@@ -30,4 +30,17 @@ public class Ingredient extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     private IngredientCategory category;
+
+
+    private Ingredient(String name, Double avb, String description, IngredientCategory category) {
+        this.name = name;
+        this.avb = avb;
+        this.description = description;
+        this.category = category;
+    }
+
+    public static Ingredient of(String name, Double avb, String description,
+        IngredientCategory category) {
+        return new Ingredient(name, avb, description, category);
+    }
 }
