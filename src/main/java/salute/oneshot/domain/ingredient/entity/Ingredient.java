@@ -32,15 +32,23 @@ public class Ingredient extends BaseEntity {
     private IngredientCategory category;
 
 
-    private Ingredient(String name, Double avb, String description, IngredientCategory category) {
+    public void update(String name, String description, IngredientCategory category, Double avb) {
         this.name = name;
-        this.avb = avb;
         this.description = description;
         this.category = category;
+        this.avb = avb;
     }
 
-    public static Ingredient of(String name, Double avb, String description,
-        IngredientCategory category) {
-        return new Ingredient(name, avb, description, category);
+
+    private Ingredient(String name, String description, IngredientCategory category, Double avb) {
+        this.name = name;
+        this.description = description;
+        this.category = category;
+        this.avb = avb;
+    }
+
+    public static Ingredient of(String name, String description,
+        IngredientCategory category, Double avb) {
+        return new Ingredient(name, description, category, avb);
     }
 }
