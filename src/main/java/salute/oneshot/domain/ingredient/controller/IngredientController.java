@@ -30,9 +30,10 @@ public class IngredientController {
     public ResponseEntity<ApiResponse<IngrResponseDto>> createIngredient(
         @Valid @RequestBody CreateIngrRequestDto request) {
 
-        IngrResponseDto responseDto = ingredientService.createIngredient(
-            CreateIngrSDto.of(request.getName(), request.getDescription(),
-                request.getCategory(), request.getAvb()));
+        CreateIngrSDto sdto = CreateIngrSDto.of(request.getName(), request.getDescription(),
+            request.getCategory(), request.getAvb());
+
+        IngrResponseDto responseDto = ingredientService.createIngredient(sdto);
 
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(ApiResponse.success(ApiResponseMessage.ADD_INGR_SUCCESS, responseDto));
@@ -43,9 +44,11 @@ public class IngredientController {
         @PathVariable Long ingredientId,
         @Valid @RequestBody UpdateIngrRequestDto request) {
 
-        IngrResponseDto responseDto = ingredientService.updateIngredient(
-            UpdateIngrSDto.of(ingredientId, request.getName(), request.getDescription(),
-                request.getCategory(), request.getAvb()));
+        UpdateIngrSDto sdto = UpdateIngrSDto.of(ingredientId, request.getName(),
+            request.getDescription(),
+            request.getCategory(), request.getAvb());
+
+        IngrResponseDto responseDto = ingredientService.updateIngredient(sdto);
 
         return ResponseEntity.ok(
             ApiResponse.success(ApiResponseMessage.UPDATE_INGR_SUCCESS, responseDto));
