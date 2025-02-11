@@ -6,7 +6,7 @@ public enum IngredientCategory {
     JIN,
     RUM,
     TEQUILA,
-    VODkA,
+    VODKA,
     WHISKEY,
     WINE,
     OTHER
