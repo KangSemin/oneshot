@@ -4,8 +4,9 @@ import lombok.Getter;
 import salute.oneshot.domain.ingredient.entity.IngredientCategory;
 
 @Getter
-public class CreateIngrSDto {
+public class UpdateIngrSDto {
 
+    private final Long id;
     private final String name;
     private final String description;
     private final IngredientCategory category;
@@ -13,16 +14,17 @@ public class CreateIngrSDto {
     private final Double avb;
 
 
-    private CreateIngrSDto(String name, String description, IngredientCategory category,
+    private UpdateIngrSDto(Long id, String name, String description, IngredientCategory category,
         Double avb) {
+        this.id = id;
         this.name = name;
         this.description = description;
         this.category = category;
         this.avb = avb;
     }
 
-    public static CreateIngrSDto of(String name, String description, IngredientCategory category,
-        Double avb) {
-        return new CreateIngrSDto(name, description, category, avb);
+    public static UpdateIngrSDto of(Long id, String name, String description,
+        IngredientCategory category, Double avb) {
+        return new UpdateIngrSDto(id, name, description, category, avb);
     }
 }
