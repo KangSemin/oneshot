@@ -9,9 +9,9 @@ import lombok.Getter;
 public class AddCartItemSDto {
     private final Long userId;
     private final Long productId;
-    private final Integer amount;
+    private final Integer quantity;
 
-    public static AddCartItemSDto of(Long userId, Long productId, Integer amount) {
-        return new AddCartItemSDto(userId, productId, amount);
+    public static AddCartItemSDto of(Long userId, Long productId, Integer quantity) {
+        return new AddCartItemSDto(userId, productId, quantity);
     }
 }

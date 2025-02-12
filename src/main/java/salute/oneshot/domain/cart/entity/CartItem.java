@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import salute.oneshot.domain.cart.dto.service.UpdateItemQuantitySDto;
 import salute.oneshot.domain.product.entity.Product;
 
 @Entity
@@ -25,15 +26,19 @@ public class CartItem {
     @JoinColumn(name = "product_id")
     private Product product;
 
-    private Integer amount;
+    private Integer quantity;
 
-    private CartItem(Cart cart, Product product, Integer amount) {
+    private CartItem(Cart cart, Product product, Integer quantity) {
         this.cart = cart;
         this.product = product;
-        this.amount = amount;
+        this.quantity = quantity;
     }
 
-    public static CartItem of(Cart foundCart, Product foundProduct, Integer amount) {
-        return new CartItem(foundCart, foundProduct, amount);
+    public static CartItem of(Cart foundCart, Product foundProduct, Integer quantity) {
+        return new CartItem(foundCart, foundProduct, quantity);
+    }
+
+    public void updateQuantity(UpdateItemQuantitySDto sdto) {
+        this.quantity = sdto.getQuantity();
     }
 }
