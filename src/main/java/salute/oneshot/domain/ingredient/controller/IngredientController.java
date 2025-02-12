@@ -56,7 +56,7 @@ public class IngredientController {
     }
 
     @DeleteMapping("/{ingredientId}")
-    public ResponseEntity<ApiResponse<IngrResponseDto>> deleteIngredient(
+    public ResponseEntity<ApiResponse<Void>> deleteIngredient(
         @PathVariable Long ingredientId) {
 
         ingredientService.deleteIngredient(ingredientId);
