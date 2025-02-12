@@ -21,9 +21,7 @@ public class JwtProvider {
 
     private final SecretKey secretKey;
 
-    public JwtProvider() {
-        Dotenv dotenv = Dotenv.load();
-        String secret = dotenv.get("JWT_SECRET_KEY");
+    public JwtProvider(@Value("${jwt.secret.key}") String secret) {
         byte[] keyBytes = Base64.getDecoder().decode(secret);
         this.secretKey = Keys.hmacShaKeyFor(keyBytes);
     }
