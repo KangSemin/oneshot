@@ -59,7 +59,7 @@ public class CartController {
         CartResponseDto responseDto = cartService.emptyCart(userId);
 
         return ResponseEntity.ok(
-                ApiResponse.success(ApiResponseMessage.GET_CART_SUCCESS, responseDto)
+                ApiResponse.success(ApiResponseMessage.EMPTY_CART_SUCCESS, responseDto)
         );
     }
 }
