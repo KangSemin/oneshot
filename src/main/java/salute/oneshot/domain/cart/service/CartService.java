@@ -47,4 +47,13 @@ public class CartService {
         Optional<Cart> foundOptionalCart = cartRepository.findByUserId(userId);
         return foundOptionalCart.map(CartResponseDto::from).orElseGet(() -> CartResponseDto.empty(userId));
     }
+
+    @Transactional
+    public CartResponseDto emptyCart(Long userId) {
+        Optional<Cart> foundOptionalCart = cartRepository.findByUserId(userId);
+        if (foundOptionalCart.isPresent()) {
+            foundOptionalCart.get().getCartItemList().clear();
+        }
+        return CartResponseDto.empty(userId);
+    }
 }
