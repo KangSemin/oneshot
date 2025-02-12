@@ -31,6 +31,9 @@ public enum ErrorCode {
 
     // 장바구니 관련 익셉션
     CART_NOT_FOUND(HttpStatus.NOT_FOUND, "장바구니가 존재하지 않습니다.");
+  
+    // 레시피 관련 익셉션
+    RECIPE_NOT_FOUND(HttpStatus.NOT_FOUND, "레시피가 존재하지 않습니다.");
 
     private final HttpStatus httpStatus;
     private final String message;
