@@ -12,10 +12,10 @@ import java.util.List;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class CartResponseDto {
 
-    private final List<CartItemResponseDto> cartItemList;
+    private final List<CartItemResponseDto> itemList;
 
     public static CartResponseDto from(Cart cart) {
-        return new CartResponseDto(cart.getCartItemList()
+        return new CartResponseDto(cart.getItemList()
                 .stream()
                 .map(CartItemResponseDto::from)
                 .toList());

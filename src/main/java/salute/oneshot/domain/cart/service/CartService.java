@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import salute.oneshot.domain.cart.dto.response.CartItemResponseDto;
 import salute.oneshot.domain.cart.dto.response.CartResponseDto;
 import salute.oneshot.domain.cart.dto.service.AddCartItemSDto;
+import salute.oneshot.domain.cart.dto.service.UpdateItemQuantitySDto;
 import salute.oneshot.domain.cart.entity.Cart;
 import salute.oneshot.domain.cart.entity.CartItem;
 import salute.oneshot.domain.cart.repository.CartItemRepository;
@@ -18,7 +19,6 @@ import salute.oneshot.domain.user.repository.UserRepository;
 import salute.oneshot.global.exception.NotFoundException;
 
 import java.util.Optional;
-import java.util.function.Consumer;
 
 @Service
 @RequiredArgsConstructor
@@ -38,7 +38,7 @@ public class CartService {
         });
 
         Product foundProduct = productRepository.findById(sdto.getProductId()).orElseThrow(() -> new NotFoundException(ErrorCode.PRODUCT_NOT_FOUND));
-        CartItem newItem = CartItem.of(foundCart, foundProduct, sdto.getAmount());
+        CartItem newItem = CartItem.of(foundCart, foundProduct, sdto.getQuantity());
         CartItem savedItem = cartItemRepository.save(newItem);
 
         return CartItemResponseDto.from(savedItem);
@@ -51,7 +51,20 @@ public class CartService {
     }
 
     @Transactional
+    public CartItemResponseDto updateItemQuantity(UpdateItemQuantitySDto sdto) {
+        CartItem item = cartItemRepository.findById(sdto.getItemId()).orElseThrow(() -> new NotFoundException(ErrorCode.CART_ITEM_NOT_FOUND));
+        item.updateQuantity(sdto);
+
+        return CartItemResponseDto.from(item);
+    }
+
+    @Transactional
+    public void removeItem(Long userId, Long itemId) {
+        cartItemRepository.deleteByIdAndCartUserId(itemId, userId);
+    }
+
+    @Transactional
     public void emptyCart(Long userId) {
-        cartRepository.findByUserId(userId).ifPresent(cart -> cart.getCartItemList().clear());
+        cartRepository.findByUserId(userId).ifPresent(cart -> cart.getItemList().clear());
     }
 }

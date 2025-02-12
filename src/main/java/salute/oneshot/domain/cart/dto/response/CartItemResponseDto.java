@@ -10,13 +10,13 @@ import salute.oneshot.domain.cart.entity.CartItem;
 public class CartItemResponseDto {
     private final Long id;
     private final Long productId;
-    private final Integer amount;
+    private final Integer quantity;
 
     public static CartItemResponseDto from(CartItem item) {
         return new CartItemResponseDto(
                 item.getId(),
                 item.getProduct().getId(),
-                item.getAmount()
+                item.getQuantity()
         );
     }
 }

@@ -10,7 +10,6 @@ import salute.oneshot.domain.common.dto.success.ApiResponseMessage;
 import salute.oneshot.domain.recipeReview.dto.request.CreateRecipeReviewRequestDto;
 import salute.oneshot.domain.recipeReview.dto.response.RecipeReviewResponseDto;
 import salute.oneshot.domain.recipeReview.dto.service.CreateRecipeReviewSDto;
-import salute.oneshot.domain.recipeReview.dto.service.GetRecipeReviewSDto;
 import salute.oneshot.domain.recipeReview.service.RecipeReviewService;
 
 

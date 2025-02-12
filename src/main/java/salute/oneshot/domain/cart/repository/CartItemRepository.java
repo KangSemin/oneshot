@@ -6,4 +6,5 @@ import salute.oneshot.domain.cart.entity.CartItem;
 
 public interface CartItemRepository extends JpaRepository<CartItem, Long> {
 
+    void deleteByIdAndCartUserId(Long itemId, Long userId);
 }
