@@ -1,12 +1,10 @@
 package salute.oneshot.domain.recipeReview.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import salute.oneshot.domain.common.dto.success.ApiResponse;
 import salute.oneshot.domain.common.dto.success.ApiResponseMessage;
 import salute.oneshot.domain.recipeReview.dto.request.CreateRecipeReviewRequestDto;
@@ -24,7 +22,7 @@ public class RecipeReviewController {
 
     @PostMapping("{recipeId}/reviews")
     public ResponseEntity<ApiResponse<RecipeReviewResponseDto>> createRecipeReview(
-            @PathVariable("recipeId") Long recipeId, CreateRecipeReviewRequestDto requestDto) {
+            @PathVariable("recipeId") Long recipeId, @Valid @RequestBody CreateRecipeReviewRequestDto requestDto) {
 
         CreateRecipeReviewSDto sDto = CreateRecipeReviewSDto.of(requestDto.getName(), requestDto.getStar(), requestDto.getContent(), recipeId);
 
