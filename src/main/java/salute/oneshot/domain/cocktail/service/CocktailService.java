@@ -20,6 +20,7 @@ import salute.oneshot.domain.ingredient.entity.Ingredient;
 import salute.oneshot.domain.ingredient.repository.IngredientRepository;
 import salute.oneshot.domain.user.entity.User;
 import salute.oneshot.domain.user.repository.UserRepository;
+import salute.oneshot.global.exception.NotFoundException;
 
 @Service
 @RequiredArgsConstructor
@@ -54,5 +55,13 @@ public class CocktailService {
     @Transactional
     public void deleteCocktail(DeleteCocktailSDto sDto) {
         cocktailRepository.deleteById(sDto.getCocktailId());
+    }
+
+    public CocktailResponseDto getCocktail(Long cocktailId) {
+
+        Cocktail cocktail = cocktailRepository.findById(cocktailId)
+            .orElseThrow(()->new NotFoundException(ErrorCode.COCKTAIL_NOT_FOUND));
+
+        return CocktailResponseDto.from(cocktail);
     }
 }

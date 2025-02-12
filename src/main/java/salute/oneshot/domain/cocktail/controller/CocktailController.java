@@ -36,6 +36,15 @@ public class CocktailController {
         return ResponseEntity.ok(ApiResponse.success(ApiResponseMessage.ADD_RCP_SUCCESS));
     }
 
+    @GetMapping("{/cocktailId}")
+    public ResponseEntity<ApiResponse<CocktailResponseDto>> getCocktail(@PathVariable Long cocktailId) {
+
+
+        CocktailResponseDto response = cocktailService.getCocktail(cocktailId);
+
+        return ResponseEntity.ok(ApiResponse.success(ApiResponseMessage.GET_CCKTL_SUCCESS));
+    }
+    
     @DeleteMapping("/{cocktailId}")
     public ResponseEntity<ApiResponse<Void>> deleteCocktail(@PathVariable Long cocktailId,
         @AuthenticationPrincipal CustomUserDetails userDetails) {
