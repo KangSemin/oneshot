@@ -9,16 +9,18 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import salute.oneshot.domain.common.dto.entity.BaseEntity;
 import salute.oneshot.domain.recipe.entity.Recipe;
+import salute.oneshot.domain.user.entity.User;
 
 
 @Entity
+@Getter
 @Table(name = "recipe_review")
 @NoArgsConstructor
 public class RecipeReview extends BaseEntity {
-
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "recipe_review_id")
@@ -31,6 +33,20 @@ public class RecipeReview extends BaseEntity {
     private Byte star;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "recipe_id")
     private Recipe recipe;
+
+    private RecipeReview(Byte star, String content, Recipe recipe) {
+        this.star = star;
+        this.content = content;
+        this.recipe = recipe;
+    }
+
+    public static RecipeReview of(Byte star, String content, Recipe recipe) {
+        return new RecipeReview(star,content,recipe);
+    }
 }
