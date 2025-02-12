@@ -50,16 +50,16 @@ public class CartController {
     }
 
     @DeleteMapping
-    public ResponseEntity<ApiResponse<CartResponseDto>> emptyCart(
+    public ResponseEntity<ApiResponse<Void>> emptyCart(
 //            @AuthenticationPrincipal Long userId
     ) {
 //        TODO: 시큐리티 설정 후 테스트용 데이터 지우기
         Long userId = 1L;
 
-        CartResponseDto responseDto = cartService.emptyCart(userId);
+        cartService.emptyCart(userId);
 
         return ResponseEntity.ok(
-                ApiResponse.success(ApiResponseMessage.EMPTY_CART_SUCCESS, responseDto)
+                ApiResponse.success(ApiResponseMessage.EMPTY_CART_SUCCESS)
         );
     }
 }
