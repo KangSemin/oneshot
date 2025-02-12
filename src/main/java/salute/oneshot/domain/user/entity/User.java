@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 import salute.oneshot.domain.common.dto.entity.BaseEntity;
 
 @Entity
-@Table(name = "cocktails")
+@Table(name = "users")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User extends BaseEntity {

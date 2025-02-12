@@ -24,7 +24,13 @@ public enum ErrorCode {
     REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "리뷰가 존재하지 않습니다."),
 
     // 팬트리 관련 익셉션
-    PANTRY_NOT_FOUND(HttpStatus.NOT_FOUND, "팬트리가 존재하지 않습니다.");
+    PANTRY_NOT_FOUND(HttpStatus.NOT_FOUND, "팬트리가 존재하지 않습니다."),
+
+    // 상품 관련 익셉션
+    PRODUCT_NOT_FOUND(HttpStatus.NOT_FOUND, "상품이 존재하지 않습니다."),
+
+    // 장바구니 관련 익셉션
+    CART_NOT_FOUND(HttpStatus.NOT_FOUND, "팬트리가 존재하지 않습니다.");
 
     private final HttpStatus httpStatus;
     private final String message;
