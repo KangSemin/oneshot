@@ -53,4 +53,18 @@ public class UserController {
                         userResponseDto
                 ));
     }
+
+    @DeleteMapping
+    public ResponseEntity<ApiResponse<UserResponseDto>> deleteUser(
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        UserResponseDto userResponseDto =
+                userService.deleteUser(userDetails.getId());
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ApiResponse.success(
+                        ApiResponseMessage.DELETE_USER_SUCCESS,
+                        userResponseDto
+                ));
+    }
 }
