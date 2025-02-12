@@ -52,9 +52,7 @@ public class CartService {
     @Transactional
     public CartResponseDto emptyCart(Long userId) {
         Optional<Cart> foundOptionalCart = cartRepository.findByUserId(userId);
-        if (foundOptionalCart.isPresent()) {
-            foundOptionalCart.get().getCartItemList().clear();
-        }
+        foundOptionalCart.ifPresent(cart -> cart.getCartItemList().clear());
         return CartResponseDto.empty(userId);
     }
 }
