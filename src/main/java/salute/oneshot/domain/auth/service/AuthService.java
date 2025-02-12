@@ -46,7 +46,7 @@ public class AuthService {
 
     @Transactional(readOnly = true)
     public SignInResponseDto userSignIn(SignInSDto signInSDto) {
-        User user = userRepository.findByEmailAndDeletedFalse(signInSDto.getEmail())
+        User user = userRepository.findByEmailAndIsDeletedIsFalse(signInSDto.getEmail())
                 .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
 
         if (!passwordEncoder.matches(signInSDto.getPassword(), user.getPassword())) {

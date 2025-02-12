@@ -37,11 +37,11 @@ public class User extends BaseEntity {
     private UserRole userRole;
 
     @Column
-    private LocalDateTime deletedAt;
+    private LocalDateTime isDeletedAt;
 
-    @Column
+    @Column(name = "is_deleted")
     @ColumnDefault("false")
-    private boolean deleted = false;
+    private boolean isDeleted = false;
 
     private User(
             String email,
@@ -71,10 +71,10 @@ public class User extends BaseEntity {
     }
 
     public void softDelete() {
-        if (this.deleted) {
+        if (this.isDeleted) {
             throw new ConflictException(ErrorCode.DUPLICATE_USER_DELETE);
         }
-        this.deleted = true;
-        this.deletedAt = LocalDateTime.now();
+        this.isDeleted = true;
+        this.isDeletedAt = LocalDateTime.now();
     }
 }
