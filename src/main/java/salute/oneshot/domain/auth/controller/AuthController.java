@@ -26,12 +26,15 @@ public class AuthController {
     public ResponseEntity<ApiResponse<SignUpResponseDto>> userSignUp(
             @Valid @RequestBody SignUpRequestDto signUpRequestDto
     ) {
+        SignUpSDto signUpSDto = SignUpSDto.of(
+                signUpRequestDto.getEmail(),
+                signUpRequestDto.getPassword(),
+                signUpRequestDto.getNickName()
+        );
+
         SignUpResponseDto signUpResponseDto =
-                authService.userSignUp(SignUpSDto.of(
-                        signUpRequestDto.getEmail(),
-                        signUpRequestDto.getPassword(),
-                        signUpRequestDto.getNickName()
-                        ));
+                authService.userSignUp(signUpSDto);
+
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.success(
                         ApiResponseMessage.SIGNUP_SUCCESS,
