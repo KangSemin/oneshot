@@ -44,7 +44,7 @@ public class CartService {
         return CartItemResponseDto.from(savedItem);
     }
 
-    // 1건의 조회밖에 이루어지지 않기 때문에 트랜잭션을 사용하지 않음
+    // 1건의 조회만 이루어지기 때문에 트랜잭션을 사용하지 않음
     public CartResponseDto findCart(Long userId) {
         Optional<Cart> foundOptionalCart = cartRepository.findByUserId(userId);
         return foundOptionalCart.map(CartResponseDto::from).orElseGet(() -> CartResponseDto.empty(userId));
