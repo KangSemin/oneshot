@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import salute.oneshot.domain.cart.entity.Cart;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -18,5 +19,9 @@ public class CartResponseDto {
                 .stream()
                 .map(CartItemResponseDto::from)
                 .toList());
+    }
+
+    public static CartResponseDto empty(Long userId) {
+        return new CartResponseDto(new ArrayList<>());
     }
 }
