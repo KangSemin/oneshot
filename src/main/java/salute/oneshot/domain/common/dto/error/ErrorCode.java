@@ -3,6 +3,7 @@ package salute.oneshot.domain.common.dto.error;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import salute.oneshot.domain.recipe.entity.Recipe;
 
 @Getter
 @RequiredArgsConstructor
@@ -24,7 +25,10 @@ public enum ErrorCode {
     REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "리뷰가 존재하지 않습니다."),
 
     // 팬트리 관련 익셉션
-    PANTRY_NOT_FOUND(HttpStatus.NOT_FOUND, "팬트리가 존재하지 않습니다.");
+    PANTRY_NOT_FOUND(HttpStatus.NOT_FOUND, "팬트리가 존재하지 않습니다."),
+
+    // 레시피 관련 익셉션
+    RECIPE_NOT_FOUND(HttpStatus.NOT_FOUND, "레시피가 존재하지 않습니다.");
 
     private final HttpStatus httpStatus;
     private final String message;
