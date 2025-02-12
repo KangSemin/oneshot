@@ -24,6 +24,7 @@ public class Cart extends BaseEntity {
     @JoinColumn(name = "user_id")
     private User user;
 
+    // Cart 엔티티를 불러오는 경우에 CartItemList를 불러오지 않는 경우가 없다고 판단하고 즉시 로딩으로 설정
     @OneToMany(mappedBy = "cart", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<CartItem> cartItemList;
 
