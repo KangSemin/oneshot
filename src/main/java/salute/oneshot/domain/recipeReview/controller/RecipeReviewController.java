@@ -25,7 +25,7 @@ public class RecipeReviewController {
     public ResponseEntity<ApiResponse<RecipeReviewResponseDto>> createRecipeReview(
             @PathVariable("recipeId") Long recipeId, @Valid @RequestBody CreateRecipeReviewRequestDto requestDto) {
 
-        CreateRecipeReviewSDto sDto = CreateRecipeReviewSDto.of(requestDto.getName(), requestDto.getStar(), requestDto.getContent(), recipeId);
+        CreateRecipeReviewSDto sDto = CreateRecipeReviewSDto.of(requestDto.getStar(), requestDto.getContent(), recipeId);
 
         RecipeReviewResponseDto responseDto = recipeReviewService.createRecipeReview(sDto);
 

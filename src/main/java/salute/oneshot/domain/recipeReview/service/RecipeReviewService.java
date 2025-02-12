@@ -23,8 +23,8 @@ public class RecipeReviewService {
         Recipe recipe = recipeRepository.findById(sDto.getRecipeId())
                 .orElseThrow(() -> new NotFoundException(ErrorCode.RECIPE_NOT_FOUND));
 
-        RecipeReview recipeReview = recipeReviewRepository.save(RecipeReview.of(sDto.getName(), sDto.getStar(), recipe));
+        RecipeReview recipeReview = recipeReviewRepository.save(RecipeReview.of(sDto.getStar(),sDto.getContent(), recipe));
 
-        return RecipeReviewResponseDto.from(sDto.getName(),recipeReview);
+        return RecipeReviewResponseDto.from(recipeReview);
     }
 }

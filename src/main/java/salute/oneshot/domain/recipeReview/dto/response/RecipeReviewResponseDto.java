@@ -10,14 +10,13 @@ import salute.oneshot.domain.recipeReview.entity.RecipeReview;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class RecipeReviewResponseDto {
     private final Long reviewId;
-    private final String name;
     private final Byte star;
     private final String content;
     private final Long userId;
 
-    public static RecipeReviewResponseDto from(String name, RecipeReview recipeReview) {
+    public static RecipeReviewResponseDto from(RecipeReview recipeReview) {
         return new RecipeReviewResponseDto(
-                recipeReview.getId(), name, recipeReview.getStar(),
+                recipeReview.getId(), recipeReview.getStar(),
                 recipeReview.getContent(), recipeReview.getUser().getId());
     }
 

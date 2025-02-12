@@ -8,8 +8,6 @@ import org.hibernate.validator.constraints.Range;
 @Getter
 public class CreateRecipeReviewRequestDto {
 
-    private String name;
-
     @NotNull
     @Range(min = 0, max = 5)
     private Byte star;
