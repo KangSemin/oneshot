@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import salute.oneshot.domain.common.dto.entity.BaseEntity;
 
+import java.util.Optional;
+
 @Entity
 @Table(name = "users")
 @Getter
@@ -42,7 +44,18 @@ public class User extends BaseEntity {
         this.userRole = userRole;
     }
 
-    public static User of(String email, String password, String nickName) {
+    public static User of(
+            String email,
+            String password,
+            String nickName
+    ) {
         return new User(email, password, nickName, UserRole.USER);
+    }
+
+    public void update(String nickName, String password) {
+        Optional.ofNullable(nickName)
+                .ifPresent(value -> this.nickName = value);
+        Optional.ofNullable(password)
+                .ifPresent(value -> this.password = value);
     }
 }
