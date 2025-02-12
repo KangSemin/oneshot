@@ -51,8 +51,7 @@ public class CartService {
     }
 
     @Transactional
-    public CartResponseDto emptyCart(Long userId) {
+    public void emptyCart(Long userId) {
         cartRepository.findByUserId(userId).ifPresent(cart -> cart.getCartItemList().clear());
-        return CartResponseDto.empty(userId);
     }
 }
