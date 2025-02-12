@@ -23,8 +23,8 @@ public class CocktailController {
     private final CocktailService cocktailService;
 
     @GetMapping
-    public ResponseEntity<ApiResponse<Page<CocktailResponseDto>>> getAllCocktails(@RequestParam(name = "page") int page,
-                                                                                  @RequestParam(name = "size") int size
+    public ResponseEntity<ApiResponse<Page<CocktailResponseDto>>> getAllCocktails(@RequestParam(name = "page", defaultValue = "1") int page,
+                                                                                  @RequestParam(name = "size", defaultValue = "10") int size
 
     ) {
         Pageable pageable = PageRequest.of(page - 1, size);
