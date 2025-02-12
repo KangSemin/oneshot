@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import salute.oneshot.domain.cart.dto.response.CartItemResponseDto;
+import salute.oneshot.domain.cart.dto.response.CartResponseDto;
 import salute.oneshot.domain.cart.dto.service.AddCartItemSDto;
 import salute.oneshot.domain.cart.entity.Cart;
 import salute.oneshot.domain.cart.entity.CartItem;
@@ -15,6 +16,8 @@ import salute.oneshot.domain.product.repository.ProductRepository;
 import salute.oneshot.domain.user.entity.User;
 import salute.oneshot.domain.user.repository.UserRepository;
 import salute.oneshot.global.exception.NotFoundException;
+
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -38,5 +41,10 @@ public class CartService {
         CartItem savedItem = cartItemRepository.save(newItem);
 
         return CartItemResponseDto.from(savedItem);
+    }
+
+    public CartResponseDto findCart(Long userId) {
+        Optional<Cart> foundOptionalCart = cartRepository.findByUserId(userId);
+        return foundOptionalCart.map(CartResponseDto::from).orElseGet(() -> CartResponseDto.empty(userId));
     }
 }
