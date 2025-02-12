@@ -28,6 +28,9 @@ public class Cart extends BaseEntity {
     @OneToMany(mappedBy = "cart", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<CartItem> itemList;
 
+    @Column(columnDefinition = "TINYINT(1) DEFAULT 0")
+    private Boolean isOrdered = false;
+
     public static Cart from(User user) {
         return new Cart(user);
     }

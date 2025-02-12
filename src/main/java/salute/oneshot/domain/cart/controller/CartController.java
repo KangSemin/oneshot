@@ -61,7 +61,7 @@ public class CartController {
     ) {
 //        TODO: 시큐리티 설정 후 테스트용 데이터 지우기
         Long userId = 1L;
-        UpdateItemQuantitySDto sdto = UpdateItemQuantitySDto.of(userId, itemId, requestDto) ;
+        UpdateItemQuantitySDto sdto = UpdateItemQuantitySDto.of(userId, itemId, requestDto.getQuantity());
         CartItemResponseDto responseDto = cartService.updateItemQuantity(sdto);
 
         return ResponseEntity.ok(
