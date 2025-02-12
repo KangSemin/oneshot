@@ -18,7 +18,7 @@ public class RecipeReviewService {
     private final RecipeReviewRepository recipeReviewRepository;
     private final RecipeRepository recipeRepository;
 
-    public RecipeReviewResponseDto createRecipeReviewService(CreateRecipeReviewSDto sDto) {
+    public RecipeReviewResponseDto createRecipeReview(CreateRecipeReviewSDto sDto) {
 
         Recipe recipe = recipeRepository.findById(sDto.getRecipeId())
                 .orElseThrow(() -> new NotFoundException(ErrorCode.RECIPE_NOT_FOUND));

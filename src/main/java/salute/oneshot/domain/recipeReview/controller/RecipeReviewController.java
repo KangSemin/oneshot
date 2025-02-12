@@ -10,6 +10,7 @@ import salute.oneshot.domain.common.dto.success.ApiResponseMessage;
 import salute.oneshot.domain.recipeReview.dto.request.CreateRecipeReviewRequestDto;
 import salute.oneshot.domain.recipeReview.dto.response.RecipeReviewResponseDto;
 import salute.oneshot.domain.recipeReview.dto.service.CreateRecipeReviewSDto;
+import salute.oneshot.domain.recipeReview.dto.service.GetRecipeReviewSDto;
 import salute.oneshot.domain.recipeReview.service.RecipeReviewService;
 
 
@@ -26,9 +27,11 @@ public class RecipeReviewController {
 
         CreateRecipeReviewSDto sDto = CreateRecipeReviewSDto.of(requestDto.getName(), requestDto.getStar(), requestDto.getContent(), recipeId);
 
-        RecipeReviewResponseDto responseDto = recipeReviewService.createRecipeReviewService(sDto);
+        RecipeReviewResponseDto responseDto = recipeReviewService.createRecipeReview(sDto);
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.success(ApiResponseMessage.ADD_RCP_RVW_SUCCESS,responseDto));
     }
+
+
 }
