@@ -3,21 +3,31 @@ package salute.oneshot.domain.auth.dto.service;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import salute.oneshot.domain.auth.dto.request.SignUpRequestDto;
+import salute.oneshot.domain.user.entity.User;
+import salute.oneshot.domain.user.entity.UserRole;
 
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class SignUpSDto {
 
-    private final String email;
-    private final String password;
-    private final String nickName;
+    private String email;
+    private String password;
+    private String nickName;
 
-    public static SignUpSDto from(SignUpRequestDto requestDto) {
-        return new SignUpSDto(
-            requestDto.getEmail(),
-            requestDto.getPassword(),
-            requestDto.getNickName()
+    public static SignUpSDto of(
+            String email,
+            String password,
+            String nickName
+    ) {
+      return new SignUpSDto(email, password, nickName);
+    }
+
+    public User of(String encodedPassword) {
+        return new User(
+                email,
+                encodedPassword,
+                nickName,
+                UserRole.USER
         );
     }
 }
