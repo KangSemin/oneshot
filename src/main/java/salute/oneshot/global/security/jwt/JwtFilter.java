@@ -95,7 +95,7 @@ public class JwtFilter extends OncePerRequestFilter {
                 !bearerToken.startsWith(SecurityConst.BEARER_PREFIX)) {
             throw new MalformedJwtException(SecurityConst.MALFORMED_TOKEN);
         }
-        return bearerToken.substring(7);
+        return bearerToken.substring(SecurityConst.BEARER_PREFIX.length());
     }
 
     private void sendErrorResponse(
