@@ -6,9 +6,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import salute.oneshot.domain.cocktail.dto.request.CreateCocktailRequestDto;
+import salute.oneshot.domain.cocktail.dto.request.UpdateCocktailRequestDto;
 import salute.oneshot.domain.cocktail.dto.response.CocktailResponseDto;
 import salute.oneshot.domain.cocktail.dto.service.CreateCocktailSDto;
 import salute.oneshot.domain.cocktail.dto.service.DeleteCocktailSDto;
+import salute.oneshot.domain.cocktail.dto.service.UpdateCocktailSDto;
 import salute.oneshot.domain.cocktail.service.CocktailService;
 import salute.oneshot.domain.common.dto.success.ApiResponse;
 import salute.oneshot.domain.common.dto.success.ApiResponseMessage;
@@ -37,14 +39,31 @@ public class CocktailController {
     }
 
     @GetMapping("{/cocktailId}")
-    public ResponseEntity<ApiResponse<CocktailResponseDto>> getCocktail(@PathVariable Long cocktailId) {
-
+    public ResponseEntity<ApiResponse<CocktailResponseDto>> getCocktail(
+        @PathVariable Long cocktailId) {
 
         CocktailResponseDto response = cocktailService.getCocktail(cocktailId);
 
-        return ResponseEntity.ok(ApiResponse.success(ApiResponseMessage.GET_CCKTL_SUCCESS));
+        return ResponseEntity.ok(
+            ApiResponse.success(ApiResponseMessage.GET_CCKTL_SUCCESS, response));
     }
-    
+
+    @PatchMapping("{/cocktailId}")
+    public ResponseEntity<ApiResponse<CocktailResponseDto>> updateCocktail(
+        @PathVariable Long cocktailId,
+        @RequestBody UpdateCocktailRequestDto request,
+        @AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        UpdateCocktailSDto sDto = UpdateCocktailSDto.of(cocktailId, userDetails.getId(),
+            request.getName(), request.getRecipe(),
+            request.getDescription(), request.getIngredientList());
+
+        CocktailResponseDto response = cocktailService.updateCocktail(sDto);
+
+        return ResponseEntity.ok(
+            ApiResponse.success(ApiResponseMessage.UPDATE_CCKTL_SUCCESS, response));
+    }
+
     @DeleteMapping("/{cocktailId}")
     public ResponseEntity<ApiResponse<Void>> deleteCocktail(@PathVariable Long cocktailId,
         @AuthenticationPrincipal CustomUserDetails userDetails) {
