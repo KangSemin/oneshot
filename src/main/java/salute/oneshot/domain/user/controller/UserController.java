@@ -4,12 +4,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import salute.oneshot.domain.common.dto.success.ApiResponse;
 import salute.oneshot.domain.common.dto.success.ApiResponseMessage;
+import salute.oneshot.domain.user.dto.repuest.UserUpdateRequestDto;
 import salute.oneshot.domain.user.dto.response.UserResponseDto;
+import salute.oneshot.domain.user.dto.service.UserUpdateSDto;
 import salute.oneshot.domain.user.service.UserService;
 import salute.oneshot.global.security.entity.CustomUserDetails;
 
@@ -24,8 +24,33 @@ public class UserController {
     public ResponseEntity<ApiResponse<UserResponseDto>> getUserInfo(
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
-        UserResponseDto userResponseDto = userService.getUserInfo(userDetails.getId());
+        UserResponseDto userResponseDto =
+                userService.getUserInfo(userDetails.getId());
+
         return ResponseEntity.status(HttpStatus.OK)
-                .body(ApiResponse.success(ApiResponseMessage.GET_USER_SUCCESS, userResponseDto));
+                .body(ApiResponse.success(
+                        ApiResponseMessage.GET_USER_SUCCESS,
+                        userResponseDto
+                ));
+    }
+
+    @PatchMapping
+    public ResponseEntity<ApiResponse<UserResponseDto>> updateUserInfo(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @RequestBody UserUpdateRequestDto userUpdateRequestDto
+    ) {
+        UserUpdateSDto userUpdateSDto = UserUpdateSDto.of(
+                userDetails.getId(),
+                userUpdateRequestDto.getNickName(),
+                userUpdateRequestDto.getPassword()
+        );
+        UserResponseDto userResponseDto =
+                userService.updateUserInfo(userUpdateSDto);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ApiResponse.success(
+                        ApiResponseMessage.UPDATE_USER_SUCCESS,
+                        userResponseDto
+                ));
     }
 }
