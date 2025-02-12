@@ -1,14 +1,22 @@
 package salute.oneshot.domain.ingredient.controller;
 
+import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
+
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import salute.oneshot.domain.common.dto.success.ApiResponse;
 import salute.oneshot.domain.common.dto.success.ApiResponseMessage;
@@ -17,6 +25,7 @@ import salute.oneshot.domain.ingredient.dto.request.UpdateIngrRequestDto;
 import salute.oneshot.domain.ingredient.dto.response.IngrResponseDto;
 import salute.oneshot.domain.ingredient.dto.service.CreateIngrSDto;
 import salute.oneshot.domain.ingredient.dto.service.UpdateIngrSDto;
+import salute.oneshot.domain.ingredient.repository.IngredientRepository;
 import salute.oneshot.domain.ingredient.service.IngredientService;
 
 @RestController
@@ -39,6 +48,29 @@ public class IngredientController {
             .body(ApiResponse.success(ApiResponseMessage.ADD_INGR_SUCCESS, responseDto));
     }
 
+    @GetMapping
+    public ResponseEntity<ApiResponse<Page<IngrResponseDto>>> getAllIngredients(
+        @RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "10") int size
+    ) {
+
+        Pageable pageable = PageRequest.of(page-1, size);
+        Page<IngrResponseDto> responseDto = ingredientService.getAllIngredients(pageable);
+
+        return ResponseEntity.ok(
+            ApiResponse.success(ApiResponseMessage.GET_INGR_SUCCESS, responseDto));
+    }
+
+    @GetMapping("/{ingredientId}")
+    public ResponseEntity<ApiResponse<IngrResponseDto>> getIngredient(
+        @PathVariable Long ingredientId) {
+
+        IngrResponseDto responseDto = ingredientService.getIngredient(ingredientId);
+
+        return ResponseEntity.ok(
+            ApiResponse.success(ApiResponseMessage.GET_INGR_SUCCESS, responseDto));
+    }
+
+
     @PatchMapping("/{ingredientId}")
     public ResponseEntity<ApiResponse<IngrResponseDto>> updateIngredient(
         @PathVariable Long ingredientId,
@@ -52,5 +84,14 @@ public class IngredientController {
 
         return ResponseEntity.ok(
             ApiResponse.success(ApiResponseMessage.UPDATE_INGR_SUCCESS, responseDto));
+    }
+
+    @DeleteMapping("/{ingredientId}")
+    public ResponseEntity<ApiResponse<Void>> deleteIngredient(
+        @PathVariable Long ingredientId) {
+
+        ingredientService.deleteIngredient(ingredientId);
+
+        return ResponseEntity.ok(ApiResponse.success(ApiResponseMessage.DELETE_INGR_SUCCESS));
     }
 }
