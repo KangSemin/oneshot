@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -52,5 +53,14 @@ public class IngredientController {
 
         return ResponseEntity.ok(
             ApiResponse.success(ApiResponseMessage.UPDATE_INGR_SUCCESS, responseDto));
+    }
+
+    @DeleteMapping("/{ingredientId}")
+    public ResponseEntity<ApiResponse<IngrResponseDto>> deleteIngredient(
+        @PathVariable Long ingredientId) {
+
+        ingredientService.deleteIngredient(ingredientId);
+
+        return ResponseEntity.ok(ApiResponse.success(ApiResponseMessage.DELETE_INGR_SUCCESS));
     }
 }
