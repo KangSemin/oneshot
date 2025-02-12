@@ -34,4 +34,15 @@ public class RecipeReviewController {
     }
 
 
+    @GetMapping("{recipeId}/reviews/{reviewId}")
+    public ResponseEntity<ApiResponse<RecipeReviewResponseDto>> getRecipeReview(
+            @PathVariable ("recipeId") Long recipeId, @PathVariable ("reviewId") Long reviewId) {
+
+        GetRecipeReviewSDto sDto = GetRecipeReviewSDto.of(recipeId,reviewId);
+
+        RecipeReviewResponseDto responseDto = recipeReviewService.getRecipeReview(sDto);
+
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(ApiResponseMessage.GET_RCP_RVW_SUCCESS,responseDto));
+    }
+
 }

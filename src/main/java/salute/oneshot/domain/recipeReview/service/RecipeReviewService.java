@@ -7,6 +7,7 @@ import salute.oneshot.domain.recipe.entity.Recipe;
 import salute.oneshot.domain.recipe.repository.RecipeRepository;
 import salute.oneshot.domain.recipeReview.dto.response.RecipeReviewResponseDto;
 import salute.oneshot.domain.recipeReview.dto.service.CreateRecipeReviewSDto;
+import salute.oneshot.domain.recipeReview.dto.service.GetRecipeReviewSDto;
 import salute.oneshot.domain.recipeReview.entity.RecipeReview;
 import salute.oneshot.domain.recipeReview.repository.RecipeReviewRepository;
 import salute.oneshot.global.exception.NotFoundException;
@@ -24,6 +25,21 @@ public class RecipeReviewService {
                 .orElseThrow(() -> new NotFoundException(ErrorCode.RECIPE_NOT_FOUND));
 
         RecipeReview recipeReview = recipeReviewRepository.save(RecipeReview.of(sDto.getStar(),sDto.getContent(), recipe));
+
+        return RecipeReviewResponseDto.from(recipeReview);
+    }
+
+    public RecipeReviewResponseDto getRecipeReview(GetRecipeReviewSDto sDto) {
+
+        Recipe recipe = recipeRepository.findById(sDto.getRecipeId())
+                .orElseThrow(() -> new NotFoundException(ErrorCode.RECIPE_NOT_FOUND));
+
+        RecipeReview recipeReview = recipeReviewRepository.findById(sDto.getReviewId())
+                .orElseThrow(() -> new NotFoundException(ErrorCode.REVIEW_NOT_FOUND));
+
+        if (!recipeReview.getRecipe().getId().equals(sDto.getRecipeId())) {
+            throw new NotFoundException(ErrorCode.REVIEW_NOT_FOUND);
+        }
 
         return RecipeReviewResponseDto.from(recipeReview);
     }
