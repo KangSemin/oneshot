@@ -4,7 +4,13 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 import salute.oneshot.domain.common.dto.entity.BaseEntity;
+import salute.oneshot.domain.common.dto.error.ErrorCode;
+import salute.oneshot.global.exception.ConflictException;
+
+import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Entity
 @Table(name = "users")
@@ -17,7 +23,10 @@ public class User extends BaseEntity {
     @Column(columnDefinition = "BigInt")
     private Long id;
 
+    @Column(nullable = false, unique = true)
     private String email;
+
+    @Column(nullable = false)
     private String password;
 
     @Column(name = "nick_name")
@@ -27,8 +36,12 @@ public class User extends BaseEntity {
     @Column(name = "user_role")
     private UserRole userRole;
 
+    @Column
+    private LocalDateTime isDeletedAt;
+
     @Column(name = "is_deleted")
-    private Boolean isDeleted;
+    @ColumnDefault("false")
+    private boolean isDeleted = false;
 
     private User(
             String email,
@@ -42,7 +55,26 @@ public class User extends BaseEntity {
         this.userRole = userRole;
     }
 
-    public static User of(String email, String password, String nickName) {
+    public static User of(
+            String email,
+            String password,
+            String nickName
+    ) {
         return new User(email, password, nickName, UserRole.USER);
+    }
+
+    public void update(String nickName, String password) {
+        Optional.ofNullable(nickName)
+                .ifPresent(value -> this.nickName = value);
+        Optional.ofNullable(password)
+                .ifPresent(value -> this.password = value);
+    }
+
+    public void softDelete() {
+        if (this.isDeleted) {
+            throw new ConflictException(ErrorCode.DUPLICATE_USER_DELETE);
+        }
+        this.isDeleted = true;
+        this.isDeletedAt = LocalDateTime.now();
     }
 }
