@@ -1,5 +1,6 @@
 package salute.oneshot.global.security.jwt;
 
+import io.github.cdimascio.dotenv.Dotenv;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -20,7 +21,9 @@ public class JwtProvider {
 
     private final SecretKey secretKey;
 
-    public JwtProvider(@Value("${jwt.secret.key}") String secret) {
+    public JwtProvider() {
+        Dotenv dotenv = Dotenv.load();
+        String secret = dotenv.get("JWT_SECRET_KEY");
         byte[] keyBytes = Base64.getDecoder().decode(secret);
         this.secretKey = Keys.hmacShaKeyFor(keyBytes);
     }
