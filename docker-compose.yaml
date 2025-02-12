@@ -20,12 +20,13 @@ services:
 
   app:
     build: .
+    image: oneshot:latest
     container_name: oneshot-app
     env_file:
       - .env
     restart: always
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://database:3306/oneshot
+      SPRING_DATASOURCE_URL: jdbc:mysql://database:3307/oneshot
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
       SPRING_DATA_REDIS_HOST: redis

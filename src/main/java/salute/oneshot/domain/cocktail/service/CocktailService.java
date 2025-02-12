@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import salute.oneshot.domain.cocktail.dto.response.CocktailResponseDto;
 import salute.oneshot.domain.cocktail.dto.service.CreateCocktailSDto;
+import salute.oneshot.domain.cocktail.dto.service.DeleteCocktailSDto;
 import salute.oneshot.domain.cocktail.entity.Cocktail;
 import salute.oneshot.domain.cocktail.entity.CocktailIngredient;
 import salute.oneshot.domain.cocktail.entity.RecipeType;
@@ -48,5 +49,10 @@ public class CocktailService {
         cocktailIngredientRepository.saveAll(ingredientList);
 
 
+    }
+
+    @Transactional
+    public void deleteCocktail(DeleteCocktailSDto sDto) {
+        cocktailRepository.deleteById(sDto.getCocktailId());
     }
 }
