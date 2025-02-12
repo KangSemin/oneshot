@@ -30,11 +30,7 @@ public class User extends BaseEntity {
     @Column(name = "is_deleted")
     private Boolean isDeleted;
 
-    public static User of(String email, String password, String nickName) {
-        return new User(email, password, nickName, UserRole.USER);
-    }
-
-    public User(
+    private User(
             String email,
             String password,
             String nickName,
@@ -44,5 +40,9 @@ public class User extends BaseEntity {
         this.password = password;
         this.nickName = nickName;
         this.userRole = userRole;
+    }
+
+    public static User of(String email, String password, String nickName) {
+        return new User(email, password, nickName, UserRole.USER);
     }
 }
