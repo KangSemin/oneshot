@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/ingredients")
+@RequestMapping("/api/ingredients/reviews")
 @RequiredArgsConstructor
 public class IngredientReviewController {
 

@@ -1,18 +1,13 @@
 package salute.oneshot.domain.user.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import salute.oneshot.domain.common.dto.entity.BaseEntity;
 
 @Entity
-@Table(name = "cocktails")
+@Table(name = "users")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User extends BaseEntity {
@@ -28,10 +23,26 @@ public class User extends BaseEntity {
     @Column(name = "nick_name")
     private String nickName;
 
-    @Column(name = "uesr_role")
+    @Enumerated(EnumType.STRING)
+    @Column(name = "user_role")
     private UserRole userRole;
 
     @Column(name = "is_deleted")
-    private Boolean idDeleted;
+    private Boolean isDeleted;
 
+    private User(
+            String email,
+            String password,
+            String nickName,
+            UserRole userRole
+    ) {
+        this.email = email;
+        this.password = password;
+        this.nickName = nickName;
+        this.userRole = userRole;
+    }
+
+    public static User of(String email, String password, String nickName) {
+        return new User(email, password, nickName, UserRole.USER);
+    }
 }
