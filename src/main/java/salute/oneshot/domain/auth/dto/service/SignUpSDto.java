@@ -21,14 +21,5 @@ public class SignUpSDto {
     ) {
       return new SignUpSDto(email, password, nickName);
     }
-
-    public User of(String encodedPassword) {
-        return new User(
-                email,
-                encodedPassword,
-                nickName,
-                UserRole.USER
-        );
-    }
 }
 

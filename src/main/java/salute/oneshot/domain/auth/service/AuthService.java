@@ -24,8 +24,11 @@ public class AuthService {
             throw new ConflictException(ErrorCode.DUPLICATE_EMAIL);
         }
 
-        User user = signUpSDto
-                .of(passwordEncoder.encode(signUpSDto.getPassword()));
+        User user = User.of(
+                signUpSDto.getEmail(),
+                passwordEncoder.encode(signUpSDto.getPassword()),
+                signUpSDto.getNickName()
+        );
 
         userRepository.save(user);
 
