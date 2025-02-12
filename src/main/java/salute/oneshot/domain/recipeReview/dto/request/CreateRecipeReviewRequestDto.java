@@ -7,7 +7,7 @@ import org.hibernate.validator.constraints.Range;
 
 @Getter
 public class CreateRecipeReviewRequestDto {
-    @NotBlank(message = "리뷰 제목은 필수입니다.")
+
     private String name;
 
     @NotNull
