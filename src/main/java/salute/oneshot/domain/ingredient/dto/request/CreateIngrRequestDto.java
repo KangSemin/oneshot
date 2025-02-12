@@ -7,6 +7,7 @@ import org.hibernate.validator.constraints.Range;
 import salute.oneshot.domain.ingredient.entity.IngredientCategory;
 
 @Getter
+
 public class CreateIngrRequestDto {
 
     @NotBlank(message = "재료명은 필수입니다.")

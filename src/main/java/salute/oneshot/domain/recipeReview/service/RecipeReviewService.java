@@ -2,9 +2,9 @@ package salute.oneshot.domain.recipeReview.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import salute.oneshot.domain.cocktail.entity.Cocktail;
+import salute.oneshot.domain.cocktail.repository.CocktailRepository;
 import salute.oneshot.domain.common.dto.error.ErrorCode;
-import salute.oneshot.domain.recipe.entity.Recipe;
-import salute.oneshot.domain.recipe.repository.RecipeRepository;
 import salute.oneshot.domain.recipeReview.dto.response.RecipeReviewResponseDto;
 import salute.oneshot.domain.recipeReview.dto.service.CreateRecipeReviewSDto;
 import salute.oneshot.domain.recipeReview.entity.RecipeReview;
@@ -16,14 +16,14 @@ import salute.oneshot.global.exception.NotFoundException;
 public class RecipeReviewService {
 
     private final RecipeReviewRepository recipeReviewRepository;
-    private final RecipeRepository recipeRepository;
+    private final CocktailRepository cocktailRepository;
 
     public RecipeReviewResponseDto createRecipeReview(CreateRecipeReviewSDto sDto) {
 
-        Recipe recipe = recipeRepository.findById(sDto.getRecipeId())
-                .orElseThrow(() -> new NotFoundException(ErrorCode.RECIPE_NOT_FOUND));
+        Cocktail cocktail = cocktailRepository.findById(sDto.getRecipeId())
+                .orElseThrow(() -> new NotFoundException(ErrorCode.COCKTAIL_NOT_FOUND));
 
-        RecipeReview recipeReview = recipeReviewRepository.save(RecipeReview.of(sDto.getStar(),sDto.getContent(), recipe));
+        RecipeReview recipeReview = recipeReviewRepository.save(RecipeReview.of(sDto.getStar(),sDto.getContent(), cocktail));
 
         return RecipeReviewResponseDto.from(recipeReview);
     }

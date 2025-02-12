@@ -45,8 +45,7 @@ public class ApiResponseMessage {
     public static final String DELETE_PNTR_SUCCESS = "팬트리 비우기가 완료되었습니다.";
 
     //레시피 관련 메시지
-    public static final String ADD_O_RCP_SUCCESS = "공식 레시피 등록이 완료되었습니다.";
-    public static final String ADD_C_RCP_SUCCESS = "나만의 레시피 등록이 완료되었습니다.";
+    public static final String ADD_RCP_SUCCESS = "레시피 등록이 완료되었습니다.";
     public static final String GET_O_RCP_LIST_SUCCESS = "공식 레시피 목록 조회가 완료되었습니다.";
     public static final String GET_C_RCP_LIST_SUCCESS = "나만의 레시피 목록 조회가 완료되었습니다.";
     public static final String GET_RCP_SUCCESS = "레시피 조회가 완료되었습니다.";
