@@ -18,6 +18,7 @@ import salute.oneshot.domain.user.repository.UserRepository;
 import salute.oneshot.global.exception.NotFoundException;
 
 import java.util.Optional;
+import java.util.function.Consumer;
 
 @Service
 @RequiredArgsConstructor
@@ -43,8 +44,15 @@ public class CartService {
         return CartItemResponseDto.from(savedItem);
     }
 
+    // 1건의 조회만 이루어지기 때문에 트랜잭션을 사용하지 않음
     public CartResponseDto findCart(Long userId) {
         Optional<Cart> foundOptionalCart = cartRepository.findByUserId(userId);
         return foundOptionalCart.map(CartResponseDto::from).orElseGet(() -> CartResponseDto.empty(userId));
+    }
+
+    @Transactional
+    public CartResponseDto emptyCart(Long userId) {
+        cartRepository.findByUserId(userId).ifPresent(cart -> cart.getCartItemList().clear());
+        return CartResponseDto.empty(userId);
     }
 }
