@@ -26,6 +26,12 @@ public enum ErrorCode {
     // 팬트리 관련 익셉션
     PANTRY_NOT_FOUND(HttpStatus.NOT_FOUND, "팬트리가 존재하지 않습니다."),
 
+    // 상품 관련 익셉션
+    PRODUCT_NOT_FOUND(HttpStatus.NOT_FOUND, "상품이 존재하지 않습니다."),
+
+    // 장바구니 관련 익셉션
+    CART_NOT_FOUND(HttpStatus.NOT_FOUND, "장바구니가 존재하지 않습니다.");
+  
     // 레시피 관련 익셉션
     RECIPE_NOT_FOUND(HttpStatus.NOT_FOUND, "레시피가 존재하지 않습니다.");
 
