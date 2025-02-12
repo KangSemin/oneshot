@@ -18,6 +18,7 @@ import salute.oneshot.domain.user.repository.UserRepository;
 import salute.oneshot.global.exception.NotFoundException;
 
 import java.util.Optional;
+import java.util.function.Consumer;
 
 @Service
 @RequiredArgsConstructor
@@ -51,8 +52,7 @@ public class CartService {
 
     @Transactional
     public CartResponseDto emptyCart(Long userId) {
-        Optional<Cart> foundOptionalCart = cartRepository.findByUserId(userId);
-        foundOptionalCart.ifPresent(cart -> cart.getCartItemList().clear());
+        cartRepository.findByUserId(userId).ifPresent(cart -> cart.getCartItemList().clear());
         return CartResponseDto.empty(userId);
     }
 }
