@@ -24,6 +24,6 @@ public class CocktailResponseDto {
 
     public static CocktailResponseDto from(Cocktail cocktail){
         return new CocktailResponseDto(cocktail.getId(), cocktail.getName(),
-                cocktail.getDescription(), cocktail.getCreatedAt(), cocktail.getUpdatedAt());
+                cocktail.getDescription(), cocktail.getCreatedAt(), cocktail.getModifiedAt());
     }
 }
