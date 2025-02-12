@@ -33,4 +33,9 @@ public class IngredientService {
         ingredient.update(request.getName(), request.getDescription(), request.getCategory(),request.getAvb());
         return IngrResponseDto.from(ingredient);
     }
+
+    public void deleteIngredient(Long ingredientId) {
+
+        ingredientRepository.deleteById(ingredientId);
+    }
 }
