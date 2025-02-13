@@ -17,7 +17,7 @@ import salute.oneshot.domain.ingredient.entity.Ingredient;
 
 @Getter
 @Entity
-@Table(name = "Cockrail_Ingredients")
+@Table(name = "Cocktail_Ingredients")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CocktailIngredient {
 
