@@ -1,16 +1,17 @@
 package salute.oneshot.domain.cocktail.controller;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import salute.oneshot.domain.cocktail.dto.request.CreateCocktailRequestDto;
 import salute.oneshot.domain.cocktail.dto.response.CocktailResponseDto;
+import salute.oneshot.domain.cocktail.dto.service.CreateCocktailSDto;
 import salute.oneshot.domain.cocktail.service.CocktailService;
 import salute.oneshot.domain.common.dto.success.ApiResponse;
 import salute.oneshot.domain.common.dto.success.ApiResponseMessage;
+import salute.oneshot.global.security.entity.CustomUserDetails;
 
 @RestController
 @RequestMapping("/api/cocktails")
@@ -19,22 +20,19 @@ public class CocktailController {
 
     private final CocktailService cocktailService;
 
-    @GetMapping
-    public ResponseEntity<ApiResponse<Page<CocktailResponseDto>>> getAllCocktails(@RequestParam(name = "page", defaultValue = "1") int page,
-                                                                                  @RequestParam(name = "size", defaultValue = "10") int size
+    @PostMapping
+    public ResponseEntity<ApiResponse<CocktailResponseDto>> createCocktail(
+        @RequestBody CreateCocktailRequestDto request, @AuthenticationPrincipal CustomUserDetails userDetails){
 
-    ) {
-        Pageable pageable = PageRequest.of(page - 1, size);
-        Page<CocktailResponseDto> responsePage = cocktailService.getAllCocktails(pageable);
 
-        return ResponseEntity.ok(ApiResponse.success(ApiResponseMessage.GET_CCKTL_LIST_SUCCESS, responsePage));
-    }
+        Long userId = userDetails.getId();
 
-    @GetMapping("/{cocktailId}")
-    public ResponseEntity<ApiResponse<CocktailResponseDto>> getCocktailById(@PathVariable(name = "cocktailId") Long cocktailId){
+        CreateCocktailSDto sDto = CreateCocktailSDto.of(userId, request.getName(),
+            request.getDescription(), request.getRecipe(), request.getIngredientList());
 
-        CocktailResponseDto responseDto = cocktailService.getCocktailById(cocktailId);
 
-        return ResponseEntity.ok(ApiResponse.success(ApiResponseMessage.GET_CCKTL_LIST_SUCCESS, responseDto));
+        cocktailService.createCocktail(sDto);
+
+        return ResponseEntity.ok(ApiResponse.success(ApiResponseMessage.ADD_RCP_SUCCESS));
     }
 }

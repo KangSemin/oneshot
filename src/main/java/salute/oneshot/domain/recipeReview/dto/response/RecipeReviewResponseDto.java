@@ -1,6 +1,5 @@
 package salute.oneshot.domain.recipeReview.dto.response;
 
-import io.lettuce.core.StrAlgoArgs;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

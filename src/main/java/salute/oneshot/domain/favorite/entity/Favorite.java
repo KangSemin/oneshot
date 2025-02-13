@@ -11,8 +11,8 @@ import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import salute.oneshot.domain.cocktail.entity.Cocktail;
 import salute.oneshot.domain.common.dto.entity.BaseEntity;
-import salute.oneshot.domain.recipe.entity.Recipe;
 import salute.oneshot.domain.user.entity.User;
 
 @Entity
@@ -32,6 +32,6 @@ public class Favorite extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = "recipe_id")
-    private Recipe recipe;
+    private Cocktail cocktail;
 }
 

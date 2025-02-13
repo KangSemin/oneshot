@@ -52,5 +52,4 @@ public class RecipeReviewController {
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(ApiResponseMessage.GET_RCP_RVW_SUCCESS,responseDtos));
     }
 
-
 }
