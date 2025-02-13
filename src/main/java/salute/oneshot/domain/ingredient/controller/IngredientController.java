@@ -25,6 +25,7 @@ import salute.oneshot.domain.ingredient.dto.request.UpdateIngrRequestDto;
 import salute.oneshot.domain.ingredient.dto.response.IngrResponseDto;
 import salute.oneshot.domain.ingredient.dto.service.CreateIngrSDto;
 import salute.oneshot.domain.ingredient.dto.service.UpdateIngrSDto;
+import salute.oneshot.domain.ingredient.entity.IngredientCategory;
 import salute.oneshot.domain.ingredient.repository.IngredientRepository;
 import salute.oneshot.domain.ingredient.service.IngredientService;
 
@@ -40,7 +41,7 @@ public class IngredientController {
         @Valid @RequestBody CreateIngrRequestDto request) {
 
         CreateIngrSDto sdto = CreateIngrSDto.of(request.getName(), request.getDescription(),
-            request.getCategory(), request.getAvb());
+            IngredientCategory.valueOf(request.getCategory()), request.getAvb());
 
         IngrResponseDto responseDto = ingredientService.createIngredient(sdto);
 
@@ -78,7 +79,7 @@ public class IngredientController {
 
         UpdateIngrSDto sdto = UpdateIngrSDto.of(ingredientId, request.getName(),
             request.getDescription(),
-            request.getCategory(), request.getAvb());
+            IngredientCategory.valueOf(request.getCategory()), request.getAvb());
 
         IngrResponseDto responseDto = ingredientService.updateIngredient(sdto);
 
