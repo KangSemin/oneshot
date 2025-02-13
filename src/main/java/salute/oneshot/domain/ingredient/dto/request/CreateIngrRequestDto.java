@@ -4,7 +4,6 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import org.hibernate.validator.constraints.Range;
-import salute.oneshot.domain.ingredient.entity.IngredientCategory;
 
 @Getter
 public class CreateIngrRequestDto {
@@ -13,8 +12,8 @@ public class CreateIngrRequestDto {
     private String name;
     @NotBlank(message = "설명은 필수입니다.")
     private String description;
-    @NotNull(message = "카테고리는 필수입니다.")
-    private IngredientCategory category;
+    @NotBlank(message = "카테고리는 필수입니다.")
+    private String category;
 
     @NotNull
     @Range(min = 0, max = 100)
