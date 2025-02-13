@@ -1,5 +1,6 @@
 package salute.oneshot.domain.cocktail.service;
 
+import java.nio.file.AccessDeniedException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -44,10 +45,11 @@ public class CocktailService {
         cocktailRepository.save(cocktail);
 
         List<CocktailIngredient> ingredientList = sDto.getIngredientList().stream()
-            .map( req-> {
-                    Ingredient ingredient = ingredientRepository.getReferenceById(req.getIngredientId());
-                    return CocktailIngredient.of(cocktail, ingredient , req.getVolume());
-                }).toList();
+            .map(req -> {
+                Ingredient ingredient = ingredientRepository.getReferenceById(
+                    req.getIngredientId());
+                return CocktailIngredient.of(cocktail, ingredient, req.getVolume());
+            }).toList();
 
         cocktailIngredientRepository.saveAll(ingredientList);
 
@@ -56,6 +58,10 @@ public class CocktailService {
 
     @Transactional
     public void deleteCocktail(DeleteCocktailSDto sDto) {
+
+        if (!cocktailRepository.existsByIdAndUserId(sDto.getCocktailId(), sDto.getUserId())) {
+            throw new UnauthorizedException(ErrorCode.FORBIDDEN_ACCESS);
+        }
         cocktailRepository.deleteById(sDto.getCocktailId());
     }
 
