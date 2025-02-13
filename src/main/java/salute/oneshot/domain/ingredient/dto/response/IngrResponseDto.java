@@ -1,8 +1,10 @@
 package salute.oneshot.domain.ingredient.dto.response;
 
+import lombok.Getter;
 import salute.oneshot.domain.ingredient.entity.Ingredient;
 import salute.oneshot.domain.ingredient.entity.IngredientCategory;
 
+@Getter
 public class IngrResponseDto {
 
     private final Long id;

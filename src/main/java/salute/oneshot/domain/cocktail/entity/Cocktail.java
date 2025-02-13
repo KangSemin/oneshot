@@ -50,7 +50,7 @@ public class Cocktail extends BaseEntity {
 
     @Column(nullable = false)
     @ColumnDefault("0")
-    private Double starRate;
+    private Double starRate = 0.0;
 
 
     private Cocktail(String name, String description, String recipe, RecipeType type,
