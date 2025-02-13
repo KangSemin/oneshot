@@ -37,16 +37,17 @@ public class RecipeReview extends BaseEntity {
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "recipe_id")
+    @JoinColumn(name = "cocktail_id")
     private Cocktail cocktail;
 
-    private RecipeReview(Byte star, String content, Cocktail cocktail) {
+    private RecipeReview(Byte star, String content, User user, Cocktail cocktail) {
         this.star = star;
         this.content = content;
+        this.user = user;
         this.cocktail = cocktail;
     }
 
-    public static RecipeReview of(Byte star, String content, Cocktail cocktail) {
-        return new RecipeReview(star,content,cocktail);
+    public static RecipeReview of(Byte star, String content, User user, Cocktail cocktail) {
+        return new RecipeReview(star,content,user,cocktail);
     }
 }

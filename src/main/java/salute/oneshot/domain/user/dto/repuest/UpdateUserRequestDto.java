@@ -9,7 +9,7 @@ import salute.oneshot.domain.user.dto.UserValidationConst;
 
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class UserUpdateRequestDto {
+public class UpdateUserRequestDto {
     @Size(
             min = UserValidationConst.NICKNAME_MIN,
             max = UserValidationConst.NICKNAME_MAX,

@@ -6,17 +6,17 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class UserUpdateSDto {
+public class UpdateUserSDto {
 
     private final Long id;
     private final String nickName;
     private final String password;
 
-    public static UserUpdateSDto of(
+    public static UpdateUserSDto of(
             Long id,
             String nickName,
             String password
     ) {
-        return new UserUpdateSDto(id, nickName, password);
+        return new UpdateUserSDto(id, nickName, password);
     }
 }
