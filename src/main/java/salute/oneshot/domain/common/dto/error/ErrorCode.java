@@ -19,12 +19,14 @@ public enum ErrorCode {
 
     // 즐겨찾기 관련 익셉션
     FAVORITE_NOT_FOUND(HttpStatus.NOT_FOUND, "즐겨찾기가 존재하지 않습니다."),
+    DUPLICATE_FAVORITE(HttpStatus.CONFLICT, "이미 즐겨찾기한 레시피입니다." ),
 
     // 재료 관련 익셉션
     INGREDIENT_NOT_FOUND(HttpStatus.NOT_FOUND, "재료가 존재하지 않습니다."),
 
     // 리뷰 관련 익셉션
     REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "리뷰가 존재하지 않습니다."),
+    REVIEW_DELETE_FORBIDDEN(HttpStatus.FORBIDDEN,"본인이 작성한 리뷰만 삭제할 수 있습니다."),
 
     // 팬트리 관련 익셉션
     PANTRY_NOT_FOUND(HttpStatus.NOT_FOUND, "팬트리가 존재하지 않습니다."),
@@ -54,6 +56,7 @@ public enum ErrorCode {
     MALFORMED_TOKEN(HttpStatus.UNAUTHORIZED, "잘못된 JWT 형식입니다."),
     EXPIRED_TOKEN(HttpStatus.UNAUTHORIZED, "만료된 JWT 토큰입니다."),
     UNSUPPORTED_TOKEN(HttpStatus.BAD_REQUEST, "지원되지 않는 JWT 토큰입니다."),
+    TOKEN_INVALID_STATE(HttpStatus.UNAUTHORIZED, "유효하지 않은 토큰입니다."),
 
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류가 발생했습니다.");
 

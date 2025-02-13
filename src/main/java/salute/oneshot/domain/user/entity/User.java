@@ -10,7 +10,6 @@ import salute.oneshot.domain.common.dto.error.ErrorCode;
 import salute.oneshot.global.exception.ConflictException;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 @Entity
 @Table(name = "users")
@@ -43,6 +42,9 @@ public class User extends BaseEntity {
     @ColumnDefault("false")
     private boolean isDeleted = false;
 
+    @Column(name = "last_logout_at")
+    private LocalDateTime lastLogoutAt;
+
     private User(
             String email,
             String password,
@@ -64,10 +66,8 @@ public class User extends BaseEntity {
     }
 
     public void update(String nickName, String password) {
-        Optional.ofNullable(nickName)
-                .ifPresent(value -> this.nickName = value);
-        Optional.ofNullable(password)
-                .ifPresent(value -> this.password = value);
+        this.nickName = nickName;
+        this.password = password;
     }
 
     public void softDelete() {
@@ -76,5 +76,9 @@ public class User extends BaseEntity {
         }
         this.isDeleted = true;
         this.isDeletedAt = LocalDateTime.now();
+    }
+
+    public void logout() {
+        this.lastLogoutAt = LocalDateTime.now();
     }
 }

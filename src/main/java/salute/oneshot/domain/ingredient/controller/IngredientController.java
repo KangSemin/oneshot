@@ -1,7 +1,5 @@
 package salute.oneshot.domain.ingredient.controller;
 
-import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
-
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -19,14 +17,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import salute.oneshot.domain.common.dto.success.ApiResponse;
-import salute.oneshot.domain.common.dto.success.ApiResponseMessage;
+import salute.oneshot.domain.common.dto.success.ApiResponseConst;
 import salute.oneshot.domain.ingredient.dto.request.CreateIngrRequestDto;
 import salute.oneshot.domain.ingredient.dto.request.UpdateIngrRequestDto;
 import salute.oneshot.domain.ingredient.dto.response.IngrResponseDto;
 import salute.oneshot.domain.ingredient.dto.service.CreateIngrSDto;
 import salute.oneshot.domain.ingredient.dto.service.UpdateIngrSDto;
 import salute.oneshot.domain.ingredient.entity.IngredientCategory;
-import salute.oneshot.domain.ingredient.repository.IngredientRepository;
 import salute.oneshot.domain.ingredient.service.IngredientService;
 
 @RestController
@@ -46,7 +43,7 @@ public class IngredientController {
         IngrResponseDto responseDto = ingredientService.createIngredient(sdto);
 
         return ResponseEntity.status(HttpStatus.CREATED)
-            .body(ApiResponse.success(ApiResponseMessage.ADD_INGR_SUCCESS, responseDto));
+            .body(ApiResponse.success(ApiResponseConst.ADD_INGR_SUCCESS, responseDto));
     }
 
     @GetMapping
@@ -58,7 +55,7 @@ public class IngredientController {
         Page<IngrResponseDto> responseDto = ingredientService.getAllIngredients(pageable);
 
         return ResponseEntity.ok(
-            ApiResponse.success(ApiResponseMessage.GET_INGR_SUCCESS, responseDto));
+            ApiResponse.success(ApiResponseConst.GET_INGR_SUCCESS, responseDto));
     }
 
     @GetMapping("/{ingredientId}")
@@ -68,7 +65,7 @@ public class IngredientController {
         IngrResponseDto responseDto = ingredientService.getIngredient(ingredientId);
 
         return ResponseEntity.ok(
-            ApiResponse.success(ApiResponseMessage.GET_INGR_SUCCESS, responseDto));
+            ApiResponse.success(ApiResponseConst.GET_INGR_SUCCESS, responseDto));
     }
 
 
@@ -84,7 +81,7 @@ public class IngredientController {
         IngrResponseDto responseDto = ingredientService.updateIngredient(sdto);
 
         return ResponseEntity.ok(
-            ApiResponse.success(ApiResponseMessage.UPDATE_INGR_SUCCESS, responseDto));
+            ApiResponse.success(ApiResponseConst.UPDATE_INGR_SUCCESS, responseDto));
     }
 
     @DeleteMapping("/{ingredientId}")
@@ -93,6 +90,6 @@ public class IngredientController {
 
         ingredientService.deleteIngredient(ingredientId);
 
-        return ResponseEntity.ok(ApiResponse.success(ApiResponseMessage.DELETE_INGR_SUCCESS));
+        return ResponseEntity.ok(ApiResponse.success(ApiResponseConst.DELETE_INGR_SUCCESS));
     }
 }
