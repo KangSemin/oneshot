@@ -37,10 +37,10 @@ public class RecipeReview extends BaseEntity {
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "recipe_id")
+    @JoinColumn(name = "cocktail_id")
     private Cocktail cocktail;
 
-    private RecipeReview(Byte star, String content, User user,Cocktail cocktail) {
+    private RecipeReview(Byte star, String content, User user, Cocktail cocktail) {
         this.star = star;
         this.content = content;
         this.user = user;

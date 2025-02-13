@@ -41,6 +41,15 @@ public class RecipeReviewController {
                 .body(ApiResponse.success(ApiResponseMessage.ADD_RCP_RVW_SUCCESS,responseDto));
     }
 
+    @GetMapping("/reviews/{reviewId}")
+    public ResponseEntity<ApiResponse<RecipeReviewResponseDto>> getRecipeReview(
+            @PathVariable ("reviewId") Long reviewId) {
+
+        RecipeReviewResponseDto responseDto = recipeReviewService.getRecipeReview(reviewId);
+
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(ApiResponseMessage.GET_RCP_RVW_SUCCESS,responseDto));
+    }
+
 
     @GetMapping("/{cocktailId}/reviews")
     public ResponseEntity<ApiResponse<Page<RecipeReviewResponseDto>>> getAllRecipeReview (
