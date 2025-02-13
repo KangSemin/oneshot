@@ -54,9 +54,8 @@ public class ApiResponseMessage {
 
     // 즐겨찾기 관련 메시지
     public static final String ADD_FVRT_SUCCESS = "즐겨찾기 등록이 완료되었습니다.";
+    public static final String GET_FVRT_STAT_SUCCESS = "즐겨찾기 상태 조회가 완료되었습니다.";
     public static final String GET_FVRT_LIST_SUCCESS = "즐겨찾기 목록 조회가 완료되었습니다.";
-    public static final String GET_FVRT_COUNT_SUCCESS = "레시피의 즐겨찾기 수 조회가 완료되었습니다.";
-    public static final String DELETE_FVRT_SUCCESS = "즐겨찾기 해제가 완료되었습니다.";
 
     // 장바구니 관련 메시지
     public static final String ADD_CART_ITEM_SUCCESS = "장바구니에 상품 추가가 완료되었습니다.";
