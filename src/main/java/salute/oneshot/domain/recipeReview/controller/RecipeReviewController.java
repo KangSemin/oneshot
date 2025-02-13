@@ -39,7 +39,7 @@ public class RecipeReviewController {
         RecipeReviewResponseDto responseDto = recipeReviewService.createRecipeReview(sDto);
 
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.success(ApiResponseMessage.ADD_RCP_RVW_SUCCESS, responseDto));
+                .body(ApiResponse.success(ApiResponseConst.ADD_RCP_RVW_SUCCESS, responseDto));
 
     }
 
@@ -49,7 +49,7 @@ public class RecipeReviewController {
 
         RecipeReviewResponseDto responseDto = recipeReviewService.getRecipeReview(reviewId);
 
-        return ResponseEntity.ok(ApiResponse.success(ApiResponseMessage.GET_RCP_RVW_SUCCESS, responseDto));
+        return ResponseEntity.ok(ApiResponse.success(ApiResponseConst.GET_RCP_RVW_SUCCESS, responseDto));
 
     }
 
@@ -66,7 +66,7 @@ public class RecipeReviewController {
 
         Page<RecipeReviewResponseDto> responseDtos = recipeReviewService.getAllRecipeReview(sDto);
 
-        return ResponseEntity.ok(ApiResponse.success(ApiResponseMessage.GET_RCP_RVW_SUCCESS, responseDtos));
+        return ResponseEntity.ok(ApiResponse.success(ApiResponseConst.GET_RCP_RVW_SUCCESS, responseDtos));
 
     }
 
@@ -81,6 +81,6 @@ public class RecipeReviewController {
 
         recipeReviewService.deleteRecipeReview(sDto);
 
-        return ResponseEntity.ok(ApiResponse.success(ApiResponseMessage.DELETE_RCP_RVW_SUCCESS));
+        return ResponseEntity.ok(ApiResponse.success(ApiResponseConst.DELETE_RCP_RVW_SUCCESS));
     }
 }
