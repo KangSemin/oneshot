@@ -40,6 +40,7 @@ public class UserService {
     public UserResponseDto deleteUser(Long userId) {
         User user = getUserById(userId);
         user.softDelete();
+        user.logout();
 
         return UserResponseDto.from(user);
     }
