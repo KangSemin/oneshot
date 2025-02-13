@@ -57,6 +57,14 @@ public class IngredientReviewController {
 
         return ResponseEntity.ok(ApiResponse.success(ApiResponseConst.GET_INGR_RVW_LIST_SUCCESS,responseDtoPage));
     }
+    
+    @GetMapping("/reviews/{reviewsId}")
+    public ResponseEntity<ApiResponse<IngrReviewResponseDto>> getIngredientReview(@PathVariable("reviewsId") Long reviewsId) {
+
+        IngrReviewResponseDto responseDto = ingredientReviewService.getIngredientReview(reviewsId);
+
+        return ResponseEntity.ok(ApiResponse.success(ApiResponseConst.GET_INGR_RVW_SUCCESS,responseDto));
+    }
 
 
 }
