@@ -14,6 +14,7 @@ import salute.oneshot.domain.common.dto.success.ApiResponseMessage;
 import salute.oneshot.domain.recipeReview.dto.request.CreateRecipeReviewRequestDto;
 import salute.oneshot.domain.recipeReview.dto.response.RecipeReviewResponseDto;
 import salute.oneshot.domain.recipeReview.dto.service.CreateRecipeReviewSDto;
+import salute.oneshot.domain.recipeReview.dto.service.DeleteRecipeReviewSDto;
 import salute.oneshot.domain.recipeReview.dto.service.GetAllRecipeReviewSDto;
 import salute.oneshot.domain.recipeReview.service.RecipeReviewService;
 import salute.oneshot.global.security.entity.CustomUserDetails;
@@ -66,4 +67,17 @@ public class RecipeReviewController {
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(ApiResponseMessage.GET_RCP_RVW_SUCCESS,responseDtos));
     }
 
+    @DeleteMapping("/reviews/{reviewId}")
+    public ResponseEntity<ApiResponse<Void>> deleteRecipeReview(
+            @PathVariable("reviewId") Long reviewId,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+
+        Long userId = customUserDetails.getId();
+
+        DeleteRecipeReviewSDto sDto = DeleteRecipeReviewSDto.of(reviewId, userId);
+
+        recipeReviewService.deleteRecipeReview(sDto);
+
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(ApiResponseMessage.DELETE_RCP_RVW_SUCCESS));
+    }
 }
