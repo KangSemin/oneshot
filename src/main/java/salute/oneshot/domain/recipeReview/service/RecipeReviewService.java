@@ -8,10 +8,7 @@ import salute.oneshot.domain.cocktail.entity.Cocktail;
 import salute.oneshot.domain.cocktail.repository.CocktailRepository;
 import salute.oneshot.domain.common.dto.error.ErrorCode;
 import salute.oneshot.domain.recipeReview.dto.response.RecipeReviewResponseDto;
-import salute.oneshot.domain.recipeReview.dto.service.CreateRecipeReviewSDto;
-import salute.oneshot.domain.recipeReview.dto.service.DeleteRecipeReviewSDto;
-import salute.oneshot.domain.recipeReview.dto.service.GetAllRecipeReviewSDto;
-import salute.oneshot.domain.recipeReview.dto.service.UpdateRecipeReviewSDto;
+import salute.oneshot.domain.recipeReview.dto.service.*;
 import salute.oneshot.domain.recipeReview.entity.RecipeReview;
 import salute.oneshot.domain.recipeReview.repository.RecipeReviewRepository;
 import salute.oneshot.domain.user.entity.User;
@@ -38,6 +35,15 @@ public class RecipeReviewService {
         RecipeReview recipeReview = recipeReviewRepository.save(RecipeReview.of(sDto.getStar(),sDto.getContent(), user, cocktail));
 
         return RecipeReviewResponseDto.from(recipeReview);
+    }
+
+    public Page<RecipeReviewResponseDto> getMyRecipeReview(GetMyRecipeReviewSDto sDto) {
+
+        Page<RecipeReview> recipeReviewPage = recipeReviewRepository.findAllByUser_Id(sDto.getUserId(), sDto.getPageable());
+
+        Page<RecipeReviewResponseDto> responseDtoPage = recipeReviewPage.map(RecipeReviewResponseDto::from);
+
+        return responseDtoPage;
     }
 
     public RecipeReviewResponseDto getRecipeReview(Long reviewId) {
@@ -86,4 +92,5 @@ public class RecipeReviewService {
 
         recipeReviewRepository.delete(recipeReview);
     }
+
 }

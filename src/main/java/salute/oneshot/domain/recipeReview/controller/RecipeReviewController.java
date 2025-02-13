@@ -14,10 +14,7 @@ import salute.oneshot.domain.common.dto.success.ApiResponseMessage;
 import salute.oneshot.domain.recipeReview.dto.request.CreateRecipeReviewRequestDto;
 import salute.oneshot.domain.recipeReview.dto.request.UpdateRecipeRequestDto;
 import salute.oneshot.domain.recipeReview.dto.response.RecipeReviewResponseDto;
-import salute.oneshot.domain.recipeReview.dto.service.CreateRecipeReviewSDto;
-import salute.oneshot.domain.recipeReview.dto.service.DeleteRecipeReviewSDto;
-import salute.oneshot.domain.recipeReview.dto.service.GetAllRecipeReviewSDto;
-import salute.oneshot.domain.recipeReview.dto.service.UpdateRecipeReviewSDto;
+import salute.oneshot.domain.recipeReview.dto.service.*;
 import salute.oneshot.domain.recipeReview.service.RecipeReviewService;
 import salute.oneshot.global.security.entity.CustomUserDetails;
 
@@ -42,6 +39,23 @@ public class RecipeReviewController {
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.success(ApiResponseMessage.ADD_RCP_RVW_SUCCESS,responseDto));
+    }
+
+    @GetMapping("/reviews/me")
+    public ResponseEntity<ApiResponse<Page<RecipeReviewResponseDto>>> getMyRecipeReview(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @RequestParam(value = "page", defaultValue = "1") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size){
+
+        Long userId = userDetails.getId();
+
+        Pageable pageable = PageRequest.of(page - 1, size);
+
+        GetMyRecipeReviewSDto sDto = GetMyRecipeReviewSDto.of(userId, pageable);
+
+        Page<RecipeReviewResponseDto> responseDtos = recipeReviewService.getMyRecipeReview(sDto);
+
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(ApiResponseMessage.GET_RCP_RVW_SUCCESS,responseDtos));
     }
 
     @GetMapping("/reviews/{reviewId}")
