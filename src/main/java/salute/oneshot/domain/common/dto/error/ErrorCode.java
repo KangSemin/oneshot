@@ -19,6 +19,7 @@ public enum ErrorCode {
 
     // 즐겨찾기 관련 익셉션
     FAVORITE_NOT_FOUND(HttpStatus.NOT_FOUND, "즐겨찾기가 존재하지 않습니다."),
+    DUPLICATE_FAVORITE(HttpStatus.CONFLICT, "이미 즐겨찾기한 레시피입니다." ),
 
     // 재료 관련 익셉션
     INGREDIENT_NOT_FOUND(HttpStatus.NOT_FOUND, "재료가 존재하지 않습니다."),

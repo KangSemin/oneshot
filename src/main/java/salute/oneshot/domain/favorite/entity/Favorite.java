@@ -33,5 +33,14 @@ public class Favorite extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "recipe_id")
     private Cocktail cocktail;
+
+    public Favorite(User user, Cocktail cocktail) {
+        this.user = user;
+        this.cocktail = cocktail;
+    }
+
+    public static Favorite from(User user, Cocktail cocktail) {
+        return new Favorite(user, cocktail);
+    }
 }
 
