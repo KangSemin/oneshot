@@ -16,7 +16,9 @@ import salute.oneshot.domain.product.entity.Product;
 import salute.oneshot.domain.product.repository.ProductRepository;
 import salute.oneshot.domain.user.entity.User;
 import salute.oneshot.domain.user.repository.UserRepository;
+import salute.oneshot.global.exception.InvalidException;
 import salute.oneshot.global.exception.NotFoundException;
+import salute.oneshot.global.exception.UnauthorizedException;
 
 import java.util.Optional;
 
@@ -29,30 +31,38 @@ public class CartService {
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
 
+    private final int MAX_CART_ITEM_LIST_SIZE = 15;
+
     @Transactional
     public CartItemResponseDto addCartItem(AddCartItemSDto sdto) {
-        Cart foundCart = cartRepository.findByUserId(sdto.getUserId()).orElseGet(() -> {
-            User foundUser = userRepository.findById(sdto.getUserId()).orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
-            Cart newCart = Cart.from(foundUser);
+        Cart foundCart = cartRepository.findByUserIdAndIsOrderedFalse(sdto.getUserId()).orElseGet(() -> {
+            User userRef = getUserRefById(sdto.getUserId());
+            Cart newCart = Cart.from(userRef);
             return cartRepository.save(newCart);
         });
 
-        Product foundProduct = productRepository.findById(sdto.getProductId()).orElseThrow(() -> new NotFoundException(ErrorCode.PRODUCT_NOT_FOUND));
-        CartItem newItem = CartItem.of(foundCart, foundProduct, sdto.getQuantity());
-        CartItem savedItem = cartItemRepository.save(newItem);
+        if (foundCart.getItemList().size() >= MAX_CART_ITEM_LIST_SIZE) {
+            throw new InvalidException(ErrorCode.FULL_CART);
+        }
 
-        return CartItemResponseDto.from(savedItem);
+        Product productRef = getProductRefById(sdto.getProductId());
+        CartItem newItem = CartItem.of(foundCart, productRef, sdto.getQuantity());
+        cartItemRepository.save(newItem);
+
+        return CartItemResponseDto.from(newItem);
     }
 
     // 1건의 조회만 이루어지기 때문에 트랜잭션을 사용하지 않음
+
     public CartResponseDto findCart(Long userId) {
-        Optional<Cart> foundOptionalCart = cartRepository.findByUserId(userId);
+        Optional<Cart> foundOptionalCart = cartRepository.findByUserIdAndIsOrderedFalse(userId);
         return foundOptionalCart.map(CartResponseDto::from).orElseGet(() -> CartResponseDto.empty(userId));
     }
-
     @Transactional
     public CartItemResponseDto updateItemQuantity(UpdateItemQuantitySDto sdto) {
-        CartItem item = cartItemRepository.findById(sdto.getItemId()).orElseThrow(() -> new NotFoundException(ErrorCode.CART_ITEM_NOT_FOUND));
+        CartItem item = getItemById(sdto.getItemId());
+        isCartItemOwnedByUser(sdto.getUserId(), item);
+
         item.updateQuantity(sdto);
 
         return CartItemResponseDto.from(item);
@@ -60,11 +70,47 @@ public class CartService {
 
     @Transactional
     public void removeItem(Long userId, Long itemId) {
+        CartItem item = getItemById(itemId);
+        isCartItemOwnedByUser(userId, item);
         cartItemRepository.deleteByIdAndCartUserId(itemId, userId);
     }
 
     @Transactional
     public void emptyCart(Long userId) {
-        cartRepository.findByUserId(userId).ifPresent(cart -> cart.getItemList().clear());
+        cartRepository.findByUserIdAndIsOrderedFalse(userId).ifPresent(cart -> cart.getItemList().clear());
+    }
+
+    private CartItem getItemById(Long itemId) {
+        CartItem item = cartItemRepository.findById(itemId).orElseThrow(() -> new NotFoundException(ErrorCode.CART_ITEM_NOT_FOUND));
+        isCartItemOrdered(item);
+        return item;
+    }
+
+    private static void isCartItemOrdered(CartItem item) {
+        if (item.getCart().getIsOrdered().equals(Boolean.TRUE)) {
+            throw new NotFoundException(ErrorCode.CART_ITEM_NOT_FOUND);
+        }
+    }
+
+    private static void isCartItemOwnedByUser(Long userId, CartItem item) {
+        if (!item.getCart().getUser().getId().equals(userId)) {
+            throw new UnauthorizedException(ErrorCode.CART_ITEM_UNAUTHORIZED);
+        }
+    }
+
+    private Product getProductRefById(Long productId) {
+        if (!productRepository.existsById(productId)) {
+            throw new NotFoundException(ErrorCode.PRODUCT_NOT_FOUND);
+        }
+        Product productRef = productRepository.getReferenceById(productId);
+        return productRef;
+    }
+
+    private User getUserRefById(Long userId) {
+        if (!userRepository.existsById(userId)) {
+            throw new NotFoundException(ErrorCode.USER_NOT_FOUND);
+        }
+        User userRef = userRepository.getReferenceById(userId);
+        return userRef;
     }
 }

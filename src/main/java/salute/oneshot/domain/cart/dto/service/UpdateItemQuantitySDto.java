@@ -12,7 +12,7 @@ public class UpdateItemQuantitySDto {
     private final Long itemId;
     private final Integer quantity;
 
-    public static UpdateItemQuantitySDto of(Long userId, Long itemId, UpdateCartItemAmountRequestDto dto) {
-        return new UpdateItemQuantitySDto(userId, itemId, dto.getQuantity());
+    public static UpdateItemQuantitySDto of(Long userId, Long itemId, Integer quantity) {
+        return new UpdateItemQuantitySDto(userId, itemId, quantity);
     }
 }

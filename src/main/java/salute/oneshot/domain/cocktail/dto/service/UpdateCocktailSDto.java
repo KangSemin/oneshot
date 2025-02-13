@@ -8,8 +8,9 @@ import salute.oneshot.domain.cocktail.dto.request.IngredientRequestDto;
 
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class CreateCocktailSDto {
+public class UpdateCocktailSDto {
 
+    private final Long cocktailId;
     private final Long userId;
     private final String name;
     private final String recipe;
@@ -17,9 +18,10 @@ public class CreateCocktailSDto {
     private final List<IngredientRequestDto> ingredientList;
 
 
-    public static CreateCocktailSDto of(Long userId, String name, String recipe, String description,
+    public static UpdateCocktailSDto of(Long cocktailId, Long userId, String name, String recipe, String description,
         List<IngredientRequestDto> ingredientList) {
-        return new CreateCocktailSDto(userId, name, recipe, description, ingredientList);
+        return new UpdateCocktailSDto(
+            cocktailId, userId, name, recipe, description, ingredientList);
     }
 
 }

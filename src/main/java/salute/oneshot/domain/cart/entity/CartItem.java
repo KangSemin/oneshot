@@ -34,8 +34,8 @@ public class CartItem {
         this.quantity = quantity;
     }
 
-    public static CartItem of(Cart foundCart, Product foundProduct, Integer quantity) {
-        return new CartItem(foundCart, foundProduct, quantity);
+    public static CartItem of(Cart cart, Product product, Integer quantity) {
+        return new CartItem(cart, product, quantity);
     }
 
     public void updateQuantity(UpdateItemQuantitySDto sdto) {
