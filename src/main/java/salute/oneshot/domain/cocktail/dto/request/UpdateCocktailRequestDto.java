@@ -16,8 +16,8 @@ public class UpdateCocktailRequestDto {
     private final String description;
     @NotNull
     private final String recipe;
-
-    List<IngredientRequestDto> ingredientList;
+    @NotNull
+    private final List<IngredientRequestDto> ingredientList;
 
 
 }

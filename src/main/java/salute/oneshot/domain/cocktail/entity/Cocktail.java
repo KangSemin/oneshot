@@ -70,9 +70,9 @@ public class Cocktail extends BaseEntity {
 
     public void update(String name, String description, String recipe,
         List<CocktailIngredient> ingredientList) {
-        this.name = name.isBlank() ? this.name : name;
-        this.description = description.isBlank() ? this.description : description;
-        this.recipe = recipe.isBlank() ? this.recipe : recipe;
+        this.name = name;
+        this.description = description;
+        this.recipe = recipe;
         this.ingredientList = ingredientList;
     }
 }
