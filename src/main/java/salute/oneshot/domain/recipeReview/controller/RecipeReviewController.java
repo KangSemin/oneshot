@@ -26,14 +26,14 @@ public class RecipeReviewController {
 
     private final RecipeReviewService recipeReviewService;
 
-    @PostMapping("{recipeId}/reviews")
+    @PostMapping("/{cocktailId}/reviews")
     public ResponseEntity<ApiResponse<RecipeReviewResponseDto>> createRecipeReview(
-            @PathVariable("recipeId") Long recipeId, @Valid @RequestBody CreateRecipeReviewRequestDto requestDto,
+            @PathVariable("cocktailId") Long cocktailId, @Valid @RequestBody CreateRecipeReviewRequestDto requestDto,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
 
         Long userId = userDetails.getId();
 
-        CreateRecipeReviewSDto sDto = CreateRecipeReviewSDto.of(requestDto.getStar(), requestDto.getContent(), userId, recipeId);
+        CreateRecipeReviewSDto sDto = CreateRecipeReviewSDto.of(requestDto.getStar(), requestDto.getContent(), userId, cocktailId);
 
         RecipeReviewResponseDto responseDto = recipeReviewService.createRecipeReview(sDto);
 
