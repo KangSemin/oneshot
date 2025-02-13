@@ -38,7 +38,7 @@ public class CocktailController {
         return ResponseEntity.ok(ApiResponse.success(ApiResponseMessage.ADD_RCP_SUCCESS));
     }
 
-    @GetMapping("{/cocktailId}")
+    @GetMapping("/{cocktailId}")
     public ResponseEntity<ApiResponse<CocktailResponseDto>> getCocktail(
         @PathVariable Long cocktailId) {
 
@@ -48,7 +48,7 @@ public class CocktailController {
             ApiResponse.success(ApiResponseMessage.GET_CCKTL_SUCCESS, response));
     }
 
-    @PatchMapping("{/cocktailId}")
+    @PatchMapping("/{cocktailId}")
     public ResponseEntity<ApiResponse<CocktailResponseDto>> updateCocktail(
         @PathVariable Long cocktailId,
         @RequestBody UpdateCocktailRequestDto request,
