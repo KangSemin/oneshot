@@ -16,6 +16,7 @@ public class UserUpdateRequestDto {
             message = UserValidationConst.NICKNAME_RANGE_MESSAGE
     )
     private final String nickName;
+
     @Pattern(
             regexp = UserValidationConst.EMAIL_REG,
             message = UserValidationConst.INVALID_EMAIL_MESSAGE

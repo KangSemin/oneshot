@@ -6,31 +6,31 @@ import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import salute.oneshot.domain.user.dto.UserValidationMessage;
+import salute.oneshot.domain.user.dto.UserValidationConst;
 
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class SignUpRequestDto {
-    @NotBlank(message = UserValidationMessage.EMAIL_BLANK_MESSAGE)
+    @NotBlank(message = UserValidationConst.EMAIL_BLANK_MESSAGE)
     @Pattern(
-            regexp = UserValidationMessage.EMAIL_REG,
-            message = UserValidationMessage.INVALID_EMAIL_MESSAGE
+            regexp = UserValidationConst.EMAIL_REG,
+            message = UserValidationConst.INVALID_EMAIL_MESSAGE
     )
     private final String email;
 
-    @NotBlank(message = UserValidationMessage.PASSWORD_BLANK_MESSAGE)
-    @Size(min = UserValidationMessage.PASSWORD_MIN, message = UserValidationMessage.PASSWORD_MIN_MESSAGE)
+    @NotBlank(message = UserValidationConst.PASSWORD_BLANK_MESSAGE)
+    @Size(min = UserValidationConst.PASSWORD_MIN, message = UserValidationConst.PASSWORD_MIN_MESSAGE)
     @Pattern(
-            regexp = UserValidationMessage.PASSWORD_REG,
-            message = UserValidationMessage.INVALID_PASSWORD_MESSAGE
+            regexp = UserValidationConst.PASSWORD_REG,
+            message = UserValidationConst.INVALID_PASSWORD_MESSAGE
     )
     private final String password;
 
-    @NotBlank(message = UserValidationMessage.NICKNAME_BLANK_MESSAGE)
+    @NotBlank(message = UserValidationConst.NICKNAME_BLANK_MESSAGE)
     @Size(
-            min = UserValidationMessage.NICKNAME_MIN,
-            max = UserValidationMessage.NICKNAME_MAX,
-            message = UserValidationMessage.NICKNAME_RANGE_MESSAGE
+            min = UserValidationConst.NICKNAME_MIN,
+            max = UserValidationConst.NICKNAME_MAX,
+            message = UserValidationConst.NICKNAME_RANGE_MESSAGE
     )
     private final String nickName;
 }
