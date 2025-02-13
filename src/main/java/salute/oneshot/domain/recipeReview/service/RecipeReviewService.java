@@ -9,11 +9,13 @@ import salute.oneshot.domain.cocktail.repository.CocktailRepository;
 import salute.oneshot.domain.common.dto.error.ErrorCode;
 import salute.oneshot.domain.recipeReview.dto.response.RecipeReviewResponseDto;
 import salute.oneshot.domain.recipeReview.dto.service.CreateRecipeReviewSDto;
+import salute.oneshot.domain.recipeReview.dto.service.DeleteRecipeReviewSDto;
 import salute.oneshot.domain.recipeReview.dto.service.GetAllRecipeReviewSDto;
 import salute.oneshot.domain.recipeReview.entity.RecipeReview;
 import salute.oneshot.domain.recipeReview.repository.RecipeReviewRepository;
 import salute.oneshot.domain.user.entity.User;
 import salute.oneshot.domain.user.repository.UserRepository;
+import salute.oneshot.global.exception.CustomRuntimeException;
 import salute.oneshot.global.exception.NotFoundException;
 
 @Service
@@ -29,7 +31,7 @@ public class RecipeReviewService {
 
         User user = userRepository.getReferenceById(sDto.getUserId());
 
-        Cocktail cocktail = cocktailRepository.findById(sDto.getRecipeId())
+        Cocktail cocktail = cocktailRepository.findById(sDto.getCocktailId())
                 .orElseThrow(() -> new NotFoundException(ErrorCode.COCKTAIL_NOT_FOUND));
 
         RecipeReview recipeReview = recipeReviewRepository.save(RecipeReview.of(sDto.getStar(),sDto.getContent(), user, cocktail));
@@ -48,12 +50,24 @@ public class RecipeReviewService {
     public Page<RecipeReviewResponseDto> getAllRecipeReview(GetAllRecipeReviewSDto sDto) {
 
         cocktailRepository.findById(sDto.getCocktailId())
-                .orElseThrow(() -> new NotFoundException(ErrorCode.RECIPE_NOT_FOUND));
+                .orElseThrow(() -> new NotFoundException(ErrorCode.COCKTAIL_NOT_FOUND));
 
         Page<RecipeReview> recipeReviewPage = recipeReviewRepository.findAllByCocktail_Id(sDto.getCocktailId(), sDto.getPageable());
 
         Page<RecipeReviewResponseDto> responseDtoPage = recipeReviewPage.map(RecipeReviewResponseDto::from);
 
         return responseDtoPage;
+    }
+
+    public void deleteRecipeReview(DeleteRecipeReviewSDto sDto) {
+
+        RecipeReview recipeReview = recipeReviewRepository.findById(sDto.getReviewId())
+                .orElseThrow(() -> new NotFoundException(ErrorCode.REVIEW_NOT_FOUND));
+
+        if(!recipeReview.getUser().getId().equals(sDto.getUserId())) {
+            throw new CustomRuntimeException(ErrorCode.REVIEW_DELETE_FORBIDDEN);
+        }
+
+        recipeReviewRepository.delete(recipeReview);
     }
 }

@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import salute.oneshot.domain.common.dto.error.ErrorCode;
 import salute.oneshot.domain.user.dto.response.UserResponseDto;
-import salute.oneshot.domain.user.dto.service.UserUpdateSDto;
+import salute.oneshot.domain.user.dto.service.UpdateUserSDto;
 import salute.oneshot.domain.user.entity.User;
 import salute.oneshot.domain.user.repository.UserRepository;
 import salute.oneshot.global.exception.NotFoundException;
@@ -26,7 +26,7 @@ public class UserService {
     }
 
     @Transactional
-    public UserResponseDto updateUserInfo(UserUpdateSDto userUpdateSDto) {
+    public UserResponseDto updateUserInfo(UpdateUserSDto userUpdateSDto) {
         User user = getUserById(userUpdateSDto.getId());
         user.update(
                 userUpdateSDto.getNickName(),
@@ -40,6 +40,7 @@ public class UserService {
     public UserResponseDto deleteUser(Long userId) {
         User user = getUserById(userId);
         user.softDelete();
+        user.logout();
 
         return UserResponseDto.from(user);
     }

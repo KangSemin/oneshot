@@ -1,6 +1,5 @@
 package salute.oneshot.domain.cart.controller;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,7 +13,7 @@ import salute.oneshot.domain.cart.dto.service.AddCartItemSDto;
 import salute.oneshot.domain.cart.dto.service.UpdateItemQuantitySDto;
 import salute.oneshot.domain.cart.service.CartService;
 import salute.oneshot.domain.common.dto.success.ApiResponse;
-import salute.oneshot.domain.common.dto.success.ApiResponseMessage;
+import salute.oneshot.domain.common.dto.success.ApiResponseConst;
 import salute.oneshot.global.security.entity.CustomUserDetails;
 
 @RestController
@@ -34,7 +33,7 @@ public class CartController {
         CartItemResponseDto responseDto = cartService.addCartItem(sdto);
 
         return ResponseEntity.ok(
-                ApiResponse.success(ApiResponseMessage.ADD_CART_ITEM_SUCCESS, responseDto)
+                ApiResponse.success(ApiResponseConst.ADD_CART_ITEM_SUCCESS, responseDto)
         );
     }
 
@@ -46,7 +45,7 @@ public class CartController {
         CartResponseDto responseDto = cartService.findCart(userDetails.getId());
 
         return ResponseEntity.ok(
-                ApiResponse.success(ApiResponseMessage.GET_CART_SUCCESS, responseDto)
+                ApiResponse.success(ApiResponseConst.GET_CART_SUCCESS, responseDto)
         );
     }
 
@@ -60,7 +59,7 @@ public class CartController {
         CartItemResponseDto responseDto = cartService.updateItemQuantity(sdto);
 
         return ResponseEntity.ok(
-                ApiResponse.success(ApiResponseMessage.UPDATE_CART_ITEM_QUANTITY_SUCCESS, responseDto)
+                ApiResponse.success(ApiResponseConst.UPDATE_CART_ITEM_QUANTITY_SUCCESS, responseDto)
         );
     }
 
@@ -72,7 +71,7 @@ public class CartController {
         cartService.removeItem(userDetails.getId(), itemId);
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT)
-                .body(ApiResponse.success(ApiResponseMessage.REMOVE_CART_ITEM_SUCCESS));
+                .body(ApiResponse.success(ApiResponseConst.REMOVE_CART_ITEM_SUCCESS));
     }
 
     @DeleteMapping
@@ -82,7 +81,7 @@ public class CartController {
         cartService.emptyCart(userDetails.getId());
 
         return ResponseEntity.ok(
-                ApiResponse.success(ApiResponseMessage.EMPTY_CART_SUCCESS)
+                ApiResponse.success(ApiResponseConst.EMPTY_CART_SUCCESS)
         );
     }
 }

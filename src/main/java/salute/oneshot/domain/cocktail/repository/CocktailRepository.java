@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import salute.oneshot.domain.cocktail.entity.Cocktail;
 import salute.oneshot.domain.cocktail.entity.RecipeType;
 
-public interface CocktailRepository extends JpaRepository<Cocktail, Long> {
+public interface CocktailRepository extends JpaRepository<Cocktail, Long> , CocktailQueryDslRepository{
 
 
     boolean existsByIdAndUserId(Long cocktailId, Long userId);

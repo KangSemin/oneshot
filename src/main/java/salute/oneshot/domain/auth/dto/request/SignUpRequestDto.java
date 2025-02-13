@@ -11,6 +11,7 @@ import salute.oneshot.domain.user.dto.UserValidationConst;
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class SignUpRequestDto {
+
     @NotBlank(message = UserValidationConst.EMAIL_BLANK_MESSAGE)
     @Pattern(
             regexp = UserValidationConst.EMAIL_REG,
