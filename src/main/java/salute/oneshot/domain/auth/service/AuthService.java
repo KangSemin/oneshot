@@ -29,27 +29,30 @@ public class AuthService {
     private final CustomUserDetailsService userDetailsService;
 
     @Transactional
-    public SignUpResponseDto userSignUp(SignUpSDto signUpSDto) {
-        if (userRepository.existsByEmail(signUpSDto.getEmail())) {
+    public SignUpResponseDto userSignUp(SignUpSDto serviceDto) {
+        if (userRepository.existsByEmail(serviceDto.getEmail())) {
             throw new ConflictException(ErrorCode.DUPLICATE_EMAIL);
         }
 
         User user = User.of(
-                signUpSDto.getEmail(),
-                passwordEncoder.encode(signUpSDto.getPassword()),
-                signUpSDto.getNickName()
-        );
+                serviceDto.getEmail(),
+                passwordEncoder.encode(serviceDto.getPassword()),
+                serviceDto.getNickName());
+
         userRepository.save(user);
 
         return SignUpResponseDto.from(user);
     }
 
     @Transactional(readOnly = true)
-    public SignInResponseDto userSignIn(SignInSDto signInSDto) {
-        User user = userRepository.findByEmailAndIsDeletedIsFalse(signInSDto.getEmail())
-                .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
+    public SignInResponseDto userSignIn(SignInSDto serviceDto) {
+        User user = userRepository
+                .findByEmailAndIsDeletedIsFalse(serviceDto.getEmail())
+                .orElseThrow(() ->
+                        new NotFoundException(ErrorCode.USER_NOT_FOUND));
 
-        if (!passwordEncoder.matches(signInSDto.getPassword(), user.getPassword())) {
+        if (!passwordEncoder
+                .matches(serviceDto.getPassword(), user.getPassword())) {
             throw new InvalidException(ErrorCode.LOGIN_FAILED);
         }
 
@@ -57,8 +60,8 @@ public class AuthService {
                 userDetailsService.createAuthentication(
                         user.getId(),
                         user.getEmail(),
-                        user.getUserRole()
-                );
+                        user.getUserRole());
+
         String token = jwtProvider.generateToken(authentication);
 
         return SignInResponseDto.of(token, SecurityConst.TOKEN_TYPE);

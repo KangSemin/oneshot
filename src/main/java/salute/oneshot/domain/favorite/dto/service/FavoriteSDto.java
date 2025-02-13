@@ -6,12 +6,12 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class CreateFavoriteSDto {
+public class FavoriteSDto {
 
-    private Long recipeId;
     private Long userId;
+    private Long cocktailId;
 
-    public static CreateFavoriteSDto of(Long recipeId, Long userId) {
-        return new CreateFavoriteSDto(recipeId, userId);
+    public static FavoriteSDto of(Long userId, Long cocktailId) {
+        return new FavoriteSDto(userId, cocktailId);
     }
 }

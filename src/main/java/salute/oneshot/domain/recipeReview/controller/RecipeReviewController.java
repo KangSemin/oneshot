@@ -10,7 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import salute.oneshot.domain.common.dto.success.ApiResponse;
-import salute.oneshot.domain.common.dto.success.ApiResponseMessage;
+import salute.oneshot.domain.common.dto.success.ApiResponseConst;
 import salute.oneshot.domain.recipeReview.dto.request.CreateRecipeReviewRequestDto;
 import salute.oneshot.domain.recipeReview.dto.response.RecipeReviewResponseDto;
 import salute.oneshot.domain.recipeReview.dto.service.CreateRecipeReviewSDto;
@@ -27,19 +27,20 @@ public class RecipeReviewController {
 
     private final RecipeReviewService recipeReviewService;
 
-    @PostMapping("{recipeId}/reviews")
+    @PostMapping("/{cocktailId}/reviews")
     public ResponseEntity<ApiResponse<RecipeReviewResponseDto>> createRecipeReview(
-            @PathVariable("recipeId") Long recipeId, @Valid @RequestBody CreateRecipeReviewRequestDto requestDto,
+            @PathVariable("cocktailId") Long cocktailId, @Valid @RequestBody CreateRecipeReviewRequestDto requestDto,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
 
         Long userId = userDetails.getId();
 
-        CreateRecipeReviewSDto sDto = CreateRecipeReviewSDto.of(requestDto.getStar(), requestDto.getContent(), userId, recipeId);
+        CreateRecipeReviewSDto sDto = CreateRecipeReviewSDto.of(requestDto.getStar(), requestDto.getContent(), userId, cocktailId);
 
         RecipeReviewResponseDto responseDto = recipeReviewService.createRecipeReview(sDto);
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.success(ApiResponseMessage.ADD_RCP_RVW_SUCCESS, responseDto));
+
     }
 
     @GetMapping("/reviews/{reviewId}")
@@ -49,6 +50,7 @@ public class RecipeReviewController {
         RecipeReviewResponseDto responseDto = recipeReviewService.getRecipeReview(reviewId);
 
         return ResponseEntity.ok(ApiResponse.success(ApiResponseMessage.GET_RCP_RVW_SUCCESS, responseDto));
+
     }
 
 
@@ -65,6 +67,7 @@ public class RecipeReviewController {
         Page<RecipeReviewResponseDto> responseDtos = recipeReviewService.getAllRecipeReview(sDto);
 
         return ResponseEntity.ok(ApiResponse.success(ApiResponseMessage.GET_RCP_RVW_SUCCESS, responseDtos));
+
     }
 
     @DeleteMapping("/reviews/{reviewId}")

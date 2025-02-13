@@ -16,7 +16,7 @@ import salute.oneshot.domain.auth.dto.service.SignInSDto;
 import salute.oneshot.domain.auth.dto.service.SignUpSDto;
 import salute.oneshot.domain.auth.service.AuthService;
 import salute.oneshot.domain.common.dto.success.ApiResponse;
-import salute.oneshot.domain.common.dto.success.ApiResponseMessage;
+import salute.oneshot.domain.common.dto.success.ApiResponseConst;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -27,39 +27,33 @@ public class AuthController {
 
     @PostMapping("/signup")
     public ResponseEntity<ApiResponse<SignUpResponseDto>> userSignUp(
-            @Valid @RequestBody SignUpRequestDto signUpRequestDto
+            @Valid @RequestBody SignUpRequestDto requestDto
     ) {
         SignUpSDto signUpSDto = SignUpSDto.of(
-                signUpRequestDto.getEmail(),
-                signUpRequestDto.getPassword(),
-                signUpRequestDto.getNickName()
-        );
+                requestDto.getEmail(),
+                requestDto.getPassword(),
+                requestDto.getNickName());
 
-        SignUpResponseDto signUpResponseDto =
+        SignUpResponseDto serviceDto =
                 authService.userSignUp(signUpSDto);
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.success(
-                        ApiResponseMessage.SIGNUP_SUCCESS,
-                        signUpResponseDto
-                ));
+                        ApiResponseConst.SIGNUP_SUCCESS, serviceDto));
     }
 
     @PostMapping("/signin")
     public ResponseEntity<ApiResponse<SignInResponseDto>> userSignIn(
-            @Valid @RequestBody SignInRequestDto signInRequestDto
+            @Valid @RequestBody SignInRequestDto requestDto
     ) {
         SignInSDto signInSDto = SignInSDto.of(
-                signInRequestDto.getEmail(),
-                signInRequestDto.getPassword());
+                requestDto.getEmail(), requestDto.getPassword());
 
         SignInResponseDto signInResponseDto =
                 authService.userSignIn(signInSDto);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ApiResponse.success(
-                        ApiResponseMessage.LOGIN_SUCCESS,
-                        signInResponseDto
-                ));
+                        ApiResponseConst.LOGIN_SUCCESS, signInResponseDto));
     }
 }
