@@ -7,5 +7,5 @@ import salute.oneshot.domain.recipeReview.entity.RecipeReview;
 
 public interface RecipeReviewRepository extends JpaRepository<RecipeReview, Long> {
 
-    Page<RecipeReview> findAllByRecipe_Id(Long recipeId, Pageable pageable);
+    Page<RecipeReview> findAllByCocktail_Id(Long cocktailId, Pageable pageable);
 }
