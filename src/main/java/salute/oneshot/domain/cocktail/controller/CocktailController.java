@@ -1,14 +1,17 @@
 package salute.oneshot.domain.cocktail.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import salute.oneshot.domain.cocktail.dto.request.CreateCocktailRequestDto;
+import salute.oneshot.domain.cocktail.dto.request.SearchCocktailByIngrsReqDto;
 import salute.oneshot.domain.cocktail.dto.request.UpdateCocktailRequestDto;
 import salute.oneshot.domain.cocktail.dto.response.CocktailResponseDto;
 import salute.oneshot.domain.cocktail.dto.service.CreateCocktailSDto;
 import salute.oneshot.domain.cocktail.dto.service.DeleteCocktailSDto;
+import salute.oneshot.domain.cocktail.dto.service.SearchCocktailSDto;
 import salute.oneshot.domain.cocktail.dto.service.UpdateCocktailSDto;
 import salute.oneshot.domain.cocktail.service.CocktailService;
 import salute.oneshot.domain.common.dto.success.ApiResponse;
@@ -35,6 +38,18 @@ public class CocktailController {
         cocktailService.createCocktail(sDto);
 
         return ResponseEntity.ok(ApiResponse.success(ApiResponseConst.ADD_RCP_SUCCESS));
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<ApiResponse<Page<CocktailResponseDto>>> searchWithIngredients(
+        @RequestBody SearchCocktailByIngrsReqDto request, @RequestParam(defaultValue = "1") int page,
+        @RequestParam(defaultValue = "10") int size) {
+
+        SearchCocktailSDto sDto = SearchCocktailSDto.of(request.getIngredientIds(),page,size);
+
+        Page<CocktailResponseDto> response = cocktailService.findCocktailsByIngr(sDto);
+
+        return ResponseEntity.ok(ApiResponse.success(ApiResponseConst.GET_CCKTL_SUCCESS,response));
     }
 
     @GetMapping("/{cocktailId}")
