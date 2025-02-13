@@ -40,6 +40,18 @@ public class CocktailController {
         return ResponseEntity.ok(ApiResponse.success(ApiResponseConst.ADD_RCP_SUCCESS));
     }
 
+
+
+    @GetMapping("/{cocktailId}")
+    public ResponseEntity<ApiResponse<CocktailResponseDto>> getCocktail(
+        @PathVariable Long cocktailId) {
+
+        CocktailResponseDto response = cocktailService.getCocktail(cocktailId);
+
+        return ResponseEntity.ok(
+            ApiResponse.success(ApiResponseConst.GET_CCKTL_SUCCESS, response));
+    }
+
     @GetMapping("/search")
     public ResponseEntity<ApiResponse<Page<CocktailResponseDto>>> searchWithIngredients(
         @RequestBody SearchCocktailByIngrsReqDto request, @RequestParam(defaultValue = "1") int page,
@@ -50,16 +62,6 @@ public class CocktailController {
         Page<CocktailResponseDto> response = cocktailService.findCocktailsByIngr(sDto);
 
         return ResponseEntity.ok(ApiResponse.success(ApiResponseConst.GET_CCKTL_SUCCESS,response));
-    }
-
-    @GetMapping("/{cocktailId}")
-    public ResponseEntity<ApiResponse<CocktailResponseDto>> getCocktail(
-        @PathVariable Long cocktailId) {
-
-        CocktailResponseDto response = cocktailService.getCocktail(cocktailId);
-
-        return ResponseEntity.ok(
-            ApiResponse.success(ApiResponseConst.GET_CCKTL_SUCCESS, response));
     }
 
     @PatchMapping("/{cocktailId}")
