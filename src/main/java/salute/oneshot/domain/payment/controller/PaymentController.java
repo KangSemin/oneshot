@@ -5,7 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import salute.oneshot.domain.common.dto.success.ApiResponse;
-import salute.oneshot.domain.common.dto.success.ApiResponseMessage;
+import salute.oneshot.domain.common.dto.success.ApiResponseConst;
 import salute.oneshot.domain.payment.dto.response.ConfirmPaymentResponseDto;
 import salute.oneshot.domain.payment.dto.response.PaymentResponseDto;
 import salute.oneshot.domain.payment.service.PaymentService;
@@ -25,6 +25,6 @@ public class PaymentController {
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(ApiResponse.success(ApiResponseMessage.ADD_PMNT_SUCCESS, responseDto));
+                .body(ApiResponse.success(ApiResponseConst.ADD_PMNT_SUCCESS, responseDto));
     }
 }
