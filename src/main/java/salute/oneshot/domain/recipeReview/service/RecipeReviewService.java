@@ -43,7 +43,7 @@ public class RecipeReviewService {
         cocktailRepository.findById(sDto.getCocktailId())
                 .orElseThrow(() -> new NotFoundException(ErrorCode.RECIPE_NOT_FOUND));
 
-        Page<RecipeReview> recipeReviewPage = recipeReviewRepository.findAllByRecipe_Id(sDto.getCocktailId(), sDto.getPageable());
+        Page<RecipeReview> recipeReviewPage = recipeReviewRepository.findAllByCocktail_Id(sDto.getCocktailId(), sDto.getPageable());
 
         Page<RecipeReviewResponseDto> responseDtoPage = recipeReviewPage.map(RecipeReviewResponseDto::from);
 
