@@ -79,7 +79,6 @@ public class CartController {
     public ResponseEntity<ApiResponse<Void>> emptyCart(
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
-
         cartService.emptyCart(userDetails.getId());
 
         return ResponseEntity.ok(

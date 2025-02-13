@@ -30,22 +30,22 @@ public class CartService {
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
 
+    private final int MAX_CART_ITEM_LIST_SIZE = 15;
+
     @Transactional
     public CartItemResponseDto addCartItem(AddCartItemSDto sdto) {
         Cart foundCart = cartRepository.findByUserIdAndIsOrderedFalse(sdto.getUserId()).orElseGet(() -> {
-            if (!userRepository.existsById(sdto.getUserId())) {
-                throw new NotFoundException(ErrorCode.USER_NOT_FOUND);
-            }
-            User userRef = userRepository.getReferenceById(sdto.getUserId());
+            User userRef = getUserRefById(sdto);
             Cart newCart = Cart.from(userRef);
             cartRepository.save(newCart);
             return newCart;
         });
 
-        if (!productRepository.existsById(sdto.getProductId())) {
-            throw new NotFoundException(ErrorCode.PRODUCT_NOT_FOUND);
+        if (foundCart.getItemList().size() >= MAX_CART_ITEM_LIST_SIZE) {
+//            throw new (ErrorCode.FULL_CART);
         }
-        Product productRef = productRepository.getReferenceById(sdto.getProductId());
+
+        Product productRef = getProductRefById(sdto);
         CartItem newItem = CartItem.of(foundCart, productRef, sdto.getQuantity());
         cartItemRepository.save(newItem);
 
@@ -53,16 +53,14 @@ public class CartService {
     }
 
     // 1건의 조회만 이루어지기 때문에 트랜잭션을 사용하지 않음
+
     public CartResponseDto findCart(Long userId) {
         Optional<Cart> foundOptionalCart = cartRepository.findByUserIdAndIsOrderedFalse(userId);
         return foundOptionalCart.map(CartResponseDto::from).orElseGet(() -> CartResponseDto.empty(userId));
     }
-
     @Transactional
     public CartItemResponseDto updateItemQuantity(UpdateItemQuantitySDto sdto) {
-        CartItem item = cartItemRepository.findById(sdto.getItemId()).orElseThrow(() -> new NotFoundException(ErrorCode.CART_ITEM_NOT_FOUND));
-
-        isCartItemOrdered(item);
+        CartItem item = getItemById(sdto.getItemId());
         isCartItemOwnedByUser(sdto.getUserId(), item);
 
         item.updateQuantity(sdto);
@@ -72,9 +70,8 @@ public class CartService {
 
     @Transactional
     public void removeItem(Long userId, Long itemId) {
-        CartItem item = cartItemRepository.findById(itemId).orElseThrow(() -> new NotFoundException(ErrorCode.CART_ITEM_NOT_FOUND));
+        CartItem item = getItemById(itemId);
 
-        isCartItemOrdered(item);
         isCartItemOwnedByUser(userId, item);
 
         cartItemRepository.deleteByIdAndCartUserId(itemId, userId);
@@ -83,6 +80,12 @@ public class CartService {
     @Transactional
     public void emptyCart(Long userId) {
         cartRepository.findByUserIdAndIsOrderedFalse(userId).ifPresent(cart -> cart.getItemList().clear());
+    }
+
+    private CartItem getItemById(Long itemId) {
+        CartItem item = cartItemRepository.findById(itemId).orElseThrow(() -> new NotFoundException(ErrorCode.CART_ITEM_NOT_FOUND));
+        isCartItemOrdered(item);
+        return item;
     }
 
     private static void isCartItemOrdered(CartItem item) {
@@ -95,5 +98,21 @@ public class CartService {
         if (!item.getCart().getUser().getId().equals(userId)) {
             throw new UnauthorizedException(ErrorCode.CART_ITEM_UNAUTHORIZED);
         }
+    }
+
+    private Product getProductRefById(AddCartItemSDto sdto) {
+        if (!productRepository.existsById(sdto.getProductId())) {
+            throw new NotFoundException(ErrorCode.PRODUCT_NOT_FOUND);
+        }
+        Product productRef = productRepository.getReferenceById(sdto.getProductId());
+        return productRef;
+    }
+
+    private User getUserRefById(AddCartItemSDto sdto) {
+        if (!userRepository.existsById(sdto.getUserId())) {
+            throw new NotFoundException(ErrorCode.USER_NOT_FOUND);
+        }
+        User userRef = userRepository.getReferenceById(sdto.getUserId());
+        return userRef;
     }
 }
