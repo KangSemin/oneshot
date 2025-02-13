@@ -10,7 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import salute.oneshot.domain.common.dto.success.ApiResponse;
-import salute.oneshot.domain.common.dto.success.ApiResponseMessage;
+import salute.oneshot.domain.common.dto.success.ApiResponseConst;
 import salute.oneshot.domain.recipeReview.dto.request.CreateRecipeReviewRequestDto;
 import salute.oneshot.domain.recipeReview.dto.response.RecipeReviewResponseDto;
 import salute.oneshot.domain.recipeReview.dto.service.CreateRecipeReviewSDto;
@@ -38,7 +38,7 @@ public class RecipeReviewController {
         RecipeReviewResponseDto responseDto = recipeReviewService.createRecipeReview(sDto);
 
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.success(ApiResponseMessage.ADD_RCP_RVW_SUCCESS,responseDto));
+                .body(ApiResponse.success(ApiResponseConst.ADD_RCP_RVW_SUCCESS,responseDto));
     }
 
     @GetMapping("/reviews/{reviewId}")
@@ -47,7 +47,7 @@ public class RecipeReviewController {
 
         RecipeReviewResponseDto responseDto = recipeReviewService.getRecipeReview(reviewId);
 
-        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(ApiResponseMessage.GET_RCP_RVW_SUCCESS,responseDto));
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(ApiResponseConst.GET_RCP_RVW_SUCCESS,responseDto));
     }
 
 
@@ -63,7 +63,7 @@ public class RecipeReviewController {
 
         Page<RecipeReviewResponseDto> responseDtos = recipeReviewService.getAllRecipeReview(sDto);
 
-        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(ApiResponseMessage.GET_RCP_RVW_SUCCESS,responseDtos));
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(ApiResponseConst.GET_RCP_RVW_SUCCESS,responseDtos));
     }
 
 }
