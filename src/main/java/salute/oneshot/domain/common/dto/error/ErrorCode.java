@@ -56,6 +56,7 @@ public enum ErrorCode {
     MALFORMED_TOKEN(HttpStatus.UNAUTHORIZED, "잘못된 JWT 형식입니다."),
     EXPIRED_TOKEN(HttpStatus.UNAUTHORIZED, "만료된 JWT 토큰입니다."),
     UNSUPPORTED_TOKEN(HttpStatus.BAD_REQUEST, "지원되지 않는 JWT 토큰입니다."),
+    TOKEN_INVALID_STATE(HttpStatus.UNAUTHORIZED, "유효하지 않은 토큰입니다."),
 
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류가 발생했습니다.");
 
