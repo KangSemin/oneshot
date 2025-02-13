@@ -68,4 +68,11 @@ public class Cocktail extends BaseEntity {
         return new Cocktail(name, description, recipe, type, user, ingredientList);
     }
 
+    public void update(String name, String description, String recipe,
+        List<CocktailIngredient> ingredientList) {
+        this.name = name;
+        this.description = description;
+        this.recipe = recipe;
+        this.ingredientList = ingredientList;
+    }
 }
