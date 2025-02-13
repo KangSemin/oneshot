@@ -7,6 +7,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import salute.oneshot.domain.common.dto.success.ApiResponse;
 import salute.oneshot.domain.common.dto.success.ApiResponseMessage;
@@ -15,6 +16,7 @@ import salute.oneshot.domain.recipeReview.dto.response.RecipeReviewResponseDto;
 import salute.oneshot.domain.recipeReview.dto.service.CreateRecipeReviewSDto;
 import salute.oneshot.domain.recipeReview.dto.service.GetAllRecipeReviewSDto;
 import salute.oneshot.domain.recipeReview.service.RecipeReviewService;
+import salute.oneshot.global.security.entity.CustomUserDetails;
 
 
 @RestController
@@ -26,9 +28,12 @@ public class RecipeReviewController {
 
     @PostMapping("{recipeId}/reviews")
     public ResponseEntity<ApiResponse<RecipeReviewResponseDto>> createRecipeReview(
-            @PathVariable("recipeId") Long recipeId, @Valid @RequestBody CreateRecipeReviewRequestDto requestDto) {
+            @PathVariable("recipeId") Long recipeId, @Valid @RequestBody CreateRecipeReviewRequestDto requestDto,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
 
-        CreateRecipeReviewSDto sDto = CreateRecipeReviewSDto.of(requestDto.getStar(), requestDto.getContent(), recipeId);
+        Long userId = userDetails.getId();
+
+        CreateRecipeReviewSDto sDto = CreateRecipeReviewSDto.of(requestDto.getStar(), requestDto.getContent(), userId, recipeId);
 
         RecipeReviewResponseDto responseDto = recipeReviewService.createRecipeReview(sDto);
 

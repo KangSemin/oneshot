@@ -40,13 +40,14 @@ public class RecipeReview extends BaseEntity {
     @JoinColumn(name = "recipe_id")
     private Cocktail cocktail;
 
-    private RecipeReview(Byte star, String content, Cocktail cocktail) {
+    private RecipeReview(Byte star, String content, User user,Cocktail cocktail) {
         this.star = star;
         this.content = content;
+        this.user = user;
         this.cocktail = cocktail;
     }
 
-    public static RecipeReview of(Byte star, String content, Cocktail cocktail) {
-        return new RecipeReview(star,content,cocktail);
+    public static RecipeReview of(Byte star, String content, User user, Cocktail cocktail) {
+        return new RecipeReview(star,content,user,cocktail);
     }
 }
