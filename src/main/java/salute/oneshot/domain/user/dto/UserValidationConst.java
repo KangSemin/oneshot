@@ -1,6 +1,6 @@
 package salute.oneshot.domain.user.dto;
 
-public class UserValidationMessage {
+public class UserValidationConst {
     public static final String EMAIL_BLANK_MESSAGE = "이메일 주소를 입력해 주세요.";
     public static final String EMAIL_REG = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+.[A-Za-z]$";
     public static final String INVALID_EMAIL_MESSAGE = "올바른 이메일 형식으로 입력해 주세요.";

@@ -11,8 +11,8 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import salute.oneshot.domain.cocktail.entity.Cocktail;
 import salute.oneshot.domain.common.dto.entity.BaseEntity;
-import salute.oneshot.domain.recipe.entity.Recipe;
 import salute.oneshot.domain.user.entity.User;
 
 
@@ -38,15 +38,15 @@ public class RecipeReview extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "recipe_id")
-    private Recipe recipe;
+    private Cocktail cocktail;
 
-    private RecipeReview(Byte star, String content, Recipe recipe) {
+    private RecipeReview(Byte star, String content, Cocktail cocktail) {
         this.star = star;
         this.content = content;
-        this.recipe = recipe;
+        this.cocktail = cocktail;
     }
 
-    public static RecipeReview of(Byte star, String content, Recipe recipe) {
-        return new RecipeReview(star,content,recipe);
+    public static RecipeReview of(Byte star, String content, Cocktail cocktail) {
+        return new RecipeReview(star,content,cocktail);
     }
 }
