@@ -7,15 +7,15 @@ import org.springframework.data.domain.Pageable;
 public class GetAllRecipeReviewSDto {
 
     public Pageable pageable;
-    public Long recipeId;
+    public Long cocktailId;
 
-    public GetAllRecipeReviewSDto(Pageable pageable, Long recipeId) {
+    public GetAllRecipeReviewSDto(Pageable pageable, Long cocktailId) {
         this.pageable = pageable;
-        this.recipeId = recipeId;
+        this.cocktailId = cocktailId;
     }
 
-    public static GetAllRecipeReviewSDto of(Pageable pageable, Long recipeId) {
-        return new GetAllRecipeReviewSDto(pageable, recipeId);
+    public static GetAllRecipeReviewSDto of(Pageable pageable, Long cocktailId) {
+        return new GetAllRecipeReviewSDto(pageable, cocktailId);
     }
 
 

@@ -37,15 +37,15 @@ public class RecipeReviewController {
     }
 
 
-    @GetMapping("/{recipeId}/reviews")
+    @GetMapping("/{cocktailId}/reviews")
     public ResponseEntity<ApiResponse<Page<RecipeReviewResponseDto>>> getAllRecipeReview (
-            @PathVariable ("recipeId") Long recipeId,
+            @PathVariable ("cocktailId") Long cocktailId,
             @RequestParam(value = "page", defaultValue = "1") int page,
             @RequestParam(value = "size", defaultValue = "10") int size) {
 
         Pageable pageable = PageRequest.of(page - 1, size);
 
-        GetAllRecipeReviewSDto sDto = GetAllRecipeReviewSDto.of(pageable, recipeId);
+        GetAllRecipeReviewSDto sDto = GetAllRecipeReviewSDto.of(pageable, cocktailId);
 
         Page<RecipeReviewResponseDto> responseDtos = recipeReviewService.getAllRecipeReview(sDto);
 

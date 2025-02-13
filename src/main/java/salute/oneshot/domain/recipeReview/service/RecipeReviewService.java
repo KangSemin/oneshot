@@ -40,10 +40,10 @@ public class RecipeReviewService {
 
     public Page<RecipeReviewResponseDto> getAllRecipeReview(GetAllRecipeReviewSDto sDto) {
 
-        recipeRepository.findById(sDto.getRecipeId())
+        cocktailRepository.findById(sDto.getCocktailId())
                 .orElseThrow(() -> new NotFoundException(ErrorCode.RECIPE_NOT_FOUND));
 
-        Page<RecipeReview> recipeReviewPage = recipeReviewRepository.findAllByRecipe_Id(sDto.getRecipeId(), sDto.getPageable());
+        Page<RecipeReview> recipeReviewPage = recipeReviewRepository.findAllByRecipe_Id(sDto.getCocktailId(), sDto.getPageable());
 
         Page<RecipeReviewResponseDto> responseDtoPage = recipeReviewPage.map(RecipeReviewResponseDto::from);
 
