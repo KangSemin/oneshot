@@ -23,7 +23,7 @@ public class FavoriteResponseDto {
         return new FavoriteResponseDto(
                 cocktail.getId(),
                 cocktail.getName(),
-                cocktail. getDescription(),
+                cocktail.getDescription(),
                 cocktail.getType(),
                 favorite.getCreatedAt());
     }

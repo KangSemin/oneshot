@@ -31,7 +31,7 @@ public class Favorite extends BaseEntity {
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "recipe_id")
+    @JoinColumn(name = "cocktail_id")
     private Cocktail cocktail;
 
     public Favorite(User user, Cocktail cocktail) {
