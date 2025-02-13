@@ -3,9 +3,12 @@ package salute.oneshot.domain.favorite.repository;
 import io.lettuce.core.dynamic.annotation.Param;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import salute.oneshot.domain.favorite.entity.Favorite;
+
+import java.util.Optional;
 
 public interface FavoriteRepository extends JpaRepository<Favorite, Long> {
 
@@ -18,4 +21,7 @@ public interface FavoriteRepository extends JpaRepository<Favorite, Long> {
     );
 
     Page<Favorite> findAllByUserId(Long id, Pageable pageable);
+
+    @EntityGraph(attributePaths = "cocktail")
+    Optional<Favorite> findByIdAndUserId(Long favoriteId, Long userId);
 }

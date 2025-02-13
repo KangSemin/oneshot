@@ -12,7 +12,8 @@ import salute.oneshot.domain.common.dto.success.ApiResponse;
 import salute.oneshot.domain.common.dto.success.ApiResponseMessage;
 import salute.oneshot.domain.favorite.dto.response.FavoritePageResponseDto;
 import salute.oneshot.domain.favorite.dto.response.FavoriteResponseDto;
-import salute.oneshot.domain.favorite.dto.response.FavoriteStatusDto;
+import salute.oneshot.domain.favorite.dto.response.GetFavoriteStatusDto;
+import salute.oneshot.domain.favorite.dto.service.DeleteFavoriteSDto;
 import salute.oneshot.domain.favorite.dto.service.FavoriteSDto;
 import salute.oneshot.domain.favorite.dto.service.GetFavoritesSDto;
 import salute.oneshot.domain.favorite.service.FavoriteService;
@@ -27,11 +28,11 @@ public class FavoriteController {
 
     @PostMapping("/cocktails/{cocktailId}/favorites")
     public ResponseEntity<ApiResponse<FavoriteResponseDto>> createFavorite(
-            @AuthenticationPrincipal CustomUserDetails customUserDetails,
+            @AuthenticationPrincipal CustomUserDetails userDetails,
             @PathVariable Long cocktailId
     ) {
         FavoriteSDto serviceDto =
-                FavoriteSDto.of(customUserDetails.getId(), cocktailId);
+                FavoriteSDto.of(userDetails.getId(), cocktailId);
         FavoriteResponseDto responseDto =
                 favoriteService.createFavorite(serviceDto);
 
@@ -41,13 +42,13 @@ public class FavoriteController {
     }
 
     @GetMapping("/cocktails/{cocktailId}/favorites")
-    public ResponseEntity<ApiResponse<FavoriteStatusDto>> checkFavorite(
-            @AuthenticationPrincipal CustomUserDetails customUserDetails,
+    public ResponseEntity<ApiResponse<GetFavoriteStatusDto>> checkFavorite(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
             @PathVariable Long cocktailId
     ) {
         FavoriteSDto serviceDto =
-                FavoriteSDto.of(customUserDetails.getId(), cocktailId);
-        FavoriteStatusDto responseDto =
+                FavoriteSDto.of(userDetails.getId(), cocktailId);
+        GetFavoriteStatusDto responseDto =
                 favoriteService.checkFavorite(serviceDto);
 
         return ResponseEntity.status(HttpStatus.OK)
@@ -57,7 +58,7 @@ public class FavoriteController {
 
     @GetMapping("/favorites")
     public ResponseEntity<ApiResponse<FavoritePageResponseDto>> getFavorites(
-            @AuthenticationPrincipal CustomUserDetails customUserDetails,
+            @AuthenticationPrincipal CustomUserDetails userDetails,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
@@ -66,7 +67,7 @@ public class FavoriteController {
         );
 
         GetFavoritesSDto serviceDto =
-                GetFavoritesSDto.of(customUserDetails.getId(), pageable);
+                GetFavoritesSDto.of(userDetails.getId(), pageable);
 
         FavoritePageResponseDto responseDto =
                 favoriteService.getFavorites(serviceDto);
@@ -74,5 +75,20 @@ public class FavoriteController {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ApiResponse.success(
                         ApiResponseMessage.GET_FVRT_LIST_SUCCESS, responseDto));
+    }
+
+    @DeleteMapping("/favorites/{favoriteId}")
+    public ResponseEntity<ApiResponse<FavoriteResponseDto>> deleteFavorite(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable Long favoriteId
+    ) {
+        DeleteFavoriteSDto serviceDto =
+                DeleteFavoriteSDto.of(userDetails.getId(), favoriteId);
+        FavoriteResponseDto responseDto =
+                favoriteService.deleteFavorite(serviceDto);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ApiResponse.success(
+                        ApiResponseMessage.DELETE_FVRT_LIST_SUCCESS, responseDto));
     }
 }

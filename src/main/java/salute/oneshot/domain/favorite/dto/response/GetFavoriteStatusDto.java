@@ -6,11 +6,11 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class FavoriteStatusDto {
+public class GetFavoriteStatusDto {
 
     private boolean isFavorited;
 
-    public static FavoriteStatusDto of(boolean status) {
-        return new FavoriteStatusDto(status);
+    public static GetFavoriteStatusDto of(boolean status) {
+        return new GetFavoriteStatusDto(status);
     }
 }
