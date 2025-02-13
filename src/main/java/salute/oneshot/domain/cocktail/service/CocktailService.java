@@ -11,6 +11,7 @@ import salute.oneshot.domain.cocktail.dto.response.CocktailResponseDto;
 import salute.oneshot.domain.cocktail.dto.service.CreateCocktailSDto;
 import salute.oneshot.domain.cocktail.dto.service.DeleteCocktailSDto;
 import salute.oneshot.domain.cocktail.dto.service.UpdateCocktailSDto;
+import salute.oneshot.domain.cocktail.dto.service.findCocktailSDto;
 import salute.oneshot.domain.cocktail.entity.Cocktail;
 import salute.oneshot.domain.cocktail.entity.CocktailIngredient;
 import salute.oneshot.domain.cocktail.entity.RecipeType;
@@ -91,6 +92,19 @@ public class CocktailService {
 
         return CocktailResponseDto.from(cocktail);
     }
+
+    public Page<CocktailResponseDto> getCocktails(findCocktailSDto sDto){
+
+        RecipeType type = (sDto.getRecipeType() != null) ? RecipeType.valueOf(sDto.getRecipeType()) : null;
+
+
+        Page<Cocktail> cocktailPage = cocktailRepository.findCocktails(sDto.getPageable(), sDto.getKeyword(), type);
+        Page<CocktailResponseDto> responsePage = cocktailPage.map(CocktailResponseDto::from);
+
+        return responsePage;
+
+    }
+
 
     private Cocktail findById(Long cocktailId) {
         return cocktailRepository.findById(cocktailId)
