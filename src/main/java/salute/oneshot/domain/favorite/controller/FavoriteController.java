@@ -9,7 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import salute.oneshot.domain.common.dto.success.ApiResponse;
-import salute.oneshot.domain.common.dto.success.ApiResponseMessage;
+import salute.oneshot.domain.common.dto.success.ApiResponseConst;
 import salute.oneshot.domain.favorite.dto.response.FavoritePageResponseDto;
 import salute.oneshot.domain.favorite.dto.response.FavoriteResponseDto;
 import salute.oneshot.domain.favorite.dto.response.GetFavoriteStatusDto;
@@ -38,7 +38,7 @@ public class FavoriteController {
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ApiResponse.success(
-                        ApiResponseMessage.ADD_FVRT_SUCCESS, responseDto));
+                        ApiResponseConst.ADD_FVRT_SUCCESS, responseDto));
     }
 
     @GetMapping("/cocktails/{cocktailId}/favorites")
@@ -53,7 +53,7 @@ public class FavoriteController {
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ApiResponse.success(
-                        ApiResponseMessage.GET_FVRT_STAT_SUCCESS, responseDto));
+                        ApiResponseConst.GET_FVRT_STAT_SUCCESS, responseDto));
     }
 
     @GetMapping("/favorites")
@@ -74,7 +74,7 @@ public class FavoriteController {
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ApiResponse.success(
-                        ApiResponseMessage.GET_FVRT_LIST_SUCCESS, responseDto));
+                        ApiResponseConst.GET_FVRT_LIST_SUCCESS, responseDto));
     }
 
     @DeleteMapping("/favorites/{favoriteId}")
@@ -89,6 +89,6 @@ public class FavoriteController {
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ApiResponse.success(
-                        ApiResponseMessage.DELETE_FVRT_LIST_SUCCESS, responseDto));
+                        ApiResponseConst.DELETE_FVRT_LIST_SUCCESS, responseDto));
     }
 }

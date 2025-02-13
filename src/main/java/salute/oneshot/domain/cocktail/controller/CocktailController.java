@@ -1,6 +1,5 @@
 package salute.oneshot.domain.cocktail.controller;
 
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -13,7 +12,7 @@ import salute.oneshot.domain.cocktail.dto.service.DeleteCocktailSDto;
 import salute.oneshot.domain.cocktail.dto.service.UpdateCocktailSDto;
 import salute.oneshot.domain.cocktail.service.CocktailService;
 import salute.oneshot.domain.common.dto.success.ApiResponse;
-import salute.oneshot.domain.common.dto.success.ApiResponseMessage;
+import salute.oneshot.domain.common.dto.success.ApiResponseConst;
 import salute.oneshot.global.security.entity.CustomUserDetails;
 
 @RestController
@@ -35,7 +34,7 @@ public class CocktailController {
 
         cocktailService.createCocktail(sDto);
 
-        return ResponseEntity.ok(ApiResponse.success(ApiResponseMessage.ADD_RCP_SUCCESS));
+        return ResponseEntity.ok(ApiResponse.success(ApiResponseConst.ADD_RCP_SUCCESS));
     }
 
     @GetMapping("/{cocktailId}")
@@ -45,7 +44,7 @@ public class CocktailController {
         CocktailResponseDto response = cocktailService.getCocktail(cocktailId);
 
         return ResponseEntity.ok(
-            ApiResponse.success(ApiResponseMessage.GET_CCKTL_SUCCESS, response));
+            ApiResponse.success(ApiResponseConst.GET_CCKTL_SUCCESS, response));
     }
 
     @PatchMapping("/{cocktailId}")
@@ -61,7 +60,7 @@ public class CocktailController {
         CocktailResponseDto response = cocktailService.updateCocktail(sDto);
 
         return ResponseEntity.ok(
-            ApiResponse.success(ApiResponseMessage.UPDATE_CCKTL_SUCCESS, response));
+            ApiResponse.success(ApiResponseConst.UPDATE_CCKTL_SUCCESS, response));
     }
 
     @DeleteMapping("/{cocktailId}")
@@ -71,6 +70,6 @@ public class CocktailController {
         DeleteCocktailSDto sDto = DeleteCocktailSDto.of(userDetails.getId(), cocktailId);
         cocktailService.deleteCocktail(sDto);
 
-        return ResponseEntity.ok(ApiResponse.success(ApiResponseMessage.DELETE_CCKTL_SUCCESS));
+        return ResponseEntity.ok(ApiResponse.success(ApiResponseConst.DELETE_CCKTL_SUCCESS));
     }
 }
