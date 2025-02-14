@@ -40,22 +40,21 @@ public class JwtFilter extends OncePerRequestFilter {
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain) throws ServletException, IOException {
 
-        String uri = request.getRequestURI();
-
-        if (uri.startsWith("/api/auth/")) {
+        if (isAuthEndpoint(request)) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        String bearerJwt = request.getHeader(SecurityConst.AUTHORIZATION_HEADER);
+        String bearerToken = request.getHeader(SecurityConst.AUTHORIZATION_HEADER);
 
-        if (bearerJwt == null) {
+        if (bearerToken == null) {
             sendErrorResponse(response, ErrorCode.TOKEN_NOT_FOUND);
             return;
         }
 
         try {
-            authenticateUser(bearerJwt);
+            String token = extractToken(bearerToken);
+            setAuthentication(token);
             filterChain.doFilter(request, response);
 
         } catch (SecurityException e) {
@@ -76,18 +75,8 @@ public class JwtFilter extends OncePerRequestFilter {
         }
     }
 
-    private void authenticateUser(String bearerJwt) {
-        String jwt = extractToken(bearerJwt);
-        Claims claims = jwtProvider.extractClaims(jwt);
-
-        Long id = Long.parseLong(claims.getSubject());
-        String email = claims.get("email", String.class);
-        UserRole role = UserRole.of(claims.get("role", String.class));
-
-        Authentication authentication =
-                userDetailsService.createAuthentication(id, email, role);
-
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+    private boolean isAuthEndpoint(HttpServletRequest request) {
+        return request.getRequestURI().startsWith("/api/auth/");
     }
 
     private String extractToken(String bearerToken) {
@@ -96,6 +85,20 @@ public class JwtFilter extends OncePerRequestFilter {
             throw new MalformedJwtException(SecurityConst.MALFORMED_TOKEN);
         }
         return bearerToken.substring(SecurityConst.BEARER_PREFIX.length());
+    }
+
+    private Authentication createAuthentication(Claims claims) {
+        Long id = Long.parseLong(claims.getSubject());
+        String email = claims.get("email", String.class);
+        UserRole role = UserRole.of(claims.get("role", String.class));
+
+        return userDetailsService.createAuthentication(id, email, role);
+    }
+
+    private void setAuthentication(String token) {
+        Claims claims = jwtProvider.parseClaims(token);  // extractToken 제거
+        Authentication authentication = createAuthentication(claims);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 
     private void sendErrorResponse(

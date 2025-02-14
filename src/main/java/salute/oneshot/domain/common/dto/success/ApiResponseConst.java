@@ -1,6 +1,6 @@
 package salute.oneshot.domain.common.dto.success;
 
-public class ApiResponseMessage {
+public class ApiResponseConst {
     // 회원 관련 성공 메시지
     public static final String SIGNUP_SUCCESS = "회원가입이 완료되었습니다.";
     public static final String LOGIN_SUCCESS = "로그인이 완료되었습니다.";
@@ -54,9 +54,9 @@ public class ApiResponseMessage {
 
     // 즐겨찾기 관련 메시지
     public static final String ADD_FVRT_SUCCESS = "즐겨찾기 등록이 완료되었습니다.";
+    public static final String GET_FVRT_STAT_SUCCESS = "즐겨찾기 상태 조회가 완료되었습니다.";
     public static final String GET_FVRT_LIST_SUCCESS = "즐겨찾기 목록 조회가 완료되었습니다.";
-    public static final String GET_FVRT_COUNT_SUCCESS = "레시피의 즐겨찾기 수 조회가 완료되었습니다.";
-    public static final String DELETE_FVRT_SUCCESS = "즐겨찾기 해제가 완료되었습니다.";
+    public static final String DELETE_FVRT_LIST_SUCCESS = "즐겨찾기 해제가 완료되었습니다.";
 
     // 장바구니 관련 메시지
     public static final String ADD_CART_ITEM_SUCCESS = "장바구니에 상품 추가가 완료되었습니다.";
@@ -64,4 +64,7 @@ public class ApiResponseMessage {
     public static final String REMOVE_CART_ITEM_SUCCESS = "장바구니에서 상품 제거가 완료되었습니다.";
     public static final String UPDATE_CART_ITEM_QUANTITY_SUCCESS = "장바구니에서 상품 수량 변경이 완료되었습니다.";
     public static final String EMPTY_CART_SUCCESS = "장바구니 비우기가 완료되었습니다.";
+
+    // 결제 관련 메시지
+    public static final String ADD_PMNT_SUCCESS = "결제가 정상적으로 처리되었습니다.";
 }

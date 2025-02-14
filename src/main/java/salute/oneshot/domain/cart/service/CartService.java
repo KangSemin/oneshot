@@ -53,11 +53,11 @@ public class CartService {
     }
 
     // 1건의 조회만 이루어지기 때문에 트랜잭션을 사용하지 않음
-
     public CartResponseDto findCart(Long userId) {
         Optional<Cart> foundOptionalCart = cartRepository.findByUserIdAndIsOrderedFalse(userId);
         return foundOptionalCart.map(CartResponseDto::from).orElseGet(() -> CartResponseDto.empty(userId));
     }
+
     @Transactional
     public CartItemResponseDto updateItemQuantity(UpdateItemQuantitySDto sdto) {
         CartItem item = getItemById(sdto.getItemId());
@@ -107,9 +107,10 @@ public class CartService {
     }
 
     private User getUserRefById(Long userId) {
-        if (!userRepository.existsById(userId)) {
-            throw new NotFoundException(ErrorCode.USER_NOT_FOUND);
-        }
+//        TODO: Authentication에 있는 유저가 없을리 없다? 탈퇴했을 때는?
+//        if (!userRepository.existsById(userId)) {
+//            throw new NotFoundException(ErrorCode.USER_NOT_FOUND);
+//        }
         User userRef = userRepository.getReferenceById(userId);
         return userRef;
     }

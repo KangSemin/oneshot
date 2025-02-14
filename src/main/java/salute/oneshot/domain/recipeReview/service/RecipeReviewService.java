@@ -32,7 +32,7 @@ public class RecipeReviewService {
 
         User user = userRepository.getReferenceById(sDto.getUserId());
 
-        Cocktail cocktail = cocktailRepository.findById(sDto.getRecipeId())
+        Cocktail cocktail = cocktailRepository.findById(sDto.getCocktailId())
                 .orElseThrow(() -> new NotFoundException(ErrorCode.COCKTAIL_NOT_FOUND));
 
         RecipeReview recipeReview = recipeReviewRepository.save(RecipeReview.of(sDto.getStar(),sDto.getContent(), user, cocktail));
@@ -51,7 +51,7 @@ public class RecipeReviewService {
     public Page<RecipeReviewResponseDto> getAllRecipeReview(GetAllRecipeReviewSDto sDto) {
 
         cocktailRepository.findById(sDto.getCocktailId())
-                .orElseThrow(() -> new NotFoundException(ErrorCode.RECIPE_NOT_FOUND));
+                .orElseThrow(() -> new NotFoundException(ErrorCode.COCKTAIL_NOT_FOUND));
 
         Page<RecipeReview> recipeReviewPage = recipeReviewRepository.findAllByCocktail_Id(sDto.getCocktailId(), sDto.getPageable());
 

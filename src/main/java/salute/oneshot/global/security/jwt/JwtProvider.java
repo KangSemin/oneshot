@@ -1,6 +1,5 @@
 package salute.oneshot.global.security.jwt;
 
-import io.github.cdimascio.dotenv.Dotenv;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -20,13 +19,28 @@ import java.util.Date;
 public class JwtProvider {
 
     private final SecretKey secretKey;
+    private final JwtValidator jwtValidator;
 
-    public JwtProvider(@Value("${jwt.secret.key}") String secret) {
+    public JwtProvider(
+            @Value("${jwt.secret.key}") String secret,
+            JwtValidator jwtValidator) {
         byte[] keyBytes = Base64.getDecoder().decode(secret);
         this.secretKey = Keys.hmacShaKeyFor(keyBytes);
+        this.jwtValidator = jwtValidator;
     }
 
-    public String generateToken(Authentication authentication) {
+    public Claims parseClaims(String token) {
+        Claims claims = Jwts.parser()
+                .verifyWith(secretKey)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+
+        validateToken(claims);
+        return claims;
+    }
+
+    public String createToken(Authentication authentication) {
         CustomUserDetails principal = (CustomUserDetails) authentication.getPrincipal();
         Date now = new Date();
 
@@ -40,11 +54,10 @@ public class JwtProvider {
                 .compact();
     }
 
-    public Claims extractClaims(String token) {
-        return Jwts.parser()
-                .verifyWith(secretKey)
-                .build()
-                .parseSignedClaims(token)
-                .getPayload();
+    private void validateToken(Claims claims) {
+        Long userId = Long.parseLong(claims.getSubject());
+        Date issuedAt = claims.getIssuedAt();
+
+        jwtValidator.validateToken(userId, issuedAt);
     }
 }
