@@ -9,11 +9,13 @@ import salute.oneshot.domain.ingredient.entity.Ingredient;
 import salute.oneshot.domain.ingredient.repository.IngredientRepository;
 import salute.oneshot.domain.ingredientReview.dto.response.IngrReviewResponseDto;
 import salute.oneshot.domain.ingredientReview.dto.service.CreateIngrReviewSDto;
+import salute.oneshot.domain.ingredientReview.dto.service.DeleteIngrReviewSDto;
 import salute.oneshot.domain.ingredientReview.dto.service.GetMyIngredientReviewSDto;
 import salute.oneshot.domain.ingredientReview.entity.IngredientReview;
 import salute.oneshot.domain.ingredientReview.repository.IngredientReviewRepository;
 import salute.oneshot.domain.user.entity.User;
 import salute.oneshot.domain.user.repository.UserRepository;
+import salute.oneshot.global.exception.CustomRuntimeException;
 import salute.oneshot.global.exception.NotFoundException;
 
 @Service
@@ -45,5 +47,23 @@ public class IngredientReviewService {
         Page<IngrReviewResponseDto> responseDtoPage = ingredientReviewPage.map(IngrReviewResponseDto::from);
 
         return responseDtoPage;
+    }
+
+    public void deleteIngredientReview(DeleteIngrReviewSDto sDto) {
+
+        IngredientReview ingredientReview = validateUser(sDto.getReviewId(), sDto.getUserId());
+
+        ingredientReviewRepository.delete(ingredientReview);
+    }
+
+    private IngredientReview validateUser(Long reviewId, Long userId) {
+        IngredientReview ingredientReview = ingredientReviewRepository.findById(reviewId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.REVIEW_NOT_FOUND));
+
+        if (!ingredientReview.getUser().getId().equals(userId)) {
+            throw new CustomRuntimeException(ErrorCode.REVIEW_DELETE_FORBIDDEN);
+        }
+
+        return ingredientReview;
     }
 }

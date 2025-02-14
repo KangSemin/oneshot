@@ -14,6 +14,7 @@ import salute.oneshot.domain.common.dto.success.ApiResponseConst;
 import salute.oneshot.domain.ingredientReview.dto.request.CreateIngrReviewRequestDto;
 import salute.oneshot.domain.ingredientReview.dto.response.IngrReviewResponseDto;
 import salute.oneshot.domain.ingredientReview.dto.service.CreateIngrReviewSDto;
+import salute.oneshot.domain.ingredientReview.dto.service.DeleteIngrReviewSDto;
 import salute.oneshot.domain.ingredientReview.dto.service.GetMyIngredientReviewSDto;
 import salute.oneshot.domain.ingredientReview.service.IngredientReviewService;
 import salute.oneshot.global.security.entity.CustomUserDetails;
@@ -58,4 +59,17 @@ public class IngredientReviewController {
         return ResponseEntity.ok(ApiResponse.success(ApiResponseConst.GET_INGR_RVW_LIST_SUCCESS,responseDtoPage));
     }
 
+    @DeleteMapping("/reviews/{reviewId}")
+    public ResponseEntity<ApiResponse<IngrReviewResponseDto>> deleteIngredientReview(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable("reviewId") Long reviewId) {
+
+        Long userId = userDetails.getId();
+
+        DeleteIngrReviewSDto sDto = DeleteIngrReviewSDto.of(reviewId, userId);
+
+        ingredientReviewService.deleteIngredientReview(sDto);
+
+        return ResponseEntity.ok(ApiResponse.success(ApiResponseConst.DELETE_INGR_RVW_SUCCESS));
+    }
 }
