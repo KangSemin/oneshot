@@ -40,7 +40,7 @@ public class Address {
     @ColumnDefault("false")
     private boolean isDefault = false;
 
-    public Address(
+    private Address(
             String addressName,
             String postcode,
             String postAddress,
