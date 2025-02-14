@@ -7,6 +7,7 @@ import salute.oneshot.domain.common.dto.error.ErrorCode;
 import salute.oneshot.domain.ingredient.entity.Ingredient;
 import salute.oneshot.domain.ingredient.repository.IngredientRepository;
 import salute.oneshot.domain.pantry.dto.response.PantryIngrResponseDto;
+import salute.oneshot.domain.pantry.dto.response.PantryResponseDto;
 import salute.oneshot.domain.pantry.dto.service.AddPantryIngredientSDto;
 import salute.oneshot.domain.pantry.entity.Pantry;
 import salute.oneshot.domain.pantry.entity.PantryIngredient;
@@ -54,6 +55,12 @@ public class PantryService {
         pantry.getPantryIngredientList().add(pantryIngredient);
 
         return PantryIngrResponseDto.from(pantryIngredient);
+    }
+
+    public PantryResponseDto getPantry(Long userId) {
+        Pantry pantry = pantryRepository.findByUser_Id((userId));
+
+        return PantryResponseDto.from(pantry);
     }
 
 }
