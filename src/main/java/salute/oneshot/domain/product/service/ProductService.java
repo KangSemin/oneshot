@@ -44,7 +44,7 @@ public class ProductService {
 
         ProductCategory category = null;
 
-        if(sDto.getCategory() != null) {
+        if (sDto.getCategory() != null) {
             category = ProductCategory.valueOf(sDto.getCategory());
         }
 
@@ -54,6 +54,14 @@ public class ProductService {
         Page<ProductResponseDto> responseDtos = productPage.map(ProductResponseDto::from);
 
         return responseDtos;
+    }
+
+    public ProductResponseDto getProduct(Long productId) {
+
+        Product product = productRepository.findByIdANDStatusNot(ProductStatus.DELETED, productId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.PRODUCT_NOT_FOUND));
+
+        return ProductResponseDto.from(product);
     }
 
     private User getUserById(Long userId) {
