@@ -32,9 +32,9 @@ public class CartController {
 
         CartItemResponseDto responseDto = cartService.addCartItem(sdto);
 
-        return ResponseEntity.ok(
-                ApiResponse.success(ApiResponseConst.ADD_CART_ITEM_SUCCESS, responseDto)
-        );
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(ApiResponse.success(ApiResponseConst.ADD_CART_ITEM_SUCCESS, responseDto)        );
     }
 
 
@@ -70,7 +70,8 @@ public class CartController {
     ) {
         cartService.removeItem(userDetails.getId(), itemId);
 
-        return ResponseEntity.status(HttpStatus.NO_CONTENT)
+        return ResponseEntity
+                .status(HttpStatus.NO_CONTENT)
                 .body(ApiResponse.success(ApiResponseConst.REMOVE_CART_ITEM_SUCCESS));
     }
 
