@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import salute.oneshot.domain.common.dto.error.ErrorCode;
 import salute.oneshot.domain.order.entity.Order;
+import salute.oneshot.domain.order.entity.OrderStatus;
 import salute.oneshot.domain.order.repository.OrderRepository;
 import salute.oneshot.domain.payment.dto.response.PaymentResponseDto;
 import salute.oneshot.domain.payment.dto.service.ConfirmPaymentSDto;
@@ -27,8 +28,11 @@ public class PaymentService {
     @Transactional
     public PaymentResponseDto createPayment(Long orderId) {
         Order foundOrder = orderRepository.findById(orderId).orElseThrow(() -> new NotFoundException(ErrorCode.ORDER_NOT_FOUND));
+        isOrderStatusPendingPayment(foundOrder);
+
         Payment newPayment = Payment.from(foundOrder);
         paymentRepository.save(newPayment);
+
         return PaymentResponseDto.from(newPayment);
     }
 
@@ -53,12 +57,23 @@ public class PaymentService {
             throw new ConflictException(ErrorCode.PAYMENT_ALREADY_CONFIRMED);
         }
 
+        isOrderStatusPendingPayment(foundPayment.getOrder());
+
+        // 비밀번호가 확인되면 결제 승인
         boolean matches = passwordEncoder.matches(sdto.getPassword(), foundPayment.getOrder().getUser().getPassword());
-        foundPayment.updateStatus(
-                matches ? PaymentStatus.APPROVED : PaymentStatus.DECLINED
-        );
+
+        if (matches) {
+            foundPayment.getOrder().updateStatus(OrderStatus.PROCESSING);
+            foundPayment.updateStatus(PaymentStatus.APPROVED);
+        } else {
+            foundPayment.updateStatus(PaymentStatus.DECLINED);
+        }
 
         return PaymentResponseDto.from(foundPayment);
+    }
+
+    private Payment getPayment(Long paymentId) {
+        return paymentRepository.findById(paymentId).orElseThrow(() -> new NotFoundException(ErrorCode.PAYMENT_NOT_FOUND));
     }
 
     private static void isPaymentOwnedByUser(Payment payment, Long userId) {
@@ -67,8 +82,10 @@ public class PaymentService {
         }
     }
 
-    private Payment getPayment(Long paymentId) {
-        return paymentRepository.findById(paymentId).orElseThrow(() -> new NotFoundException(ErrorCode.PAYMENT_NOT_FOUND));
+    private static void isOrderStatusPendingPayment(Order order) {
+        if (!order.getStatus().equals(OrderStatus.PENDING_PAYMENT)) {
+            throw new ConflictException(ErrorCode.ORDER_ALREADY_PAID);
+        }
     }
 
 //    public ConfirmPaymentResponseDto confirmPayment(ConfirmPaymentSDto sdto) {
