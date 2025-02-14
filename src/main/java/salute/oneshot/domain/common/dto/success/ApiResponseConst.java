@@ -67,4 +67,7 @@ public class ApiResponseConst {
 
     // 결제 관련 메시지
     public static final String ADD_PMNT_SUCCESS = "결제가 정상적으로 처리되었습니다.";
+
+    // 상품 관련 메세지
+    public static final String ADD_PRDT_SUCCESS = "상품 등록이 완료되었습니다.";
 }
