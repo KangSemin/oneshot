@@ -6,14 +6,14 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import java.util.ArrayList;
-import java.util.List;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import salute.oneshot.domain.common.dto.entity.BaseEntity;
+import salute.oneshot.domain.ingredient.entity.Ingredient;
 
 @Entity
 @Table(name = "pantries")
@@ -29,16 +29,17 @@ public class Pantry extends BaseEntity {
     @Column(name = "user_id")
     private Long userId;
 
-    @OneToMany(mappedBy = "pantry", fetch = FetchType.LAZY, orphanRemoval = true)
-    private List<PantryIngredient> pantryIngredientList;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ingredient_id")
+    private Ingredient ingredient;
 
-    private Pantry(Long userId) {
-        this.pantryIngredientList = new ArrayList<>();
+    private Pantry(Long userId, Ingredient ingredient) {
         this.userId = userId;
+        this.ingredient = ingredient;
     }
 
-    public static Pantry of(Long userId) {
-        return new Pantry(userId);
+    public static Pantry of(Long userId, Ingredient ingredient) {
+        return new Pantry(userId, ingredient);
     }
 
 }

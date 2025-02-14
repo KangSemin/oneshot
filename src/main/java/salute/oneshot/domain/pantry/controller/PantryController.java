@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import salute.oneshot.domain.common.dto.success.ApiResponse;
 import salute.oneshot.domain.common.dto.success.ApiResponseConst;
-import salute.oneshot.domain.pantry.dto.response.PantryIngrResponseDto;
 import salute.oneshot.domain.pantry.dto.response.PantryResponseDto;
 import salute.oneshot.domain.pantry.dto.service.AddIngrToPantrySDto;
 import salute.oneshot.domain.pantry.dto.service.RemoveIngrFromPantrySDto;
@@ -29,22 +28,22 @@ public class PantryController {
     private final PantryService pantryService;
 
     @PostMapping("/ingredients/{ingredientId}")
-    public ResponseEntity<ApiResponse<PantryIngrResponseDto>> addIngrToPantry(
+    public ResponseEntity<ApiResponse<PantryResponseDto>> addIngrToPantry(
         @PathVariable Long ingredientId,
         @AuthenticationPrincipal CustomUserDetails userDetails) {
 
         AddIngrToPantrySDto sDto = AddIngrToPantrySDto.of(userDetails.getId(), ingredientId);
-        PantryIngrResponseDto response = pantryService.addIngredientToPantry(sDto);
+        PantryResponseDto response = pantryService.addIngredientToPantry(sDto);
 
         return ResponseEntity.ok(
             ApiResponse.success(ApiResponseConst.ADD_PNTR_INGR_SUCCESS, response));
     }
 
     @GetMapping
-    public ResponseEntity<ApiResponse<PantryResponseDto>> getMyPantry(
+    public ResponseEntity<ApiResponse<List<PantryResponseDto>>> getMyPantry(
         @AuthenticationPrincipal CustomUserDetails userDetails) {
 
-        PantryResponseDto response = pantryService.getPantry(userDetails.getId());
+        List<PantryResponseDto> response = pantryService.getPantry(userDetails.getId());
 
         return ResponseEntity.ok(ApiResponse.success(ApiResponseConst.GET_PNTR_SUCCESS, response));
     }
@@ -65,7 +64,7 @@ public class PantryController {
         RemoveIngrFromPantrySDto sDto = RemoveIngrFromPantrySDto.of(userDetails.getId(),
             ingredientIds);
 
-        pantryService.removeIngredientFromPantry(sDto);
+        pantryService.removeIngredientsFromPantry(sDto);
         return ResponseEntity.status(HttpStatus.NO_CONTENT)
             .body(ApiResponse.success(ApiResponseConst.DELETE_INGR_SUCCESS));
     }
