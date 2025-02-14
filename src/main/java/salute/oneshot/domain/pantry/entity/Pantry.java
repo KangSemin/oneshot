@@ -1,6 +1,5 @@
 package salute.oneshot.domain.pantry.entity;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -11,6 +10,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -33,6 +33,16 @@ public class Pantry extends BaseEntity {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToMany(mappedBy = "pantry", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @OneToMany(mappedBy = "pantry", fetch = FetchType.LAZY, orphanRemoval = true)
     private List<PantryIngredient> pantryIngredientList;
+
+    private Pantry(User user) {
+        this.pantryIngredientList = new ArrayList<>();
+        this.user = user;
+    }
+
+    public static Pantry of(User user) {
+        return new Pantry(user);
+    }
+
 }
