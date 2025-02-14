@@ -1,6 +1,7 @@
 package salute.oneshot.domain.cocktail.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -16,6 +17,7 @@ public class CreateCocktailRequestDto {
     @NotBlank
     private final String recipe;
 
+    @NotNull
     List<IngredientRequestDto> ingredientList;
 
 

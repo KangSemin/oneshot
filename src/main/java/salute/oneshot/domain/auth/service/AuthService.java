@@ -6,9 +6,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import salute.oneshot.domain.auth.dto.response.SignInResponseDto;
-import salute.oneshot.domain.auth.dto.response.SignUpResponseDto;
+import salute.oneshot.domain.auth.dto.response.AuthResponseDto;
 import salute.oneshot.domain.auth.dto.service.SignInSDto;
-import salute.oneshot.domain.auth.dto.service.SignUpSDto;
+import salute.oneshot.domain.auth.dto.service.AuthSDto;
 import salute.oneshot.domain.common.dto.error.ErrorCode;
 import salute.oneshot.domain.user.entity.User;
 import salute.oneshot.domain.user.repository.UserRepository;
@@ -29,27 +29,30 @@ public class AuthService {
     private final CustomUserDetailsService userDetailsService;
 
     @Transactional
-    public SignUpResponseDto userSignUp(SignUpSDto signUpSDto) {
-        if (userRepository.existsByEmail(signUpSDto.getEmail())) {
+    public AuthResponseDto userSignUp(AuthSDto serviceDto) {
+        if (userRepository.existsByEmail(serviceDto.getEmail())) {
             throw new ConflictException(ErrorCode.DUPLICATE_EMAIL);
         }
 
         User user = User.of(
-                signUpSDto.getEmail(),
-                passwordEncoder.encode(signUpSDto.getPassword()),
-                signUpSDto.getNickName()
-        );
+                serviceDto.getEmail(),
+                passwordEncoder.encode(serviceDto.getPassword()),
+                serviceDto.getNickName());
+
         userRepository.save(user);
 
-        return SignUpResponseDto.from(user);
+        return AuthResponseDto.from(user);
     }
 
     @Transactional(readOnly = true)
-    public SignInResponseDto userSignIn(SignInSDto signInSDto) {
-        User user = userRepository.findByEmailAndIsDeletedIsFalse(signInSDto.getEmail())
-                .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
+    public SignInResponseDto userSignIn(SignInSDto serviceDto) {
+        User user = userRepository
+                .findByEmailAndIsDeletedIsFalse(serviceDto.getEmail())
+                .orElseThrow(() ->
+                        new NotFoundException(ErrorCode.USER_NOT_FOUND));
 
-        if (!passwordEncoder.matches(signInSDto.getPassword(), user.getPassword())) {
+        if (!passwordEncoder
+                .matches(serviceDto.getPassword(), user.getPassword())) {
             throw new InvalidException(ErrorCode.LOGIN_FAILED);
         }
 
@@ -57,10 +60,20 @@ public class AuthService {
                 userDetailsService.createAuthentication(
                         user.getId(),
                         user.getEmail(),
-                        user.getUserRole()
-                );
-        String token = jwtProvider.generateToken(authentication);
+                        user.getUserRole());
+
+        String token = jwtProvider.createToken(authentication);
 
         return SignInResponseDto.of(token, SecurityConst.TOKEN_TYPE);
+    }
+
+    @Transactional
+    public AuthResponseDto signOut(Long id) {
+        User user = userRepository.findByIdAndIsDeletedIsFalse(id)
+                .orElseThrow(() ->
+                        new NotFoundException(ErrorCode.USER_NOT_FOUND));
+        user.logout();
+
+        return AuthResponseDto.from(user);
     }
 }
