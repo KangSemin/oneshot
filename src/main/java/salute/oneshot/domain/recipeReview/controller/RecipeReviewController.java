@@ -80,8 +80,7 @@ public class RecipeReviewController {
 
         RecipeReviewResponseDto responseDto = recipeReviewService.updateRecipeReview(sDto);
 
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(ApiResponse.success(ApiResponseMessage.UPDATE_RCP_RVW_SUCCESS,responseDto));
+        return ResponseEntity.ok(ApiResponse.success(ApiResponseMessage.UPDATE_RCP_RVW_SUCCESS,responseDto));
     }
 
 
