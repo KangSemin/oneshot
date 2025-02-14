@@ -7,7 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import salute.oneshot.domain.address.dto.response.AddressPageResponseDto;
 import salute.oneshot.domain.address.dto.response.AddressResponseDto;
 import salute.oneshot.domain.address.dto.service.CreateAddressSdto;
-import salute.oneshot.domain.address.dto.service.GetAddressSDto;
+import salute.oneshot.domain.address.dto.service.AddressSDto;
 import salute.oneshot.domain.address.dto.service.GetAddressesSDto;
 import salute.oneshot.domain.address.dto.service.UpdateAddressSDto;
 import salute.oneshot.domain.address.entity.Address;
@@ -53,7 +53,7 @@ public class AddressService {
     }
 
     @Transactional(readOnly = true)
-    public AddressResponseDto getAddress(GetAddressSDto serviceDto) {
+    public AddressResponseDto getAddress(AddressSDto serviceDto) {
         Address address = addressRepository.findByIdAndUserId(
                         serviceDto.getAddressId(),
                         serviceDto.getUserId())
@@ -65,8 +65,7 @@ public class AddressService {
 
     @Transactional
     public AddressResponseDto updateAddress(UpdateAddressSDto serviceDto) {
-        Address address = addressRepository.findById(serviceDto.getAddressId())
-                .orElseThrow(() -> new NotFoundException(ErrorCode.ADR_NOT_FOUND));
+        Address address = getAddressById(serviceDto.getAddressId());
 
         if (!address.getUserId().equals(serviceDto.getUserId())) {
             throw new ForbiddenException(ErrorCode.FORBIDDEN_ACCESS);
@@ -81,6 +80,18 @@ public class AddressService {
                 serviceDto.getUserId());
 
         return AddressResponseDto.from(address);
+    }
+
+    @Transactional
+    public Long deleteAddress(AddressSDto serviceDto) {
+        Address address = getAddressById(serviceDto.getAddressId());
+        if (!address.getUserId().equals(serviceDto.getUserId())) {
+            throw new ForbiddenException(ErrorCode.FORBIDDEN_ACCESS);
+        }
+
+        addressRepository.delete(address);
+
+        return serviceDto.getAddressId();
     }
 
     private boolean isFirstAddress(Long userId) {
