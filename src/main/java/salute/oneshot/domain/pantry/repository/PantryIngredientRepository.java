@@ -8,7 +8,7 @@ import salute.oneshot.domain.pantry.entity.PantryIngredient;
 
 public interface PantryIngredientRepository extends JpaRepository<PantryIngredient,Long> {
 
-    @Modifying
+    @Modifying(clearAutomatically = true,flushAutomatically = true)
     @Query("delete from PantryIngredient p where p.pantry.id = :pantryId")
     void deleteByPantryId(@Param("pantryId") Long pantryId);
 }

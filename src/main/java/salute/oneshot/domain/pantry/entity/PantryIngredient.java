@@ -20,6 +20,7 @@ import salute.oneshot.domain.ingredient.entity.Ingredient;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class PantryIngredient extends BaseEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(columnDefinition = "BIGINT")
