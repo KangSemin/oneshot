@@ -19,7 +19,6 @@ public class AddressController {
 
     private final AddressService addressService;
 
-    @ResponseBody
     @PostMapping
     public ResponseEntity<AddressResponseDto> createAddress(
             @AuthenticationPrincipal CustomUserDetails userDetails,
