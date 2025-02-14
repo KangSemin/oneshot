@@ -83,6 +83,19 @@ public class AddressService {
     }
 
     @Transactional
+    public AddressResponseDto setDefaultAddress(AddressSDto serviceDto) {
+        Address address = getAddressById(serviceDto.getAddressId());
+        if (!address.getUserId().equals(serviceDto.getUserId())) {
+            throw new ForbiddenException(ErrorCode.FORBIDDEN_ACCESS);
+        }
+
+        address.setDefault();
+
+        return AddressResponseDto.from(address);
+    }
+
+
+    @Transactional
     public Long deleteAddress(AddressSDto serviceDto) {
         Address address = getAddressById(serviceDto.getAddressId());
         if (!address.getUserId().equals(serviceDto.getUserId())) {

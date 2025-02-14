@@ -111,6 +111,23 @@ public class AddressController {
                         responseDto));
     }
 
+    @PatchMapping("/{addressId}/default")
+    public ResponseEntity<ApiResponse<AddressResponseDto>> setDefaultAddress(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable Long addressId
+    ) {
+        AddressSDto serviceDto =
+                AddressSDto.of(userDetails.getId(), addressId);
+        AddressResponseDto responseDto =
+                addressService.setDefaultAddress(serviceDto);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ApiResponse.success(
+                        ApiResponseConst.SET_DEFAULT_ADDRESS_SUCCESS,
+                        responseDto));
+    }
+
+
     @DeleteMapping("/{addressId}")
     public ResponseEntity<ApiResponse<Long>> deleteAddress(
             @AuthenticationPrincipal CustomUserDetails userDetails,

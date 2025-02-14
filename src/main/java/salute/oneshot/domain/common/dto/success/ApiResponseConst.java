@@ -78,7 +78,7 @@ public class ApiResponseConst {
     public static final String GET_ADR_SUCCESS = "주소 조회가 완료되었습니다.";
     public static final String UPDATE_ADR_SUCCESS = "주소 수정이 완료되었습니다.";
     public static final String DELETE_ADR_SUCCESS = "주소 삭제가 완료되었습니다.";
-
+    public static final String SET_DEFAULT_ADDRESS_SUCCESS = "기본 주소로 설정 완료 되었습니다.";
 
     // 상품 관련 메세지
     public static final String ADD_PRDT_SUCCESS = "상품 등록이 완료되었습니다.";

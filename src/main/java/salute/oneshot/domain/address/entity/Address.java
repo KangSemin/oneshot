@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 import salute.oneshot.domain.common.dto.entity.BaseEntity;
-import salute.oneshot.domain.user.entity.User;
 
 @Entity
 @Table(name = "address")
@@ -56,6 +55,22 @@ public class Address extends BaseEntity {
         this.userId = userId;
     }
 
+    public void updateAddress(
+            String addressName,
+            String postcode,
+            String postAddress,
+            String detailAddress,
+            String extraAddress,
+            Long userId
+    ) {
+        this.addressName = addressName;
+        this.postcode = postcode;
+        this.postAddress = postAddress;
+        this.detailAddress = detailAddress;
+        this.extraAddress = extraAddress;
+        this.userId = userId;
+    }
+
     public static Address of(
             String addressName,
             String postcode,
@@ -76,21 +91,5 @@ public class Address extends BaseEntity {
 
     public void setDefault() {
         this.isDefault = true;
-    }
-
-    public void updateAddress(
-            String addressName,
-            String postcode,
-            String postAddress,
-            String detailAddress,
-            String extraAddress,
-            Long userId
-    ) {
-        this.addressName = addressName;
-        this.postcode = postcode;
-        this.postAddress = postAddress;
-        this.detailAddress = detailAddress;
-        this.extraAddress = extraAddress;
-        this.userId = userId;
     }
 }
