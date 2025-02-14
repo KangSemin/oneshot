@@ -16,8 +16,6 @@ import salute.oneshot.domain.pantry.entity.Pantry;
 import salute.oneshot.domain.pantry.entity.PantryIngredient;
 import salute.oneshot.domain.pantry.repository.PantryIngredientRepository;
 import salute.oneshot.domain.pantry.repository.PantryRepository;
-import salute.oneshot.domain.user.entity.User;
-import salute.oneshot.domain.user.repository.UserRepository;
 import salute.oneshot.global.exception.ConflictException;
 import salute.oneshot.global.exception.NotFoundException;
 
@@ -26,7 +24,6 @@ import salute.oneshot.global.exception.NotFoundException;
 public class PantryService {
 
     private final PantryRepository pantryRepository;
-    private final UserRepository userRepository;
     private final IngredientRepository ingredientRepository;
     private final PantryIngredientRepository pantryIngredientRepository;
 
@@ -90,12 +87,9 @@ public class PantryService {
         Pantry pantry = pantryRepository.findByUser_Id((userId));
 
         if (pantry == null) {
-            User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
-            pantry = Pantry.of(user);
+            pantry = Pantry.of(userId);
             pantryRepository.save(pantry);
         }
-
         return pantry;
     }
 
