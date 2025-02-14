@@ -1,5 +1,6 @@
 package salute.oneshot.domain.recipeReview.dto.service;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -14,6 +15,7 @@ public class CreateRecipeReviewSDto {
 
 
     public static CreateRecipeReviewSDto of(Byte star, String content, Long userId, Long recipeId) {
-        return new CreateRecipeReviewSDto(star, content, userId,recipeId);
+        return new CreateRecipeReviewSDto(star, content, userId, recipeId);
+    }
 
 }
