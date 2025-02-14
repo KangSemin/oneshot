@@ -11,7 +11,6 @@ import salute.oneshot.domain.payment.dto.response.PaymentResponseDto;
 import salute.oneshot.domain.payment.dto.service.ConfirmPaymentSDto;
 import salute.oneshot.domain.payment.entity.Payment;
 import salute.oneshot.domain.payment.repository.PaymentRepository;
-import salute.oneshot.domain.payment.util.PaymentClient;
 import salute.oneshot.global.exception.NotFoundException;
 
 import java.util.Optional;
@@ -21,7 +20,7 @@ import java.util.Optional;
 public class PaymentService {
     private final PaymentRepository paymentRepository;
     private final OrderRepository orderRepository;
-    private final PaymentClient paymentClient;
+//    private final PaymentClient paymentClient;
 
     @Transactional
     public PaymentResponseDto createPayment(Long orderId) {
@@ -31,11 +30,11 @@ public class PaymentService {
         return PaymentResponseDto.from(newPayment);
     }
 
-    public ConfirmPaymentResponseDto confirmPayment(ConfirmPaymentSDto sdto) {
-        final ConfirmPaymentResponseDto responseDto = paymentClient.confirmPayment(sdto);
-//        final Payment payment = responseDto.toPayment(sdto.getOrderId());
-
-//        paymentRepository.save(payment);
-        return responseDto;
-    }
+//    public ConfirmPaymentResponseDto confirmPayment(ConfirmPaymentSDto sdto) {
+//        final ConfirmPaymentResponseDto responseDto = paymentClient.confirmPayment(sdto);
+////        final Payment payment = responseDto.toPayment(sdto.getOrderId());
+//
+////        paymentRepository.save(payment);
+//        return responseDto;
+//    }
 }
