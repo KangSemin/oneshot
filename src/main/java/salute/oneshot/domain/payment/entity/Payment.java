@@ -15,9 +15,15 @@ public class Payment {
     @Column(columnDefinition = "BIGINT")
     private Long id;
 
-    @OneToOne
+    // TODO: fetch type 고민
+    @ManyToOne
+    @JoinColumn(name = "order_id")
     private Order order;
+
     private Long amount;
+
+    @Enumerated(EnumType.STRING)
+    private PaymentStatus status = PaymentStatus.PENDING;
 
     public static Payment from(Order order) {
         return new Payment(
@@ -31,4 +37,7 @@ public class Payment {
         this.amount = amount;
     }
 
+    public void updateStatus(PaymentStatus paymentStatus) {
+        this.status = paymentStatus;
+    }
 }

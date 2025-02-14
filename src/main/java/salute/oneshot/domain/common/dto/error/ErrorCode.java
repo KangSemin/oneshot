@@ -23,10 +23,12 @@ public enum ErrorCode {
 
     // 재료 관련 익셉션
     INGREDIENT_NOT_FOUND(HttpStatus.NOT_FOUND, "재료가 존재하지 않습니다."),
+    DUPLICATE_INGREDIENT(HttpStatus.CONFLICT, "이미 등록된 재료입니다." ),
 
     // 리뷰 관련 익셉션
     REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "리뷰가 존재하지 않습니다."),
     REVIEW_DELETE_FORBIDDEN(HttpStatus.FORBIDDEN,"본인이 작성한 리뷰만 삭제할 수 있습니다."),
+    REVIEW_UPDATE_FORBIDDEN(HttpStatus.FORBIDDEN,"본인이 작성한 리뷰만 수정할 수 있습니다."),
 
     // 팬트리 관련 익셉션
     PANTRY_NOT_FOUND(HttpStatus.NOT_FOUND, "팬트리가 존재하지 않습니다."),
@@ -44,13 +46,22 @@ public enum ErrorCode {
     // 주문 관련 익셉션
     ORDER_NOT_FOUND(HttpStatus.NOT_FOUND, "주문이 존재하지 않습니다."),
 
+    // 결제 관련 익셉션
+    PAYMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 결제 내역이 존재하지 않습니다."),
+    PAYMENT_UNAUTHORIZED(HttpStatus.NOT_FOUND, "본인의 결제 내역만 조회할 수 있습니다."),
+    PAYMENT_ALREADY_CONFIRMED(HttpStatus.CONFLICT, "이미 만료된 결제입니다."),
+    ORDER_ALREADY_PAID(HttpStatus.CONFLICT, "이미 결제가 된 주문입니다."),
+
     // 레시피 관련 익셉션
     RECIPE_NOT_FOUND(HttpStatus.NOT_FOUND, "레시피가 존재하지 않습니다."),
+
+    // 주소 관련 익셉션
+    ADR_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 주소가 존재하지 않습니다."),
 
     // 인가 관련 익셉션
     FORBIDDEN_ACCESS(HttpStatus.UNAUTHORIZED, "접근 권한이 없습니다." ),
 
-    // 인증 관련 익셉션,
+    // 인증 관련 익셉션
     UNAUTHORIZED_ACCESS(HttpStatus.UNAUTHORIZED, "로그인이 필요합니다."),
     LOGIN_FAILED(HttpStatus.UNAUTHORIZED, "잘못된 아이디 또는 비밀번호입니다."),
     TOKEN_NOT_FOUND(HttpStatus.BAD_REQUEST, "JWT 토큰이 없습니다."),

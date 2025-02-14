@@ -44,7 +44,6 @@ public class CocktailController {
     }
 
 
-
     @GetMapping("/{cocktailId}")
     public ResponseEntity<ApiResponse<CocktailResponseDto>> getCocktail(
         @PathVariable Long cocktailId) {
@@ -105,7 +104,7 @@ public class CocktailController {
 
         Page<CocktailResponseDto> responsePage = cocktailService.getCocktails(sDto);
 
-        return ResponseEntity.ok(ApiResponse.success(ApiResponseMessage.GET_CCKTL_LIST_SUCCESS, responsePage));
+        return ResponseEntity.ok(ApiResponse.success(ApiResponseConst.GET_CCKTL_LIST_SUCCESS, responsePage));
 
     }
 
