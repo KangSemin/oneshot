@@ -11,6 +11,7 @@ import salute.oneshot.domain.recipeReview.dto.response.RecipeReviewResponseDto;
 import salute.oneshot.domain.recipeReview.dto.service.CreateRecipeReviewSDto;
 import salute.oneshot.domain.recipeReview.dto.service.DeleteRecipeReviewSDto;
 import salute.oneshot.domain.recipeReview.dto.service.GetAllRecipeReviewSDto;
+import salute.oneshot.domain.recipeReview.dto.service.UpdateRecipeReviewSDto;
 import salute.oneshot.domain.recipeReview.entity.RecipeReview;
 import salute.oneshot.domain.recipeReview.repository.RecipeReviewRepository;
 import salute.oneshot.domain.user.entity.User;
@@ -57,6 +58,21 @@ public class RecipeReviewService {
         Page<RecipeReviewResponseDto> responseDtoPage = recipeReviewPage.map(RecipeReviewResponseDto::from);
 
         return responseDtoPage;
+    }
+
+    @Transactional
+    public RecipeReviewResponseDto updateRecipeReview(UpdateRecipeReviewSDto sDto) {
+
+        RecipeReview recipeReview = recipeReviewRepository.findById(sDto.getReviewId())
+                .orElseThrow(() -> new NotFoundException(ErrorCode.REVIEW_NOT_FOUND));
+
+        if(!recipeReview.getUser().getId().equals(sDto.getUserId())) {
+            throw new CustomRuntimeException(ErrorCode.REVIEW_UPDATE_FORBIDDEN);
+        }
+
+        recipeReview.updateRecipeReview(sDto.getStar(),sDto.getContent());
+
+        return RecipeReviewResponseDto.from(recipeReview);
     }
 
     public void deleteRecipeReview(DeleteRecipeReviewSDto sDto) {

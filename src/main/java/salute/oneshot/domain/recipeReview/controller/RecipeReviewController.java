@@ -12,10 +12,12 @@ import org.springframework.web.bind.annotation.*;
 import salute.oneshot.domain.common.dto.success.ApiResponse;
 import salute.oneshot.domain.common.dto.success.ApiResponseConst;
 import salute.oneshot.domain.recipeReview.dto.request.CreateRecipeReviewRequestDto;
+import salute.oneshot.domain.recipeReview.dto.request.UpdateRecipeRequestDto;
 import salute.oneshot.domain.recipeReview.dto.response.RecipeReviewResponseDto;
 import salute.oneshot.domain.recipeReview.dto.service.CreateRecipeReviewSDto;
 import salute.oneshot.domain.recipeReview.dto.service.DeleteRecipeReviewSDto;
 import salute.oneshot.domain.recipeReview.dto.service.GetAllRecipeReviewSDto;
+import salute.oneshot.domain.recipeReview.dto.service.UpdateRecipeReviewSDto;
 import salute.oneshot.domain.recipeReview.service.RecipeReviewService;
 import salute.oneshot.global.security.entity.CustomUserDetails;
 
@@ -69,6 +71,21 @@ public class RecipeReviewController {
         return ResponseEntity.ok(ApiResponse.success(ApiResponseConst.GET_RCP_RVW_SUCCESS, responseDtos));
 
     }
+
+    @PatchMapping("/reviews/{reviewId}")
+    public ResponseEntity<ApiResponse<RecipeReviewResponseDto>> updateRecipeReview(
+            @PathVariable("reviewId") Long reviewId, @Valid @RequestBody UpdateRecipeRequestDto requestDto,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+
+        Long userId = customUserDetails.getId();
+
+        UpdateRecipeReviewSDto sDto = UpdateRecipeReviewSDto.of(reviewId, requestDto.getStar(),requestDto.getContent(), userId);
+
+        RecipeReviewResponseDto responseDto = recipeReviewService.updateRecipeReview(sDto);
+
+        return ResponseEntity.ok(ApiResponse.success(ApiResponseMessage.UPDATE_RCP_RVW_SUCCESS,responseDto));
+    }
+
 
     @DeleteMapping("/reviews/{reviewId}")
     public ResponseEntity<ApiResponse<Void>> deleteRecipeReview(
