@@ -1,7 +1,6 @@
 package salute.oneshot.domain.pantry.service;
 
 
-import jakarta.persistence.EntityManager;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -30,7 +29,6 @@ public class PantryService {
     private final UserRepository userRepository;
     private final IngredientRepository ingredientRepository;
     private final PantryIngredientRepository pantryIngredientRepository;
-    private final EntityManager entityManager;
 
     @Transactional
     public PantryIngrResponseDto addIngredientToPantry(AddIngrToPantrySDto request) {
@@ -82,10 +80,9 @@ public class PantryService {
     public void clearPantryIngredients(Long userId) {
 
         Pantry pantry = findPantry(userId);
+
         if (!pantry.getPantryIngredientList().isEmpty()) {
             pantryIngredientRepository.deleteByPantryId(pantry.getId());
-            pantry.getPantryIngredientList().clear();
-            entityManager.clear();
         }
     }
 
