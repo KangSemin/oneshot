@@ -70,4 +70,5 @@ public class ApiResponseConst {
 
     // 상품 관련 메세지
     public static final String ADD_PRDT_SUCCESS = "상품 등록이 완료되었습니다.";
+    public static final String GET_PRDT_SUCCESS = "상품 조회가 완료되었습니다.";
 }
