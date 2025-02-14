@@ -39,7 +39,6 @@ public class RecipeReviewController {
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.success(ApiResponseConst.ADD_RCP_RVW_SUCCESS, responseDto));
-
     }
 
     @GetMapping("/reviews/me")
@@ -56,7 +55,7 @@ public class RecipeReviewController {
 
         Page<RecipeReviewResponseDto> responseDtos = recipeReviewService.getMyRecipeReview(sDto);
 
-        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(ApiResponseMessage.GET_RCP_RVW_SUCCESS,responseDtos));
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(ApiResponseConst.GET_RCP_RVW_SUCCESS,responseDtos));
     }
 
     @GetMapping("/reviews/{reviewId}")
@@ -66,7 +65,6 @@ public class RecipeReviewController {
         RecipeReviewResponseDto responseDto = recipeReviewService.getRecipeReview(reviewId);
 
         return ResponseEntity.ok(ApiResponse.success(ApiResponseConst.GET_RCP_RVW_SUCCESS, responseDto));
-
     }
 
 
@@ -97,7 +95,7 @@ public class RecipeReviewController {
 
         RecipeReviewResponseDto responseDto = recipeReviewService.updateRecipeReview(sDto);
 
-        return ResponseEntity.ok(ApiResponse.success(ApiResponseMessage.UPDATE_RCP_RVW_SUCCESS,responseDto));
+        return ResponseEntity.ok(ApiResponse.success(ApiResponseConst.UPDATE_RCP_RVW_SUCCESS,responseDto));
     }
 
 
