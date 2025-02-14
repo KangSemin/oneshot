@@ -23,6 +23,7 @@ public enum ErrorCode {
 
     // 재료 관련 익셉션
     INGREDIENT_NOT_FOUND(HttpStatus.NOT_FOUND, "재료가 존재하지 않습니다."),
+    DUPLICATE_INGREDIENT(HttpStatus.CONFLICT, "이미 등록된 재료입니다." ),
 
     // 리뷰 관련 익셉션
     REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "리뷰가 존재하지 않습니다."),
