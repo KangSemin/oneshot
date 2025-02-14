@@ -77,7 +77,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
     private boolean isAuthEndpoint(HttpServletRequest request) {
         return request.getRequestURI().startsWith("/api/auth/") ||
-                request.getRequestURI().equals("/addresses");
+                request.getRequestURI().startsWith("/addresses");
     }
 
     private String extractToken(String bearerToken) {

@@ -77,4 +77,20 @@ public class Address extends BaseEntity {
     public void setDefault() {
         this.isDefault = true;
     }
+
+    public void updateAddress(
+            String addressName,
+            String postcode,
+            String postAddress,
+            String detailAddress,
+            String extraAddress,
+            Long userId
+    ) {
+        this.addressName = addressName;
+        this.postcode = postcode;
+        this.postAddress = postAddress;
+        this.detailAddress = detailAddress;
+        this.extraAddress = extraAddress;
+        this.userId = userId;
+    }
 }

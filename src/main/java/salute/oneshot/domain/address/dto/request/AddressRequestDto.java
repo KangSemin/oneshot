@@ -7,7 +7,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class CreateAddressRequestDto {
+public class AddressRequestDto {
 
     @NotBlank
     private String addressName;

@@ -9,12 +9,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import salute.oneshot.domain.address.dto.request.CreateAddressRequestDto;
+import salute.oneshot.domain.address.dto.request.AddressRequestDto;
 import salute.oneshot.domain.address.dto.response.AddressPageResponseDto;
 import salute.oneshot.domain.address.dto.response.AddressResponseDto;
-import salute.oneshot.domain.address.dto.service.AddressSdto;
+import salute.oneshot.domain.address.dto.service.CreateAddressSdto;
 import salute.oneshot.domain.address.dto.service.GetAddressSDto;
 import salute.oneshot.domain.address.dto.service.GetAddressesSDto;
+import salute.oneshot.domain.address.dto.service.UpdateAddressSDto;
 import salute.oneshot.domain.address.service.AddressService;
 import salute.oneshot.domain.common.dto.success.ApiResponse;
 import salute.oneshot.domain.common.dto.success.ApiResponseConst;
@@ -30,17 +31,16 @@ public class AddressController {
     @PostMapping
     public ResponseEntity<ApiResponse<AddressResponseDto>> createAddress(
             @AuthenticationPrincipal CustomUserDetails userDetails,
-            @Valid @RequestBody CreateAddressRequestDto request
+            @Valid @RequestBody AddressRequestDto requestDto
     ) {
-        AddressSdto serviceDto =
-                AddressSdto.of(
-                        request.getAddressName(),
-                        request.getPostcode(),
-                        request.getPostAddress(),
-                        request.getDetailAddress(),
-                        request.getExtraAddress(),
-                        userDetails.getId()
-                );
+        CreateAddressSdto serviceDto = CreateAddressSdto.of(
+                requestDto.getAddressName(),
+                requestDto.getPostcode(),
+                requestDto.getPostAddress(),
+                requestDto.getDetailAddress(),
+                requestDto.getExtraAddress(),
+                userDetails.getId()
+        );
         AddressResponseDto responseDto =
                 addressService.createAddress(serviceDto);
 
@@ -84,6 +84,29 @@ public class AddressController {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ApiResponse.success(
                         ApiResponseConst.GET_ADR_SUCCESS,
+                        responseDto));
+    }
+
+    @PatchMapping("/{addressId}")
+    public ResponseEntity<ApiResponse<AddressResponseDto>> updateAddress(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @Valid @RequestBody AddressRequestDto requestDto,
+            @PathVariable Long addressId
+    ) {
+        UpdateAddressSDto serviceDto = UpdateAddressSDto.of(
+                requestDto.getAddressName(),
+                requestDto.getPostcode(),
+                requestDto.getPostAddress(),
+                requestDto.getDetailAddress(),
+                requestDto.getExtraAddress(),
+                userDetails.getId(),
+                addressId
+        );
+        AddressResponseDto responseDto = addressService.updateAddress(serviceDto);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ApiResponse.success(
+                        ApiResponseConst.UPDATE_ADR_SUCCESS,
                         responseDto));
     }
 }
