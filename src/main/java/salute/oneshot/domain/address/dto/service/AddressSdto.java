@@ -6,7 +6,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class CreateAddressSdto {
+public class AddressSdto {
 
     private String addressName;
     private String postcode;
@@ -15,7 +15,7 @@ public class CreateAddressSdto {
     private String extraAddress;
     private Long userId;
 
-    public static CreateAddressSdto of(
+    public static AddressSdto of(
             String addressName,
             String postcode,
             String postAddress,
@@ -23,7 +23,7 @@ public class CreateAddressSdto {
             String extraAddress,
             Long userId
     ) {
-        return new CreateAddressSdto(
+        return new AddressSdto(
                 addressName,
                 postcode,
                 postAddress,
