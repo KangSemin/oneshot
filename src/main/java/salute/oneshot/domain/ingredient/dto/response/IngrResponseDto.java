@@ -1,10 +1,13 @@
 package salute.oneshot.domain.ingredient.dto.response;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import salute.oneshot.domain.ingredient.entity.Ingredient;
 import salute.oneshot.domain.ingredient.entity.IngredientCategory;
 
 @Getter
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class IngrResponseDto {
 
     private final Long id;
@@ -13,14 +16,6 @@ public class IngrResponseDto {
     private final IngredientCategory category;
     private final Double AVB;
 
-    private IngrResponseDto(Long id, String name, String description, IngredientCategory category,
-        Double AVB) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-        this.category = category;
-        this.AVB = AVB;
-    }
 
     public static IngrResponseDto from(Ingredient ingredient) {
         return new IngrResponseDto(

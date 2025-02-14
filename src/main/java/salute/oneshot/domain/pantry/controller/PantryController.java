@@ -1,9 +1,18 @@
 package salute.oneshot.domain.pantry.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import salute.oneshot.domain.common.dto.success.ApiResponse;
+import salute.oneshot.domain.common.dto.success.ApiResponseConst;
+import salute.oneshot.domain.pantry.dto.response.PantryIngrResponseDto;
+import salute.oneshot.domain.pantry.dto.service.AddPantryIngredientSDto;
 import salute.oneshot.domain.pantry.service.PantryService;
+import salute.oneshot.global.security.entity.CustomUserDetails;
 
 @RestController
 @RequestMapping("/api/pantries")
@@ -11,4 +20,14 @@ import salute.oneshot.domain.pantry.service.PantryService;
 public class PantryController {
 
     private final PantryService pantryService;
+
+    @PostMapping("/ingredients/{ingredientId}")
+    public ResponseEntity<ApiResponse<PantryIngrResponseDto>> addIngrToPantry(@PathVariable Long ingredientId,
+        @AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        AddPantryIngredientSDto sDto = AddPantryIngredientSDto.of(userDetails.getId(), ingredientId);
+        PantryIngrResponseDto response = pantryService.addIngredientToPantry(sDto);
+
+        return ResponseEntity.ok(ApiResponse.success(ApiResponseConst.ADD_PNTR_INGR_SUCCESS,response));
+    }
 }
