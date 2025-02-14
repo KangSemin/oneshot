@@ -55,7 +55,7 @@ public class RecipeReviewController {
 
         Page<RecipeReviewResponseDto> responseDtos = recipeReviewService.getMyRecipeReview(sDto);
 
-        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(ApiResponseConst.GET_RCP_RVW_SUCCESS,responseDtos));
+        return ResponseEntity.ok(ApiResponse.success(ApiResponseConst.GET_RCP_RVW_SUCCESS,responseDtos));
     }
 
     @GetMapping("/reviews/{reviewId}")
