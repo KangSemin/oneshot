@@ -45,4 +45,13 @@ public class Product {
     public static Product of(String name, String description, int price, int stockQuantity, ProductCategory category, ProductStatus status, User user) {
         return new Product(name, description, price, stockQuantity, category, status,user);
     }
+
+    public void updateProduct(String name, String description, int price, int stockQuantity, ProductCategory category, ProductStatus status) {
+        this.name = name;
+        this.description = description;
+        this.price = price;
+        this.stockQuantity = stockQuantity;
+        this.category = category;
+        this.status = status;
+    }
 }
