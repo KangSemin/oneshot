@@ -13,7 +13,7 @@ import salute.oneshot.domain.address.dto.request.AddressRequestDto;
 import salute.oneshot.domain.address.dto.response.AddressPageResponseDto;
 import salute.oneshot.domain.address.dto.response.AddressResponseDto;
 import salute.oneshot.domain.address.dto.service.CreateAddressSdto;
-import salute.oneshot.domain.address.dto.service.GetAddressSDto;
+import salute.oneshot.domain.address.dto.service.AddressSDto;
 import salute.oneshot.domain.address.dto.service.GetAddressesSDto;
 import salute.oneshot.domain.address.dto.service.UpdateAddressSDto;
 import salute.oneshot.domain.address.service.AddressService;
@@ -76,8 +76,8 @@ public class AddressController {
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @PathVariable Long addressId
     ) {
-        GetAddressSDto serviceDto =
-                GetAddressSDto.of(userDetails.getId(), addressId);
+        AddressSDto serviceDto =
+                AddressSDto.of(userDetails.getId(), addressId);
         AddressResponseDto responseDto =
                 addressService.getAddress(serviceDto);
 
@@ -102,11 +102,27 @@ public class AddressController {
                 userDetails.getId(),
                 addressId
         );
-        AddressResponseDto responseDto = addressService.updateAddress(serviceDto);
+        AddressResponseDto responseDto =
+                addressService.updateAddress(serviceDto);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ApiResponse.success(
                         ApiResponseConst.UPDATE_ADR_SUCCESS,
                         responseDto));
+    }
+
+    @DeleteMapping("/{addressId}")
+    public ResponseEntity<ApiResponse<Long>> deleteAddress(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable Long addressId) {
+        AddressSDto serviceDto =
+                AddressSDto.of(userDetails.getId(), addressId);
+        Long deletedAddress =
+                addressService.deleteAddress(serviceDto);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ApiResponse.success(
+                        ApiResponseConst.DELETE_ADR_SUCCESS,
+                        deletedAddress));
     }
 }

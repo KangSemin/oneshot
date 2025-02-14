@@ -6,12 +6,12 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class GetAddressSDto {
+public class AddressSDto {
 
     private Long userId;
     private Long addressId;
 
-    public static GetAddressSDto of(Long userId, Long addressId) {
-        return new GetAddressSDto(userId, addressId);
+    public static AddressSDto of(Long userId, Long addressId) {
+        return new AddressSDto(userId, addressId);
     }
 }
