@@ -3,8 +3,10 @@ package salute.oneshot.domain.pantry.dto.response;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import salute.oneshot.domain.pantry.entity.Pantry;
 
+@Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class PantryResponseDto {
 
