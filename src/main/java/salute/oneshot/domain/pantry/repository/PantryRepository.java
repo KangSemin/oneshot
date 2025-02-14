@@ -14,5 +14,12 @@ public interface PantryRepository extends JpaRepository<Pantry, Long> {
     left join fetch pi.ingredient
     where p.userId = :userId
     """)
-    Pantry findByUser_Id(Long userId);
+    Pantry findByUserId(Long userId);
+
+    @Query(
+        """
+        select p.id from Pantry p
+        where p.userId = :userId
+        """)
+    Long findIdByUserId(Long userId);
 }

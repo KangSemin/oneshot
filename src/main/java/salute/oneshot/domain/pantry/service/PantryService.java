@@ -1,7 +1,6 @@
 package salute.oneshot.domain.pantry.service;
 
 
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,40 +50,30 @@ public class PantryService {
     @Transactional(readOnly = true)
     public PantryResponseDto getPantry(Long userId) {
 
-        Pantry pantry = pantryRepository.findByUser_Id((userId));
-
+        Pantry pantry = pantryRepository.findByUserId((userId));
         return PantryResponseDto.from(pantry);
     }
 
     @Transactional
     public void removeIngredientFromPantry(RemoveIngrFromPantrySDto sDto) {
 
-        Pantry pantry = findPantry(sDto.getUserId());
-
-        Optional<PantryIngredient> targetOpt = pantry.getPantryIngredientList().stream()
-            .filter(pi -> pi.getIngredient().getId().equals(sDto.getIngredientId()))
-            .findFirst();
-
-        if (targetOpt.isEmpty()) {
-            throw new NotFoundException(ErrorCode.INGREDIENT_NOT_FOUND);
-        }
-
-        PantryIngredient target = targetOpt.get();
-        pantry.getPantryIngredientList().remove(target);
+        pantryIngredientRepository.deleteByPantryIdAndIngredientIds(sDto.getUserId(),
+            sDto.getIngredientIds());
     }
+
 
     @Transactional
     public void clearPantryIngredients(Long userId) {
 
-        Pantry pantry = findPantry(userId);
+        Long pantryId = pantryRepository.findIdByUserId(userId);
 
-        if (!pantry.getPantryIngredientList().isEmpty()) {
-            pantryIngredientRepository.deleteByPantryId(pantry.getId());
+        if (pantryId != null) {
+            pantryIngredientRepository.deleteByPantryId(pantryId);
         }
     }
 
     private Pantry findPantry(Long userId) {
-        Pantry pantry = pantryRepository.findByUser_Id((userId));
+        Pantry pantry = pantryRepository.findByUserId((userId));
 
         if (pantry == null) {
             pantry = Pantry.of(userId);
