@@ -7,13 +7,13 @@ import org.springframework.data.domain.Pageable;
 
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class GetAllRecipeReviewSDto {
+public class GetMyRecipeReviewSDto {
 
-    public Pageable pageable;
-    public Long cocktailId;
+    private Long userId;
+    private Pageable pageable;
 
-    public static GetAllRecipeReviewSDto of(Pageable pageable, Long cocktailId) {
-        return new GetAllRecipeReviewSDto(pageable, cocktailId);
+    public static GetMyRecipeReviewSDto of (Long userId, Pageable pageable) {
+        return new GetMyRecipeReviewSDto(userId, pageable);
     }
 
 }

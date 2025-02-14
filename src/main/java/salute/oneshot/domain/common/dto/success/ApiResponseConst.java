@@ -26,7 +26,7 @@ public class ApiResponseConst {
     public static final String DELETE_INGR_SUCCESS = "재료 삭제가 완료되었습니다.";
 
     // 레세피 리뷰 관련 메시지
-    public static final String ADD_RCP_RVW_SUCCESS = "레세피 리뷰 등록이 완료되었습니다.";
+    public static final String ADD_RCP_RVW_SUCCESS = "레시피 리뷰 등록이 완료되었습니다.";
     public static final String GET_RCP_RVW_SUCCESS = "레시피 리뷰 조회가 완료되었습니다.";
     public static final String GET_RCP_RVW_LIST_SUCCESS = "레시피 리뷰 목록 조회가 완료되었습니다.";
     public static final String UPDATE_RCP_RVW_SUCCESS = "레시피 리뷰 수정이 완료되었습니다.";
