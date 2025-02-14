@@ -6,13 +6,13 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class AddPantryIngredientSDto {
+public class RemoveIngrFromPantrySDto {
 
     private Long userId;
     private Long ingredientId;
 
-    public static AddPantryIngredientSDto of(Long userId ,Long ingredientId) {
-        return new AddPantryIngredientSDto(userId,ingredientId);
+    public static RemoveIngrFromPantrySDto of(Long userId ,Long ingredientId) {
+        return new RemoveIngrFromPantrySDto(userId,ingredientId);
     }
 
 }

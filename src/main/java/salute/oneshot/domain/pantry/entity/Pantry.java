@@ -34,7 +34,7 @@ public class Pantry extends BaseEntity {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToMany(mappedBy = "pantry", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "pantry", fetch = FetchType.LAZY, orphanRemoval = true)
     private List<PantryIngredient> pantryIngredientList;
 
     private Pantry(User user) {
