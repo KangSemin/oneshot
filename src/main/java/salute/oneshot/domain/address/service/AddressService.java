@@ -6,13 +6,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import salute.oneshot.domain.address.dto.response.AddressPageResponseDto;
 import salute.oneshot.domain.address.dto.response.AddressResponseDto;
-import salute.oneshot.domain.address.dto.service.AddressSdto;
+import salute.oneshot.domain.address.dto.service.CreateAddressSdto;
 import salute.oneshot.domain.address.dto.service.GetAddressSDto;
 import salute.oneshot.domain.address.dto.service.GetAddressesSDto;
+import salute.oneshot.domain.address.dto.service.UpdateAddressSDto;
 import salute.oneshot.domain.address.entity.Address;
 import salute.oneshot.domain.address.repository.AddressRepository;
 import salute.oneshot.domain.common.dto.error.ErrorCode;
-import salute.oneshot.domain.user.repository.UserRepository;
+import salute.oneshot.global.exception.ForbiddenException;
 import salute.oneshot.global.exception.NotFoundException;
 
 @Service
@@ -20,10 +21,9 @@ import salute.oneshot.global.exception.NotFoundException;
 public class AddressService {
 
     private final AddressRepository addressRepository;
-    private final UserRepository userRepository;
 
     @Transactional
-    public AddressResponseDto createAddress(AddressSdto serviceDto) {
+    public AddressResponseDto createAddress(CreateAddressSdto serviceDto) {
         Address address = Address.of(
                 serviceDto.getAddressName(),
                 serviceDto.getPostcode(),
@@ -35,7 +35,6 @@ public class AddressService {
         if (isFirstAddress(serviceDto.getUserId())) {
             address.setDefault();
         }
-
         addressRepository.save(address);
 
         return AddressResponseDto.from(address);
@@ -64,7 +63,33 @@ public class AddressService {
         return AddressResponseDto.from(address);
     }
 
+    @Transactional
+    public AddressResponseDto updateAddress(UpdateAddressSDto serviceDto) {
+        Address address = addressRepository.findById(serviceDto.getAddressId())
+                .orElseThrow(() -> new NotFoundException(ErrorCode.ADR_NOT_FOUND));
+
+        if (!address.getUserId().equals(serviceDto.getUserId())) {
+            throw new ForbiddenException(ErrorCode.FORBIDDEN_ACCESS);
+        }
+
+        address.updateAddress(
+                serviceDto.getAddressName(),
+                serviceDto.getPostcode(),
+                serviceDto.getPostAddress(),
+                serviceDto.getDetailAddress(),
+                serviceDto.getExtraAddress(),
+                serviceDto.getUserId());
+
+        return AddressResponseDto.from(address);
+    }
+
     private boolean isFirstAddress(Long userId) {
         return !addressRepository.existsByUserId(userId);
+    }
+
+    public Address getAddressById(Long id) {
+        return addressRepository.findById(id)
+                .orElseThrow(() ->
+                        new NotFoundException(ErrorCode.ADR_NOT_FOUND));
     }
 }
