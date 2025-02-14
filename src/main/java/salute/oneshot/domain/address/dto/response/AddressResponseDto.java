@@ -15,6 +15,7 @@ public class AddressResponseDto {
     private String postAddress;
     private String detailAddress;
     private String extraAddress;
+    private boolean isDefault;
 
     public static AddressResponseDto from(Address address) {
         return new AddressResponseDto(
@@ -23,6 +24,7 @@ public class AddressResponseDto {
                 address.getPostcode(),
                 address.getPostAddress(),
                 address.getDetailAddress(),
-                address.getExtraAddress());
+                address.getExtraAddress(),
+                address.isDefault());
     }
 }
