@@ -46,6 +46,7 @@ public enum ErrorCode {
     // 결제 관련 익셉션
     PAYMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 결제 내역이 존재하지 않습니다."),
     PAYMENT_UNAUTHORIZED(HttpStatus.NOT_FOUND, "본인의 결제 내역만 조회할 수 있습니다."),
+    PAYMENT_ALREADY_CONFIRMED(HttpStatus.CONFLICT, "이미 만료된 결제입니다."),
 
     // 레시피 관련 익셉션
     RECIPE_NOT_FOUND(HttpStatus.NOT_FOUND, "레시피가 존재하지 않습니다."),

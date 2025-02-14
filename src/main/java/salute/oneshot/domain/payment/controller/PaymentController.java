@@ -45,7 +45,7 @@ public class PaymentController {
                 ApiResponse.success(ApiResponseConst.GET_PAYMENT_SUCCESS, responseDto));
     }
 
-    @GetMapping("/payments/{paymentId}")
+    @PostMapping("/payments/{paymentId}/confirm")
     public ResponseEntity<ApiResponse<PaymentResponseDto>> confirmPayment(
             @PathVariable Long paymentId,
             @RequestBody ConfirmPaymentRequestDto requestDto,

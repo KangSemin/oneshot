@@ -15,7 +15,9 @@ public class Payment {
     @Column(columnDefinition = "BIGINT")
     private Long id;
 
-    @OneToOne
+    // TODO: fetch type 고민
+    @ManyToOne
+    @JoinColumn(name = "order_id")
     private Order order;
 
     private Long amount;
