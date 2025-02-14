@@ -1,6 +1,5 @@
 package salute.oneshot.domain.pantry.entity;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
