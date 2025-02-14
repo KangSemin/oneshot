@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>주소 검색</title>
+    <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const addressNameInput = document.getElementById("addressName");
+            const postcodeInput = document.getElementById("postcode");
+            const addressInput = document.getElementById("address");
+            const detailAddressInput = document.getElementById("detailAddress");
+            const extraAddressInput = document.getElementById("extraAddress");
+            const searchButton = document.getElementById("searchAddressBtn");
+            const submitButton = document.getElementById("submitFormBtn");
+
+            // 주소 검색 함수
+            function searchAddress() {
+                new daum.Postcode({
+                    oncomplete: function (data) {
+                        postcodeInput.value = data.zonecode;
+                        addressInput.value = data.address;
+                        detailAddressInput.focus();
+                    }
+                }).open();
+            }
+
+            async function submitForm() {
+                const requestData = {
+                    addressName: addressNameInput.value.trim(),
+                    postcode: postcodeInput.value.trim(),
+                    postAddress: addressInput.value.trim(),
+                    detailAddress: detailAddressInput.value.trim(),
+                    extraAddress: extraAddressInput.value.trim()
+                };
+
+                try {
+                    const response = await fetch("/api/addresses", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Authorization": `Bearer ${localStorage.getItem('token')}`
+                        },
+                        body: JSON.stringify(requestData)
+                    });
+
+                    const responseText = await response.text();
+
+                    if (!response.ok) {
+                        throw new Error(`서버 응답 실패: ${response.status}, 내용: ${responseText}`);
+                    }
+
+                    const data = JSON.parse(responseText);
+                    alert("주소가 저장되었습니다. (ID: " + data.id + ")");
+                } catch (error) {
+                    console.error("주소 저장 실패 상세 정보:", error);
+                    alert("주소 저장에 실패했습니다.");
+                }
+            }
+
+            // 이벤트 리스너 등록
+            searchButton.addEventListener("click", searchAddress);
+            submitButton.addEventListener("click", submitForm);
+        });
+    </script>
+</head>
+<body>
+<h1>주소 검색</h1>
+<label for="addressName">주소지 이름</label>
+<input type="text" id="addressName" placeholder="예: 집, 회사"><br>
+
+<label for="postcode">우편번호</label>
+<input type="text" id="postcode" placeholder="우편번호" readonly>
+<button type="button" id="searchAddressBtn">주소 검색</button><br>
+
+<label for="address">주소</label>
+<input type="text" id="address" placeholder="주소" readonly><br>
+
+<label for="detailAddress">상세주소</label>
+<input type="text" id="detailAddress" placeholder="상세주소"><br>
+
+<label for="extraAddress">참고항목</label>
+<input type="text" id="extraAddress" placeholder="참고항목"><br>
+
+<button type="button" id="submitFormBtn">저장</button>
+</body>
+</html>
