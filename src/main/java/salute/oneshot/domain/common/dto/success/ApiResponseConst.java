@@ -76,4 +76,7 @@ public class ApiResponseConst {
     public static final String ADD_ADR_SUCCESS = "주소 등록이 완료되었습니다.";
     public static final String GET_ADR_LIST_SUCCESS = "주소지 목록 조회가 완료되었습니다.";
     public static final String GET_ADR_SUCCESS = "주소 조회가 완료되었습니다.";
+
+    // 상품 관련 메세지
+    public static final String ADD_PRDT_SUCCESS = "상품 등록이 완료되었습니다.";
 }
