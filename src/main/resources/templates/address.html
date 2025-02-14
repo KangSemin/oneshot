@@ -63,25 +63,73 @@
             submitButton.addEventListener("click", submitForm);
         });
     </script>
+    <style>
+        .address-container {
+            max-width: 500px;  /* 컨테이너 최대 너비 */
+            margin: 0 auto;    /* 중앙 정렬 */
+            padding: 20px;     /* 여백 */
+        }
+
+        .form-group {
+            margin-bottom: 15px;  /* 각 입력 그룹 사이 간격 */
+        }
+
+        input[type="text"] {
+            width: 100%;          /* 입력창 너비 */
+            padding: 8px;         /* 내부 여백 */
+            margin: 5px 0;        /* 위아래 여백 */
+            box-sizing: border-box;  /* padding이 너비에 포함되도록 */
+        }
+
+        /* 우편번호 입력창과 검색 버튼을 한 줄에 */
+        .postcode-group {
+            display: flex;
+            gap: 10px;  /* 우편번호와 버튼 사이 간격 */
+        }
+
+        .postcode-group input {
+            width: 150px;  /* 우편번호 입력창 너비 */
+        }
+
+        button {
+            padding: 8px 16px;
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
-<h1>주소 검색</h1>
-<label for="addressName">주소지 이름</label>
-<input type="text" id="addressName" placeholder="예: 집, 회사"><br>
+<div class="address-container">
+    <h1>주소 검색</h1>
 
-<label for="postcode">우편번호</label>
-<input type="text" id="postcode" placeholder="우편번호" readonly>
-<button type="button" id="searchAddressBtn">주소 검색</button><br>
+    <div class="form-group">
+        <label for="addressName">주소지 이름</label>
+        <input type="text" id="addressName" placeholder="예: 집, 회사">
+    </div>
 
-<label for="address">주소</label>
-<input type="text" id="address" placeholder="주소" readonly><br>
+    <div class="form-group postcode-group">
+        <div>
+            <label for="postcode">우편번호</label>
+            <input type="text" id="postcode" placeholder="우편번호" readonly>
+        </div>
+        <button type="button" id="searchAddressBtn">주소 검색</button>
+    </div>
 
-<label for="detailAddress">상세주소</label>
-<input type="text" id="detailAddress" placeholder="상세주소"><br>
+    <div class="form-group">
+        <label for="address">주소</label>
+        <input type="text" id="address" placeholder="주소" readonly>
+    </div>
 
-<label for="extraAddress">참고항목</label>
-<input type="text" id="extraAddress" placeholder="참고항목"><br>
+    <div class="form-group">
+        <label for="detailAddress">상세주소</label>
+        <input type="text" id="detailAddress" placeholder="상세주소">
+    </div>
 
-<button type="button" id="submitFormBtn">저장</button>
+    <div class="form-group">
+        <label for="extraAddress">참고항목</label>
+        <input type="text" id="extraAddress" placeholder="참고항목">
+    </div>
+
+    <button type="button" id="submitFormBtn">저장</button>
+</div>
 </body>
 </html>
