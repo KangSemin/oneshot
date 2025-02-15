@@ -13,7 +13,6 @@ import salute.oneshot.domain.address.dto.service.UpdateAddressSDto;
 import salute.oneshot.domain.address.entity.Address;
 import salute.oneshot.domain.address.repository.AddressRepository;
 import salute.oneshot.domain.common.dto.error.ErrorCode;
-import salute.oneshot.global.exception.ForbiddenException;
 import salute.oneshot.global.exception.NotFoundException;
 
 @Service
@@ -54,21 +53,22 @@ public class AddressService {
 
     @Transactional(readOnly = true)
     public AddressResponseDto getAddress(AddressSDto serviceDto) {
-        Address address = addressRepository.findByIdAndUserId(
-                        serviceDto.getAddressId(),
-                        serviceDto.getUserId())
-                .orElseThrow(() ->
-                        new NotFoundException(ErrorCode.ADR_NOT_FOUND));
+        Address address = getAddressByIdAndUserId(
+                serviceDto.getAddressId(),
+                serviceDto.getUserId());
 
         return AddressResponseDto.from(address);
     }
 
     @Transactional
     public AddressResponseDto updateAddress(UpdateAddressSDto serviceDto) {
-        Address address = getAddressById(serviceDto.getAddressId());
+        Address address = getAddressByIdAndUserId(
+                serviceDto.getAddressId(),
+                serviceDto.getUserId());
 
-        if (!address.getUserId().equals(serviceDto.getUserId())) {
-            throw new ForbiddenException(ErrorCode.FORBIDDEN_ACCESS);
+        if (serviceDto.isDefault()) {
+            addressRepository.findByUserIdAndIsDefaultIsTrue(serviceDto.getUserId())
+                    .ifPresent(Address::unsetDefault);
         }
 
         address.updateAddress(
@@ -77,17 +77,17 @@ public class AddressService {
                 serviceDto.getPostAddress(),
                 serviceDto.getDetailAddress(),
                 serviceDto.getExtraAddress(),
-                serviceDto.getUserId());
+                serviceDto.getUserId(),
+                serviceDto.isDefault());
 
         return AddressResponseDto.from(address);
     }
 
     @Transactional
     public Long deleteAddress(AddressSDto serviceDto) {
-        Address address = getAddressById(serviceDto.getAddressId());
-        if (!address.getUserId().equals(serviceDto.getUserId())) {
-            throw new ForbiddenException(ErrorCode.FORBIDDEN_ACCESS);
-        }
+        Address address = getAddressByIdAndUserId(
+                serviceDto.getAddressId(),
+                serviceDto.getUserId());
 
         addressRepository.delete(address);
 
@@ -96,6 +96,12 @@ public class AddressService {
 
     private boolean isFirstAddress(Long userId) {
         return !addressRepository.existsByUserId(userId);
+    }
+
+    private Address getAddressByIdAndUserId(Long addressId, Long userId) {
+        return addressRepository.findByIdAndUserId(addressId, userId)
+                .orElseThrow(() ->
+                        new NotFoundException(ErrorCode.ADR_NOT_FOUND));
     }
 
     public Address getAddressById(Long id) {

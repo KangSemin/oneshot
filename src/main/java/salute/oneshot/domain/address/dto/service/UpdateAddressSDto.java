@@ -13,6 +13,7 @@ public class UpdateAddressSDto {
     private String postAddress;
     private String detailAddress;
     private String extraAddress;
+    private boolean isDefault;
     private Long userId;
     private Long addressId;
 
@@ -22,6 +23,7 @@ public class UpdateAddressSDto {
             String postAddress,
             String detailAddress,
             String extraAddress,
+            boolean isDefault,
             Long userId,
             Long addressId
     ) {
@@ -31,6 +33,7 @@ public class UpdateAddressSDto {
                 postAddress,
                 detailAddress,
                 extraAddress,
+                isDefault,
                 userId,
                 addressId
         );
