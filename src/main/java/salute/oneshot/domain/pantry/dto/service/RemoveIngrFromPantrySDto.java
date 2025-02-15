@@ -1,5 +1,6 @@
 package salute.oneshot.domain.pantry.dto.service;
 
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,10 +10,10 @@ import lombok.Getter;
 public class RemoveIngrFromPantrySDto {
 
     private Long userId;
-    private Long ingredientId;
+    private List<Long> ingredientIds;
 
-    public static RemoveIngrFromPantrySDto of(Long userId ,Long ingredientId) {
-        return new RemoveIngrFromPantrySDto(userId,ingredientId);
+    public static RemoveIngrFromPantrySDto of(Long userId ,List<Long> ingredientIds) {
+        return new RemoveIngrFromPantrySDto(userId,ingredientIds);
     }
 
 }
