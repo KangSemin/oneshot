@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 import salute.oneshot.domain.cocktail.entity.CocktailIngredient;
 import salute.oneshot.domain.cocktail.entity.RecipeType;
 import salute.oneshot.domain.ingredient.dto.response.IngrResponseDto;
+import salute.oneshot.domain.user.dto.response.UserResponseDto;
 import salute.oneshot.domain.user.entity.User;
 
 @Getter
@@ -21,7 +22,7 @@ public class CocktailResponseDto {
     private String description;
     private String recipe;
     private RecipeType type;
-    private User user;
+    private UserResponseDto user;
 
     private List<IngrResponseDto> ingredientList;
     private Integer likeCount;
@@ -33,12 +34,14 @@ public class CocktailResponseDto {
 
     public static CocktailResponseDto from(Cocktail cocktail) {
 
-        List<IngrResponseDto> reponseList = cocktail.getIngredientList().stream()
+        List<IngrResponseDto> ingrReponseList = cocktail.getIngredientList().stream()
             .map(ingr -> IngrResponseDto.from(ingr.getIngredient())).toList();
 
+        UserResponseDto userResponse = UserResponseDto.from(cocktail.getUser());
+
         return new CocktailResponseDto(cocktail.getId(), cocktail.getName(),
-            cocktail.getDescription(), cocktail.getRecipe(), cocktail.getType(), cocktail.getUser(),
-            reponseList, cocktail.getLikeCounts(), cocktail.getStarRate(), cocktail.getCreatedAt(),
+            cocktail.getDescription(), cocktail.getRecipe(), cocktail.getType(), userResponse,
+            ingrReponseList, cocktail.getLikeCounts(), cocktail.getStarRate(), cocktail.getCreatedAt(),
             cocktail.getModifiedAt());
     }
 }

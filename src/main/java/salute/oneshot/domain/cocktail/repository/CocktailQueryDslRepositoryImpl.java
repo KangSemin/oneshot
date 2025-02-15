@@ -15,7 +15,6 @@ import salute.oneshot.domain.cocktail.entity.QCocktail;
 import salute.oneshot.domain.cocktail.entity.QCocktailIngredient;
 import salute.oneshot.domain.ingredient.entity.Ingredient;
 import salute.oneshot.domain.ingredient.entity.IngredientCategory;
-import salute.oneshot.domain.ingredient.entity.QIngredient;
 
 @Repository
 public class CocktailQueryDslRepositoryImpl implements CocktailQueryDslRepository {
