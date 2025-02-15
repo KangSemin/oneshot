@@ -112,12 +112,9 @@ public class CocktailService {
     public Page<CocktailResponseDto> getCocktails(findCocktailSDto sDto){
 
         RecipeType type = (sDto.getRecipeType() != null) ? RecipeType.valueOf(sDto.getRecipeType()) : null;
-
-
+        
         Page<Cocktail> cocktailPage = cocktailRepository.findCocktails(sDto.getPageable(), sDto.getKeyword(), type);
-        Page<CocktailResponseDto> responsePage = cocktailPage.map(CocktailResponseDto::from);
-
-        return responsePage;
+        return cocktailPage.map(CocktailResponseDto::from);
 
     }
 

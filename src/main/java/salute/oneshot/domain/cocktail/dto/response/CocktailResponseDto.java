@@ -7,11 +7,9 @@ import lombok.Getter;
 import salute.oneshot.domain.cocktail.entity.Cocktail;
 
 import java.time.LocalDateTime;
-import salute.oneshot.domain.cocktail.entity.CocktailIngredient;
 import salute.oneshot.domain.cocktail.entity.RecipeType;
 import salute.oneshot.domain.ingredient.dto.response.IngrResponseDto;
 import salute.oneshot.domain.user.dto.response.UserResponseDto;
-import salute.oneshot.domain.user.entity.User;
 
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
