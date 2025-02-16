@@ -11,10 +11,7 @@ import salute.oneshot.domain.cocktail.dto.request.CreateCocktailRequestDto;
 import salute.oneshot.domain.cocktail.dto.request.SearchCocktailByIngrsReqDto;
 import salute.oneshot.domain.cocktail.dto.request.UpdateCocktailRequestDto;
 import salute.oneshot.domain.cocktail.dto.response.CocktailResponseDto;
-import salute.oneshot.domain.cocktail.dto.service.CreateCocktailSDto;
-import salute.oneshot.domain.cocktail.dto.service.DeleteCocktailSDto;
-import salute.oneshot.domain.cocktail.dto.service.SearchCocktailSDto;
-import salute.oneshot.domain.cocktail.dto.service.UpdateCocktailSDto;
+import salute.oneshot.domain.cocktail.dto.service.*;
 import salute.oneshot.domain.cocktail.service.CocktailService;
 import salute.oneshot.domain.cocktail.service.RedisService;
 import salute.oneshot.domain.common.dto.success.ApiResponse;
@@ -95,7 +92,7 @@ public class CocktailController {
         return ResponseEntity.ok(ApiResponse.success(ApiResponseConst.DELETE_CCKTL_SUCCESS));
     }
 
-    @GetMapping
+    @GetMapping//조건별 검색
     public ResponseEntity<ApiResponse<Page<CocktailResponseDto>>> getCocktails(@RequestParam(name = "page", defaultValue = "1")int page,
                                                                                @RequestParam(name ="size", defaultValue = "10")int size,
                                                                                @RequestParam(name ="keyword", required = false) String keyword,
@@ -113,7 +110,7 @@ public class CocktailController {
 
 
 
-    @GetMapping("/popular")
+    @GetMapping("/popular")//인기 칵테일 조회
     public ResponseEntity<ApiResponse<Page<CocktailResponseDto>>> getPopularCocktails(@RequestParam(name = "page", defaultValue = "1") int page,
                                                                                         @RequestParam(name = "size", defaultValue = "10")int size)
     {

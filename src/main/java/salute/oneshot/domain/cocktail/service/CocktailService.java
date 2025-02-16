@@ -72,7 +72,7 @@ public class CocktailService {
 
         Pageable pageable = PageRequest.of(sDto.getPage()-1,sDto.getSize());
 
-        List<Ingredient> ingredientList = ingredientRepository.findAllById(sDto.getIngrientIds());
+        List<Ingredient> ingredientList = ingredientRepository.findAllById(sDto.getIngredientIds());
 
         Page<Cocktail> cocktailPage = cocktailRepository.searchCocktailsByIngredients(ingredientList,pageable);
 
