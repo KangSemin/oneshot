@@ -8,15 +8,15 @@ import lombok.Getter;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class ConfirmPaymentSDto {
 
-    private final String orderId;
-    private final Long amount;
-    private final String paymentKey;
+    private final Long userId;
+    private final Long paymentId;
+    private final String password;
 
-    public static ConfirmPaymentSDto of(String orderId, Long amount, String paymentKey) {
+    public static ConfirmPaymentSDto of(Long userId, Long paymentId, String password) {
         return new ConfirmPaymentSDto(
-                orderId,
-                amount,
-                paymentKey
+                userId,
+                paymentId,
+                password
         );
     }
 }

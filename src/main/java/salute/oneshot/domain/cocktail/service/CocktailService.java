@@ -1,6 +1,5 @@
 package salute.oneshot.domain.cocktail.service;
 
-import java.nio.file.AccessDeniedException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -13,14 +12,13 @@ import salute.oneshot.domain.cocktail.dto.service.CreateCocktailSDto;
 import salute.oneshot.domain.cocktail.dto.service.DeleteCocktailSDto;
 import salute.oneshot.domain.cocktail.dto.service.SearchCocktailSDto;
 import salute.oneshot.domain.cocktail.dto.service.UpdateCocktailSDto;
+import salute.oneshot.domain.cocktail.dto.service.findCocktailSDto;
 import salute.oneshot.domain.cocktail.entity.Cocktail;
 import salute.oneshot.domain.cocktail.entity.CocktailIngredient;
 import salute.oneshot.domain.cocktail.entity.RecipeType;
 import salute.oneshot.domain.cocktail.repository.CocktailIngredientRepository;
-import salute.oneshot.domain.cocktail.repository.CocktailQueryDslRepository;
 import salute.oneshot.domain.cocktail.repository.CocktailRepository;
 import salute.oneshot.domain.common.dto.error.ErrorCode;
-import salute.oneshot.domain.common.dto.success.ApiResponse;
 import salute.oneshot.domain.ingredient.entity.Ingredient;
 import salute.oneshot.domain.ingredient.repository.IngredientRepository;
 import salute.oneshot.domain.user.entity.User;
@@ -56,7 +54,6 @@ public class CocktailService {
 
         cocktailIngredientRepository.saveAll(ingredientList);
 
-
     }
 
     @Transactional(readOnly = true)
@@ -64,7 +61,7 @@ public class CocktailService {
 
         Pageable pageable = PageRequest.of(sDto.getPage()-1,sDto.getSize());
 
-        List<Ingredient> ingredientList = ingredientRepository.findAllById(sDto.getIngrientIds());
+        List<Ingredient> ingredientList = ingredientRepository.findAllById(sDto.getIngredientIds());
 
         Page<Cocktail> cocktailPage = cocktailRepository.searchCocktailsByIngredients(ingredientList,pageable);
 
@@ -106,6 +103,15 @@ public class CocktailService {
         cocktail.update(sDto.getName(),sDto.getDescription(),sDto.getRecipe(),ingredientList);
 
         return CocktailResponseDto.from(cocktail);
+    }
+
+    public Page<CocktailResponseDto> getCocktails(findCocktailSDto sDto){
+
+        RecipeType type = (sDto.getRecipeType() != null) ? RecipeType.valueOf(sDto.getRecipeType()) : null;
+
+        Page<Cocktail> cocktailPage = cocktailRepository.findCocktails(sDto.getPageable(), sDto.getKeyword(), type);
+        return cocktailPage.map(CocktailResponseDto::from);
+
     }
 
     private Cocktail findById(Long cocktailId) {
