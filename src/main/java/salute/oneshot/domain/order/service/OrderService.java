@@ -9,8 +9,11 @@ import salute.oneshot.domain.cart.entity.Cart;
 import salute.oneshot.domain.cart.entity.CartItem;
 import salute.oneshot.domain.cart.repository.CartRepository;
 import salute.oneshot.domain.common.dto.error.ErrorCode;
+import salute.oneshot.domain.order.dto.response.GetOrderResponseDto;
+import salute.oneshot.domain.order.dto.response.OrderItemListResponseDto;
 import salute.oneshot.domain.order.dto.response.OrderResponseDto;
 import salute.oneshot.domain.order.dto.service.CreateOrderSDto;
+import salute.oneshot.domain.order.dto.service.GetOrderSDto;
 import salute.oneshot.domain.order.entity.Order;
 import salute.oneshot.domain.order.entity.OrderItem;
 import salute.oneshot.domain.order.repository.OrderRepository;
@@ -20,6 +23,7 @@ import salute.oneshot.global.exception.NotFoundException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -58,7 +62,10 @@ public class OrderService {
 
         // 주문 생성
         Order order = Order.of(orderName, orderAmount, cart.getUser(), cart, address, orderItems);
-        orderItems.get(0).setOrder(order);
+
+        for (OrderItem orderItem : orderItems) {
+            orderItem.setOrder(order);
+        }
 
         // 주문 저장
         orderRepository.save(order);
@@ -68,6 +75,25 @@ public class OrderService {
 
         return OrderResponseDto.from(order);
     }
+
+    @Transactional
+    public GetOrderResponseDto getOrder(GetOrderSDto sDto) {
+
+        Order order = orderRepository.findById(sDto.getOrderId())
+                .orElseThrow(() -> new NotFoundException(ErrorCode.ORDER_NOT_FOUND));
+
+        if(!order.getUser().getId().equals(sDto.getUserId())) {
+            throw new ForbiddenException(ErrorCode.ORDER_GET_FORBIDDEN);
+        }
+
+        order.getCart();
+
+        List<OrderItemListResponseDto> responseDtoList = order.getOrderItems().stream()
+                .map(OrderItemListResponseDto::from).collect(Collectors.toList());
+
+        return GetOrderResponseDto.from(order, responseDtoList);
+    }
+
 
     private String generateOrderName(Cart cart) {
 
