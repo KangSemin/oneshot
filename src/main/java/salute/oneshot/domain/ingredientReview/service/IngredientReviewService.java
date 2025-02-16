@@ -11,7 +11,6 @@ import salute.oneshot.domain.ingredientReview.dto.response.IngrReviewResponseDto
 import salute.oneshot.domain.ingredientReview.dto.service.CreateIngrReviewSDto;
 import salute.oneshot.domain.ingredientReview.dto.service.GetAllIngrReviewSDto;
 import salute.oneshot.domain.ingredientReview.dto.service.GetMyIngredientReviewSDto;
-import salute.oneshot.domain.ingredientReview.dto.service.GetMyIngredientReviewSDto;
 import salute.oneshot.domain.ingredientReview.entity.IngredientReview;
 import salute.oneshot.domain.ingredientReview.repository.IngredientReviewRepository;
 import salute.oneshot.domain.user.entity.User;
@@ -38,6 +37,15 @@ public class IngredientReviewService {
 
         return IngrReviewResponseDto.from(ingredientReview);
     }
+
+    public IngrReviewResponseDto getIngredientReview(Long reviewsId) {
+
+        IngredientReview ingredientReview = ingredientReviewRepository.findById(reviewsId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.REVIEW_NOT_FOUND));
+
+        return IngrReviewResponseDto.from(ingredientReview);
+    }
+
 
     public Page<IngrReviewResponseDto> getMyIngredientReview(GetMyIngredientReviewSDto sDto) {
 
