@@ -86,8 +86,6 @@ public class OrderService {
             throw new ForbiddenException(ErrorCode.ORDER_GET_FORBIDDEN);
         }
 
-        order.getCart();
-
         List<OrderItemListResponseDto> responseDtoList = order.getOrderItems().stream()
                 .map(OrderItemListResponseDto::from).collect(Collectors.toList());
 
