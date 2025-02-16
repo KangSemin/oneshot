@@ -57,15 +57,14 @@ public class ProductService {
 
         User user = getUserById(sDto.getUserId());
 
-        if(user.getUserRole() != UserRole.ADMIN) {
-            throw new UnauthorizedException(ErrorCode.FORBIDDEN_ACCESS);
-        }
+        verifyAdmin(user);
 
         Product product = productRepository.findById(sDto.getProductId())
                 .orElseThrow(() -> new NotFoundException(ErrorCode.PRODUCT_NOT_FOUND));
 
         product.deleteProduct();
     }
+
 
     private User getUserById(Long userId) {
         return userRepository.findByIdAndIsDeletedIsFalse(userId)
