@@ -7,13 +7,14 @@ import salute.oneshot.domain.common.dto.error.ErrorCode;
 import salute.oneshot.domain.order.entity.Order;
 import salute.oneshot.domain.order.entity.OrderStatus;
 import salute.oneshot.domain.order.repository.OrderRepository;
+import salute.oneshot.domain.shipping.dto.response.AdminShippingResponseDto;
 import salute.oneshot.domain.shipping.dto.response.CreateShippingResponseDto;
+import salute.oneshot.domain.shipping.dto.response.UserShippingResponseDto;
+import salute.oneshot.domain.shipping.dto.service.GetShippingSDto;
 import salute.oneshot.domain.shipping.dto.service.ShippingSDto;
 import salute.oneshot.domain.shipping.entity.Shipping;
 import salute.oneshot.domain.shipping.repository.ShippingRepository;
-import salute.oneshot.global.exception.ConflictException;
-import salute.oneshot.global.exception.InvalidException;
-import salute.oneshot.global.exception.NotFoundException;
+import salute.oneshot.global.exception.*;
 
 @Service
 @RequiredArgsConstructor
@@ -47,5 +48,25 @@ public class ShippingService {
         shippingRepository.save(shipping);
 
         return CreateShippingResponseDto.from(shipping);
+    }
+
+    @Transactional(readOnly = true)
+    public AdminShippingResponseDto getShipping(Long shippingId) {
+        Shipping shipping = shippingRepository.findById(shippingId)
+                        .orElseThrow(() -> new NotFoundException(ErrorCode.SHIPPING_NOT_FOUND));
+
+        return AdminShippingResponseDto.from(shipping);
+    }
+
+    @Transactional(readOnly = true)
+    public UserShippingResponseDto getShippingByOrderId(Long orderId, Long userId) {
+        Shipping shipping = shippingRepository.findByOrderId(orderId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.SHIPPING_NOT_FOUND));
+
+        if (!shipping.getOrder().getUser().getId().equals(userId)) {
+            throw new ForbiddenException(ErrorCode.FORBIDDEN_ACCESS);
+        }
+
+        return UserShippingResponseDto.from(shipping);
     }
 }
