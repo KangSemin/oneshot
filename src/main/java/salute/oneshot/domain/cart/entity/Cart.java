@@ -40,4 +40,8 @@ public class Cart extends BaseEntity {
     private Cart(User user) {
         this.user = user;
     }
+
+    public void setIsOrdered() {
+        this.isOrdered = true;
+    }
 }
