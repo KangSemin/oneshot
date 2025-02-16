@@ -2,6 +2,8 @@ package salute.oneshot.domain.cocktail.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +16,7 @@ import salute.oneshot.domain.cocktail.dto.service.DeleteCocktailSDto;
 import salute.oneshot.domain.cocktail.dto.service.SearchCocktailSDto;
 import salute.oneshot.domain.cocktail.dto.service.UpdateCocktailSDto;
 import salute.oneshot.domain.cocktail.service.CocktailService;
+import salute.oneshot.domain.cocktail.service.RedisService;
 import salute.oneshot.domain.common.dto.success.ApiResponse;
 import salute.oneshot.domain.common.dto.success.ApiResponseConst;
 import salute.oneshot.global.security.entity.CustomUserDetails;
@@ -24,6 +27,7 @@ import salute.oneshot.global.security.entity.CustomUserDetails;
 public class CocktailController {
 
     private final CocktailService cocktailService;
+    private final RedisService redisService;
 
     @PostMapping
     public ResponseEntity<ApiResponse<CocktailResponseDto>> createCocktail(
@@ -46,6 +50,7 @@ public class CocktailController {
     public ResponseEntity<ApiResponse<CocktailResponseDto>> getCocktail(
         @PathVariable Long cocktailId) {
 
+        redisService.increaseViewScore(cocktailId);
         CocktailResponseDto response = cocktailService.getCocktail(cocktailId);
 
         return ResponseEntity.ok(
@@ -89,4 +94,17 @@ public class CocktailController {
 
         return ResponseEntity.ok(ApiResponse.success(ApiResponseConst.DELETE_CCKTL_SUCCESS));
     }
+
+    @GetMapping("/popular")
+    public ResponseEntity<ApiResponse<Page<CocktailResponseDto>>> getPopularCocktails(@RequestParam(name = "page", defaultValue = "1") int page,
+                                                                                        @RequestParam(name = "size", defaultValue = "10")int size)
+    {
+        Pageable pageable = PageRequest.of(page - 1, size);
+
+       Page<CocktailResponseDto> responseDtoPage = cocktailService.getPopularCocktails(pageable);
+
+       return ResponseEntity.ok(ApiResponse.success(ApiResponseConst.GET_CCKTL_LIST_SUCCESS, responseDtoPage));
+    }
+
+
 }

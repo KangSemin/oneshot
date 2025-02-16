@@ -4,8 +4,10 @@ import lombok.Getter;
 import salute.oneshot.domain.ingredient.entity.Ingredient;
 import salute.oneshot.domain.ingredient.entity.IngredientCategory;
 
+import java.io.Serializable;
+
 @Getter
-public class IngrResponseDto {
+public class IngrResponseDto implements Serializable {
 
     private final Long id;
     private final String name;

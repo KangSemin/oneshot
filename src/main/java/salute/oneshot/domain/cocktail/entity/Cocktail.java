@@ -52,6 +52,9 @@ public class Cocktail extends BaseEntity {
     @ColumnDefault("0")
     private Double starRate = 0.0;
 
+    @ColumnDefault("0")
+    private Integer viewCount = 0;
+
 
     private Cocktail(String name, String description, String recipe, RecipeType type,
         User user, List<CocktailIngredient> ingredientList) {
@@ -74,5 +77,8 @@ public class Cocktail extends BaseEntity {
         this.description = description;
         this.recipe = recipe;
         this.ingredientList = ingredientList;
+    }
+    public void incrementCount() {
+        this.viewCount++;
     }
 }
