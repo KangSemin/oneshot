@@ -7,6 +7,7 @@ import salute.oneshot.domain.common.dto.error.ErrorCode;
 import salute.oneshot.domain.product.dto.response.ProductResponseDto;
 import salute.oneshot.domain.product.dto.service.CreateProductSDto;
 import salute.oneshot.domain.product.dto.service.UpdateProductRequestSDto;
+import salute.oneshot.domain.product.dto.service.DeleteProductSDto;
 import salute.oneshot.domain.product.entity.Product;
 import salute.oneshot.domain.product.repository.ProductRepository;
 import salute.oneshot.domain.user.entity.User;
@@ -50,6 +51,20 @@ public class ProductService {
 
         return ProductResponseDto.from(product);
     }
+
+    @Transactional
+    public void deleteProduct(DeleteProductSDto sDto) {
+
+        User user = getUserById(sDto.getUserId());
+
+        verifyAdmin(user);
+
+        Product product = productRepository.findById(sDto.getProductId())
+                .orElseThrow(() -> new NotFoundException(ErrorCode.PRODUCT_NOT_FOUND));
+
+        product.deleteProduct();
+    }
+
 
     private User getUserById(Long userId) {
         return userRepository.findByIdAndIsDeletedIsFalse(userId)

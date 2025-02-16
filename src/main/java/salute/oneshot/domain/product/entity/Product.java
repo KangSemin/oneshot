@@ -43,7 +43,7 @@ public class Product {
     }
 
     public static Product of(String name, String description, int price, int stockQuantity, ProductCategory category, ProductStatus status, User user) {
-        return new Product(name, description, price, stockQuantity, category, status,user);
+        return new Product(name, description, price, stockQuantity, category, status, user);
     }
 
     public void updateProduct(String name, String description, int price, int stockQuantity, ProductCategory category, ProductStatus status) {
@@ -53,5 +53,9 @@ public class Product {
         this.stockQuantity = stockQuantity;
         this.category = category;
         this.status = status;
+    }
+
+    public void deleteProduct() {
+        this.status = ProductStatus.DELETED;
     }
 }

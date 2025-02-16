@@ -13,6 +13,7 @@ import salute.oneshot.domain.product.dto.request.UpdateProductRequestDto;
 import salute.oneshot.domain.product.dto.response.ProductResponseDto;
 import salute.oneshot.domain.product.dto.service.CreateProductSDto;
 import salute.oneshot.domain.product.dto.service.UpdateProductRequestSDto;
+import salute.oneshot.domain.product.dto.service.DeleteProductSDto;
 import salute.oneshot.domain.product.service.ProductService;
 import salute.oneshot.global.security.entity.CustomUserDetails;
 
@@ -56,4 +57,17 @@ public class ProductController {
         return ResponseEntity.ok(ApiResponse.success(ApiResponseConst.UPDATE_PRDT_SUCCESS, responseDto));
     }
 
+    @DeleteMapping("/{productId}")
+    public ResponseEntity<ApiResponse<Void>> deleteProduct(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable("productId") Long productId) {
+
+        Long userId = userDetails.getId();
+
+        DeleteProductSDto sDto = DeleteProductSDto.of(userId, productId);
+
+        productService.deleteProduct(sDto);
+
+        return ResponseEntity.ok(ApiResponse.success(ApiResponseConst.DELETE_PRDT_SUCCESS));
+    }
 }
