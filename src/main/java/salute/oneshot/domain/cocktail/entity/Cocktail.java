@@ -1,5 +1,6 @@
 package salute.oneshot.domain.cocktail.entity;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -43,7 +44,7 @@ public class Cocktail extends BaseEntity {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToMany(mappedBy = "cocktail")
+    @OneToMany(mappedBy = "cocktail",cascade = CascadeType.REMOVE)
     private List<CocktailIngredient> ingredientList;
 
     private Integer likeCounts;
