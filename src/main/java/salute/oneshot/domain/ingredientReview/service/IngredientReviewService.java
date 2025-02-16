@@ -9,6 +9,7 @@ import salute.oneshot.domain.ingredient.entity.Ingredient;
 import salute.oneshot.domain.ingredient.repository.IngredientRepository;
 import salute.oneshot.domain.ingredientReview.dto.response.IngrReviewResponseDto;
 import salute.oneshot.domain.ingredientReview.dto.service.CreateIngrReviewSDto;
+import salute.oneshot.domain.ingredientReview.dto.service.GetAllIngrReviewSDto;
 import salute.oneshot.domain.ingredientReview.dto.service.GetMyIngredientReviewSDto;
 import salute.oneshot.domain.ingredientReview.entity.IngredientReview;
 import salute.oneshot.domain.ingredientReview.repository.IngredientReviewRepository;
@@ -41,6 +42,16 @@ public class IngredientReviewService {
 
         Page<IngredientReview> ingredientReviewPage = ingredientReviewRepository
                 .findAllByUser_Id(sDto.getUserId(), sDto.getPageable());
+
+        Page<IngrReviewResponseDto> responseDtoPage = ingredientReviewPage.map(IngrReviewResponseDto::from);
+
+        return responseDtoPage;
+    }
+
+    public Page<IngrReviewResponseDto> getAllIngredientReview(GetAllIngrReviewSDto sDto) {
+
+        Page<IngredientReview> ingredientReviewPage = ingredientReviewRepository
+                .findAllByIngredient_Id(sDto.getIngredientId(), sDto.getPageable());
 
         Page<IngrReviewResponseDto> responseDtoPage = ingredientReviewPage.map(IngrReviewResponseDto::from);
 

@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import salute.oneshot.domain.common.dto.error.ErrorCode;
 import salute.oneshot.domain.product.dto.response.ProductResponseDto;
 import salute.oneshot.domain.product.dto.service.CreateProductSDto;
+import salute.oneshot.domain.product.dto.service.UpdateProductRequestSDto;
 import salute.oneshot.domain.product.dto.service.DeleteProductSDto;
 import salute.oneshot.domain.product.entity.Product;
 import salute.oneshot.domain.product.repository.ProductRepository;
@@ -27,12 +28,26 @@ public class ProductService {
 
         User user = getUserById(sDto.getUserId());
 
-        if (user.getUserRole() != UserRole.ADMIN) {
-            throw new UnauthorizedException(ErrorCode.FORBIDDEN_ACCESS);
-        }
+        verifyAdmin(user);
 
         Product product = productRepository.save(Product.of(sDto.getName(), sDto.getDescription(), sDto.getPrice(),
                 sDto.getStockQuantity(), sDto.getCategory(), sDto.getStatus(), user));
+
+        return ProductResponseDto.from(product);
+    }
+
+    @Transactional
+    public ProductResponseDto updateProduct(UpdateProductRequestSDto sDto) {
+
+        User user = getUserById(sDto.getUserId());
+
+        verifyAdmin(user);
+
+        Product product = productRepository.findById(sDto.getProductId())
+                .orElseThrow(() -> new NotFoundException(ErrorCode.PRODUCT_NOT_FOUND));
+
+        product.updateProduct(sDto.getName(),sDto.getDescription(),sDto.getPrice(),
+                sDto.getStockQuantity(),sDto.getCategory(),sDto.getStatus());
 
         return ProductResponseDto.from(product);
     }
@@ -57,4 +72,9 @@ public class ProductService {
                 .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
     }
 
+    private void verifyAdmin(User user) {
+        if (user.getUserRole() != UserRole.ADMIN) {
+            throw new UnauthorizedException(ErrorCode.FORBIDDEN_ACCESS);
+        }
+    }
 }

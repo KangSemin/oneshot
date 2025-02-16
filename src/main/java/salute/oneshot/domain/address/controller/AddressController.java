@@ -9,7 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import salute.oneshot.domain.address.dto.request.AddressRequestDto;
+import salute.oneshot.domain.address.dto.request.CreateAddressRequestDto;
+import salute.oneshot.domain.address.dto.request.UpdateAddressRequestDto;
 import salute.oneshot.domain.address.dto.response.AddressPageResponseDto;
 import salute.oneshot.domain.address.dto.response.AddressResponseDto;
 import salute.oneshot.domain.address.dto.service.CreateAddressSdto;
@@ -31,7 +32,7 @@ public class AddressController {
     @PostMapping
     public ResponseEntity<ApiResponse<AddressResponseDto>> createAddress(
             @AuthenticationPrincipal CustomUserDetails userDetails,
-            @Valid @RequestBody AddressRequestDto requestDto
+            @Valid @RequestBody CreateAddressRequestDto requestDto
     ) {
         CreateAddressSdto serviceDto = CreateAddressSdto.of(
                 requestDto.getAddressName(),
@@ -90,7 +91,7 @@ public class AddressController {
     @PatchMapping("/{addressId}")
     public ResponseEntity<ApiResponse<AddressResponseDto>> updateAddress(
             @AuthenticationPrincipal CustomUserDetails userDetails,
-            @Valid @RequestBody AddressRequestDto requestDto,
+            @Valid @RequestBody UpdateAddressRequestDto requestDto,
             @PathVariable Long addressId
     ) {
         UpdateAddressSDto serviceDto = UpdateAddressSDto.of(
@@ -99,6 +100,7 @@ public class AddressController {
                 requestDto.getPostAddress(),
                 requestDto.getDetailAddress(),
                 requestDto.getExtraAddress(),
+                requestDto.isDefault(),
                 userDetails.getId(),
                 addressId
         );
