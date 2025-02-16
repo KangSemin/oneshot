@@ -12,9 +12,12 @@ import org.springframework.web.bind.annotation.*;
 import salute.oneshot.domain.common.dto.success.ApiResponse;
 import salute.oneshot.domain.common.dto.success.ApiResponseConst;
 import salute.oneshot.domain.product.dto.request.CreateProductRequestDto;
+import salute.oneshot.domain.product.dto.request.UpdateProductRequestDto;
 import salute.oneshot.domain.product.dto.response.ProductResponseDto;
 import salute.oneshot.domain.product.dto.service.CreateProductSDto;
 import salute.oneshot.domain.product.dto.service.GetAllProductSDto;
+import salute.oneshot.domain.product.dto.service.UpdateProductRequestSDto;
+import salute.oneshot.domain.product.dto.service.DeleteProductSDto;
 import salute.oneshot.domain.product.service.ProductService;
 import salute.oneshot.global.security.entity.CustomUserDetails;
 
@@ -41,6 +44,23 @@ public class ProductController {
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(ApiResponseConst.ADD_PRDT_SUCCESS, responseDto));
     }
 
+    @PatchMapping("/{productId}")
+    public ResponseEntity<ApiResponse<ProductResponseDto>> updateProduct(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @Valid @RequestBody UpdateProductRequestDto requestDto,
+            @PathVariable("productId") Long productId) {
+
+        Long userId = userDetails.getId();
+
+        UpdateProductRequestSDto sDto = UpdateProductRequestSDto
+                .of(userId, requestDto.getName(), requestDto.getDescription(), requestDto.getCategory(),
+                        requestDto.getPrice(), requestDto.getStockQuantity(), requestDto.getStatus(), productId);
+
+        ProductResponseDto responseDto = productService.updateProduct(sDto);
+
+        return ResponseEntity.ok(ApiResponse.success(ApiResponseConst.UPDATE_PRDT_SUCCESS, responseDto));
+    }
+
     @GetMapping
     public ResponseEntity<ApiResponse<Page<ProductResponseDto>>> getAllProduct(
             @RequestParam(value = "category", required = false) String category,
@@ -65,4 +85,17 @@ public class ProductController {
         return ResponseEntity.ok(ApiResponse.success(ApiResponseConst.GET_PRDT_SUCCESS,responseDto));
     }
 
+    @DeleteMapping("/{productId}")
+    public ResponseEntity<ApiResponse<Void>> deleteProduct(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable("productId") Long productId) {
+
+        Long userId = userDetails.getId();
+
+        DeleteProductSDto sDto = DeleteProductSDto.of(userId, productId);
+
+        productService.deleteProduct(sDto);
+
+        return ResponseEntity.ok(ApiResponse.success(ApiResponseConst.DELETE_PRDT_SUCCESS));
+    }
 }

@@ -2,12 +2,15 @@ package salute.oneshot.domain.ingredientReview.service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import salute.oneshot.domain.common.dto.error.ErrorCode;
 import salute.oneshot.domain.ingredient.entity.Ingredient;
 import salute.oneshot.domain.ingredient.repository.IngredientRepository;
 import salute.oneshot.domain.ingredientReview.dto.response.IngrReviewResponseDto;
 import salute.oneshot.domain.ingredientReview.dto.service.CreateIngrReviewSDto;
+import salute.oneshot.domain.ingredientReview.dto.service.GetAllIngrReviewSDto;
+import salute.oneshot.domain.ingredientReview.dto.service.GetMyIngredientReviewSDto;
 import salute.oneshot.domain.ingredientReview.entity.IngredientReview;
 import salute.oneshot.domain.ingredientReview.repository.IngredientReviewRepository;
 import salute.oneshot.domain.user.entity.User;
@@ -33,5 +36,25 @@ public class IngredientReviewService {
         IngredientReview ingredientReview = ingredientReviewRepository.save(IngredientReview.of(sDto.getStar(), sDto.getContent(), user, ingredient));
 
         return IngrReviewResponseDto.from(ingredientReview);
+    }
+
+    public Page<IngrReviewResponseDto> getMyIngredientReview(GetMyIngredientReviewSDto sDto) {
+
+        Page<IngredientReview> ingredientReviewPage = ingredientReviewRepository
+                .findAllByUser_Id(sDto.getUserId(), sDto.getPageable());
+
+        Page<IngrReviewResponseDto> responseDtoPage = ingredientReviewPage.map(IngrReviewResponseDto::from);
+
+        return responseDtoPage;
+    }
+
+    public Page<IngrReviewResponseDto> getAllIngredientReview(GetAllIngrReviewSDto sDto) {
+
+        Page<IngredientReview> ingredientReviewPage = ingredientReviewRepository
+                .findAllByIngredient_Id(sDto.getIngredientId(), sDto.getPageable());
+
+        Page<IngrReviewResponseDto> responseDtoPage = ingredientReviewPage.map(IngrReviewResponseDto::from);
+
+        return responseDtoPage;
     }
 }

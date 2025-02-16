@@ -30,6 +30,8 @@ public class PaymentService {
         Order foundOrder = orderRepository.findById(orderId).orElseThrow(() -> new NotFoundException(ErrorCode.ORDER_NOT_FOUND));
         isOrderStatusPendingPayment(foundOrder);
 
+        // 다른 대기 중인 경제가 있을 경우 처리
+
         Payment newPayment = Payment.from(foundOrder);
         paymentRepository.save(newPayment);
 

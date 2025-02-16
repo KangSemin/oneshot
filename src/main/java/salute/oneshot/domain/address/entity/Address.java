@@ -6,10 +6,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 import salute.oneshot.domain.common.dto.entity.BaseEntity;
-import salute.oneshot.domain.user.entity.User;
 
 @Entity
-@Table(name = "address")
+@Table(name = "address", indexes = {
+        @Index(name = "idx_user_id", columnList = "user_id"),
+        @Index(name = "idx_user_id_is_default", columnList = "user_id, is_default")
+})
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Address extends BaseEntity {
@@ -56,6 +58,24 @@ public class Address extends BaseEntity {
         this.userId = userId;
     }
 
+    public void updateAddress(
+            String addressName,
+            String postcode,
+            String postAddress,
+            String detailAddress,
+            String extraAddress,
+            Long userId,
+            boolean isDefault
+    ) {
+        this.addressName = addressName;
+        this.postcode = postcode;
+        this.postAddress = postAddress;
+        this.detailAddress = detailAddress;
+        this.extraAddress = extraAddress;
+        this.userId = userId;
+        this.isDefault = isDefault;
+    }
+
     public static Address of(
             String addressName,
             String postcode,
@@ -76,5 +96,9 @@ public class Address extends BaseEntity {
 
     public void setDefault() {
         this.isDefault = true;
+    }
+
+    public void unsetDefault() {
+        this.isDefault = false;
     }
 }

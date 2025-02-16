@@ -57,9 +57,10 @@ public enum ErrorCode {
 
     // 주소 관련 익셉션
     ADR_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 주소가 존재하지 않습니다."),
+    DUPLICATE_ADR_DEFAULT(HttpStatus.CREATED, "이미 기본값으로 설정된 주소입니다."),
 
     // 인가 관련 익셉션
-    FORBIDDEN_ACCESS(HttpStatus.UNAUTHORIZED, "접근 권한이 없습니다." ),
+    FORBIDDEN_ACCESS(HttpStatus.UNAUTHORIZED, "접근 권한이 없습니다."),
 
     // 인증 관련 익셉션
     UNAUTHORIZED_ACCESS(HttpStatus.UNAUTHORIZED, "로그인이 필요합니다."),
