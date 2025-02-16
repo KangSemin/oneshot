@@ -91,4 +91,7 @@ public class ApiResponseConst {
     public static final String GET_ORD_SUCCESS = "주문 조회가 완료되었습니다.";
     public static final String UPDATE_ORD_SUCCESS = "주문 상태가 변경되었습니다.";
     public static final String DELETE_ORD_SUCCESS = "주문이 취소되었습니다.";
+
+    // 배송 관련 메시지
+    public static final String ADD_SHIPPING_SUCCESS = "배송 정보 등록이 완료되었습니다.";
 }
