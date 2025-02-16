@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import salute.oneshot.domain.address.repository.AddressRepository;
 import salute.oneshot.domain.common.dto.error.ErrorCode;
 import salute.oneshot.domain.user.dto.response.UserResponseDto;
 import salute.oneshot.domain.user.dto.service.UpdateUserSDto;
@@ -17,7 +16,6 @@ import salute.oneshot.global.exception.NotFoundException;
 public class UserService {
 
     private final UserRepository userRepository;
-    private final AddressRepository addressRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Transactional(readOnly = true)
@@ -41,12 +39,8 @@ public class UserService {
     @Transactional
     public UserResponseDto deleteUser(Long userId) {
         User user = getUserById(userId);
-
-        addressRepository.deleteAllByUserId(userId);
-
         user.softDelete();
         user.logout();
-
 
         return UserResponseDto.from(user);
     }

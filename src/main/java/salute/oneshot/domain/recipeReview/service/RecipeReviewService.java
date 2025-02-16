@@ -8,7 +8,9 @@ import salute.oneshot.domain.cocktail.entity.Cocktail;
 import salute.oneshot.domain.cocktail.repository.CocktailRepository;
 import salute.oneshot.domain.common.dto.error.ErrorCode;
 import salute.oneshot.domain.recipeReview.dto.response.RecipeReviewResponseDto;
-import salute.oneshot.domain.recipeReview.dto.service.*;
+import salute.oneshot.domain.recipeReview.dto.service.CreateRecipeReviewSDto;
+import salute.oneshot.domain.recipeReview.dto.service.DeleteRecipeReviewSDto;
+import salute.oneshot.domain.recipeReview.dto.service.GetAllRecipeReviewSDto;
 import salute.oneshot.domain.recipeReview.entity.RecipeReview;
 import salute.oneshot.domain.recipeReview.repository.RecipeReviewRepository;
 import salute.oneshot.domain.user.entity.User;
@@ -37,15 +39,6 @@ public class RecipeReviewService {
         return RecipeReviewResponseDto.from(recipeReview);
     }
 
-    public Page<RecipeReviewResponseDto> getMyRecipeReview(GetMyRecipeReviewSDto sDto) {
-
-        Page<RecipeReview> recipeReviewPage = recipeReviewRepository.findAllByUser_Id(sDto.getUserId(), sDto.getPageable());
-
-        Page<RecipeReviewResponseDto> responseDtoPage = recipeReviewPage.map(RecipeReviewResponseDto::from);
-
-        return responseDtoPage;
-    }
-
     public RecipeReviewResponseDto getRecipeReview(Long reviewId) {
 
         RecipeReview recipeReview = recipeReviewRepository.findById(reviewId)
@@ -66,21 +59,6 @@ public class RecipeReviewService {
         return responseDtoPage;
     }
 
-    @Transactional
-    public RecipeReviewResponseDto updateRecipeReview(UpdateRecipeReviewSDto sDto) {
-
-        RecipeReview recipeReview = recipeReviewRepository.findById(sDto.getReviewId())
-                .orElseThrow(() -> new NotFoundException(ErrorCode.REVIEW_NOT_FOUND));
-
-        if(!recipeReview.getUser().getId().equals(sDto.getUserId())) {
-            throw new CustomRuntimeException(ErrorCode.REVIEW_UPDATE_FORBIDDEN);
-        }
-
-        recipeReview.updateRecipeReview(sDto.getStar(),sDto.getContent());
-
-        return RecipeReviewResponseDto.from(recipeReview);
-    }
-
     public void deleteRecipeReview(DeleteRecipeReviewSDto sDto) {
 
         RecipeReview recipeReview = recipeReviewRepository.findById(sDto.getReviewId())
@@ -92,5 +70,4 @@ public class RecipeReviewService {
 
         recipeReviewRepository.delete(recipeReview);
     }
-
 }

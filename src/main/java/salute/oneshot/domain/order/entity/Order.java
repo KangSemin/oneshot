@@ -17,7 +17,6 @@ public class Order {
 
     private String name; // "토스 티셔츠 외 2건"
     private Long amount; // 15000 (원으로 고정)
-    private OrderStatus status;
 
     // TODO:Cart로 유저에 접근 가능한데 유저와의 연관관계가 필요한지
     @ManyToOne(fetch = FetchType.LAZY)
@@ -27,8 +26,4 @@ public class Order {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cart_id")
     private Cart cart;
-
-    public void updateStatus(OrderStatus status) {
-        this.status = status;
-    }
 }

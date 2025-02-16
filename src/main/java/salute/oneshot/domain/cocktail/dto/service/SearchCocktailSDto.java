@@ -9,12 +9,12 @@ import lombok.Getter;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class SearchCocktailSDto {
 
-    private final List<Long> ingredientIds;
+    private final List<Long> ingrientIds;
     private final int page;
     private final int size;
 
-    public static SearchCocktailSDto of(List<Long> ingredientIds, int page, int size) {
-        return new SearchCocktailSDto(ingredientIds, page, size);
+    public static SearchCocktailSDto of(List<Long> ingrientIds, int page, int size) {
+        return new SearchCocktailSDto(ingrientIds, page, size);
     }
 
 }

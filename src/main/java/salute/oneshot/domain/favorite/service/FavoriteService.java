@@ -67,7 +67,7 @@ public class FavoriteService {
         Page<FavoriteResponseDto> favoritePage = favorites.map(favorite ->
                 FavoriteResponseDto.from(favorite.getCocktail(), favorite));
 
-        return FavoritePageResponseDto.from(favoritePage);
+        return FavoritePageResponseDto.of(favoritePage);
     }
 
     @Transactional

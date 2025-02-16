@@ -2,8 +2,6 @@ package salute.oneshot.domain.cocktail.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -15,7 +13,6 @@ import salute.oneshot.domain.cocktail.dto.service.CreateCocktailSDto;
 import salute.oneshot.domain.cocktail.dto.service.DeleteCocktailSDto;
 import salute.oneshot.domain.cocktail.dto.service.SearchCocktailSDto;
 import salute.oneshot.domain.cocktail.dto.service.UpdateCocktailSDto;
-import salute.oneshot.domain.cocktail.dto.service.findCocktailSDto;
 import salute.oneshot.domain.cocktail.service.CocktailService;
 import salute.oneshot.domain.common.dto.success.ApiResponse;
 import salute.oneshot.domain.common.dto.success.ApiResponseConst;
@@ -42,6 +39,7 @@ public class CocktailController {
 
         return ResponseEntity.ok(ApiResponse.success(ApiResponseConst.ADD_RCP_SUCCESS));
     }
+
 
 
     @GetMapping("/{cocktailId}")
@@ -91,22 +89,4 @@ public class CocktailController {
 
         return ResponseEntity.ok(ApiResponse.success(ApiResponseConst.DELETE_CCKTL_SUCCESS));
     }
-
-    @GetMapping
-    public ResponseEntity<ApiResponse<Page<CocktailResponseDto>>> getCocktails(@RequestParam(name = "page", defaultValue = "1")int page,
-                                                                               @RequestParam(name ="size", defaultValue = "10")int size,
-                                                                               @RequestParam(name ="keyword", required = false) String keyword,
-                                                                               @RequestParam(name = "recipeType", required = false) String recipeType
-    ){
-        Pageable pageable = PageRequest.of(page - 1, size);
-
-        findCocktailSDto sDto = findCocktailSDto.of(pageable, keyword, recipeType);
-
-        Page<CocktailResponseDto> responsePage = cocktailService.getCocktails(sDto);
-
-        return ResponseEntity.ok(ApiResponse.success(ApiResponseConst.GET_CCKTL_LIST_SUCCESS, responsePage));
-
-    }
-
-
 }

@@ -1,16 +1,18 @@
 package salute.oneshot.domain.ingredientReview.entity;
 
-import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import salute.oneshot.domain.common.dto.entity.BaseEntity;
 import salute.oneshot.domain.ingredient.entity.Ingredient;
-import salute.oneshot.domain.user.entity.User;
 
 @Entity
-@Getter
 @Table(name = "ingredient_review")
-@NoArgsConstructor
 public class IngredientReview extends BaseEntity {
 
     @Id
@@ -24,22 +26,7 @@ public class IngredientReview extends BaseEntity {
     @Column(name = "star")
     private Byte star;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
-
     @ManyToOne
     @JoinColumn(name = "inredient_id")
     private Ingredient ingredient;
-
-    private IngredientReview (Byte star, String content, User user, Ingredient ingredient) {
-        this.star = star;
-        this.content = content;
-        this.user = user;
-        this.ingredient = ingredient;
-    }
-
-    public static IngredientReview of (Byte star, String content, User user, Ingredient ingredient) {
-        return new IngredientReview(star, content, user, ingredient);
-    }
 }

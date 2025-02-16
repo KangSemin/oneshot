@@ -10,19 +10,19 @@ import java.util.List;
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class FavoritePageResponseDto {
-    private List<FavoriteResponseDto> favorites;
+    private List<FavoriteResponseDto> favoriteList;
     private int currentPage;
     private int totalPages;
     private boolean hasNext;
 
-    public static FavoritePageResponseDto from(
-            Page<FavoriteResponseDto> pageResponseDto
+    public static FavoritePageResponseDto of(
+            Page<FavoriteResponseDto> favoriteList
     ) {
         return new FavoritePageResponseDto(
-                pageResponseDto.getContent(),
-                pageResponseDto.getNumber(),
-                pageResponseDto.getTotalPages(),
-                pageResponseDto.hasNext()
+                favoriteList.getContent(),
+                favoriteList.getNumber(),
+                favoriteList.getTotalPages(),
+                favoriteList.hasNext()
         );
     }
 }
