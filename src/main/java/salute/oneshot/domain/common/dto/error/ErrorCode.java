@@ -46,6 +46,7 @@ public enum ErrorCode {
     // 주문 관련 익셉션
     ORDER_NOT_FOUND(HttpStatus.NOT_FOUND, "주문이 존재하지 않습니다."),
     ORDER_GET_FORBIDDEN(HttpStatus.FORBIDDEN,"본인이 주문한 주문내역만 조회할 수 있습니다."),
+    INVALID_ORDER_STATUS(HttpStatus.BAD_REQUEST, "현재 상태에서는 주문 상태를 변경할 수 없습니다."),
 
     // 결제 관련 익셉션
     PAYMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 결제 내역이 존재하지 않습니다."),

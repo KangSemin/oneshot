@@ -13,15 +13,23 @@ import salute.oneshot.domain.common.dto.error.ErrorCode;
 import salute.oneshot.domain.order.dto.response.GetOrderResponseDto;
 import salute.oneshot.domain.order.dto.response.OrderItemListResponseDto;
 import salute.oneshot.domain.order.dto.response.OrderResponseDto;
+import salute.oneshot.domain.order.dto.response.UpdateOrderResponseDto;
 import salute.oneshot.domain.order.dto.service.CreateOrderSDto;
 import salute.oneshot.domain.order.dto.service.GetAllOrderSDto;
 import salute.oneshot.domain.order.dto.service.GetOrderSDto;
+import salute.oneshot.domain.order.dto.service.UpdateOrderSDto;
 import salute.oneshot.domain.order.entity.Order;
 import salute.oneshot.domain.order.entity.OrderItem;
+import salute.oneshot.domain.order.entity.OrderStatus;
 import salute.oneshot.domain.order.repository.OrderRepository;
 import salute.oneshot.domain.product.entity.Product;
+import salute.oneshot.domain.user.entity.User;
+import salute.oneshot.domain.user.entity.UserRole;
+import salute.oneshot.domain.user.repository.UserRepository;
 import salute.oneshot.global.exception.ForbiddenException;
+import salute.oneshot.global.exception.InvalidException;
 import salute.oneshot.global.exception.NotFoundException;
+import salute.oneshot.global.exception.UnauthorizedException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +42,7 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final CartRepository cartRepository;
     private final AddressRepository addressRepository;
+    private final UserRepository userRepository;
 
     @Transactional
     public OrderResponseDto createOrder(CreateOrderSDto sDto) {
@@ -116,4 +125,33 @@ public class OrderService {
 
     }
 
+    @Transactional
+    public UpdateOrderResponseDto updateOrder(UpdateOrderSDto sDto) {
+
+        Order order = orderRepository.findById(sDto.getOrderId())
+                .orElseThrow(() -> new NotFoundException(ErrorCode.ORDER_NOT_FOUND));
+
+        User user = getUserById(sDto.getUserId());
+        verifyAdmin(user);
+
+        if(!order.isValidStatusChange(order.getStatus(), OrderStatus.valueOf(sDto.getOrderStatus()))) {
+            throw new InvalidException(ErrorCode.INVALID_ORDER_STATUS);
+        }
+
+        order.updateOrderStatus(OrderStatus.valueOf(sDto.getOrderStatus()));
+
+        return UpdateOrderResponseDto.from(order);
+    }
+
+
+    private User getUserById(Long userId) {
+        return userRepository.findByIdAndIsDeletedIsFalse(userId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
+    }
+
+    private void verifyAdmin(User user) {
+        if (user.getUserRole() != UserRole.ADMIN) {
+            throw new UnauthorizedException(ErrorCode.FORBIDDEN_ACCESS);
+        }
+    }
 }

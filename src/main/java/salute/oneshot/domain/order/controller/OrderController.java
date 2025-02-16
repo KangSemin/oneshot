@@ -1,5 +1,6 @@
 package salute.oneshot.domain.order.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -11,11 +12,14 @@ import org.springframework.web.bind.annotation.*;
 import salute.oneshot.domain.common.dto.success.ApiResponse;
 import salute.oneshot.domain.common.dto.success.ApiResponseConst;
 import salute.oneshot.domain.order.dto.request.CreateOrderRequestDto;
+import salute.oneshot.domain.order.dto.request.UpdateOrderRequestDto;
 import salute.oneshot.domain.order.dto.response.GetOrderResponseDto;
 import salute.oneshot.domain.order.dto.response.OrderResponseDto;
+import salute.oneshot.domain.order.dto.response.UpdateOrderResponseDto;
 import salute.oneshot.domain.order.dto.service.CreateOrderSDto;
 import salute.oneshot.domain.order.dto.service.GetAllOrderSDto;
 import salute.oneshot.domain.order.dto.service.GetOrderSDto;
+import salute.oneshot.domain.order.dto.service.UpdateOrderSDto;
 import salute.oneshot.domain.order.service.OrderService;
 import salute.oneshot.global.security.entity.CustomUserDetails;
 
@@ -70,4 +74,22 @@ public class OrderController {
 
         return ResponseEntity.ok(ApiResponse.success(ApiResponseConst.GET_ORD_SUCCESS, responseDtoPage));
     }
+
+
+    @PatchMapping("/{orderId}")
+    public ResponseEntity<ApiResponse<UpdateOrderResponseDto>> updateOrder(
+            @PathVariable("orderId") Long orderId,
+            @Valid @RequestBody UpdateOrderRequestDto requestDto,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        Long userId = userDetails.getId();
+
+        UpdateOrderSDto sDto = UpdateOrderSDto
+                .of(userId, orderId, requestDto.getOrderStatus());
+
+        UpdateOrderResponseDto responseDto = orderService.updateOrder(sDto);
+
+        return ResponseEntity.ok(ApiResponse.success(ApiResponseConst.UPDATE_ORD_SUCCESS, responseDto));
+    }
+
 }

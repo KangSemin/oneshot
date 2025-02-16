@@ -62,4 +62,21 @@ public class Order extends BaseEntity {
     public void updateStatus(OrderStatus status) {
         this.status = status;
     }
+
+    public Boolean isValidStatusChange (OrderStatus currentStatus, OrderStatus newStatus) {
+        if(currentStatus == OrderStatus.PENDING_PAYMENT &&  newStatus == OrderStatus.PROCESSING) {
+            return true;
+        }else if(currentStatus == OrderStatus.PROCESSING &&  newStatus == OrderStatus.PENDING_SHIPMENT) {
+            return true;
+        } else if(currentStatus == OrderStatus.PENDING_SHIPMENT &&  newStatus == OrderStatus.IN_TRANSIT) {
+            return true;
+        } else if(currentStatus == OrderStatus.IN_TRANSIT &&  newStatus == OrderStatus.SHIPPED) {
+            return true;
+        }
+        return false;
+    }
+
+    public void updateOrderStatus (OrderStatus status) {
+        this.status = status;
+    }
 }
