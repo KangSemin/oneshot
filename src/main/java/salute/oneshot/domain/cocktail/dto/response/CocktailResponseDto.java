@@ -23,7 +23,7 @@ public class CocktailResponseDto implements Serializable{
     private String description;
     private String recipe;
     private RecipeType type;
-    private UserResponseDto userResponseDto;
+    private UserResponseDto user;
 
     private List<IngrResponseDto> ingredientList;
     private Integer likeCount;
@@ -36,12 +36,14 @@ public class CocktailResponseDto implements Serializable{
 
     public static CocktailResponseDto from(Cocktail cocktail) {
 
-        List<IngrResponseDto> reponseList = cocktail.getIngredientList().stream()
+        List<IngrResponseDto> ingrReponseList = cocktail.getIngredientList().stream()
             .map(ingr -> IngrResponseDto.from(ingr.getIngredient())).toList();
 
+        UserResponseDto userResponse = UserResponseDto.from(cocktail.getUser());
+
         return new CocktailResponseDto(cocktail.getId(), cocktail.getName(),
-            cocktail.getDescription(), cocktail.getRecipe(), cocktail.getType(), UserResponseDto.from(cocktail.getUser()),
-            reponseList, cocktail.getLikeCounts(), cocktail.getStarRate(), cocktail.getViewCount(), cocktail.getCreatedAt(),
+            cocktail.getDescription(), cocktail.getRecipe(), cocktail.getType(), userResponse,
+            ingrReponseList, cocktail.getLikeCounts(), cocktail.getStarRate(), cocktail.getCreatedAt(),
             cocktail.getModifiedAt());
     }
 }

@@ -36,7 +36,7 @@ public class CartService {
     @Transactional
     public CartItemResponseDto addCartItem(AddCartItemSDto sdto) {
         Cart foundCart = cartRepository.findByUserIdAndIsOrderedFalse(sdto.getUserId()).orElseGet(() -> {
-            User userRef = getUserRefById(sdto.getUserId());
+            User userRef = userRepository.getReferenceById(sdto.getUserId());
             Cart newCart = Cart.from(userRef);
             return cartRepository.save(newCart);
         });
@@ -102,16 +102,6 @@ public class CartService {
         if (!productRepository.existsById(productId)) {
             throw new NotFoundException(ErrorCode.PRODUCT_NOT_FOUND);
         }
-        Product productRef = productRepository.getReferenceById(productId);
-        return productRef;
-    }
-
-    private User getUserRefById(Long userId) {
-//        TODO: Authentication에 있는 유저가 없을리 없다? 탈퇴했을 때는?
-//        if (!userRepository.existsById(userId)) {
-//            throw new NotFoundException(ErrorCode.USER_NOT_FOUND);
-//        }
-        User userRef = userRepository.getReferenceById(userId);
-        return userRef;
+        return productRepository.getReferenceById(productId);
     }
 }

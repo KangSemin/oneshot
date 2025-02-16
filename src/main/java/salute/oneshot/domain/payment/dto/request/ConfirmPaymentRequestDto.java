@@ -7,7 +7,5 @@ import lombok.Getter;
 @AllArgsConstructor
 public class ConfirmPaymentRequestDto {
 
-    private final String orderId;
-    private final Long amount;
-    private final String paymentKey;
+    private final String password;
 }

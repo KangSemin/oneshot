@@ -8,6 +8,8 @@ import java.io.Serializable;
 
 @Getter
 public class IngrResponseDto implements Serializable {
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+public class IngrResponseDto {
 
     private final Long id;
     private final String name;

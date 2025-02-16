@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>주소 수정</title>
+    <style>
+        .address-container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 8px;
+            margin: 5px 0;
+            box-sizing: border-box;
+        }
+
+        .postcode-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .postcode-group input {
+            width: 150px;
+        }
+
+        button {
+            padding: 8px 16px;
+            cursor: pointer;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .button-group button {
+            flex: 1;
+        }
+
+        .cancel-btn {
+            background-color: #f0f0f0;
+            border: 1px solid #ddd;
+        }
+
+        .submit-btn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+<div class="address-container">
+    <h1>주소 수정</h1>
+
+    <form id="updateAddressForm">
+        <div class="form-group">
+            <label for="addressName">주소지 이름</label>
+            <input type="text"
+                   id="addressName"
+                   name="addressName"
+                   th:value="${address.addressName}"
+                   required>
+        </div>
+
+        <div class="form-group postcode-group">
+            <div>
+                <label for="postcode">우편번호</label>
+                <input type="text"
+                       id="postcode"
+                       name="postcode"
+                       th:value="${address.postcode}"
+                       readonly
+                       required>
+            </div>
+            <button type="button" id="searchAddressBtn">주소 검색</button>
+        </div>
+
+        <div class="form-group">
+            <label for="postAddress">주소</label>
+            <input type="text"
+                   id="postAddress"
+                   name="postAddress"
+                   th:value="${address.postAddress}"
+                   readonly
+                   required>
+        </div>
+
+        <div class="form-group">
+            <label for="detailAddress">상세주소</label>
+            <input type="text"
+                   id="detailAddress"
+                   name="detailAddress"
+                   th:value="${address.detailAddress}"
+            >
+
+        </div>
+
+        <div class="form-group">
+            <label for="extraAddress">참고항목</label>
+            <input type="text"
+                   id="extraAddress"
+                   name="extraAddress"
+                   th:value="${address.extraAddress}"
+            >
+        </div>
+
+        <div class="form-group">
+            <label>
+            <input type="checkbox"
+                   id="isDefault"
+                   name="isDefault"
+                   th:checked="${address.isDefault}">
+            기본 배송지로 설정
+            </label>
+        </div>
+
+        <div class="button-group">
+            <button type="button"
+                    class="cancel-btn"
+                    onclick="history.back()">취소
+            </button>
+            <button type="submit"
+                    id="submitFormBtn"
+                    class="submit-btn">수정
+            </button>
+        </div>
+    </form>
+</div>
+
+<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const addressId = window.location.pathname.split('/')[2];
+        console.log(addressId);  // 추출된 addressId를 확인
+        const addressNameInput = document.getElementById("addressName");
+        const postcodeInput = document.getElementById("postcode");
+        const postAddressInput = document.getElementById("postAddress");
+        const detailAddressInput = document.getElementById("detailAddress");
+        const extraAddressInput = document.getElementById("extraAddress");
+        const searchButton = document.getElementById("searchAddressBtn");
+        const submitButton = document.getElementById("submitFormBtn");
+        const isDefaultCheckbox = document.getElementById("isDefault");
+
+
+        // 주소 검색 함수
+        function searchAddress() {
+            new daum.Postcode({
+                oncomplete: function (data) {
+                    // 우편번호, 주소를 입력
+                    postcodeInput.value = data.zonecode;
+                    postAddressInput.value = data.address;
+
+                    detailAddressInput.focus();
+                }
+            }).open();
+        }
+
+        async function submitForm(event) {
+            event.preventDefault();
+
+            const requestData = {
+                addressName: addressNameInput.value.trim(),
+                postcode: postcodeInput.value.trim(),
+                postAddress: postAddressInput.value.trim(),
+                detailAddress: detailAddressInput.value.trim(),
+                extraAddress: extraAddressInput.value.trim(),
+                isDefault: isDefaultCheckbox.checked  // 체크박스 상태 추가
+            };
+
+            try {
+                const response = await fetch(`/api/addresses/${addressId}`, {
+                    method: "PATCH",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${localStorage.getItem('token')}`
+                    },
+                    body: JSON.stringify(requestData)
+                });
+
+                const responseText = await response.text();
+
+                if (!response.ok) {
+                    throw new Error(`서버 응답 실패: ${response.status}, 내용: ${responseText}`);
+                }
+
+                const data = JSON.parse(responseText);
+                alert("주소가 저장되었습니다. (ID: " + data.id + ")");
+            } catch (error) {
+                console.error("주소 저장 실패 상세 정보:", error);
+                alert("주소 저장에 실패했습니다.");
+            }
+        }
+
+        // 이벤트 리스너 등록
+        searchButton.addEventListener("click", searchAddress);
+        submitButton.addEventListener("click", submitForm);
+    });
+</script>
+</body>
+</html>

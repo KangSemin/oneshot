@@ -95,6 +95,24 @@ public class CocktailController {
         return ResponseEntity.ok(ApiResponse.success(ApiResponseConst.DELETE_CCKTL_SUCCESS));
     }
 
+    @GetMapping
+    public ResponseEntity<ApiResponse<Page<CocktailResponseDto>>> getCocktails(@RequestParam(name = "page", defaultValue = "1")int page,
+                                                                               @RequestParam(name ="size", defaultValue = "10")int size,
+                                                                               @RequestParam(name ="keyword", required = false) String keyword,
+                                                                               @RequestParam(name = "recipeType", required = false) String recipeType
+    ){
+        Pageable pageable = PageRequest.of(page - 1, size);
+
+        findCocktailSDto sDto = findCocktailSDto.of(pageable, keyword, recipeType);
+
+        Page<CocktailResponseDto> responsePage = cocktailService.getCocktails(sDto);
+
+        return ResponseEntity.ok(ApiResponse.success(ApiResponseConst.GET_CCKTL_LIST_SUCCESS, responsePage));
+
+    }
+
+
+
     @GetMapping("/popular")
     public ResponseEntity<ApiResponse<Page<CocktailResponseDto>>> getPopularCocktails(@RequestParam(name = "page", defaultValue = "1") int page,
                                                                                         @RequestParam(name = "size", defaultValue = "10")int size)
