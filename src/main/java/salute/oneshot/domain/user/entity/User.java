@@ -42,6 +42,9 @@ public class User extends BaseEntity {
     @ColumnDefault("false")
     private boolean isDeleted = false;
 
+    @Column(name = "last_logout_at")
+    private LocalDateTime lastLogoutAt;
+
     private User(
             String email,
             String password,
@@ -73,5 +76,9 @@ public class User extends BaseEntity {
         }
         this.isDeleted = true;
         this.isDeletedAt = LocalDateTime.now();
+    }
+
+    public void logout() {
+        this.lastLogoutAt = LocalDateTime.now();
     }
 }

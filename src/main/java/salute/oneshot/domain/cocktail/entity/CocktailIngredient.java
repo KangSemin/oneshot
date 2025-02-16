@@ -8,7 +8,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -17,7 +16,7 @@ import salute.oneshot.domain.ingredient.entity.Ingredient;
 
 @Getter
 @Entity
-@Table(name = "Cockrail_Ingredients")
+@Table(name = "Cocktail_Ingredients")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CocktailIngredient {
 
@@ -30,7 +29,7 @@ public class CocktailIngredient {
     @JoinColumn(name = "cocktail_id")
     private Cocktail cocktail;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ingredient_id")
     private Ingredient ingredient;
 
