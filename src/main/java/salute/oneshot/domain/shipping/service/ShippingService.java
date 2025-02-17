@@ -7,13 +7,14 @@ import salute.oneshot.domain.common.dto.error.ErrorCode;
 import salute.oneshot.domain.order.entity.Order;
 import salute.oneshot.domain.order.entity.OrderStatus;
 import salute.oneshot.domain.order.repository.OrderRepository;
-import salute.oneshot.domain.shipping.dto.response.CreateShippingResponseDto;
+import salute.oneshot.domain.shipping.dto.response.AdminShippingResponseDto;
+import salute.oneshot.domain.shipping.dto.response.UserShippingResponseDto;
+import salute.oneshot.domain.shipping.dto.service.AdminShippingSDto;
 import salute.oneshot.domain.shipping.dto.service.ShippingSDto;
+import salute.oneshot.domain.shipping.dto.service.UserShippingSDto;
 import salute.oneshot.domain.shipping.entity.Shipping;
 import salute.oneshot.domain.shipping.repository.ShippingRepository;
-import salute.oneshot.global.exception.ConflictException;
-import salute.oneshot.global.exception.InvalidException;
-import salute.oneshot.global.exception.NotFoundException;
+import salute.oneshot.global.exception.*;
 
 @Service
 @RequiredArgsConstructor
@@ -23,7 +24,7 @@ public class ShippingService {
     private final OrderRepository orderRepository;
 
     @Transactional
-    public CreateShippingResponseDto createShipping(ShippingSDto serviceDto) {
+    public AdminShippingResponseDto createShipping(ShippingSDto serviceDto) {
         if (shippingRepository.existsByOrderId(serviceDto.getOrderId())) {
             throw new ConflictException(ErrorCode.DUPLICATE_SHIPPING);
         }
@@ -46,6 +47,26 @@ public class ShippingService {
                 serviceDto.getCourierCompany());
         shippingRepository.save(shipping);
 
-        return CreateShippingResponseDto.from(shipping);
+        return AdminShippingResponseDto.from(shipping);
+    }
+
+    @Transactional(readOnly = true)
+    public AdminShippingResponseDto getShipping(Long shippingId) {
+        Shipping shipping = shippingRepository.findById(shippingId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.SHIPPING_NOT_FOUND));
+
+        return AdminShippingResponseDto.from(shipping);
+    }
+
+    @Transactional(readOnly = true)
+    public UserShippingResponseDto getShippingByOrderId(UserShippingSDto serviceDto) {
+        Shipping shipping = shippingRepository.findByOrderId(serviceDto.getOrderId())
+                .orElseThrow(() -> new NotFoundException(ErrorCode.SHIPPING_NOT_FOUND));
+
+        if (!shipping.getOrder().getUser().getId().equals(serviceDto.getUserId())) {
+            throw new ForbiddenException(ErrorCode.FORBIDDEN_ACCESS);
+        }
+
+        return UserShippingResponseDto.from(shipping);
     }
 }

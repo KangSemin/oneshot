@@ -8,7 +8,7 @@ import java.util.Arrays;
 
 @Getter
 public enum CourierCompany {
-    CJ("대한통운", "04"),
+    CJGLS("대한통운", "04"),
     LOTTE("롯데택배", "08"),
     HANJIN("한진택배", "05"),
     LOGEN("로젠택배", "06"),

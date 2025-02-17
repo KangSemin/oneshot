@@ -5,8 +5,11 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import salute.oneshot.domain.common.dto.entity.BaseEntity;
+import salute.oneshot.domain.common.dto.error.ErrorCode;
 import salute.oneshot.domain.order.entity.Order;
 import salute.oneshot.domain.shipping.enums.CourierCompany;
+import salute.oneshot.domain.shipping.enums.ShippingStatus;
+import salute.oneshot.global.exception.InvalidException;
 
 @Entity
 @Table(name = "shippings")
@@ -16,10 +19,10 @@ public class Shipping extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(columnDefinition = "BIGINT")
     private Long id;
 
-    @OneToOne(mappedBy = "shippings")
+    @OneToOne
+    @JoinColumn(name = "order_id")
     private Order order;
 
     private String receiverName;
@@ -65,5 +68,15 @@ public class Shipping extends BaseEntity {
                 trackingNumber,
                 courierCompany
         );
+    }
+
+    public void updateStatus(ShippingStatus status) {
+        if (this.status == status) {
+            throw new InvalidException(ErrorCode.SAME_STATUS_UPDATE);
+        }
+
+        if (!this.status.canTransitionTo(status)) {
+            throw new InvalidException(ErrorCode.INVALID_STATUS_CHANGE);
+        }
     }
 }
