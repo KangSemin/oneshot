@@ -36,7 +36,6 @@ public class RedisService {
         ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
 
             valueOperations.increment(viewCountKey);
-
         redisTemplate.opsForZSet().incrementScore(POPULAR_COCKTAIL_KEY, String.valueOf(cocktailId), 1);// 해당 아이디를 키로가지고 있는 score를 증가 시킨다
     }
 

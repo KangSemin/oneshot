@@ -6,6 +6,8 @@ import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import java.util.List;
+
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -19,13 +21,11 @@ import salute.oneshot.domain.ingredient.entity.IngredientCategory;
 import static salute.oneshot.domain.cocktail.entity.QCocktail.cocktail;
 
 @Repository
+@RequiredArgsConstructor
 public class CocktailQueryDslRepositoryImpl implements CocktailQueryDslRepository {
 
     private final JPAQueryFactory queryFactory;
 
-    public CocktailQueryDslRepositoryImpl(EntityManager em) {
-        queryFactory = new JPAQueryFactory(em);
-    }
 
     @Override
     public Page<Cocktail> searchCocktailsByIngredients(List<Ingredient> selectedIngrs,
