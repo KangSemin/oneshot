@@ -1,14 +1,18 @@
 package salute.oneshot.domain.product.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import salute.oneshot.domain.common.dto.error.ErrorCode;
 import salute.oneshot.domain.product.dto.response.ProductResponseDto;
 import salute.oneshot.domain.product.dto.service.CreateProductSDto;
+import salute.oneshot.domain.product.dto.service.GetAllProductSDto;
 import salute.oneshot.domain.product.dto.service.UpdateProductRequestSDto;
 import salute.oneshot.domain.product.dto.service.DeleteProductSDto;
 import salute.oneshot.domain.product.entity.Product;
+import salute.oneshot.domain.product.entity.ProductCategory;
+import salute.oneshot.domain.product.entity.ProductStatus;
 import salute.oneshot.domain.product.repository.ProductRepository;
 import salute.oneshot.domain.user.entity.User;
 import salute.oneshot.domain.user.entity.UserRole;
@@ -32,6 +36,30 @@ public class ProductService {
 
         Product product = productRepository.save(Product.of(sDto.getName(), sDto.getDescription(), sDto.getPrice(),
                 sDto.getStockQuantity(), sDto.getCategory(), sDto.getStatus(), user));
+
+        return ProductResponseDto.from(product);
+    }
+
+    public Page<ProductResponseDto> getAllProduct(GetAllProductSDto sDto) {
+
+        ProductCategory category = null;
+
+        if (sDto.getCategory() != null) {
+            category = ProductCategory.valueOf(sDto.getCategory());
+        }
+
+        Page<Product> productPage = productRepository
+                .findByCategoryANDStatusNot(ProductStatus.DELETED, category, sDto.getPageable());
+
+        Page<ProductResponseDto> responseDtos = productPage.map(ProductResponseDto::from);
+
+        return responseDtos;
+    }
+
+    public ProductResponseDto getProduct(Long productId) {
+
+        Product product = productRepository.findByIdANDStatusNot(ProductStatus.DELETED, productId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.PRODUCT_NOT_FOUND));
 
         return ProductResponseDto.from(product);
     }
