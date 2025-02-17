@@ -7,9 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import salute.oneshot.domain.common.dto.success.ApiResponse;
 import salute.oneshot.domain.common.dto.success.ApiResponseConst;
 import salute.oneshot.domain.shipping.dto.request.ShippingRequestDto;
-import salute.oneshot.domain.shipping.dto.request.UpdateShippingRequest;
 import salute.oneshot.domain.shipping.dto.response.AdminShippingResponseDto;
-import salute.oneshot.domain.shipping.dto.service.AdminShippingSDto;
 import salute.oneshot.domain.shipping.dto.service.ShippingSDto;
 import salute.oneshot.domain.shipping.service.ShippingService;
 
