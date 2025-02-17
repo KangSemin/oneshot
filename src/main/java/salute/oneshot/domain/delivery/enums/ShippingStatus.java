@@ -1,4 +1,4 @@
-package salute.oneshot.domain.shipping.enums;
+package salute.oneshot.domain.delivery.enums;
 
 import lombok.Getter;
 

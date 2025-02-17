@@ -1,18 +1,18 @@
-package salute.oneshot.domain.shipping.dto.response;
+package salute.oneshot.domain.delivery.dto.response;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import salute.oneshot.domain.shipping.entity.Shipping;
-import salute.oneshot.domain.shipping.enums.ShippingStatus;
-import salute.oneshot.domain.shipping.enums.CourierCompany;
+import salute.oneshot.domain.delivery.entity.Delivery;
+import salute.oneshot.domain.delivery.enums.ShippingStatus;
+import salute.oneshot.domain.delivery.enums.CourierCompany;
 
 import java.time.LocalDateTime;
 
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class AdminShippingResponseDto {
-    private final Long shippingId;
+public class AdminDeliveryResponseDto {
+    private final Long deliveryId;
     private final Long orderId;
     private final String receiverName;
     private final String receiverPhone;
@@ -22,8 +22,8 @@ public class AdminShippingResponseDto {
     private final ShippingStatus status;
     private final LocalDateTime createdAt;
 
-    public static AdminShippingResponseDto from(Shipping shipping) {
-        return new AdminShippingResponseDto(
+    public static AdminDeliveryResponseDto from(Delivery shipping) {
+        return new AdminDeliveryResponseDto(
                 shipping.getId(),
                 shipping.getOrder().getId(),
                 shipping.getReceiverName(),

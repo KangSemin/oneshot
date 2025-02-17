@@ -1,13 +1,13 @@
-package salute.oneshot.domain.shipping.dto.service;
+package salute.oneshot.domain.delivery.dto.service;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import salute.oneshot.domain.shipping.enums.CourierCompany;
+import salute.oneshot.domain.delivery.enums.CourierCompany;
 
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class ShippingSDto {
+public class DeliverySDto {
 
     private final Long orderId;
     private final String receiverName;
@@ -16,7 +16,7 @@ public class ShippingSDto {
     private final String trackingNumber;
     private final CourierCompany courierCompany;
 
-    public static ShippingSDto of(
+    public static DeliverySDto of(
             Long orderId,
             String receiverName,
             String receiverPhone,
@@ -24,7 +24,7 @@ public class ShippingSDto {
             String trackingNumber,
             CourierCompany courierCompany
     ){
-        return new ShippingSDto(
+        return new DeliverySDto(
                 orderId,
                 receiverName,
                 receiverPhone,

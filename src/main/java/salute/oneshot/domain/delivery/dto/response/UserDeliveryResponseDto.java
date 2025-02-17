@@ -1,23 +1,23 @@
-package salute.oneshot.domain.shipping.dto.response;
+package salute.oneshot.domain.delivery.dto.response;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import salute.oneshot.domain.shipping.entity.Shipping;
-import salute.oneshot.domain.shipping.enums.ShippingStatus;
+import salute.oneshot.domain.delivery.entity.Delivery;
+import salute.oneshot.domain.delivery.enums.ShippingStatus;
 
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class UserShippingResponseDto {
-    private final Long shippingId;
+public class UserDeliveryResponseDto {
+    private final Long deliveryId;
     private final Long orderId;
     private final String courierName;
     private final String trackingNumber;
     private final ShippingStatus status;
     private final String deliveryMessage;
 
-    public static UserShippingResponseDto from(Shipping shipping) {
-        return new UserShippingResponseDto(
+    public static UserDeliveryResponseDto from(Delivery shipping) {
+        return new UserDeliveryResponseDto(
                 shipping.getId(),
                 shipping.getOrder().getId(),
                 shipping.getCourierCompany().getCompanyName(),

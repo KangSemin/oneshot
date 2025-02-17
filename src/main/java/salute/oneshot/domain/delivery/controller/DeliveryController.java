@@ -1,4 +1,4 @@
-package salute.oneshot.domain.shipping.controller;
+package salute.oneshot.domain.delivery.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -10,31 +10,31 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import salute.oneshot.domain.common.dto.success.ApiResponse;
 import salute.oneshot.domain.common.dto.success.ApiResponseConst;
-import salute.oneshot.domain.shipping.dto.response.UserShippingResponseDto;
-import salute.oneshot.domain.shipping.dto.service.UserShippingSDto;
-import salute.oneshot.domain.shipping.service.ShippingService;
+import salute.oneshot.domain.delivery.dto.response.UserDeliveryResponseDto;
+import salute.oneshot.domain.delivery.dto.service.UserDeliverySDto;
+import salute.oneshot.domain.delivery.service.DeliveryService;
 import salute.oneshot.global.security.entity.CustomUserDetails;
 
 @RestController
-@RequestMapping("/api/shipping")
+@RequestMapping("/api/deliveries")
 @RequiredArgsConstructor
-public class ShippingController {
+public class DeliveryController {
 
-    private final ShippingService shippingService;
+    private final DeliveryService deliveryService;
 
-    @GetMapping("/order/{orderId}")
-    public ResponseEntity<ApiResponse<UserShippingResponseDto>> getShipping(
+    @GetMapping("/orders/{orderId}")
+    public ResponseEntity<ApiResponse<UserDeliveryResponseDto>> getShipping(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @PathVariable Long orderId
     ) {
-        UserShippingSDto serviceDto =
-                UserShippingSDto.of(userDetails.getId(), orderId);
-        UserShippingResponseDto responseDto =
-                shippingService.getShippingByOrderId(serviceDto);
+        UserDeliverySDto serviceDto =
+                UserDeliverySDto.of(userDetails.getId(), orderId);
+        UserDeliveryResponseDto responseDto =
+                deliveryService.getDeliveryByOrderId(serviceDto);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ApiResponse.success(
-                        ApiResponseConst.GET_SHIPPING_SUCCESS,
+                        ApiResponseConst.GET_DELIVERY_SUCCESS,
                         responseDto));
     }
 }
