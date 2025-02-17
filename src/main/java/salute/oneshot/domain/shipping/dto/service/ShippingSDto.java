@@ -9,12 +9,12 @@ import salute.oneshot.domain.shipping.enums.CourierCompany;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class ShippingSDto {
 
-    private Long orderId;
-    private String receiverName;
-    private String receiverPhone;
-    private String deliveryMessage;
-    private String trackingNumber;
-    private CourierCompany courierCompany;
+    private final Long orderId;
+    private final String receiverName;
+    private final String receiverPhone;
+    private final String deliveryMessage;
+    private final String trackingNumber;
+    private final CourierCompany courierCompany;
 
     public static ShippingSDto of(
             Long orderId,

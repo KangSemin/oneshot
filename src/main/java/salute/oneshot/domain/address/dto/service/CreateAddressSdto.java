@@ -8,12 +8,12 @@ import lombok.Getter;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class CreateAddressSdto {
 
-    private String addressName;
-    private String postcode;
-    private String postAddress;
-    private String detailAddress;
-    private String extraAddress;
-    private Long userId;
+    private final String addressName;
+    private final String postcode;
+    private final String postAddress;
+    private final String detailAddress;
+    private final String extraAddress;
+    private final Long userId;
 
     public static CreateAddressSdto of(
             String addressName,
