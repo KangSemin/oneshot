@@ -59,6 +59,9 @@ public class IngredientReviewService {
 
     public Page<IngrReviewResponseDto> getAllIngredientReview(GetAllIngrReviewSDto sDto) {
 
+        Ingredient ingredient = ingredientRepository.findById(sDto.getIngredientId())
+                .orElseThrow(() -> new NotFoundException(ErrorCode.INGREDIENT_NOT_FOUND));
+
         Page<IngredientReview> ingredientReviewPage = ingredientReviewRepository
                 .findAllByIngredient_Id(sDto.getIngredientId(), sDto.getPageable());
 
