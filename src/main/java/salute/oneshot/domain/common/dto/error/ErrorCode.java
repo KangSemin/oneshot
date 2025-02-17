@@ -48,7 +48,7 @@ public enum ErrorCode {
     ORDER_GET_FORBIDDEN(HttpStatus.FORBIDDEN,"본인이 주문한 주문내역만 조회할 수 있습니다."),
     INVALID_ORDER_STATUS(HttpStatus.BAD_REQUEST, "현재 상태에서는 주문 상태를 변경할 수 없습니다."),
     CANNOT_CANCEL_SHIPPED_ORDER(HttpStatus.BAD_REQUEST, "배송 완료된 주문은 취소할 수 없습니다."),
-    ORDER_CANCEL_FORBIDDEN(HttpStatus.FORBIDDEN,"본인의 주문만 취소 가능합니다."),
+    ORDER_CANCEL_UNAUTHORIZED(HttpStatus.UNAUTHORIZED,"본인의 주문만 취소 가능합니다."),
     ALREADY_CANCELLED_ORDER(HttpStatus.BAD_REQUEST, "이미 취소처리 된 주문입니다."),
 
     // 결제 관련 익셉션
