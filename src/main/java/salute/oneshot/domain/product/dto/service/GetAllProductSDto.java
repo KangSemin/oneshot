@@ -9,8 +9,8 @@ import org.springframework.data.domain.Pageable;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class GetAllProductSDto {
 
-    private String category;
-    private Pageable pageable;
+    private final String category;
+    private final Pageable pageable;
 
     public static GetAllProductSDto of(String category, Pageable pageable) {
         return new GetAllProductSDto(category, pageable);
