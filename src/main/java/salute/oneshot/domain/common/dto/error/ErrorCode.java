@@ -64,6 +64,15 @@ public enum ErrorCode {
     ADR_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 주소가 존재하지 않습니다."),
     DUPLICATE_ADR_DEFAULT(HttpStatus.CREATED, "이미 기본값으로 설정된 주소입니다."),
     INVALID_ADDRESS_ACCESS(HttpStatus.FORBIDDEN, "유효하지 않은 주소입니다."),
+    DEFAULT_ADDRESS_REQUIRED(HttpStatus.BAD_REQUEST, "기본 주소는 필수입니다"),
+
+    // 배송 관련 익셉션
+    INVALID_SHIPPING_CODE(HttpStatus.BAD_REQUEST, "유효하지 않은 Code 입니다."),
+    DUPLICATE_SHIPPING(HttpStatus.CONFLICT, "이미 배송정보가 존재하는 주문입니다."),
+    INVALID_ORDER_STATE(HttpStatus.BAD_REQUEST,"배송 대기 중인 주문만 등록할 수 있습니다"),
+    SHIPPING_NOT_FOUND(HttpStatus.NOT_FOUND, "배송 정보가 존재하지 않습니다."),
+    SAME_STATUS_UPDATE(HttpStatus.BAD_REQUEST, "이미 해당 배송 상태입니다"),
+    INVALID_STATUS_CHANGE(HttpStatus.BAD_REQUEST, "유효하지 않은 배송 상태 변경입니다"),
 
     // 인가 관련 익셉션
     FORBIDDEN_ACCESS(HttpStatus.UNAUTHORIZED, "접근 권한이 없습니다."),

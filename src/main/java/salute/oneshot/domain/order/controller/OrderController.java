@@ -14,7 +14,7 @@ import salute.oneshot.domain.common.dto.success.ApiResponseConst;
 import salute.oneshot.domain.order.dto.request.CreateOrderRequestDto;
 import salute.oneshot.domain.order.dto.request.UpdateOrderRequestDto;
 import salute.oneshot.domain.order.dto.response.GetOrderResponseDto;
-import salute.oneshot.domain.order.dto.response.OrderResponseDto;
+import salute.oneshot.domain.order.dto.response.CreateOrderResponseDto;
 import salute.oneshot.domain.order.dto.response.UpdateOrderResponseDto;
 import salute.oneshot.domain.order.dto.service.*;
 import salute.oneshot.domain.order.service.OrderService;
@@ -28,7 +28,7 @@ public class OrderController {
     private final OrderService orderService;
 
     @PostMapping
-    public ResponseEntity<ApiResponse<OrderResponseDto>> createOrder(
+    public ResponseEntity<ApiResponse<CreateOrderResponseDto>> createOrder(
             @RequestBody CreateOrderRequestDto requestDto,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
 
@@ -36,7 +36,7 @@ public class OrderController {
 
         CreateOrderSDto sDto = CreateOrderSDto.of(userId, requestDto.getAddressId());
 
-        OrderResponseDto responseDto = orderService.createOrder(sDto);
+        CreateOrderResponseDto responseDto = orderService.createOrder(sDto);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(ApiResponseConst.ADD_ORD_SUCCESS, responseDto));
     }
@@ -56,7 +56,7 @@ public class OrderController {
     }
 
     @GetMapping
-    public ResponseEntity<ApiResponse<Page<OrderResponseDto>>> getAllOrder(
+    public ResponseEntity<ApiResponse<Page<CreateOrderResponseDto>>> getAllOrder(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @RequestParam(value = "page", defaultValue = "1") int page,
             @RequestParam(value = "size", defaultValue = "10") int size) {
@@ -67,7 +67,7 @@ public class OrderController {
 
         GetAllOrderSDto sDto = GetAllOrderSDto.of(userId, pageable);
 
-        Page<OrderResponseDto> responseDtoPage = orderService.getAllOrder(sDto);
+        Page<CreateOrderResponseDto> responseDtoPage = orderService.getAllOrder(sDto);
 
         return ResponseEntity.ok(ApiResponse.success(ApiResponseConst.GET_ORD_SUCCESS, responseDtoPage));
     }

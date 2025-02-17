@@ -196,6 +196,20 @@
                 alert("주소가 저장되었습니다. (ID: " + data.id + ")");
             } catch (error) {
                 console.error("주소 저장 실패 상세 정보:", error);
+
+                // 에러 메시지에서 JSON 부분을 추출하고 파싱
+                try {
+                    const errorContentMatch = error.message.match(/내용: ({.*})/);
+                    if (errorContentMatch) {
+                        const errorData = JSON.parse(errorContentMatch[1]);
+                        alert(errorData.errorMessage);
+                        return;
+                    }
+                } catch (parseError) {
+                    console.error("에러 메시지 파싱 실패:", parseError);
+                }
+
+                // 파싱 실패시 기본 메시지
                 alert("주소 저장에 실패했습니다.");
             }
         }

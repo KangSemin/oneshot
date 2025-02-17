@@ -12,7 +12,7 @@ import salute.oneshot.domain.cart.repository.CartRepository;
 import salute.oneshot.domain.common.dto.error.ErrorCode;
 import salute.oneshot.domain.order.dto.response.GetOrderResponseDto;
 import salute.oneshot.domain.order.dto.response.OrderItemListResponseDto;
-import salute.oneshot.domain.order.dto.response.OrderResponseDto;
+import salute.oneshot.domain.order.dto.response.CreateOrderResponseDto;
 import salute.oneshot.domain.order.dto.response.UpdateOrderResponseDto;
 import salute.oneshot.domain.order.dto.service.*;
 import salute.oneshot.domain.order.entity.Order;
@@ -39,7 +39,7 @@ public class OrderService {
     private final UserRepository userRepository;
 
     @Transactional
-    public OrderResponseDto createOrder(CreateOrderSDto sDto) {
+    public CreateOrderResponseDto createOrder(CreateOrderSDto sDto) {
 
         //유저 아이디로 장바구니가 존재 하는지 조회
         Cart cart = cartRepository.findByUserIdAndIsOrderedFalse(sDto.getUserId())
@@ -78,7 +78,7 @@ public class OrderService {
         // 카트 상태 변경
         cart.setIsOrdered();
 
-        return OrderResponseDto.from(order);
+        return CreateOrderResponseDto.from(order);
     }
 
     @Transactional
@@ -97,11 +97,11 @@ public class OrderService {
         return GetOrderResponseDto.from(order, responseDtoList);
     }
 
-    public Page<OrderResponseDto> getAllOrder(GetAllOrderSDto sDto) {
+    public Page<CreateOrderResponseDto> getAllOrder(GetAllOrderSDto sDto) {
 
         Page<Order> orderPage = orderRepository.findByUser_Id(sDto.getUserId(), sDto.getPageable());
 
-        Page<OrderResponseDto> responseDtoPage = orderPage.map(OrderResponseDto::from);
+        Page<CreateOrderResponseDto> responseDtoPage = orderPage.map(CreateOrderResponseDto::from);
 
         return responseDtoPage;
     }

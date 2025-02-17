@@ -9,9 +9,9 @@ import salute.oneshot.domain.order.entity.OrderItem;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class OrderItemListResponseDto {
 
-    private String productName;
-    private int quantity;
-    private int price;
+    private final String productName;
+    private final int quantity;
+    private final int price;
 
     public static OrderItemListResponseDto from(OrderItem orderItem) {
         return new OrderItemListResponseDto(orderItem.getProduct().getName(),

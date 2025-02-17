@@ -8,7 +8,7 @@ import lombok.Getter;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class GetFavoriteStatusDto {
 
-    private boolean isFavorited;
+    private final boolean isFavorited;
 
     public static GetFavoriteStatusDto of(boolean status) {
         return new GetFavoriteStatusDto(status);

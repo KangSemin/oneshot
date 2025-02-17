@@ -8,10 +8,10 @@ import lombok.Getter;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class CreateRecipeReviewSDto {
 
-    private Byte star;
-    private String content;
-    private Long userId;
-    private Long cocktailId;
+    private final Byte star;
+    private final String content;
+    private final Long userId;
+    private final Long cocktailId;
 
 
     public static CreateRecipeReviewSDto of(Byte star, String content, Long userId, Long recipeId) {

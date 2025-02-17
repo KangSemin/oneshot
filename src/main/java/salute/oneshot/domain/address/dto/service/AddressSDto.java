@@ -8,8 +8,8 @@ import lombok.Getter;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class AddressSDto {
 
-    private Long userId;
-    private Long addressId;
+    private final Long userId;
+    private final Long addressId;
 
     public static AddressSDto of(Long userId, Long addressId) {
         return new AddressSDto(userId, addressId);

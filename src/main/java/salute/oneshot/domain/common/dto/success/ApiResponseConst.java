@@ -82,6 +82,7 @@ public class ApiResponseConst {
 
     // 상품 관련 메세지
     public static final String ADD_PRDT_SUCCESS = "상품 등록이 완료되었습니다.";
+    public static final String GET_PRDT_SUCCESS = "상품 조회가 완료되었습니다.";
     public static final String UPDATE_PRDT_SUCCESS = "상품 정보 수정이 완료되었습니다.";
     public static final String DELETE_PRDT_SUCCESS = "상품 삭제가 완료되었습니다.";
 
@@ -90,4 +91,9 @@ public class ApiResponseConst {
     public static final String GET_ORD_SUCCESS = "주문 조회가 완료되었습니다.";
     public static final String UPDATE_ORD_SUCCESS = "주문 상태가 변경되었습니다.";
     public static final String DELETE_ORD_SUCCESS = "주문이 취소되었습니다.";
+
+    // 배송 관련 메시지
+    public static final String ADD_DELIVERY_SUCCESS = "배송 정보 등록이 완료되었습니다.";
+    public static final String GET_DELIVERY_SUCCESS = "배송 정보 조회가 완료되었습니다.";
+    public static final String UPDATE_DELIVERY_SUCCESS = "배송 정보 수정이 완료되었습니다.";
 }
