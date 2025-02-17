@@ -12,6 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import salute.oneshot.domain.cocktail.entity.Cocktail;
 import salute.oneshot.domain.cocktail.entity.QCocktail;
 import salute.oneshot.domain.cocktail.entity.QCocktailIngredient;
@@ -63,6 +64,7 @@ public class CocktailQueryDslRepositoryImpl implements CocktailQueryDslRepositor
 
     }
 
+    @Transactional
     public void addViewCntFromRedis(Long cocktailId, Integer viewCount){
        Integer addViewCount = (viewCount == null ? 0 : viewCount);
 
