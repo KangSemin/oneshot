@@ -1,5 +1,6 @@
 package salute.oneshot.domain.cocktail.entity;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -43,7 +44,7 @@ public class Cocktail extends BaseEntity {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToMany(mappedBy = "cocktail")
+    @OneToMany(mappedBy = "cocktail",cascade = CascadeType.REMOVE)
     private List<CocktailIngredient> ingredientList;
 
     private Integer likeCounts;
@@ -51,6 +52,9 @@ public class Cocktail extends BaseEntity {
     @Column(nullable = false)
     @ColumnDefault("0")
     private Double starRate = 0.0;
+
+    @ColumnDefault("0")
+    private Integer viewCount = 0;
 
 
     private Cocktail(String name, String description, String recipe, RecipeType type,
@@ -74,5 +78,8 @@ public class Cocktail extends BaseEntity {
         this.description = description;
         this.recipe = recipe;
         this.ingredientList = ingredientList;
+    }
+    public void incrementCount() {
+        this.viewCount++;
     }
 }

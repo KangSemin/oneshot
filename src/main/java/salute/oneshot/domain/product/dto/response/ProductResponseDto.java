@@ -9,11 +9,11 @@ import salute.oneshot.domain.product.entity.Product;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class ProductResponseDto {
 
-    private Long productId;
-    private String name;
-    private String description;
-    private int price;
-    private int stockQuantity;
+    private final Long productId;
+    private final String name;
+    private final String description;
+    private final int price;
+    private final int stockQuantity;
 
     public static ProductResponseDto from(Product product) {
         return new ProductResponseDto(

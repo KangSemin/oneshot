@@ -10,12 +10,12 @@ import lombok.Getter;
 public class CreateAddressRequestDto {
 
     @NotBlank
-    private String addressName;
+    private final String addressName;
     @NotBlank
-    private String postcode;
+    private final String postcode;
     @NotBlank
-    private String postAddress;
+    private final String postAddress;
     @NotBlank
-    private String detailAddress;
-    private String extraAddress;
+    private final String detailAddress;
+    private final String extraAddress;
 }

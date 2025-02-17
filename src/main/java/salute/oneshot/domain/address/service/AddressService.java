@@ -6,13 +6,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import salute.oneshot.domain.address.dto.response.AddressPageResponseDto;
 import salute.oneshot.domain.address.dto.response.AddressResponseDto;
-import salute.oneshot.domain.address.dto.service.AddressSdto;
-import salute.oneshot.domain.address.dto.service.GetAddressSDto;
+import salute.oneshot.domain.address.dto.service.CreateAddressSdto;
+import salute.oneshot.domain.address.dto.service.AddressSDto;
 import salute.oneshot.domain.address.dto.service.GetAddressesSDto;
+import salute.oneshot.domain.address.dto.service.UpdateAddressSDto;
 import salute.oneshot.domain.address.entity.Address;
 import salute.oneshot.domain.address.repository.AddressRepository;
 import salute.oneshot.domain.common.dto.error.ErrorCode;
-import salute.oneshot.domain.user.repository.UserRepository;
+import salute.oneshot.global.exception.InvalidException;
 import salute.oneshot.global.exception.NotFoundException;
 
 @Service
@@ -20,10 +21,9 @@ import salute.oneshot.global.exception.NotFoundException;
 public class AddressService {
 
     private final AddressRepository addressRepository;
-    private final UserRepository userRepository;
 
     @Transactional
-    public AddressResponseDto createAddress(AddressSdto serviceDto) {
+    public AddressResponseDto createAddress(CreateAddressSdto serviceDto) {
         Address address = Address.of(
                 serviceDto.getAddressName(),
                 serviceDto.getPostcode(),
@@ -35,7 +35,6 @@ public class AddressService {
         if (isFirstAddress(serviceDto.getUserId())) {
             address.setDefault();
         }
-
         addressRepository.save(address);
 
         return AddressResponseDto.from(address);
@@ -54,17 +53,65 @@ public class AddressService {
     }
 
     @Transactional(readOnly = true)
-    public AddressResponseDto getAddress(GetAddressSDto serviceDto) {
-        Address address = addressRepository.findByIdAndUserId(
-                        serviceDto.getAddressId(),
-                        serviceDto.getUserId())
-                .orElseThrow(() ->
-                        new NotFoundException(ErrorCode.ADR_NOT_FOUND));
+    public AddressResponseDto getAddress(AddressSDto serviceDto) {
+        Address address = getAddressByIdAndUserId(
+                serviceDto.getAddressId(),
+                serviceDto.getUserId());
 
         return AddressResponseDto.from(address);
     }
 
+    @Transactional
+    public AddressResponseDto updateAddress(UpdateAddressSDto serviceDto) {
+        Address address = getAddressByIdAndUserId(
+                serviceDto.getAddressId(),
+                serviceDto.getUserId());
+
+        if (!serviceDto.isDefault() && address.isDefault()) {
+            throw new InvalidException(ErrorCode.DEFAULT_ADDRESS_REQUIRED);
+        }
+
+        if (serviceDto.isDefault()) {
+            addressRepository.findByUserIdAndIsDefaultIsTrue(serviceDto.getUserId())
+                    .ifPresent(Address::unsetDefault);
+        }
+
+        address.updateAddress(
+                serviceDto.getAddressName(),
+                serviceDto.getPostcode(),
+                serviceDto.getPostAddress(),
+                serviceDto.getDetailAddress(),
+                serviceDto.getExtraAddress(),
+                serviceDto.getUserId(),
+                serviceDto.isDefault());
+
+        return AddressResponseDto.from(address);
+    }
+
+    @Transactional
+    public Long deleteAddress(AddressSDto serviceDto) {
+        Address address = getAddressByIdAndUserId(
+                serviceDto.getAddressId(),
+                serviceDto.getUserId());
+
+        addressRepository.delete(address);
+
+        return serviceDto.getAddressId();
+    }
+
     private boolean isFirstAddress(Long userId) {
         return !addressRepository.existsByUserId(userId);
+    }
+
+    private Address getAddressByIdAndUserId(Long addressId, Long userId) {
+        return addressRepository.findByIdAndUserId(addressId, userId)
+                .orElseThrow(() ->
+                        new NotFoundException(ErrorCode.ADR_NOT_FOUND));
+    }
+
+    public Address getAddressById(Long id) {
+        return addressRepository.findById(id)
+                .orElseThrow(() ->
+                        new NotFoundException(ErrorCode.ADR_NOT_FOUND));
     }
 }

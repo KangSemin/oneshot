@@ -6,6 +6,8 @@ import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import java.util.List;
+
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -15,16 +17,15 @@ import salute.oneshot.domain.cocktail.entity.QCocktail;
 import salute.oneshot.domain.cocktail.entity.QCocktailIngredient;
 import salute.oneshot.domain.ingredient.entity.Ingredient;
 import salute.oneshot.domain.ingredient.entity.IngredientCategory;
-import salute.oneshot.domain.ingredient.entity.QIngredient;
+
+import static salute.oneshot.domain.cocktail.entity.QCocktail.cocktail;
 
 @Repository
+@RequiredArgsConstructor
 public class CocktailQueryDslRepositoryImpl implements CocktailQueryDslRepository {
 
     private final JPAQueryFactory queryFactory;
 
-    public CocktailQueryDslRepositoryImpl(EntityManager em) {
-        queryFactory = new JPAQueryFactory(em);
-    }
 
     @Override
     public Page<Cocktail> searchCocktailsByIngredients(List<Ingredient> selectedIngrs,
@@ -60,5 +61,14 @@ public class CocktailQueryDslRepositoryImpl implements CocktailQueryDslRepositor
 
         return new PageImpl<>(content, pageable, total);
 
+    }
+
+    public void addViewCntFromRedis(Long cocktailId, Integer viewCount){
+       Integer addViewCount = (viewCount == null ? 0 : viewCount);
+
+        queryFactory.update(cocktail)
+                .set(cocktail.viewCount, cocktail.viewCount.add(addViewCount))
+                .where(cocktail.id.eq(cocktailId))
+                .execute();
     }
 }

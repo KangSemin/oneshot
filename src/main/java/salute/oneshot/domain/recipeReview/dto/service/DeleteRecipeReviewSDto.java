@@ -8,8 +8,8 @@ import lombok.Getter;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class DeleteRecipeReviewSDto {
 
-    private Long reviewId;
-    private Long userId;
+    private final Long reviewId;
+    private final Long userId;
 
     public static DeleteRecipeReviewSDto of(Long reviewId, Long userId) {
         return new DeleteRecipeReviewSDto(reviewId, userId);

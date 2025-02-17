@@ -38,13 +38,11 @@ public class FavoriteService {
             throw new ConflictException(ErrorCode.DUPLICATE_FAVORITE);
         }
 
-        User proxyUser = userRepository.getReferenceById(userId);
-
         Cocktail cocktail = cocktailRepository.findById(cocktailId)
                 .orElseThrow(() ->
                         new NotFoundException(ErrorCode.COCKTAIL_NOT_FOUND));
 
-        Favorite favorite = Favorite.from(proxyUser, cocktail);
+        Favorite favorite = Favorite.from(userId, cocktail);
         favoriteRepository.save(favorite);
 
         return FavoriteResponseDto.from(cocktail, favorite);
@@ -67,7 +65,7 @@ public class FavoriteService {
         Page<FavoriteResponseDto> favoritePage = favorites.map(favorite ->
                 FavoriteResponseDto.from(favorite.getCocktail(), favorite));
 
-        return FavoritePageResponseDto.of(favoritePage);
+        return FavoritePageResponseDto.from(favoritePage);
     }
 
     @Transactional
