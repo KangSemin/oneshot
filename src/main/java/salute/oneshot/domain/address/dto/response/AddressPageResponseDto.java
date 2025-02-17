@@ -11,10 +11,10 @@ import java.util.List;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class AddressPageResponseDto {
 
-    private List<AddressResponseDto> addresses;
-    private int currentPage;
-    private int totalPage;
-    private boolean hasNext;
+    private final List<AddressResponseDto> addresses;
+    private final int currentPage;
+    private final int totalPage;
+    private final boolean hasNext;
 
     public static AddressPageResponseDto from(
             Page<AddressResponseDto> pageResponseDto

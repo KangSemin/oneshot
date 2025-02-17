@@ -8,14 +8,14 @@ import lombok.Getter;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class UpdateAddressSDto {
 
-    private String addressName;
-    private String postcode;
-    private String postAddress;
-    private String detailAddress;
-    private String extraAddress;
-    private boolean isDefault;
-    private Long userId;
-    private Long addressId;
+    private final String addressName;
+    private final String postcode;
+    private final String postAddress;
+    private final String detailAddress;
+    private final String extraAddress;
+    private final boolean isDefault;
+    private final Long userId;
+    private final Long addressId;
 
     public static UpdateAddressSDto of(
             String addressName,

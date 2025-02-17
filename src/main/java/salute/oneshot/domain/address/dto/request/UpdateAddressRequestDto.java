@@ -10,14 +10,14 @@ import lombok.Getter;
 public class UpdateAddressRequestDto {
 
     @NotBlank
-    private String addressName;
+    private final String addressName;
     @NotBlank
-    private String postcode;
+    private final String postcode;
     @NotBlank
-    private String postAddress;
+    private final String postAddress;
     @NotBlank
-    private String detailAddress;
-    private String extraAddress;
-    private boolean isDefault;
+    private final String detailAddress;
+    private final String extraAddress;
+    private final boolean isDefault;
 }
 
