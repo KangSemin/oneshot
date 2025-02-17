@@ -5,11 +5,12 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import salute.oneshot.domain.user.entity.User;
 import salute.oneshot.domain.user.entity.UserRole;
-import salute.oneshot.domain.user.repository.UserRepository;
+
+import java.io.Serializable;
 
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class UserResponseDto {
+public class UserResponseDto implements Serializable {
 
     private final Long id;
     private final String email;
