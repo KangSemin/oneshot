@@ -11,9 +11,9 @@ import java.util.List;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class GetOrderResponseDto {
 
-    private Long orderId;
-    private Long amount;
-    private List<OrderItemListResponseDto> orderItems;
+    private final Long orderId;
+    private final Long amount;
+    private final List<OrderItemListResponseDto> orderItems;
 
     public static GetOrderResponseDto from(Order order, List<OrderItemListResponseDto> orderItems) {
         return new GetOrderResponseDto(order.getId(), order.getAmount(),orderItems);

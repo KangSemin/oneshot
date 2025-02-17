@@ -12,11 +12,11 @@ import java.time.LocalDateTime;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class OrderResponseDto {
 
-    private Long orderId;
-    private String name;
-    private Long amount;
-    private OrderStatus status;
-    private LocalDateTime orderDate;
+    private final Long orderId;
+    private final String name;
+    private final Long amount;
+    private final OrderStatus status;
+    private final LocalDateTime orderDate;
 
     public static OrderResponseDto from(Order order) {
         return new OrderResponseDto(order.getId(), order.getName(),
