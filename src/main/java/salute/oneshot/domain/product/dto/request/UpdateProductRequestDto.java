@@ -2,29 +2,30 @@ package salute.oneshot.domain.product.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import salute.oneshot.domain.product.entity.ProductCategory;
 import salute.oneshot.domain.product.entity.ProductStatus;
 
 @Getter
-@AllArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class UpdateProductRequestDto {
 
     @NotBlank
-    private String name;
+    private final String name;
 
     @NotBlank
-    private String description;
+    private final String description;
 
     @NotNull
-    private ProductCategory category;
+    private final ProductCategory category;
 
     @NotNull
-    private int price;
+    private final int price;
 
     @NotNull
-    private int stockQuantity;
+    private final int stockQuantity;
 
-    private ProductStatus status;
+    private final ProductStatus status;
 }

@@ -10,13 +10,13 @@ import salute.oneshot.domain.product.entity.ProductStatus;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class CreateProductSDto {
 
-    private Long userId;
-    private String name;
-    private String description;
-    private ProductCategory category;
-    private int price;
-    private int stockQuantity;
-    private ProductStatus status;
+    private final Long userId;
+    private final String name;
+    private final String description;
+    private final ProductCategory category;
+    private final int price;
+    private final int stockQuantity;
+    private final ProductStatus status;
 
     public static CreateProductSDto of(Long userId, String name, String description, ProductCategory category,
                                        int price, int stockQuantity, ProductStatus status) {

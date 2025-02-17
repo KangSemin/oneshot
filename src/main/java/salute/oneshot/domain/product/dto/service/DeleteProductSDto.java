@@ -8,8 +8,8 @@ import lombok.Getter;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class DeleteProductSDto {
 
-    private Long userId;
-    private Long productId;
+    private final Long userId;
+    private final Long productId;
 
     public static DeleteProductSDto of(Long userId, Long productId) {
         return new DeleteProductSDto(userId, productId);
