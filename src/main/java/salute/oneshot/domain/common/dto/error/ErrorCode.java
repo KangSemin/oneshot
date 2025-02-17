@@ -45,8 +45,11 @@ public enum ErrorCode {
 
     // 주문 관련 익셉션
     ORDER_NOT_FOUND(HttpStatus.NOT_FOUND, "주문이 존재하지 않습니다."),
-    ORDER_GET_FORBIDDEN(HttpStatus.FORBIDDEN,"본인이 주문한 주문내역만 조회할 수 있습니다."),
+    ORDER_GET_FORBIDDEN(HttpStatus.FORBIDDEN,"다른 사용자의 주문 내역은 조회할 수 없습니다."),
     INVALID_ORDER_STATUS(HttpStatus.BAD_REQUEST, "현재 상태에서는 주문 상태를 변경할 수 없습니다."),
+    CANNOT_CANCEL_SHIPPED_ORDER(HttpStatus.BAD_REQUEST, "배송 완료된 주문은 취소할 수 없습니다."),
+    ORDER_CANCEL_FORBIDDEN(HttpStatus.FORBIDDEN,"이 주문을 취소할 권한이 없습니다."),
+    ALREADY_CANCELLED_ORDER(HttpStatus.BAD_REQUEST, "이미 취소처리 된 주문입니다."),
 
     // 결제 관련 익셉션
     PAYMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 결제 내역이 존재하지 않습니다."),
@@ -60,7 +63,7 @@ public enum ErrorCode {
     // 주소 관련 익셉션
     ADR_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 주소가 존재하지 않습니다."),
     DUPLICATE_ADR_DEFAULT(HttpStatus.CREATED, "이미 기본값으로 설정된 주소입니다."),
-    INVALID_ADDRESS_ACCESS(HttpStatus.FORBIDDEN, "유효하지 않은 주소입니다."),
+    INVALID_ADDRESS_ACCESS(HttpStatus.FORBIDDEN, "해당 주소에 대한 접근 권한이 없습니다."),
     DEFAULT_ADDRESS_REQUIRED(HttpStatus.BAD_REQUEST, "기본 주소는 필수입니다"),
 
     // 배송 관련 익셉션
@@ -72,7 +75,7 @@ public enum ErrorCode {
     INVALID_STATUS_CHANGE(HttpStatus.BAD_REQUEST, "유효하지 않은 배송 상태 변경입니다"),
 
     // 인가 관련 익셉션
-    FORBIDDEN_ACCESS(HttpStatus.UNAUTHORIZED, "접근 권한이 없습니다."),
+    FORBIDDEN_ACCESS(HttpStatus.FORBIDDEN, "접근 권한이 없습니다."),
 
     // 인증 관련 익셉션
     UNAUTHORIZED_ACCESS(HttpStatus.UNAUTHORIZED, "로그인이 필요합니다."),
