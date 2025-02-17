@@ -78,13 +78,13 @@ public class PaymentService {
         return paymentRepository.findById(paymentId).orElseThrow(() -> new NotFoundException(ErrorCode.PAYMENT_NOT_FOUND));
     }
 
-    private static void isPaymentOwnedByUser(Payment payment, Long userId) {
+    private void isPaymentOwnedByUser(Payment payment, Long userId) {
         if (!payment.getOrder().getUser().getId().equals(userId)) {
             throw new UnauthorizedException(ErrorCode.PAYMENT_UNAUTHORIZED);
         }
     }
 
-    private static void isOrderStatusPendingPayment(Order order) {
+    private void isOrderStatusPendingPayment(Order order) {
         if (!order.getStatus().equals(OrderStatus.PENDING_PAYMENT)) {
             throw new ConflictException(ErrorCode.ORDER_ALREADY_PAID);
         }
