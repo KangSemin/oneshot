@@ -45,6 +45,7 @@ public enum ErrorCode {
 
     // 주문 관련 익셉션
     ORDER_NOT_FOUND(HttpStatus.NOT_FOUND, "주문이 존재하지 않습니다."),
+    ORDER_GET_FORBIDDEN(HttpStatus.FORBIDDEN,"본인이 주문한 주문내역만 조회할 수 있습니다."),
 
     // 결제 관련 익셉션
     PAYMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 결제 내역이 존재하지 않습니다."),
@@ -58,6 +59,7 @@ public enum ErrorCode {
     // 주소 관련 익셉션
     ADR_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 주소가 존재하지 않습니다."),
     DUPLICATE_ADR_DEFAULT(HttpStatus.CREATED, "이미 기본값으로 설정된 주소입니다."),
+    INVALID_ADDRESS_ACCESS(HttpStatus.FORBIDDEN, "유효하지 않은 주소입니다."),
 
     // 인가 관련 익셉션
     FORBIDDEN_ACCESS(HttpStatus.UNAUTHORIZED, "접근 권한이 없습니다."),
