@@ -104,7 +104,13 @@ public class IngredientReviewService {
 
         ingredientReview.updateIngredientReview(sDto.getStar(), sDto.getContent());
 
-        return IngrReviewResponseDto.from(ingredientReview);
+        Ingredient ingredient = ingredientReview.getIngredient();
+        User user = ingredientReview.getUser();
+
+        UserResponseDto userResponseDto = UserResponseDto.from(user);
+        IngredientResponseDto ingrResponseDto = IngredientResponseDto.from(ingredient);
+
+        return IngrReviewResponseDto.from(ingrResponseDto, userResponseDto, ingredientReview);
     }
 
     private IngredientReview validateUser(Long reviewId, Long userId) {
