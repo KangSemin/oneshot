@@ -12,11 +12,13 @@ import org.springframework.web.bind.annotation.*;
 import salute.oneshot.domain.common.dto.success.ApiResponse;
 import salute.oneshot.domain.common.dto.success.ApiResponseConst;
 import salute.oneshot.domain.ingredientReview.dto.request.CreateIngrReviewRequestDto;
+import salute.oneshot.domain.ingredientReview.dto.request.UpdateIngrReviewRequestDto;
 import salute.oneshot.domain.ingredientReview.dto.response.IngrReviewResponseDto;
 import salute.oneshot.domain.ingredientReview.dto.service.CreateIngrReviewSDto;
 import salute.oneshot.domain.ingredientReview.dto.service.DeleteIngrReviewSDto;
 import salute.oneshot.domain.ingredientReview.dto.service.GetMyIngredientReviewSDto;
 import salute.oneshot.domain.ingredientReview.service.IngredientReviewService;
+import salute.oneshot.domain.recipeReview.dto.service.UpdateRecipeReviewSDto;
 import salute.oneshot.global.security.entity.CustomUserDetails;
 
 @RestController
@@ -27,7 +29,7 @@ public class IngredientReviewController {
     private final IngredientReviewService ingredientReviewService;
 
     @PostMapping("/{ingredientId}/reviews")
-    public ResponseEntity<ApiResponse<IngrReviewResponseDto>> createIngredientReview (
+    public ResponseEntity<ApiResponse<IngrReviewResponseDto>> createIngredientReview(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @PathVariable("ingredientId") Long ingredientId,
             @Valid @RequestBody CreateIngrReviewRequestDto requestDto) {
@@ -39,7 +41,7 @@ public class IngredientReviewController {
 
         IngrReviewResponseDto responseDto = ingredientReviewService.createIngredientReview(sDto);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(ApiResponseConst.ADD_INGR_RVW_SUCCESS,responseDto));
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(ApiResponseConst.ADD_INGR_RVW_SUCCESS, responseDto));
     }
 
     @GetMapping("/reviews/me")
@@ -56,7 +58,23 @@ public class IngredientReviewController {
 
         Page<IngrReviewResponseDto> responseDtoPage = ingredientReviewService.getMyIngredientReview(sDto);
 
-        return ResponseEntity.ok(ApiResponse.success(ApiResponseConst.GET_INGR_RVW_LIST_SUCCESS,responseDtoPage));
+        return ResponseEntity.ok(ApiResponse.success(ApiResponseConst.GET_INGR_RVW_LIST_SUCCESS, responseDtoPage));
+    }
+
+    @PatchMapping("/reviews/{reviewId}")
+    public ResponseEntity<ApiResponse<IngrReviewResponseDto>> updateIngredientReview(
+            @PathVariable("reviewId") Long reviewId,
+            @Valid @RequestBody UpdateIngrReviewRequestDto requestDto,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        Long userId = userDetails.getId();
+
+        UpdateRecipeReviewSDto sDto = UpdateRecipeReviewSDto
+                .of(reviewId, requestDto.getStar(), requestDto.getContent(), userId);
+
+        IngrReviewResponseDto responseDto = ingredientReviewService.updateIngredientReview(sDto);
+
+        return ResponseEntity.ok(ApiResponse.success(ApiResponseConst.UPDATE_INGR_RVW_SUCCESS, responseDto));
     }
 
     @DeleteMapping("/reviews/{reviewId}")

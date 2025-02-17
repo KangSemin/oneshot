@@ -32,14 +32,19 @@ public class IngredientReview extends BaseEntity {
     @JoinColumn(name = "inredient_id")
     private Ingredient ingredient;
 
-    private IngredientReview (Byte star, String content, User user, Ingredient ingredient) {
+    private IngredientReview(Byte star, String content, User user, Ingredient ingredient) {
         this.star = star;
         this.content = content;
         this.user = user;
         this.ingredient = ingredient;
     }
 
-    public static IngredientReview of (Byte star, String content, User user, Ingredient ingredient) {
+    public static IngredientReview of(Byte star, String content, User user, Ingredient ingredient) {
         return new IngredientReview(star, content, user, ingredient);
+    }
+
+    public void updateIngredientReview(Byte star, String content) {
+        this.star = star;
+        this.content = content;
     }
 }
