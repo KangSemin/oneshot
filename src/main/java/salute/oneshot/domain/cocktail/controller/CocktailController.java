@@ -11,12 +11,9 @@ import salute.oneshot.domain.cocktail.dto.request.CreateCocktailRequestDto;
 import salute.oneshot.domain.cocktail.dto.request.SearchCocktailByIngrsReqDto;
 import salute.oneshot.domain.cocktail.dto.request.UpdateCocktailRequestDto;
 import salute.oneshot.domain.cocktail.dto.response.CocktailResponseDto;
-import salute.oneshot.domain.cocktail.dto.service.CreateCocktailSDto;
-import salute.oneshot.domain.cocktail.dto.service.DeleteCocktailSDto;
-import salute.oneshot.domain.cocktail.dto.service.SearchCocktailSDto;
-import salute.oneshot.domain.cocktail.dto.service.UpdateCocktailSDto;
-import salute.oneshot.domain.cocktail.dto.service.findCocktailSDto;
+import salute.oneshot.domain.cocktail.dto.service.*;
 import salute.oneshot.domain.cocktail.service.CocktailService;
+import salute.oneshot.domain.cocktail.service.RedisService;
 import salute.oneshot.domain.common.dto.success.ApiResponse;
 import salute.oneshot.domain.common.dto.success.ApiResponseConst;
 import salute.oneshot.global.security.entity.CustomUserDetails;
@@ -27,6 +24,7 @@ import salute.oneshot.global.security.entity.CustomUserDetails;
 public class CocktailController {
 
     private final CocktailService cocktailService;
+    private final RedisService redisService;
 
     @PostMapping
     public ResponseEntity<ApiResponse<CocktailResponseDto>> createCocktail(
@@ -44,10 +42,12 @@ public class CocktailController {
     }
 
 
+
     @GetMapping("/{cocktailId}")
     public ResponseEntity<ApiResponse<CocktailResponseDto>> getCocktail(
         @PathVariable Long cocktailId) {
 
+        redisService.increaseViewScore(cocktailId);
         CocktailResponseDto response = cocktailService.getCocktail(cocktailId);
 
         return ResponseEntity.ok(
@@ -92,7 +92,7 @@ public class CocktailController {
         return ResponseEntity.ok(ApiResponse.success(ApiResponseConst.DELETE_CCKTL_SUCCESS));
     }
 
-    @GetMapping
+    @GetMapping//조건별 검색
     public ResponseEntity<ApiResponse<Page<CocktailResponseDto>>> getCocktails(@RequestParam(name = "page", defaultValue = "1")int page,
                                                                                @RequestParam(name ="size", defaultValue = "10")int size,
                                                                                @RequestParam(name ="keyword", required = false) String keyword,
@@ -106,6 +106,19 @@ public class CocktailController {
 
         return ResponseEntity.ok(ApiResponse.success(ApiResponseConst.GET_CCKTL_LIST_SUCCESS, responsePage));
 
+    }
+
+
+
+    @GetMapping("/popular")//인기 칵테일 조회
+    public ResponseEntity<ApiResponse<Page<CocktailResponseDto>>> getPopularCocktails(@RequestParam(name = "page", defaultValue = "1") int page,
+                                                                                        @RequestParam(name = "size", defaultValue = "10")int size)
+    {
+        Pageable pageable = PageRequest.of(page - 1, size);
+
+       Page<CocktailResponseDto> responseDtoPage = cocktailService.getPopularCocktails(pageable);
+
+       return ResponseEntity.ok(ApiResponse.success(ApiResponseConst.GET_CCKTL_LIST_SUCCESS, responseDtoPage));
     }
 
 
