@@ -114,6 +114,7 @@ public class IngredientReviewService {
         return IngrReviewResponseDto.from(ingrResponseDto, userResponseDto, ingredientReview);
     }
 
+    @Transactional
     public void deleteIngredientReview(DeleteIngrReviewSDto sDto) {
 
         IngredientReview ingredientReview = validateUser(sDto.getReviewId(), sDto.getUserId());
