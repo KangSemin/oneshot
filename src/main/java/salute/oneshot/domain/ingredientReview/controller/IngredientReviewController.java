@@ -15,11 +15,11 @@ import salute.oneshot.domain.ingredientReview.dto.request.CreateIngrReviewReques
 import salute.oneshot.domain.ingredientReview.dto.request.UpdateIngrReviewRequestDto;
 import salute.oneshot.domain.ingredientReview.dto.response.IngrReviewResponseDto;
 import salute.oneshot.domain.ingredientReview.dto.service.CreateIngrReviewSDto;
+import salute.oneshot.domain.ingredientReview.dto.service.DeleteIngrReviewSDto;
 import salute.oneshot.domain.ingredientReview.dto.service.GetAllIngrReviewSDto;
 import salute.oneshot.domain.ingredientReview.dto.service.GetMyIngredientReviewSDto;
 import salute.oneshot.domain.ingredientReview.dto.service.UpdateIngrReviewSDto;
 import salute.oneshot.domain.ingredientReview.service.IngredientReviewService;
-import salute.oneshot.domain.recipeReview.dto.service.UpdateRecipeReviewSDto;
 import salute.oneshot.global.security.entity.CustomUserDetails;
 
 @RestController
@@ -104,4 +104,17 @@ public class IngredientReviewController {
         return ResponseEntity.ok(ApiResponse.success(ApiResponseConst.UPDATE_INGR_RVW_SUCCESS, responseDto));
     }
 
+    @DeleteMapping("/reviews/{reviewId}")
+    public ResponseEntity<ApiResponse<IngrReviewResponseDto>> deleteIngredientReview(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable("reviewId") Long reviewId) {
+
+        Long userId = userDetails.getId();
+
+        DeleteIngrReviewSDto sDto = DeleteIngrReviewSDto.of(reviewId, userId);
+
+        ingredientReviewService.deleteIngredientReview(sDto);
+
+        return ResponseEntity.ok(ApiResponse.success(ApiResponseConst.DELETE_INGR_RVW_SUCCESS));
+    }
 }
