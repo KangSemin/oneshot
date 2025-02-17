@@ -14,10 +14,7 @@ import salute.oneshot.domain.order.dto.response.GetOrderResponseDto;
 import salute.oneshot.domain.order.dto.response.OrderItemListResponseDto;
 import salute.oneshot.domain.order.dto.response.OrderResponseDto;
 import salute.oneshot.domain.order.dto.response.UpdateOrderResponseDto;
-import salute.oneshot.domain.order.dto.service.CreateOrderSDto;
-import salute.oneshot.domain.order.dto.service.GetAllOrderSDto;
-import salute.oneshot.domain.order.dto.service.GetOrderSDto;
-import salute.oneshot.domain.order.dto.service.UpdateOrderSDto;
+import salute.oneshot.domain.order.dto.service.*;
 import salute.oneshot.domain.order.entity.Order;
 import salute.oneshot.domain.order.entity.OrderItem;
 import salute.oneshot.domain.order.entity.OrderStatus;
@@ -26,10 +23,7 @@ import salute.oneshot.domain.product.entity.Product;
 import salute.oneshot.domain.user.entity.User;
 import salute.oneshot.domain.user.entity.UserRole;
 import salute.oneshot.domain.user.repository.UserRepository;
-import salute.oneshot.global.exception.ForbiddenException;
-import salute.oneshot.global.exception.InvalidException;
-import salute.oneshot.global.exception.NotFoundException;
-import salute.oneshot.global.exception.UnauthorizedException;
+import salute.oneshot.global.exception.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -141,6 +135,25 @@ public class OrderService {
         order.updateOrderStatus(OrderStatus.valueOf(sDto.getOrderStatus()));
 
         return UpdateOrderResponseDto.from(order);
+    }
+
+    @Transactional
+    public void deleteOrder(DeleteOrderSDto sDto) {
+
+        Order order = orderRepository.findById(sDto.getOrderId())
+                .orElseThrow(() -> new NotFoundException(ErrorCode.ORDER_NOT_FOUND));
+
+        if(!order.getUser().getId().equals(sDto.getUserId())) {
+            throw new ForbiddenException(ErrorCode.ORDER_CANCEL_FORBIDDEN);
+        }
+
+        if(order.getStatus() == OrderStatus.SHIPPED) {
+            throw new CustomRuntimeException(ErrorCode.CANNOT_CANCEL_SHIPPED_ORDER);
+        } else if (order.getStatus() == OrderStatus.CANCELLED) {
+            throw new CustomRuntimeException(ErrorCode.ALREADY_CANCELLED_ORDER);
+        }
+
+        order.cancelOrder();
     }
 
 

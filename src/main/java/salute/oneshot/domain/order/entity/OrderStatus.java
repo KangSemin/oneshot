@@ -6,5 +6,5 @@ public enum OrderStatus {
     PENDING_SHIPMENT,   // 배송 대기 중
     IN_TRANSIT,         // 배송 중
     SHIPPED,            // 배송 완료
-//    CANCELLED         // 취소
+    CANCELLED           // 취소
 }

@@ -16,10 +16,7 @@ import salute.oneshot.domain.order.dto.request.UpdateOrderRequestDto;
 import salute.oneshot.domain.order.dto.response.GetOrderResponseDto;
 import salute.oneshot.domain.order.dto.response.OrderResponseDto;
 import salute.oneshot.domain.order.dto.response.UpdateOrderResponseDto;
-import salute.oneshot.domain.order.dto.service.CreateOrderSDto;
-import salute.oneshot.domain.order.dto.service.GetAllOrderSDto;
-import salute.oneshot.domain.order.dto.service.GetOrderSDto;
-import salute.oneshot.domain.order.dto.service.UpdateOrderSDto;
+import salute.oneshot.domain.order.dto.service.*;
 import salute.oneshot.domain.order.service.OrderService;
 import salute.oneshot.global.security.entity.CustomUserDetails;
 
@@ -92,4 +89,17 @@ public class OrderController {
         return ResponseEntity.ok(ApiResponse.success(ApiResponseConst.UPDATE_ORD_SUCCESS, responseDto));
     }
 
+    @DeleteMapping("/{orderId}")
+    public ResponseEntity<ApiResponse<Void>> deleteOrder(
+            @PathVariable("orderId") Long orderId,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        Long userId = userDetails.getId();
+
+        DeleteOrderSDto sDto = DeleteOrderSDto.of(userId, orderId);
+
+        orderService.deleteOrder(sDto);
+
+        return ResponseEntity.ok(ApiResponse.success(ApiResponseConst.DELETE_ORD_SUCCESS));
+    }
 }
