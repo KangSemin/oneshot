@@ -136,8 +136,11 @@ public class OrderService {
         }
 
         if(order.getStatus() == OrderStatus.SHIPPED) {
+
             throw new CustomRuntimeException(ErrorCode.CANNOT_CANCEL_SHIPPED_ORDER);
+
         } else if (order.getStatus() == OrderStatus.CANCELLED) {
+
             throw new CustomRuntimeException(ErrorCode.ALREADY_CANCELLED_ORDER);
         }
 
