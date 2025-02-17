@@ -97,6 +97,7 @@ public class OrderService {
         return GetOrderResponseDto.from(order, responseDtoList);
     }
 
+    @Transactional
     public Page<CreateOrderResponseDto> getAllOrder(GetAllOrderSDto sDto) {
 
         Page<Order> orderPage = orderRepository.findByUser_Id(sDto.getUserId(), sDto.getPageable());
@@ -104,19 +105,6 @@ public class OrderService {
         Page<CreateOrderResponseDto> responseDtoPage = orderPage.map(CreateOrderResponseDto::from);
 
         return responseDtoPage;
-    }
-
-
-    private String generateOrderName(Cart cart) {
-
-        if (cart.getItemList().size() == 1) {
-            return cart.getItemList().get(0).getProduct().getName();
-        } else {
-            return cart.getItemList().get(0).getProduct().getName() + " 외 " +
-                    (cart.getItemList().size() - 1) + "개";
-        }
-
-
     }
 
     @Transactional
@@ -165,6 +153,16 @@ public class OrderService {
     private void verifyAdmin(User user) {
         if (user.getUserRole() != UserRole.ADMIN) {
             throw new UnauthorizedException(ErrorCode.FORBIDDEN_ACCESS);
+        }
+    }
+
+    private String generateOrderName(Cart cart) {
+
+        if (cart.getItemList().size() == 1) {
+            return cart.getItemList().get(0).getProduct().getName();
+        } else {
+            return cart.getItemList().get(0).getProduct().getName() + " 외 " +
+                    (cart.getItemList().size() - 1) + "개";
         }
     }
 }
