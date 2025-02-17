@@ -8,10 +8,10 @@ import lombok.Getter;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class UpdateIngrReviewSDto {
 
-    private Long reviewId;
-    private Byte star;
-    private String content;
-    private Long userId;
+    private final Long reviewId;
+    private final Byte star;
+    private final String content;
+    private final Long userId;
 
     public static UpdateIngrReviewSDto of(Long reviewId, Byte star, String content, Long userId) {
         return new UpdateIngrReviewSDto(reviewId, star, content, userId);

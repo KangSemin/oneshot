@@ -1,17 +1,18 @@
 package salute.oneshot.domain.ingredientReview.dto.response;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import salute.oneshot.domain.ingredientReview.entity.IngredientReview;
 
 @Getter
-@AllArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class IngrReviewResponseDto {
 
-    private Long reviewId;
-    private Byte star;
-    private String content;
-    private Long userId;
+    private final Long reviewId;
+    private final Byte star;
+    private final String content;
+    private final Long userId;
 
     public static IngrReviewResponseDto from(IngredientReview ingredientReview) {
         return new IngrReviewResponseDto(
