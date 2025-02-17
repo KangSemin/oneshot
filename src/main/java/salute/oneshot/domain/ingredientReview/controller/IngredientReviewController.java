@@ -17,6 +17,7 @@ import salute.oneshot.domain.ingredientReview.dto.response.IngrReviewResponseDto
 import salute.oneshot.domain.ingredientReview.dto.service.CreateIngrReviewSDto;
 import salute.oneshot.domain.ingredientReview.dto.service.GetAllIngrReviewSDto;
 import salute.oneshot.domain.ingredientReview.dto.service.GetMyIngredientReviewSDto;
+import salute.oneshot.domain.ingredientReview.dto.service.UpdateIngrReviewSDto;
 import salute.oneshot.domain.ingredientReview.service.IngredientReviewService;
 import salute.oneshot.domain.recipeReview.dto.service.UpdateRecipeReviewSDto;
 import salute.oneshot.global.security.entity.CustomUserDetails;
@@ -95,7 +96,7 @@ public class IngredientReviewController {
 
         Long userId = userDetails.getId();
 
-        UpdateRecipeReviewSDto sDto = UpdateRecipeReviewSDto
+        UpdateIngrReviewSDto sDto = UpdateIngrReviewSDto
                 .of(reviewId, requestDto.getStar(), requestDto.getContent(), userId);
 
         IngrReviewResponseDto responseDto = ingredientReviewService.updateIngredientReview(sDto);

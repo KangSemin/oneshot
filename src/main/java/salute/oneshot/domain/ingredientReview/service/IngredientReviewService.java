@@ -11,9 +11,9 @@ import salute.oneshot.domain.ingredientReview.dto.response.IngrReviewResponseDto
 import salute.oneshot.domain.ingredientReview.dto.service.CreateIngrReviewSDto;
 import salute.oneshot.domain.ingredientReview.dto.service.GetAllIngrReviewSDto;
 import salute.oneshot.domain.ingredientReview.dto.service.GetMyIngredientReviewSDto;
+import salute.oneshot.domain.ingredientReview.dto.service.UpdateIngrReviewSDto;
 import salute.oneshot.domain.ingredientReview.entity.IngredientReview;
 import salute.oneshot.domain.ingredientReview.repository.IngredientReviewRepository;
-import salute.oneshot.domain.recipeReview.dto.service.UpdateRecipeReviewSDto;
 import salute.oneshot.domain.user.entity.User;
 import salute.oneshot.domain.user.repository.UserRepository;
 import salute.oneshot.global.exception.CustomRuntimeException;
@@ -70,7 +70,7 @@ public class IngredientReviewService {
     }
 
     @Transactional
-    public IngrReviewResponseDto updateIngredientReview(UpdateRecipeReviewSDto sDto) {
+    public IngrReviewResponseDto updateIngredientReview(UpdateIngrReviewSDto sDto) {
 
         IngredientReview ingredientReview = validateUser(sDto.getReviewId(), sDto.getUserId());
 
