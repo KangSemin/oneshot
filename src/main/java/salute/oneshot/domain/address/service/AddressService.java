@@ -13,6 +13,7 @@ import salute.oneshot.domain.address.dto.service.UpdateAddressSDto;
 import salute.oneshot.domain.address.entity.Address;
 import salute.oneshot.domain.address.repository.AddressRepository;
 import salute.oneshot.domain.common.dto.error.ErrorCode;
+import salute.oneshot.global.exception.InvalidException;
 import salute.oneshot.global.exception.NotFoundException;
 
 @Service
@@ -65,6 +66,10 @@ public class AddressService {
         Address address = getAddressByIdAndUserId(
                 serviceDto.getAddressId(),
                 serviceDto.getUserId());
+
+        if (!serviceDto.isDefault() && address.isDefault()) {
+            throw new InvalidException(ErrorCode.DEFAULT_ADDRESS_REQUIRED);
+        }
 
         if (serviceDto.isDefault()) {
             addressRepository.findByUserIdAndIsDefaultIsTrue(serviceDto.getUserId())
