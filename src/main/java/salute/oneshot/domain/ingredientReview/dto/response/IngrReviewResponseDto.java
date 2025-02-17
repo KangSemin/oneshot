@@ -8,6 +8,7 @@ import salute.oneshot.domain.ingredientReview.entity.IngredientReview;
 @AllArgsConstructor
 public class IngrReviewResponseDto {
 
+    private String ingredientName;
     private Long reviewId;
     private Byte star;
     private String content;
@@ -15,7 +16,7 @@ public class IngrReviewResponseDto {
 
     public static IngrReviewResponseDto from(IngredientReview ingredientReview) {
         return new IngrReviewResponseDto(
-                ingredientReview.getId(), ingredientReview.getStar(),
+                ingredientReview.getIngredient().getName(), ingredientReview.getId() ,ingredientReview.getStar(),
                 ingredientReview.getContent(), ingredientReview.getUser().getId());
     }
 
