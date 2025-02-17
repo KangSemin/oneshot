@@ -1,6 +1,7 @@
 package salute.oneshot.domain.order.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import salute.oneshot.domain.address.entity.Address;
@@ -13,6 +14,7 @@ import salute.oneshot.domain.order.dto.response.GetOrderResponseDto;
 import salute.oneshot.domain.order.dto.response.OrderItemListResponseDto;
 import salute.oneshot.domain.order.dto.response.OrderResponseDto;
 import salute.oneshot.domain.order.dto.service.CreateOrderSDto;
+import salute.oneshot.domain.order.dto.service.GetAllOrderSDto;
 import salute.oneshot.domain.order.dto.service.GetOrderSDto;
 import salute.oneshot.domain.order.entity.Order;
 import salute.oneshot.domain.order.entity.OrderItem;
@@ -90,6 +92,15 @@ public class OrderService {
                 .map(OrderItemListResponseDto::from).collect(Collectors.toList());
 
         return GetOrderResponseDto.from(order, responseDtoList);
+    }
+
+    public Page<OrderResponseDto> getAllOrder(GetAllOrderSDto sDto) {
+
+        Page<Order> orderPage = orderRepository.findByUser_Id(sDto.getUserId(), sDto.getPageable());
+
+        Page<OrderResponseDto> responseDtoPage = orderPage.map(OrderResponseDto::from);
+
+        return responseDtoPage;
     }
 
 

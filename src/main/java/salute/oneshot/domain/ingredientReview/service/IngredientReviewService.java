@@ -1,9 +1,9 @@
 package salute.oneshot.domain.ingredientReview.service;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import salute.oneshot.domain.common.dto.error.ErrorCode;
 import salute.oneshot.domain.ingredient.entity.Ingredient;
 import salute.oneshot.domain.ingredient.repository.IngredientRepository;
@@ -13,10 +13,12 @@ import salute.oneshot.domain.ingredientReview.dto.response.UserResponseDto;
 import salute.oneshot.domain.ingredientReview.dto.service.CreateIngrReviewSDto;
 import salute.oneshot.domain.ingredientReview.dto.service.GetAllIngrReviewSDto;
 import salute.oneshot.domain.ingredientReview.dto.service.GetMyIngredientReviewSDto;
+import salute.oneshot.domain.ingredientReview.dto.service.UpdateIngrReviewSDto;
 import salute.oneshot.domain.ingredientReview.entity.IngredientReview;
 import salute.oneshot.domain.ingredientReview.repository.IngredientReviewRepository;
 import salute.oneshot.domain.user.entity.User;
 import salute.oneshot.domain.user.repository.UserRepository;
+import salute.oneshot.global.exception.CustomRuntimeException;
 import salute.oneshot.global.exception.NotFoundException;
 
 @Service
@@ -93,5 +95,26 @@ public class IngredientReviewService {
         });
 
         return responseDtoPage;
+    }
+
+    @Transactional
+    public IngrReviewResponseDto updateIngredientReview(UpdateIngrReviewSDto sDto) {
+
+        IngredientReview ingredientReview = validateUser(sDto.getReviewId(), sDto.getUserId());
+
+        ingredientReview.updateIngredientReview(sDto.getStar(), sDto.getContent());
+
+        return IngrReviewResponseDto.from(ingredientReview);
+    }
+
+    private IngredientReview validateUser(Long reviewId, Long userId) {
+        IngredientReview ingredientReview = ingredientReviewRepository.findById(reviewId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.REVIEW_NOT_FOUND));
+
+        if (!ingredientReview.getUser().getId().equals(userId)) {
+            throw new CustomRuntimeException(ErrorCode.REVIEW_DELETE_FORBIDDEN);
+        }
+
+        return ingredientReview;
     }
 }
