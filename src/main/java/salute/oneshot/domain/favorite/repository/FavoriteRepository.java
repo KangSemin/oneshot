@@ -14,7 +14,7 @@ public interface FavoriteRepository extends JpaRepository<Favorite, Long> {
 
     @Query("SELECT EXISTS(" +
             "SELECT 1 FROM Favorite f " +
-            "WHERE f.cocktail.id = :cocktailId AND f.user.id = :userId)")
+            "WHERE f.cocktail.id = :cocktailId AND f.userId = :userId)")
     boolean existsByRecipeIdAndUserId(
             @Param("cocktailId") Long cocktailId,
             @Param("userId") Long userId
