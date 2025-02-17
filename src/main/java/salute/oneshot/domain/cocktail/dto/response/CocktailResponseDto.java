@@ -46,17 +46,4 @@ public class CocktailResponseDto implements Serializable{
             ingrReponseList, cocktail.getLikeCounts(), cocktail.getStarRate(), cocktail.getViewCount(), cocktail.getCreatedAt(),
             cocktail.getModifiedAt());
     }
-
-    public static CocktailResponseDto of(Cocktail cocktail, Integer viewCount){
-        List<IngrResponseDto> ingrReponseList = cocktail.getIngredientList().stream()
-                .map(ingr -> IngrResponseDto.from(ingr.getIngredient())).toList();
-
-        UserResponseDto userResponse = UserResponseDto.from(cocktail.getUser());
-
-        return new CocktailResponseDto(cocktail.getId(), cocktail.getName(),
-                cocktail.getDescription(), cocktail.getRecipe(), cocktail.getType(), userResponse,
-                ingrReponseList, cocktail.getLikeCounts(), cocktail.getStarRate(), viewCount, cocktail.getCreatedAt(),
-                cocktail.getModifiedAt());
-
-    }
 }
