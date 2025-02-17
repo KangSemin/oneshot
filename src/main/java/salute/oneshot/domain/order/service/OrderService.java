@@ -153,7 +153,7 @@ public class OrderService {
             throw new CustomRuntimeException(ErrorCode.ALREADY_CANCELLED_ORDER);
         }
 
-        order.cancelOrder();
+        order.updateOrderStatus(OrderStatus.CANCELLED);
     }
 
 
