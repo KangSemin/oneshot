@@ -15,7 +15,7 @@ public class PaymentViewController {
 
     @GetMapping
     public String paymentsPage() {
-        return "toss-payment";
+        return "payment/toss-payment";
     }
 
     @GetMapping("/success")

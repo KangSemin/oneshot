@@ -14,12 +14,12 @@ public class PaymentResponseDto {
     private final Long amount;
     private final PaymentStatus status;
 
-    public static PaymentResponseDto from(Payment payment) {
-        return new PaymentResponseDto(
-                payment.getId(),
-                payment.getOrder().getId(),
-                payment.getAmount(),
-                payment.getStatus()
-        );
-    }
+//    public static PaymentResponseDto from(Payment payment) {
+//        return new PaymentResponseDto(
+//                payment.getId(),
+//                payment.getOrder().getId(),
+//                payment.getAmount(),
+//                payment.getStatus()
+//        );
+//    }
 }

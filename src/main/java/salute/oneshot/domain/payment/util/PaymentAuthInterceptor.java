@@ -2,16 +2,18 @@ package salute.oneshot.domain.payment.util;
 
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
-import lombok.RequiredArgsConstructor;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
-@RequiredArgsConstructor
 public class PaymentAuthInterceptor implements RequestInterceptor {
     private static final String AUTH_HEADER_PREFIX = "Basic ";
 
     private final PaymentProperties paymentProperties;
+
+    public PaymentAuthInterceptor(final PaymentProperties paymentProperties) {
+        this.paymentProperties = paymentProperties;
+    }
 
     @Override
     public void apply(final RequestTemplate template) {

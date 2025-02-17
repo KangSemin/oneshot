@@ -27,7 +27,7 @@
         const clientKey = "test_gck_docs_Ovk5rk1EwkEbP0W43n07xlzm";
         const tossPayments = TossPayments(clientKey);
         // 회원 결제
-        const customerKey = "f_Q8mDWquBCxWTnzv64HD";
+        const customerKey = "hs1Er0JjqKMR0DZC-bBDC";
         const widgets = tossPayments.widgets({
             customerKey,
         });
@@ -63,14 +63,14 @@
 
             await widgets.setAmount({
                 currency: "KRW",
-                value: 50000,
+                value: 5000,
             });
         });
 
         // ------ '결제하기' 버튼 누르면 결제창 띄우기 ------
         button.addEventListener("click", async function () {
             await widgets.requestPayment({
-                orderId: "BeFA8ryxFTKg9WG6ww5Q6",
+                orderId: "PsW-iekdJqYLX9yIEfpox",
                 orderName: "토스 티셔츠 외 2건",
                 successUrl: window.location.origin + "/payments/success",
                 failUrl: window.location.origin + "/payments/fail",

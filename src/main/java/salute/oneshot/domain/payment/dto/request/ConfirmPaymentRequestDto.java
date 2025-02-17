@@ -7,6 +7,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class ConfirmPaymentRequestDto {
-
-    private final String password;
+    private final String orderId;
+    private final int amount;
+    private final String paymentKey;
 }

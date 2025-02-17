@@ -2,9 +2,14 @@ package salute.oneshot.domain.payment.entity;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.eclipse.jgit.dircache.Checkout;
 import salute.oneshot.domain.order.entity.Order;
+import salute.oneshot.domain.payment.dto.response.ConfirmPaymentResponseDto;
+
+import javax.smartcardio.Card;
 
 @Entity
 @Getter
@@ -15,29 +20,20 @@ public class Payment {
     @Column(columnDefinition = "BIGINT")
     private Long id;
 
-    // TODO: fetch type 고민
-    @ManyToOne
-    @JoinColumn(name = "order_id")
-    private Order order;
+//    // TODO: fetch type 고민
+//    @ManyToOne
+//    @JoinColumn(name = "order_id")
+    private String orderId;
 
-    private Long amount;
+    private String paymentKey;
 
-    @Enumerated(EnumType.STRING)
-    private PaymentStatus status = PaymentStatus.PENDING;
-
-    public static Payment from(Order order) {
-        return new Payment(
-                order,
-                order.getAmount()
-        );
+    private Payment(String orderId, String paymentKey) {
+        this.orderId = orderId;
+        this.paymentKey = paymentKey;
     }
 
-    public Payment(Order order, Long amount) {
-        this.order = order;
-        this.amount = amount;
+    public static Payment fromDto(ConfirmPaymentResponseDto dto) {
+        return new Payment(dto.getOrderId(), dto.getPaymentKey());
     }
 
-    public void updateStatus(PaymentStatus paymentStatus) {
-        this.status = paymentStatus;
-    }
 }

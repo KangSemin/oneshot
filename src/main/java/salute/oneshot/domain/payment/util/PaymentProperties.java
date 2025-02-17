@@ -1,13 +1,15 @@
 package salute.oneshot.domain.payment.util;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-import javax.crypto.SecretKey;
-import java.beans.ConstructorProperties;
-
 @Getter
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @ConfigurationProperties(prefix = "payment")
 public class PaymentProperties {
-    private String SecretKey;
+    private final String secretKey;
+//    private final String base;
+//    private final String confirmEndpoint;
 }
