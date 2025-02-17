@@ -8,6 +8,8 @@ import salute.oneshot.domain.common.dto.error.ErrorCode;
 import salute.oneshot.domain.ingredient.entity.Ingredient;
 import salute.oneshot.domain.ingredient.repository.IngredientRepository;
 import salute.oneshot.domain.ingredientReview.dto.response.IngrReviewResponseDto;
+import salute.oneshot.domain.ingredientReview.dto.response.IngredientResponseDto;
+import salute.oneshot.domain.ingredientReview.dto.response.UserResponseDto;
 import salute.oneshot.domain.ingredientReview.dto.service.CreateIngrReviewSDto;
 import salute.oneshot.domain.ingredientReview.dto.service.GetAllIngrReviewSDto;
 import salute.oneshot.domain.ingredientReview.dto.service.GetMyIngredientReviewSDto;
@@ -35,28 +37,45 @@ public class IngredientReviewService {
 
         IngredientReview ingredientReview = ingredientReviewRepository.save(IngredientReview.of(sDto.getStar(), sDto.getContent(), user, ingredient));
 
-        return IngrReviewResponseDto.from(ingredientReview);
+        UserResponseDto userResponseDto = UserResponseDto.from(user);
+        IngredientResponseDto ingrResponseDto = IngredientResponseDto.from(ingredient);
+
+        return IngrReviewResponseDto.from(ingrResponseDto, userResponseDto, ingredientReview);
     }
 
+    @Transactional
     public IngrReviewResponseDto getIngredientReview(Long reviewsId) {
 
         IngredientReview ingredientReview = ingredientReviewRepository.findById(reviewsId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.REVIEW_NOT_FOUND));
 
-        return IngrReviewResponseDto.from(ingredientReview);
+        Ingredient ingredient = ingredientReview.getIngredient();
+        User user = ingredientReview.getUser();
+
+        UserResponseDto userResponseDto = UserResponseDto.from(user);
+        IngredientResponseDto ingrResponseDto = IngredientResponseDto.from(ingredient);
+
+        return IngrReviewResponseDto.from(ingrResponseDto, userResponseDto, ingredientReview);
     }
 
-
+    @Transactional
     public Page<IngrReviewResponseDto> getMyIngredientReview(GetMyIngredientReviewSDto sDto) {
 
         Page<IngredientReview> ingredientReviewPage = ingredientReviewRepository
                 .findAllByUser_Id(sDto.getUserId(), sDto.getPageable());
 
-        Page<IngrReviewResponseDto> responseDtoPage = ingredientReviewPage.map(IngrReviewResponseDto::from);
+        Page<IngrReviewResponseDto> responseDtoPage = ingredientReviewPage.map(ingredientReview -> {
+
+            UserResponseDto userResponseDto = UserResponseDto.from(ingredientReview.getUser());
+            IngredientResponseDto ingrResponseDto = IngredientResponseDto.from(ingredientReview.getIngredient());
+            return IngrReviewResponseDto.from(ingrResponseDto, userResponseDto, ingredientReview);
+
+        });
 
         return responseDtoPage;
     }
 
+    @Transactional
     public Page<IngrReviewResponseDto> getAllIngredientReview(GetAllIngrReviewSDto sDto) {
 
         Ingredient ingredient = ingredientRepository.findById(sDto.getIngredientId())
@@ -65,7 +84,13 @@ public class IngredientReviewService {
         Page<IngredientReview> ingredientReviewPage = ingredientReviewRepository
                 .findAllByIngredient_Id(sDto.getIngredientId(), sDto.getPageable());
 
-        Page<IngrReviewResponseDto> responseDtoPage = ingredientReviewPage.map(IngrReviewResponseDto::from);
+        Page<IngrReviewResponseDto> responseDtoPage = ingredientReviewPage.map(ingredientReview -> {
+
+            UserResponseDto userResponseDto = UserResponseDto.from(ingredientReview.getUser());
+            IngredientResponseDto ingrResponseDto = IngredientResponseDto.from(ingredientReview.getIngredient());
+
+            return IngrReviewResponseDto.from(ingrResponseDto, userResponseDto, ingredientReview);
+        });
 
         return responseDtoPage;
     }

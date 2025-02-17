@@ -8,16 +8,16 @@ import salute.oneshot.domain.ingredientReview.entity.IngredientReview;
 @AllArgsConstructor
 public class IngrReviewResponseDto {
 
-    private String ingredientName;
+    private IngredientResponseDto ingredient;
+    private UserResponseDto user;
     private Long reviewId;
     private Byte star;
     private String content;
-    private Long userId;
 
-    public static IngrReviewResponseDto from(IngredientReview ingredientReview) {
+    public static IngrReviewResponseDto from(IngredientResponseDto ingredient, UserResponseDto user, IngredientReview ingredientReview) {
         return new IngrReviewResponseDto(
-                ingredientReview.getIngredient().getName(), ingredientReview.getId() ,ingredientReview.getStar(),
-                ingredientReview.getContent(), ingredientReview.getUser().getId());
+                ingredient, user, ingredientReview.getId(), ingredientReview.getStar(),
+                ingredientReview.getContent());
     }
 
 }
