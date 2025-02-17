@@ -2,6 +2,8 @@ package salute.oneshot.domain.cocktail.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -22,6 +24,7 @@ public class CocktailSchedule {
 
 
     @Scheduled(cron = "0 0/1 * * * ?")
+    @CacheEvict(value = "popular_cocktail", allEntries = true)
     public void updateCocktailViewCountToDB() {
         log.info("캐시와 db에 조회수 정합성 맞춤");
         Set<String> redisKeys = redisTemplate.keys("cocktail_viewCount::*");

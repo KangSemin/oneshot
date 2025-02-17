@@ -142,7 +142,7 @@ public class CocktailService {
     }
 
     @CachePut(value = "popular_cocktail", key = "'popular'")
-    @Scheduled(cron = "0 * * * * ?") // 1시간마다 캐시데이터 갱신되어 인기칵테일 반영
+    @Scheduled(cron = "0 0 * * * ?") // 1시간마다 캐시데이터 갱신되어 인기칵테일 반영
     public Page<CocktailResponseDto> updatePopularCocktailsCache() {
         log.info("ttl이 실행된다");
         return getPopularCocktails(PageRequest.of(0, 10)); // 기본 Pageable 설정

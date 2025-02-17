@@ -1,21 +1,14 @@
 package salute.oneshot.domain.cocktail.service;
 
-import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import salute.oneshot.domain.cocktail.repository.CocktailRepository;
-
-import java.time.Duration;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
-import static salute.oneshot.domain.cocktail.entity.QCocktail.cocktail;
 
 
 @Component
