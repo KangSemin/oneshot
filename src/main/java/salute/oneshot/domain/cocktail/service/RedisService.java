@@ -3,11 +3,15 @@ package salute.oneshot.domain.cocktail.service;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import salute.oneshot.domain.cocktail.dto.response.CocktailResponseDto;
 import salute.oneshot.domain.cocktail.repository.CocktailRepository;
 
 import java.time.Duration;

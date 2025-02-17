@@ -11,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import salute.oneshot.domain.cocktail.dto.response.CocktailResponseDto;
@@ -23,10 +24,8 @@ import salute.oneshot.domain.cocktail.entity.Cocktail;
 import salute.oneshot.domain.cocktail.entity.CocktailIngredient;
 import salute.oneshot.domain.cocktail.entity.RecipeType;
 import salute.oneshot.domain.cocktail.repository.CocktailIngredientRepository;
-import salute.oneshot.domain.cocktail.repository.CocktailQueryDslRepository;
 import salute.oneshot.domain.cocktail.repository.CocktailRepository;
 import salute.oneshot.domain.common.dto.error.ErrorCode;
-import salute.oneshot.domain.common.dto.success.ApiResponse;
 import salute.oneshot.domain.ingredient.entity.Ingredient;
 import salute.oneshot.domain.ingredient.repository.IngredientRepository;
 import salute.oneshot.domain.user.entity.User;
@@ -142,6 +141,12 @@ public class CocktailService {
         return new PageImpl<>(responseDtoList, pageable, responseDtoList.size());
     }
 
+    @CachePut(value = "popular_cocktail", key = "'popular'")
+    @Scheduled(cron = "0 0 * * * ?") // 1시간마다 캐시데이터 갱신되어 인기칵테일 반영
+    public Page<CocktailResponseDto> updatePopularCocktailsCache() {
+        log.info("ttl이 실행된다");
+        return getPopularCocktails(PageRequest.of(0, 10)); // 기본 Pageable 설정
+    }
 
     private Cocktail findById(Long cocktailId) {
         return cocktailRepository.findById(cocktailId)
