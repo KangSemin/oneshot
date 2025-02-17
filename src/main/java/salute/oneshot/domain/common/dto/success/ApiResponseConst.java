@@ -26,7 +26,7 @@ public class ApiResponseConst {
     public static final String DELETE_INGR_SUCCESS = "재료 삭제가 완료되었습니다.";
 
     // 레세피 리뷰 관련 메시지
-    public static final String ADD_RCP_RVW_SUCCESS = "레세피 리뷰 등록이 완료되었습니다.";
+    public static final String ADD_RCP_RVW_SUCCESS = "레시피 리뷰 등록이 완료되었습니다.";
     public static final String GET_RCP_RVW_SUCCESS = "레시피 리뷰 조회가 완료되었습니다.";
     public static final String GET_RCP_RVW_LIST_SUCCESS = "레시피 리뷰 목록 조회가 완료되었습니다.";
     public static final String UPDATE_RCP_RVW_SUCCESS = "레시피 리뷰 수정이 완료되었습니다.";
@@ -66,5 +66,34 @@ public class ApiResponseConst {
     public static final String EMPTY_CART_SUCCESS = "장바구니 비우기가 완료되었습니다.";
 
     // 결제 관련 메시지
+    public static final String ADD_PAYMENT_SUCCESS = "결제 생성이 완료되었습니다.";
+    public static final String GET_PAYMENT_SUCCESS = "결제 조회가 완료되었습니다.";
+    public static final String PAYMENT_APPROVED = "결제가 승인되었습니다.";
+    public static final String PAYMENT_DECLINED = "결제가 거부되었습니다.";
     public static final String ADD_PMNT_SUCCESS = "결제가 정상적으로 처리되었습니다.";
+
+    // 주소 관련 메시지
+    public static final String ADD_ADR_SUCCESS = "주소 등록이 완료되었습니다.";
+    public static final String GET_ADR_LIST_SUCCESS = "주소지 목록 조회가 완료되었습니다.";
+    public static final String GET_ADR_SUCCESS = "주소 조회가 완료되었습니다.";
+    public static final String UPDATE_ADR_SUCCESS = "주소 수정이 완료되었습니다.";
+    public static final String DELETE_ADR_SUCCESS = "주소 삭제가 완료되었습니다.";
+
+
+    // 상품 관련 메세지
+    public static final String ADD_PRDT_SUCCESS = "상품 등록이 완료되었습니다.";
+    public static final String GET_PRDT_SUCCESS = "상품 조회가 완료되었습니다.";
+    public static final String UPDATE_PRDT_SUCCESS = "상품 정보 수정이 완료되었습니다.";
+    public static final String DELETE_PRDT_SUCCESS = "상품 삭제가 완료되었습니다.";
+
+    // 주문 관련 메세지
+    public static final String ADD_ORD_SUCCESS = "주문이 완료되었습니다.";
+    public static final String GET_ORD_SUCCESS = "주문 조회가 완료되었습니다.";
+    public static final String UPDATE_ORD_SUCCESS = "주문 상태가 변경되었습니다.";
+    public static final String DELETE_ORD_SUCCESS = "주문이 취소되었습니다.";
+
+    // 배송 관련 메시지
+    public static final String ADD_DELIVERY_SUCCESS = "배송 정보 등록이 완료되었습니다.";
+    public static final String GET_DELIVERY_SUCCESS = "배송 정보 조회가 완료되었습니다.";
+    public static final String UPDATE_DELIVERY_SUCCESS = "배송 정보 수정이 완료되었습니다.";
 }

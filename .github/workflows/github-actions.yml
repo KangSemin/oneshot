@@ -1,0 +1,30 @@
+name: Gradle Build
+
+on:
+  push:
+    branches: [ "main", "develop_v1" ]
+  pull_request:
+    branches: [ "main", "develop_v1" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Gradle Caching
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Checkout source code
+        uses: actions/checkout@v3
+
+      - name: Gradle build
+        run: |
+          chmod +x gradlew
+          ./gradlew clean build --no-daemon -x test

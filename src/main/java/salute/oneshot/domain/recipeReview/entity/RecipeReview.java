@@ -50,4 +50,9 @@ public class RecipeReview extends BaseEntity {
     public static RecipeReview of(Byte star, String content, User user, Cocktail cocktail) {
         return new RecipeReview(star,content,user,cocktail);
     }
+
+    public void updateRecipeReview(Byte star, String content) {
+        this.star = star;
+        this.content = content;
+    }
 }

@@ -8,15 +8,16 @@ import salute.oneshot.domain.recipeReview.entity.RecipeReview;
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class RecipeReviewResponseDto {
+
+    private final CocktailResponseDto cocktail;
+    private final UserResponseDto user;
     private final Long reviewId;
     private final Byte star;
     private final String content;
-    private final Long userId;
 
-    public static RecipeReviewResponseDto from(RecipeReview recipeReview) {
+    public static RecipeReviewResponseDto from(CocktailResponseDto cocktail, UserResponseDto user, RecipeReview recipeReview) {
         return new RecipeReviewResponseDto(
-                recipeReview.getId(), recipeReview.getStar(),
-                recipeReview.getContent(), recipeReview.getUser().getId());
+                cocktail, user, recipeReview.getId(), recipeReview.getStar(), recipeReview.getContent());
     }
 
 }

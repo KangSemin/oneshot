@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.*;
 import salute.oneshot.domain.common.dto.success.ApiResponse;
 import salute.oneshot.domain.common.dto.success.ApiResponseConst;
 import salute.oneshot.domain.recipeReview.dto.request.CreateRecipeReviewRequestDto;
+import salute.oneshot.domain.recipeReview.dto.request.UpdateRecipeRequestDto;
 import salute.oneshot.domain.recipeReview.dto.response.RecipeReviewResponseDto;
-import salute.oneshot.domain.recipeReview.dto.service.CreateRecipeReviewSDto;
-import salute.oneshot.domain.recipeReview.dto.service.GetAllRecipeReviewSDto;
+import salute.oneshot.domain.recipeReview.dto.service.*;
 import salute.oneshot.domain.recipeReview.service.RecipeReviewService;
 import salute.oneshot.global.security.entity.CustomUserDetails;
 
@@ -38,22 +38,39 @@ public class RecipeReviewController {
         RecipeReviewResponseDto responseDto = recipeReviewService.createRecipeReview(sDto);
 
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.success(ApiResponseConst.ADD_RCP_RVW_SUCCESS,responseDto));
+                .body(ApiResponse.success(ApiResponseConst.ADD_RCP_RVW_SUCCESS, responseDto));
+    }
+
+    @GetMapping("/reviews/me")
+    public ResponseEntity<ApiResponse<Page<RecipeReviewResponseDto>>> getMyRecipeReview(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @RequestParam(value = "page", defaultValue = "1") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size){
+
+        Long userId = userDetails.getId();
+
+        Pageable pageable = PageRequest.of(page - 1, size);
+
+        GetMyRecipeReviewSDto sDto = GetMyRecipeReviewSDto.of(userId, pageable);
+
+        Page<RecipeReviewResponseDto> responseDtos = recipeReviewService.getMyRecipeReview(sDto);
+
+        return ResponseEntity.ok(ApiResponse.success(ApiResponseConst.GET_RCP_RVW_SUCCESS,responseDtos));
     }
 
     @GetMapping("/reviews/{reviewId}")
     public ResponseEntity<ApiResponse<RecipeReviewResponseDto>> getRecipeReview(
-            @PathVariable ("reviewId") Long reviewId) {
+            @PathVariable("reviewId") Long reviewId) {
 
         RecipeReviewResponseDto responseDto = recipeReviewService.getRecipeReview(reviewId);
 
-        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(ApiResponseConst.GET_RCP_RVW_SUCCESS,responseDto));
+        return ResponseEntity.ok(ApiResponse.success(ApiResponseConst.GET_RCP_RVW_SUCCESS, responseDto));
     }
 
 
     @GetMapping("/{cocktailId}/reviews")
-    public ResponseEntity<ApiResponse<Page<RecipeReviewResponseDto>>> getAllRecipeReview (
-            @PathVariable ("cocktailId") Long cocktailId,
+    public ResponseEntity<ApiResponse<Page<RecipeReviewResponseDto>>> getAllRecipeReview(
+            @PathVariable("cocktailId") Long cocktailId,
             @RequestParam(value = "page", defaultValue = "1") int page,
             @RequestParam(value = "size", defaultValue = "10") int size) {
 
@@ -63,7 +80,36 @@ public class RecipeReviewController {
 
         Page<RecipeReviewResponseDto> responseDtos = recipeReviewService.getAllRecipeReview(sDto);
 
-        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(ApiResponseConst.GET_RCP_RVW_SUCCESS,responseDtos));
+        return ResponseEntity.ok(ApiResponse.success(ApiResponseConst.GET_RCP_RVW_SUCCESS, responseDtos));
+
     }
 
+    @PatchMapping("/reviews/{reviewId}")
+    public ResponseEntity<ApiResponse<RecipeReviewResponseDto>> updateRecipeReview(
+            @PathVariable("reviewId") Long reviewId, @Valid @RequestBody UpdateRecipeRequestDto requestDto,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+
+        Long userId = customUserDetails.getId();
+
+        UpdateRecipeReviewSDto sDto = UpdateRecipeReviewSDto.of(reviewId, requestDto.getStar(),requestDto.getContent(), userId);
+
+        RecipeReviewResponseDto responseDto = recipeReviewService.updateRecipeReview(sDto);
+
+        return ResponseEntity.ok(ApiResponse.success(ApiResponseConst.UPDATE_RCP_RVW_SUCCESS,responseDto));
+    }
+
+
+    @DeleteMapping("/reviews/{reviewId}")
+    public ResponseEntity<ApiResponse<Void>> deleteRecipeReview(
+            @PathVariable("reviewId") Long reviewId,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+
+        Long userId = customUserDetails.getId();
+
+        DeleteRecipeReviewSDto sDto = DeleteRecipeReviewSDto.of(reviewId, userId);
+
+        recipeReviewService.deleteRecipeReview(sDto);
+
+        return ResponseEntity.ok(ApiResponse.success(ApiResponseConst.DELETE_RCP_RVW_SUCCESS));
+    }
 }
