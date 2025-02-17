@@ -2,12 +2,13 @@ package salute.oneshot.domain.cart.dto.request;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import salute.oneshot.domain.cart.dto.CartValidationConst;
 
 @Getter
-@AllArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class AddCartItemRequestDto {
 
     @NotNull
