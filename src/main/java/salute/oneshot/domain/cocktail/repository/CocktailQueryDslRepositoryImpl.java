@@ -16,6 +16,8 @@ import salute.oneshot.domain.cocktail.entity.QCocktailIngredient;
 import salute.oneshot.domain.ingredient.entity.Ingredient;
 import salute.oneshot.domain.ingredient.entity.IngredientCategory;
 
+import static salute.oneshot.domain.cocktail.entity.QCocktail.cocktail;
+
 @Repository
 public class CocktailQueryDslRepositoryImpl implements CocktailQueryDslRepository {
 
@@ -59,5 +61,14 @@ public class CocktailQueryDslRepositoryImpl implements CocktailQueryDslRepositor
 
         return new PageImpl<>(content, pageable, total);
 
+    }
+
+    public void addViewCntFromRedis(Long cocktailId, Integer viewCount){
+       Integer addViewCount = (viewCount == null ? 0 : viewCount);
+
+        queryFactory.update(cocktail)
+                .set(cocktail.viewCount, cocktail.viewCount.add(addViewCount))
+                .where(cocktail.id.eq(cocktailId))
+                .execute();
     }
 }

@@ -3,15 +3,11 @@ package salute.oneshot.domain.cocktail.service;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.CachePut;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import salute.oneshot.domain.cocktail.dto.response.CocktailResponseDto;
 import salute.oneshot.domain.cocktail.repository.CocktailRepository;
 
 import java.time.Duration;
@@ -31,19 +27,14 @@ public class RedisService {
     private final RedisTemplate<String, String> redisTemplate;
 
     private static String POPULAR_COCKTAIL_KEY = "popular_cocktail";
-    private static String COCKTAIL_VIEWCOUNT_KEY_PREFIX = "cocktail_viewCount";
+    private static String COCKTAIL_VIEWCOUNT_KEY_PREFIX = "cocktail_viewCount::";
 
 
     public void increaseViewScore(Long cocktailId) {
         String viewCountKey = COCKTAIL_VIEWCOUNT_KEY_PREFIX + cocktailId;
 
         ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
-        if (valueOperations.get(viewCountKey) == null)
-            valueOperations.set(
-                    viewCountKey,
-                    String.valueOf(1),
-                    Duration.ofMinutes(3));
-        else
+
             valueOperations.increment(viewCountKey);
 
         redisTemplate.opsForZSet().incrementScore(POPULAR_COCKTAIL_KEY, String.valueOf(cocktailId), 1);// 해당 아이디를 키로가지고 있는 score를 증가 시킨다

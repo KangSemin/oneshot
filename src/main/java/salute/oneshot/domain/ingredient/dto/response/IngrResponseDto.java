@@ -12,8 +12,6 @@ import java.io.Serializable;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class IngrResponseDto implements Serializable {
 
-
-
     private final Long id;
     private final String name;
     private final String description;
