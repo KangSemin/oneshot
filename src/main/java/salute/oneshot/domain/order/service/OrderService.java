@@ -155,7 +155,7 @@ public class OrderService {
 
     private void verifyAdmin(User user) {
         if (user.getUserRole() != UserRole.ADMIN) {
-            throw new UnauthorizedException(ErrorCode.FORBIDDEN_ACCESS);
+            throw new ForbiddenException(ErrorCode.FORBIDDEN_ACCESS);
         }
     }
 
