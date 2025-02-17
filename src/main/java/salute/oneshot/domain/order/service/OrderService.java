@@ -132,7 +132,7 @@ public class OrderService {
                 .orElseThrow(() -> new NotFoundException(ErrorCode.ORDER_NOT_FOUND));
 
         if(!order.getUser().getId().equals(sDto.getUserId())) {
-            throw new UnauthorizedException(ErrorCode.ORDER_CANCEL_UNAUTHORIZED);
+            throw new ForbiddenException(ErrorCode.ORDER_CANCEL_FORBIDDEN);
         }
 
         if(order.getStatus() == OrderStatus.SHIPPED) {
@@ -155,7 +155,7 @@ public class OrderService {
 
     private void verifyAdmin(User user) {
         if (user.getUserRole() != UserRole.ADMIN) {
-            throw new UnauthorizedException(ErrorCode.UNAUTHORIZED_ACCESS);
+            throw new ForbiddenException(ErrorCode.FORBIDDEN_ACCESS);
         }
     }
 
