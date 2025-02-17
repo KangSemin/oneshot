@@ -1,4 +1,4 @@
-package salute.oneshot.domain.shipping.entity;
+package salute.oneshot.domain.delivery.entity;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -7,15 +7,15 @@ import lombok.NoArgsConstructor;
 import salute.oneshot.domain.common.dto.entity.BaseEntity;
 import salute.oneshot.domain.common.dto.error.ErrorCode;
 import salute.oneshot.domain.order.entity.Order;
-import salute.oneshot.domain.shipping.enums.CourierCompany;
-import salute.oneshot.domain.shipping.enums.ShippingStatus;
+import salute.oneshot.domain.delivery.enums.CourierCompany;
+import salute.oneshot.domain.delivery.enums.ShippingStatus;
 import salute.oneshot.global.exception.InvalidException;
 
 @Entity
-@Table(name = "shippings")
+@Table(name = "deliveries")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Shipping extends BaseEntity {
+public class Delivery extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,7 +36,7 @@ public class Shipping extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private ShippingStatus status = ShippingStatus.REGISTERED;
 
-    private Shipping(
+    private Delivery(
             Order order,
             String receiverName,
             String receiverPhone,
@@ -52,7 +52,7 @@ public class Shipping extends BaseEntity {
         this.courierCompany = courierCompany;
     }
 
-    public static Shipping of(
+    public static Delivery of(
             Order order,
             String receiverName,
             String receiverPhone,
@@ -60,7 +60,7 @@ public class Shipping extends BaseEntity {
             String trackingNumber,
             CourierCompany courierCompany
     ) {
-        return new Shipping(
+        return new Delivery(
                 order,
                 receiverName,
                 receiverPhone,
@@ -78,5 +78,7 @@ public class Shipping extends BaseEntity {
         if (!this.status.canTransitionTo(status)) {
             throw new InvalidException(ErrorCode.INVALID_STATUS_CHANGE);
         }
+
+        this.status = status;
     }
 }
