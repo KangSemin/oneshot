@@ -14,6 +14,7 @@ import salute.oneshot.domain.payment.entity.Payment;
 import salute.oneshot.domain.payment.entity.PaymentStatus;
 import salute.oneshot.domain.payment.repository.PaymentRepository;
 import salute.oneshot.global.exception.ConflictException;
+import salute.oneshot.global.exception.ForbiddenException;
 import salute.oneshot.global.exception.NotFoundException;
 import salute.oneshot.global.exception.UnauthorizedException;
 
@@ -80,7 +81,7 @@ public class PaymentService {
 
     private void isPaymentOwnedByUser(Payment payment, Long userId) {
         if (!payment.getOrder().getUser().getId().equals(userId)) {
-            throw new UnauthorizedException(ErrorCode.PAYMENT_UNAUTHORIZED);
+            throw new ForbiddenException(ErrorCode.PAYMENT_FORBIDDEN);
         }
     }
 

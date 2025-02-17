@@ -16,6 +16,7 @@ import salute.oneshot.domain.product.entity.Product;
 import salute.oneshot.domain.product.repository.ProductRepository;
 import salute.oneshot.domain.user.entity.User;
 import salute.oneshot.domain.user.repository.UserRepository;
+import salute.oneshot.global.exception.ForbiddenException;
 import salute.oneshot.global.exception.InvalidException;
 import salute.oneshot.global.exception.NotFoundException;
 import salute.oneshot.global.exception.UnauthorizedException;
@@ -94,7 +95,7 @@ public class CartService {
 
     private static void isCartItemOwnedByUser(Long userId, CartItem item) {
         if (!item.getCart().getUser().getId().equals(userId)) {
-            throw new UnauthorizedException(ErrorCode.CART_ITEM_UNAUTHORIZED);
+            throw new ForbiddenException(ErrorCode.CART_ITEM_FORBIDDEN);
         }
     }
 
