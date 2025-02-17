@@ -12,11 +12,14 @@ import org.springframework.web.bind.annotation.*;
 import salute.oneshot.domain.common.dto.success.ApiResponse;
 import salute.oneshot.domain.common.dto.success.ApiResponseConst;
 import salute.oneshot.domain.ingredientReview.dto.request.CreateIngrReviewRequestDto;
+import salute.oneshot.domain.ingredientReview.dto.request.UpdateIngrReviewRequestDto;
 import salute.oneshot.domain.ingredientReview.dto.response.IngrReviewResponseDto;
 import salute.oneshot.domain.ingredientReview.dto.service.CreateIngrReviewSDto;
 import salute.oneshot.domain.ingredientReview.dto.service.GetAllIngrReviewSDto;
 import salute.oneshot.domain.ingredientReview.dto.service.GetMyIngredientReviewSDto;
+import salute.oneshot.domain.ingredientReview.dto.service.UpdateIngrReviewSDto;
 import salute.oneshot.domain.ingredientReview.service.IngredientReviewService;
+import salute.oneshot.domain.recipeReview.dto.service.UpdateRecipeReviewSDto;
 import salute.oneshot.global.security.entity.CustomUserDetails;
 
 @RestController
@@ -41,6 +44,17 @@ public class IngredientReviewController {
 
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(ApiResponseConst.ADD_INGR_RVW_SUCCESS, responseDto));
     }
+
+
+    @GetMapping("/reviews/{reviewsId}")
+    public ResponseEntity<ApiResponse<IngrReviewResponseDto>> getIngredientReview(
+            @PathVariable("reviewsId") Long reviewsId) {
+
+        IngrReviewResponseDto responseDto = ingredientReviewService.getIngredientReview(reviewsId);
+
+        return ResponseEntity.ok(ApiResponse.success(ApiResponseConst.GET_INGR_RVW_SUCCESS,responseDto));
+    }
+
 
     @GetMapping("/reviews/me")
     public ResponseEntity<ApiResponse<Page<IngrReviewResponseDto>>> getMyIngredientReview(
@@ -72,6 +86,22 @@ public class IngredientReviewController {
         Page<IngrReviewResponseDto> responseDtos = ingredientReviewService.getAllIngredientReview(sDto);
 
         return ResponseEntity.ok(ApiResponse.success(ApiResponseConst.GET_INGR_RVW_LIST_SUCCESS, responseDtos));
+    }
+
+    @PatchMapping("/reviews/{reviewId}")
+    public ResponseEntity<ApiResponse<IngrReviewResponseDto>> updateIngredientReview(
+            @PathVariable("reviewId") Long reviewId,
+            @Valid @RequestBody UpdateIngrReviewRequestDto requestDto,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        Long userId = userDetails.getId();
+
+        UpdateIngrReviewSDto sDto = UpdateIngrReviewSDto
+                .of(reviewId, requestDto.getStar(), requestDto.getContent(), userId);
+
+        IngrReviewResponseDto responseDto = ingredientReviewService.updateIngredientReview(sDto);
+
+        return ResponseEntity.ok(ApiResponse.success(ApiResponseConst.UPDATE_INGR_RVW_SUCCESS, responseDto));
     }
 
 }

@@ -1,10 +1,17 @@
 package salute.oneshot.domain.cocktail.service;
 
+import java.nio.file.AccessDeniedException;
 import java.util.List;
+
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import salute.oneshot.domain.cocktail.dto.response.CocktailResponseDto;
@@ -27,6 +34,7 @@ import salute.oneshot.global.exception.NotFoundException;
 import salute.oneshot.global.exception.UnauthorizedException;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class CocktailService {
 
@@ -34,6 +42,7 @@ public class CocktailService {
     private final UserRepository userRepository;
     private final IngredientRepository ingredientRepository;
     private final CocktailIngredientRepository cocktailIngredientRepository;
+    private final RedisService redisService;
 
     @Transactional
     public void createCocktail(CreateCocktailSDto sDto) {
@@ -53,6 +62,7 @@ public class CocktailService {
             }).toList();
 
         cocktailIngredientRepository.saveAll(ingredientList);
+
 
     }
 
@@ -78,14 +88,20 @@ public class CocktailService {
         cocktailRepository.deleteById(sDto.getCocktailId());
     }
 
+    @Transactional
+    @Cacheable(value = "popular_cocktail", key ="#cocktailId")
     public CocktailResponseDto getCocktail(Long cocktailId) {
 
         Cocktail cocktail = findById(cocktailId);
+        cocktail.incrementCount();
+
+        redisService.increaseViewScore(cocktailId);// 조회점수가 올라간다
 
         return CocktailResponseDto.from(cocktail);
     }
 
     @Transactional
+    @CachePut(value = "popular_cocktail", key ="#cocktailId")
     public CocktailResponseDto updateCocktail(UpdateCocktailSDto sDto) {
 
         Cocktail cocktail = findById(sDto.getCocktailId());
@@ -114,8 +130,26 @@ public class CocktailService {
 
     }
 
+
+    @Cacheable(value = "popular_cocktail", key ="'popular'")
+    public Page<CocktailResponseDto> getPopularCocktails(Pageable pageable) {
+
+        List<CocktailResponseDto> responseDtoList = redisService.getPopularCocktails(pageable.getPageSize())
+                .stream().map(this::findById)
+                .map(CocktailResponseDto::from).toList();
+
+        return new PageImpl<>(responseDtoList, pageable, responseDtoList.size());
+    }
+
+    @CachePut(value = "popular_cocktail", key = "'popular'")
+    @Scheduled(cron = "0 * * * * ?") // 1시간마다 캐시데이터 갱신되어 인기칵테일 반영
+    public Page<CocktailResponseDto> updatePopularCocktailsCache() {
+        log.info("ttl이 실행된다");
+        return getPopularCocktails(PageRequest.of(0, 10)); // 기본 Pageable 설정
+    }
+
     private Cocktail findById(Long cocktailId) {
         return cocktailRepository.findById(cocktailId)
-            .orElseThrow(()->new NotFoundException(ErrorCode.COCKTAIL_NOT_FOUND));
+                .orElseThrow(() -> new NotFoundException(ErrorCode.COCKTAIL_NOT_FOUND));
     }
 }

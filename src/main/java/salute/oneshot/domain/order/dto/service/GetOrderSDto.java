@@ -8,8 +8,8 @@ import lombok.Getter;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class GetOrderSDto {
 
-    private Long userId;
-    private Long orderId;
+    private final Long userId;
+    private final Long orderId;
 
     public static GetOrderSDto of(Long userId, Long orderId) {
         return new GetOrderSDto(userId, orderId);

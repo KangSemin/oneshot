@@ -1,0 +1,25 @@
+services:
+
+  redis:
+    image: 'redis:latest'
+    container_name: redis-container
+    ports:
+      - '6379:6379'
+
+  app:
+    build: .
+    image: ${DOCKERHUB_USERNAME}/oneshot:latest
+    container_name: oneshot-app
+    restart: always
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://${RDS_ENDPOINT}:3306/oneshot
+      SPRING_DATASOURCE_USERNAME: ${RDS_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${RDS_PASSWORD}
+      SPRING_JPA_HIBERNATE_DDL-AUTO: create
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: 6379
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+    depends_on:
+      - redis
+    ports:
+      - "8080:8080"
