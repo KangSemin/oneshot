@@ -38,6 +38,15 @@ public class IngredientReviewService {
         return IngrReviewResponseDto.from(ingredientReview);
     }
 
+    public IngrReviewResponseDto getIngredientReview(Long reviewsId) {
+
+        IngredientReview ingredientReview = ingredientReviewRepository.findById(reviewsId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.REVIEW_NOT_FOUND));
+
+        return IngrReviewResponseDto.from(ingredientReview);
+    }
+
+
     public Page<IngrReviewResponseDto> getMyIngredientReview(GetMyIngredientReviewSDto sDto) {
 
         Page<IngredientReview> ingredientReviewPage = ingredientReviewRepository

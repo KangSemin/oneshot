@@ -42,6 +42,17 @@ public class IngredientReviewController {
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(ApiResponseConst.ADD_INGR_RVW_SUCCESS, responseDto));
     }
 
+
+    @GetMapping("/reviews/{reviewsId}")
+    public ResponseEntity<ApiResponse<IngrReviewResponseDto>> getIngredientReview(
+            @PathVariable("reviewsId") Long reviewsId) {
+
+        IngrReviewResponseDto responseDto = ingredientReviewService.getIngredientReview(reviewsId);
+
+        return ResponseEntity.ok(ApiResponse.success(ApiResponseConst.GET_INGR_RVW_SUCCESS,responseDto));
+    }
+
+
     @GetMapping("/reviews/me")
     public ResponseEntity<ApiResponse<Page<IngrReviewResponseDto>>> getMyIngredientReview(
             @AuthenticationPrincipal CustomUserDetails userDetails,
@@ -58,6 +69,7 @@ public class IngredientReviewController {
 
         return ResponseEntity.ok(ApiResponse.success(ApiResponseConst.GET_INGR_RVW_LIST_SUCCESS, responseDtoPage));
     }
+
 
     @GetMapping("{ingredientId}/reviews")
     public ResponseEntity<ApiResponse<Page<IngrReviewResponseDto>>> getAllIngredientReview(
