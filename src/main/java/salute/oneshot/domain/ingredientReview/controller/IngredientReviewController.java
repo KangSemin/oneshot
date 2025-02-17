@@ -20,7 +20,6 @@ import salute.oneshot.domain.ingredientReview.dto.service.GetAllIngrReviewSDto;
 import salute.oneshot.domain.ingredientReview.dto.service.GetMyIngredientReviewSDto;
 import salute.oneshot.domain.ingredientReview.dto.service.UpdateIngrReviewSDto;
 import salute.oneshot.domain.ingredientReview.service.IngredientReviewService;
-import salute.oneshot.domain.recipeReview.dto.service.UpdateRecipeReviewSDto;
 import salute.oneshot.global.security.entity.CustomUserDetails;
 
 @RestController
