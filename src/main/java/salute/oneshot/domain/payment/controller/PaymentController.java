@@ -19,12 +19,14 @@ public class PaymentController {
 
     private final PaymentService paymentService;
 
-    @PostMapping("/payments/{reservationId}/confirm")
+//    @PostMapping("/payments/{reservationId}/confirm")
+    @PostMapping("/payments/confirm")
     public ResponseEntity<ApiResponse<ConfirmPaymentResponseDto>> confirmPayment(
-            @PathVariable Long reservationId,
+//            @PathVariable Long reservationId,
             @RequestBody ConfirmPaymentRequestDto requestDto
     ) {
-        ConfirmPaymentSDto sdto = ConfirmPaymentSDto.of(reservationId, requestDto.getOrderId(), requestDto.getAmount(), requestDto.getPaymentKey());
+//        ConfirmPaymentSDto sdto = ConfirmPaymentSDto.of(reservationId, requestDto.getOrderId(), requestDto.getAmount(), requestDto.getPaymentKey());
+        ConfirmPaymentSDto sdto = ConfirmPaymentSDto.of(requestDto.getOrderId(), requestDto.getAmount(), requestDto.getPaymentKey());
         ConfirmPaymentResponseDto responseDto = paymentService.confirmPayment(sdto);
 
         return ResponseEntity.ok()

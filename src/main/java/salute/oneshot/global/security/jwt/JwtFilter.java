@@ -77,6 +77,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
     private boolean isAuthEndpoint(HttpServletRequest request) {
         return request.getRequestURI().startsWith("/api/auth/") ||
+                request.getRequestURI().startsWith("/api/payments") ||
                 request.getRequestURI().startsWith("/addresses") ||
                 request.getRequestURI().startsWith("/payments");
     }

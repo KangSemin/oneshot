@@ -9,10 +9,11 @@ import salute.oneshot.domain.payment.dto.response.ConfirmPaymentResponseDto;
 import salute.oneshot.domain.payment.dto.service.ConfirmPaymentSDto;
 import salute.oneshot.global.config.PaymentFeignConfig;
 
-@FeignClient(name = "paymentClient", url = "${payment.base-url}", configuration = PaymentFeignConfig.class)
+//@FeignClient(name = "paymentClient", url = "${payment.base-url}", configuration = PaymentFeignConfig.class)
+@FeignClient(name = "paymentClient", url = "https://api.tosspayments.com/v1/payments", configuration = PaymentFeignConfig.class)
 public interface PaymentClient {
 
-    @PostMapping(value = "${payment.confirm-endpoint}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    ConfirmPaymentResponseDto confirmPayment(@RequestBody ConfirmPaymentSDto paymentConfirmRequest);
+    @PostMapping(value = "/confirm", consumes = MediaType.APPLICATION_JSON_VALUE)
+    ConfirmPaymentResponseDto confirmPayment(@RequestBody ConfirmPaymentSDto sdto);
 
 }
