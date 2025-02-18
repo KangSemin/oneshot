@@ -19,7 +19,6 @@ import salute.oneshot.domain.user.repository.UserRepository;
 import salute.oneshot.global.exception.ForbiddenException;
 import salute.oneshot.global.exception.InvalidException;
 import salute.oneshot.global.exception.NotFoundException;
-import salute.oneshot.global.exception.UnauthorizedException;
 
 import java.util.Optional;
 
@@ -61,7 +60,7 @@ public class CartService {
 
     @Transactional
     public CartItemResponseDto updateItemQuantity(UpdateItemQuantitySDto sdto) {
-        CartItem item = getItemById(sdto.getItemId());
+        CartItem item = getItemByIdIfItemIsNotOrdered(sdto.getItemId());
         isCartItemOwnedByUser(sdto.getUserId(), item);
 
         item.updateQuantity(sdto);
@@ -71,7 +70,7 @@ public class CartService {
 
     @Transactional
     public void removeItem(Long userId, Long itemId) {
-        CartItem item = getItemById(itemId);
+        CartItem item = getItemByIdIfItemIsNotOrdered(itemId);
         isCartItemOwnedByUser(userId, item);
         cartItemRepository.deleteByIdAndCartUserId(itemId, userId);
     }
@@ -81,7 +80,7 @@ public class CartService {
         cartRepository.findByUserIdAndIsOrderedFalse(userId).ifPresent(cart -> cart.getItemList().clear());
     }
 
-    private CartItem getItemById(Long itemId) {
+    private CartItem getItemByIdIfItemIsNotOrdered(Long itemId) {
         CartItem item = cartItemRepository.findById(itemId).orElseThrow(() -> new NotFoundException(ErrorCode.CART_ITEM_NOT_FOUND));
         isCartItemOrdered(item);
         return item;

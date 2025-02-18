@@ -2,6 +2,7 @@ package salute.oneshot.domain.payment.util;
 
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
+import org.apache.http.HttpHeaders;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.nio.charset.StandardCharsets;
@@ -16,7 +17,7 @@ public class PaymentAuthInterceptor implements RequestInterceptor {
     @Override
     public void apply(final RequestTemplate template) {
         final String authHeader = createPaymentAuthorizationHeader();
-        template.header("Authorization", authHeader);
+        template.header(HttpHeaders.AUTHORIZATION, authHeader);
     }
 
     private String createPaymentAuthorizationHeader() {

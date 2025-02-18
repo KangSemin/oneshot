@@ -8,7 +8,7 @@
 <body>
 <!-- 결제하기 버튼 -->
 <button class="button" style="margin-top: 30px" onclick="requestPayment()">결제하기</button>
-<script>
+<script th:inline="javascript">
     // ------  SDK 초기화 ------
     // @docs https://docs.tosspayments.com/sdk/v2/js#토스페이먼츠-초기화
     const clientKey = "test_ck_nRQoOaPz8LENQzY2zy953y47BMw6";
@@ -33,13 +33,13 @@
                 value: 50000,
             },
             // TODO: orderId 우리가 쓰는 거 넣으면 되나?
-            orderId: "llxMnad689_ZpMX-mjouj", // 고유 주문번호
+            orderId: [[${orderId}]], // 고유 주문번호
             orderName: "토스 티셔츠 외 2건",
             successUrl: window.location.origin + "/payments/success", // 결제 요청이 성공하면 리다이렉트되는 URL
             failUrl: window.location.origin + "/payments/fail", // 결제 요청이 실패하면 리다이렉트되는 URL
             customerEmail: "customer123@gmail.com",
             customerName: "김토스",
-            customerMobilePhone: "01012341234",
+            customerMobilePhone: "01025628192",
             // 카드 결제에 필요한 정보
             // TODO: 수정이 필요한가?
             card: {

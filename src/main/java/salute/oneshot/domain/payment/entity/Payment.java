@@ -2,14 +2,9 @@ package salute.oneshot.domain.payment.entity;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.eclipse.jgit.dircache.Checkout;
-import salute.oneshot.domain.order.entity.Order;
-import salute.oneshot.domain.payment.dto.response.ConfirmPaymentResponseDto;
-
-import javax.smartcardio.Card;
+import salute.oneshot.domain.payment.dto.feign.TossPaymentResponseDto;
 
 @Entity
 @Getter
@@ -32,7 +27,7 @@ public class Payment {
         this.paymentKey = paymentKey;
     }
 
-    public static Payment fromDto(ConfirmPaymentResponseDto dto) {
+    public static Payment fromDto(TossPaymentResponseDto dto) {
         return new Payment(dto.getOrderId(), dto.getPaymentKey());
     }
 

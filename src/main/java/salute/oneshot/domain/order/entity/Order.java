@@ -64,13 +64,13 @@ public class Order extends BaseEntity {
     }
 
     public Boolean isValidStatusChange (OrderStatus currentStatus, OrderStatus newStatus) {
-        if(currentStatus == OrderStatus.PENDING_PAYMENT &&  newStatus == OrderStatus.PROCESSING) {
+        if(currentStatus == OrderStatus.PENDING_PAYMENT && newStatus == OrderStatus.PROCESSING) {
             return true;
-        }else if(currentStatus == OrderStatus.PROCESSING &&  newStatus == OrderStatus.PENDING_SHIPMENT) {
+        } else if(currentStatus == OrderStatus.PROCESSING && newStatus == OrderStatus.PENDING_SHIPMENT) {
             return true;
-        } else if(currentStatus == OrderStatus.PENDING_SHIPMENT &&  newStatus == OrderStatus.IN_TRANSIT) {
+        } else if(currentStatus == OrderStatus.PENDING_SHIPMENT && newStatus == OrderStatus.IN_TRANSIT) {
             return true;
-        } else if(currentStatus == OrderStatus.IN_TRANSIT &&  newStatus == OrderStatus.SHIPPED) {
+        } else if(currentStatus == OrderStatus.IN_TRANSIT && newStatus == OrderStatus.SHIPPED) {
             return true;
         }
         return false;
