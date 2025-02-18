@@ -14,10 +14,7 @@ import salute.oneshot.domain.order.dto.response.GetOrderResponseDto;
 import salute.oneshot.domain.order.dto.response.OrderItemListResponseDto;
 import salute.oneshot.domain.order.dto.response.CreateOrderResponseDto;
 import salute.oneshot.domain.order.dto.response.UpdateOrderResponseDto;
-import salute.oneshot.domain.order.dto.service.CreateOrderSDto;
-import salute.oneshot.domain.order.dto.service.GetAllOrderSDto;
-import salute.oneshot.domain.order.dto.service.GetOrderSDto;
-import salute.oneshot.domain.order.dto.service.UpdateOrderSDto;
+import salute.oneshot.domain.order.dto.service.*;
 import salute.oneshot.domain.order.entity.Order;
 import salute.oneshot.domain.order.entity.OrderItem;
 import salute.oneshot.domain.order.entity.OrderStatus;
@@ -26,10 +23,7 @@ import salute.oneshot.domain.product.entity.Product;
 import salute.oneshot.domain.user.entity.User;
 import salute.oneshot.domain.user.entity.UserRole;
 import salute.oneshot.domain.user.repository.UserRepository;
-import salute.oneshot.global.exception.ForbiddenException;
-import salute.oneshot.global.exception.InvalidException;
-import salute.oneshot.global.exception.NotFoundException;
-import salute.oneshot.global.exception.UnauthorizedException;
+import salute.oneshot.global.exception.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -103,6 +97,7 @@ public class OrderService {
         return GetOrderResponseDto.from(order, responseDtoList);
     }
 
+    @Transactional
     public Page<CreateOrderResponseDto> getAllOrder(GetAllOrderSDto sDto) {
 
         Page<Order> orderPage = orderRepository.findByUser_Id(sDto.getUserId(), sDto.getPageable());
@@ -110,19 +105,6 @@ public class OrderService {
         Page<CreateOrderResponseDto> responseDtoPage = orderPage.map(CreateOrderResponseDto::from);
 
         return responseDtoPage;
-    }
-
-
-    private String generateOrderName(Cart cart) {
-
-        if (cart.getItemList().size() == 1) {
-            return cart.getItemList().get(0).getProduct().getName();
-        } else {
-            return cart.getItemList().get(0).getProduct().getName() + " 외 " +
-                    (cart.getItemList().size() - 1) + "개";
-        }
-
-
     }
 
     @Transactional
@@ -143,6 +125,28 @@ public class OrderService {
         return UpdateOrderResponseDto.from(order);
     }
 
+    @Transactional
+    public void deleteOrder(DeleteOrderSDto sDto) {
+
+        Order order = orderRepository.findById(sDto.getOrderId())
+                .orElseThrow(() -> new NotFoundException(ErrorCode.ORDER_NOT_FOUND));
+
+        if(!order.getUser().getId().equals(sDto.getUserId())) {
+            throw new ForbiddenException(ErrorCode.ORDER_CANCEL_FORBIDDEN);
+        }
+
+        if(order.getStatus() == OrderStatus.SHIPPED) {
+
+            throw new CustomRuntimeException(ErrorCode.CANNOT_CANCEL_SHIPPED_ORDER);
+
+        } else if (order.getStatus() == OrderStatus.CANCELLED) {
+
+            throw new CustomRuntimeException(ErrorCode.ALREADY_CANCELLED_ORDER);
+        }
+
+        order.updateOrderStatus(OrderStatus.CANCELLED);
+    }
+
 
     private User getUserById(Long userId) {
         return userRepository.findByIdAndIsDeletedIsFalse(userId)
@@ -151,7 +155,17 @@ public class OrderService {
 
     private void verifyAdmin(User user) {
         if (user.getUserRole() != UserRole.ADMIN) {
-            throw new UnauthorizedException(ErrorCode.FORBIDDEN_ACCESS);
+            throw new ForbiddenException(ErrorCode.FORBIDDEN_ACCESS);
+        }
+    }
+
+    private String generateOrderName(Cart cart) {
+
+        if (cart.getItemList().size() == 1) {
+            return cart.getItemList().get(0).getProduct().getName();
+        } else {
+            return cart.getItemList().get(0).getProduct().getName() + " 외 " +
+                    (cart.getItemList().size() - 1) + "개";
         }
     }
 }
