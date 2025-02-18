@@ -18,18 +18,8 @@ public class FeignConfig {
         return new Request.Options(2, TimeUnit.SECONDS, 60, TimeUnit.SECONDS, true);
     }
 
-//    @Bean
-//    public PaymentErrorDecoder paymentErrorDecoder() {
-//        return new PaymentErrorDecoder();
-//    }
-
     @Bean
     PaymentAuthInterceptor paymentAuthInterceptor() {
         return new PaymentAuthInterceptor();
     }
-
-//    @Bean
-//    PaymentLoggingInterceptor paymentLoggingInterceptor() {
-//        return new PaymentLoggingInterceptor();
-//    }
 }
