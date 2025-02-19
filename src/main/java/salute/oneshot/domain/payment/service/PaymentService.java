@@ -27,19 +27,26 @@ public class PaymentService {
     public ConfirmPaymentResponseDto confirmPayment(ConfirmPaymentSDto sdto) {
 
         log.info("orderId: " + sdto.getOrderId());
-        log.info("paymentKey: " + sdto.getPaymentKey());
         log.info("amount: " + sdto.getAmount());
+        log.info("paymentKey: " + sdto.getPaymentKey());
 
         TossConfirmPaymentRequestDto tossRequestDto = TossConfirmPaymentRequestDto.of(sdto.getOrderId(), sdto.getAmount(), sdto.getPaymentKey());
 
-        logStatus(sdto);
-
+//        logStatus(sdto);
         TossPaymentResponseDto tossResponseDto = paymentClient.confirmPayment(tossRequestDto);
-
-        logStatus(sdto);
+//        logStatus(sdto);
 
         Payment payment = Payment.fromDto(tossResponseDto);
         paymentRepository.save(payment);
+
+////        String orderNo;
+////        NOT FOUND 처리해야 하나? 트랜잭션 때문에 결제 저장 안되면 망하는데
+//        Order order = orderRepository.findByOrderNo().orElseThrow();
+////        이것도 뭔가 필요없는 검증같기도 하고
+//        if (!order.isValidStatusChange(OrderStatus.PROCESSING)) {
+//            throw new ConflictException(ErrorCode.ORDER_STATUS_NOT_POSSIBL);
+//        }
+//        order.updateStatus(OrderStatus.PROCESSING);
 
         return ConfirmPaymentResponseDto.from(tossResponseDto);
     }
