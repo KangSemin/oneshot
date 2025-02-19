@@ -12,10 +12,11 @@ import java.util.List;
 public class GetOrderResponseDto {
 
     private final Long orderId;
+    private final String orderNumber;
     private final Long amount;
     private final List<OrderItemListResponseDto> orderItems;
 
     public static GetOrderResponseDto from(Order order, List<OrderItemListResponseDto> orderItems) {
-        return new GetOrderResponseDto(order.getId(), order.getAmount(),orderItems);
+        return new GetOrderResponseDto(order.getId(), order.getOrderNumber(), order.getAmount(), orderItems);
     }
 }
