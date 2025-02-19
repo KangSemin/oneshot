@@ -2,6 +2,8 @@ package salute.oneshot.domain.order.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import salute.oneshot.domain.address.entity.Address;
@@ -10,9 +12,9 @@ import salute.oneshot.domain.cart.entity.Cart;
 import salute.oneshot.domain.cart.entity.CartItem;
 import salute.oneshot.domain.cart.repository.CartRepository;
 import salute.oneshot.domain.common.dto.error.ErrorCode;
+import salute.oneshot.domain.order.dto.response.CreateOrderResponseDto;
 import salute.oneshot.domain.order.dto.response.GetOrderResponseDto;
 import salute.oneshot.domain.order.dto.response.OrderItemListResponseDto;
-import salute.oneshot.domain.order.dto.response.CreateOrderResponseDto;
 import salute.oneshot.domain.order.dto.response.UpdateOrderResponseDto;
 import salute.oneshot.domain.order.dto.service.*;
 import salute.oneshot.domain.order.entity.Order;
@@ -23,8 +25,13 @@ import salute.oneshot.domain.product.entity.Product;
 import salute.oneshot.domain.user.entity.User;
 import salute.oneshot.domain.user.entity.UserRole;
 import salute.oneshot.domain.user.repository.UserRepository;
-import salute.oneshot.global.exception.*;
+import salute.oneshot.global.exception.CustomRuntimeException;
+import salute.oneshot.global.exception.ForbiddenException;
+import salute.oneshot.global.exception.InvalidException;
+import salute.oneshot.global.exception.NotFoundException;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -65,8 +72,11 @@ public class OrderService {
         String orderName = generateOrderName(cart);
         long orderAmount = orderItems.stream().mapToLong(OrderItem::getPrice).sum();
 
+        //주문번호 생성
+        String orderNumber = generateOrderNumber();
+
         // 주문 생성
-        Order order = Order.of(orderName, orderAmount, cart.getUser(), cart, address, orderItems);
+        Order order = Order.of(orderNumber, orderName, orderAmount, cart.getUser(), cart, address, orderItems);
 
         for (OrderItem orderItem : orderItems) {
             orderItem.setOrder(order);
@@ -167,5 +177,23 @@ public class OrderService {
             return cart.getItemList().get(0).getProduct().getName() + " 외 " +
                     (cart.getItemList().size() - 1) + "개";
         }
+    }
+
+    private String generateOrderNumber() {
+
+        String orderDate = LocalDate.now().format(DateTimeFormatter.ofPattern("'O'yyMMdd"));
+
+        Pageable pageable = PageRequest.of(0,1);
+        List<String> lastOrderNumberByDate = orderRepository.findLastOrderNumberByDate(orderDate, pageable);
+
+        int serialNumber = 1;
+
+        if(lastOrderNumberByDate != null) {
+            String lastOrderNumber = lastOrderNumberByDate.get(0);
+            String lastSerialNumber = lastOrderNumber.substring(7);
+            serialNumber = Integer.parseInt(lastSerialNumber) + 1;
+        }
+
+        return orderDate + String.format("%03d", serialNumber);
     }
 }
