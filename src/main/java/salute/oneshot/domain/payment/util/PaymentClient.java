@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import salute.oneshot.domain.payment.dto.feign.TossCancelPaymentRequestDto;
 import salute.oneshot.domain.payment.dto.feign.TossConfirmPaymentRequestDto;
-import salute.oneshot.domain.payment.dto.feign.TossPaymentResponseDto;
+import salute.oneshot.domain.payment.entity.TossPayment;
 import salute.oneshot.global.config.FeignConfig;
 
 //@FeignClient(name = "paymentClient", url = "${payment.base-url}", configuration = PaymentFeignConfig.class)
@@ -16,12 +16,12 @@ import salute.oneshot.global.config.FeignConfig;
 public interface PaymentClient {
 
     @PostMapping(value = "/confirm", consumes = MediaType.APPLICATION_JSON_VALUE)
-    TossPaymentResponseDto confirmPayment(@RequestBody TossConfirmPaymentRequestDto requestDto);
+    TossPayment confirmPayment(@RequestBody TossConfirmPaymentRequestDto requestDto);
 
     @GetMapping(value = "/orders/{orderId}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    TossPaymentResponseDto getPaymentByOrderId(@PathVariable String orderId);
+    TossPayment getPaymentByOrderId(@PathVariable String orderId);
 
     @PostMapping(value = "/cancel", consumes = MediaType.APPLICATION_JSON_VALUE)
-    TossPaymentResponseDto cancelPayment(@RequestBody TossCancelPaymentRequestDto requestDto);
+    TossPayment cancelPayment(@RequestBody TossCancelPaymentRequestDto requestDto);
 
 }

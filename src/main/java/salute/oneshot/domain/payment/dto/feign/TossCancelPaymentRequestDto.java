@@ -10,7 +10,7 @@ public class TossCancelPaymentRequestDto {
 
     private final String cancelReason;
 
-    public static TossCancelPaymentRequestDto of(String cancelReason) {
+    public static TossCancelPaymentRequestDto from(String cancelReason) {
         return new TossCancelPaymentRequestDto(
                 cancelReason
         );

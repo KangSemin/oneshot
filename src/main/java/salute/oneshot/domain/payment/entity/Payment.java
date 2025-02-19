@@ -4,31 +4,42 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import salute.oneshot.domain.payment.dto.feign.TossPaymentResponseDto;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Payment {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(columnDefinition = "BIGINT")
     private Long id;
 
-//    // TODO: fetch type 고민
-//    @ManyToOne
-//    @JoinColumn(name = "order_id")
     private String orderId;
-
     private String paymentKey;
+    private PaymentStatus status;
+    private String orderName;
+    private Long totalAmount;
 
-    private Payment(String orderId, String paymentKey) {
+    public Payment(String orderId, String paymentKey, PaymentStatus status, String orderName, Long totalAmount) {
         this.orderId = orderId;
         this.paymentKey = paymentKey;
+        this.status = status;
+        this.orderName = orderName;
+        this.totalAmount = totalAmount;
     }
 
-    public static Payment fromDto(TossPaymentResponseDto dto) {
-        return new Payment(dto.getOrderId(), dto.getPaymentKey());
+    public static Payment fromDto(TossPayment tossPayment) {
+        return new Payment(
+                tossPayment.getOrderId(),
+                tossPayment.getPaymentKey(),
+                tossPayment.getStatus(),
+                tossPayment.getOrderName(),
+                tossPayment.getTotalAmount()
+        );
     }
 
+    public void updateStatus(PaymentStatus status) {
+        this.status = status;
+    }
 }

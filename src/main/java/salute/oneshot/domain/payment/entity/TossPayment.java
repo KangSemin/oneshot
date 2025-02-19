@@ -1,9 +1,9 @@
-package salute.oneshot.domain.payment.dto.feign;
+package salute.oneshot.domain.payment.entity;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import salute.oneshot.domain.payment.dto.response.ConfirmPaymentResponseDto;
+import salute.oneshot.domain.payment.dto.response.PaymentResponseDto;
 
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -11,12 +11,12 @@ import java.util.Map;
 
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class TossPaymentResponseDto {
+public class TossPayment {
 
     private final String mId;
     private final String version;
     private final String paymentKey;
-    private final String status;
+    private final PaymentStatus status;
     private final String lastTransactionKey;
     private final String method;
     private final String orderId;
@@ -50,7 +50,7 @@ public class TossPaymentResponseDto {
     private final Long taxFreeAmount;
     private final Map<String, String> metadata;
 
-    public static ConfirmPaymentResponseDto from(TossPaymentResponseDto tossResponseDto) {
+    public static PaymentResponseDto from(TossPayment tossResponseDto) {
         return null;
     }
 
