@@ -31,12 +31,22 @@ public class PaymentService {
         log.info("amount: " + sdto.getAmount());
 
         TossConfirmPaymentRequestDto tossRequestDto = TossConfirmPaymentRequestDto.of(sdto.getOrderId(), sdto.getAmount(), sdto.getPaymentKey());
+
+        logStatus(sdto);
+
         TossPaymentResponseDto tossResponseDto = paymentClient.confirmPayment(tossRequestDto);
+
+        logStatus(sdto);
 
         Payment payment = Payment.fromDto(tossResponseDto);
         paymentRepository.save(payment);
 
         return ConfirmPaymentResponseDto.from(tossResponseDto);
+    }
+
+    private void logStatus(ConfirmPaymentSDto sdto) {
+        TossPaymentResponseDto tossResponseDto = paymentClient.getPaymentByOrderId(sdto.getOrderId());
+        log.info(tossResponseDto.getStatus());
     }
 
 //    public GetPaymentResponseDto GetPayment(String reason) {

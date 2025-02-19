@@ -17,6 +17,8 @@ public class PaymentErrorDecoder implements ErrorDecoder {
     @Override
     public Exception decode(String methodKey, Response response) {
 
+        log.info(methodKey);
+
         String bodyContent = "";
 
         if (response.body() != null) {

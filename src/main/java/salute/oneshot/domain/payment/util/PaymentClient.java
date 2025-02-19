@@ -2,6 +2,7 @@ package salute.oneshot.domain.payment.util;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,8 +18,8 @@ public interface PaymentClient {
     @PostMapping(value = "/confirm", consumes = MediaType.APPLICATION_JSON_VALUE)
     TossPaymentResponseDto confirmPayment(@RequestBody TossConfirmPaymentRequestDto requestDto);
 
-    @PostMapping(value = "/order/{orderId}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    TossPaymentResponseDto getPaymentByOrderId(@PathVariable Long orderId);
+    @GetMapping(value = "/orders/{orderId}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    TossPaymentResponseDto getPaymentByOrderId(@PathVariable String orderId);
 
     @PostMapping(value = "/cancel", consumes = MediaType.APPLICATION_JSON_VALUE)
     TossPaymentResponseDto cancelPayment(@RequestBody TossCancelPaymentRequestDto requestDto);
