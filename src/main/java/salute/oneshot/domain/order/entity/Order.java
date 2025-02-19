@@ -23,6 +23,9 @@ public class Order extends BaseEntity {
     @Column(columnDefinition = "BIGINT")
     private Long id;
 
+    @Column(nullable = false, unique = true)
+    private String orderNumber; //주문 번호
+
     private String name; // "토스 티셔츠 외 2건"
     private Long amount; // 15000 (원으로 고정)
 
@@ -45,8 +48,9 @@ public class Order extends BaseEntity {
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderItem> orderItems = new ArrayList<>();
 
-    private Order (String name, Long amount, User user ,Cart cart, Address address, List<OrderItem> orderItems) {
+    private Order (String orderNumber, String name, Long amount, User user ,Cart cart, Address address, List<OrderItem> orderItems) {
         this.status = OrderStatus.PENDING_PAYMENT;
+        this.orderNumber = orderNumber;
         this.name = name;
         this.amount = amount;
         this.user = user;
@@ -55,8 +59,8 @@ public class Order extends BaseEntity {
         this.orderItems = orderItems;
     }
 
-    public static Order of (String name, Long amount, User user ,Cart cart, Address address, List<OrderItem> orderItems) {
-        return new Order(name, amount, user, cart, address, orderItems);
+    public static Order of (String orderNumber, String name, Long amount, User user ,Cart cart, Address address, List<OrderItem> orderItems) {
+        return new Order(orderNumber, name, amount, user, cart, address, orderItems);
     }
 
     public void updateStatus(OrderStatus status) {
