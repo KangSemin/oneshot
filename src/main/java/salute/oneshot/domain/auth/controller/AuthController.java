@@ -12,7 +12,6 @@ import salute.oneshot.domain.auth.dto.request.SignInRequestDto;
 import salute.oneshot.domain.auth.dto.request.SignUpRequestDto;
 import salute.oneshot.domain.auth.dto.response.AccessTokenDto;
 import salute.oneshot.domain.auth.dto.response.AuthResponseDto;
-import salute.oneshot.domain.auth.dto.response.RefreshTokenDto;
 import salute.oneshot.domain.auth.dto.response.TokenInfo;
 import salute.oneshot.domain.auth.dto.service.SignInSDto;
 import salute.oneshot.domain.auth.dto.service.AuthSDto;
@@ -58,7 +57,7 @@ public class AuthController {
 
         ResponseCookie refreshCookie =
                 ResponseCookie.from("refreshToken", tokenInfo.getRefreshToken())
-                        .httpOnly(true)  // XSS 방어 (JS에서 접근 불가)
+                        .httpOnly(true)  // XSS 방어 JavaScript에서 쿠키에 접근하는 것을 차단(프로토콜과 무관)
                         .secure(false)    // HTTPS 환경에서만 전송
                         .sameSite("Strict")  // CSRF 방어
                         .path("/api/auth/refresh")  // 특정 경로에서만 전송
@@ -87,17 +86,15 @@ public class AuthController {
     }
 
     @PostMapping("/reissue")
-    public ResponseEntity<ApiResponse<RefreshTokenDto>> reissueToken(
+    public ResponseEntity<ApiResponse<String>> reissueToken(
             @CookieValue(name = "refreshToken") String refreshToken
     ) {
-        String newAccessToken = authService.reissueAccessToken(refreshToken);
-
-        RefreshTokenDto responseDto =
-                RefreshTokenDto.of(newAccessToken);
+        String newAccessToken =
+                authService.reissueAccessToken(refreshToken);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ApiResponse.success(
                         ApiResponseConst.GET_ACS_TOKEN_SUCCESS,
-                        responseDto));
+                        newAccessToken));
     }
 }
