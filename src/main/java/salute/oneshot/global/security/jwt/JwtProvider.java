@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import salute.oneshot.domain.auth.dto.response.TokenInfo;
 import salute.oneshot.domain.auth.repository.BlacklistCacheRepository;
+import salute.oneshot.domain.user.entity.UserRole;
 import salute.oneshot.global.security.SecurityConst;
 
 import javax.crypto.SecretKey;
@@ -33,6 +34,7 @@ public class JwtProvider {
 
         return Jwts.builder()
                 .subject(userId.toString())
+                .claim("role", UserRole.USER.name())
                 .issuedAt(now)
                 .expiration(new Date(now.getTime() + expireTime))
                 .signWith(secretKey)
@@ -40,15 +42,19 @@ public class JwtProvider {
     }
 
     public TokenInfo createToken(Long userId) {
-        String accessToken =
-                createAccessToken(userId);
-        long accessExpiresAt =
-                System.currentTimeMillis() + SecurityConst.ACCESS_TOKEN_EXPIRE_TIME;
-        String refreshToken =
-                createRefreshToken(userId);
-        long refreshExpiresAt =
-                System.currentTimeMillis() + SecurityConst.REFRESH_TOKEN_EXPIRE_TIME;
-        return TokenInfo.of(accessToken, accessExpiresAt, refreshToken, refreshExpiresAt);
+        String accessToken = createAccessToken(userId);
+        long accessExpiresAt = System.currentTimeMillis() +
+                        SecurityConst.ACCESS_TOKEN_EXPIRE_TIME;
+
+        String refreshToken = createRefreshToken(userId);
+        long refreshExpiresAt = System.currentTimeMillis() +
+                        SecurityConst.REFRESH_TOKEN_EXPIRE_TIME;
+
+        return TokenInfo.of(
+                accessToken,
+                accessExpiresAt,
+                refreshToken,
+                refreshExpiresAt);
     }
 
     public Claims parseClaims(String token) {
@@ -84,4 +90,5 @@ public class JwtProvider {
             throw new JwtException(SecurityConst.INVALID_TOKEN);
         }
     }
+
 }

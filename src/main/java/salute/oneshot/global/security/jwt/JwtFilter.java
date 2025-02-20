@@ -61,7 +61,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
     private Authentication createAuthentication(Claims claims) {
         Long id = Long.parseLong(claims.getSubject());
-        UserRole role = userDetailsService.loadUserById(id);
+        UserRole role = UserRole.of(claims.get("role", String.class));
 
         return userDetailsService.createAuthentication(id, role);
     }
