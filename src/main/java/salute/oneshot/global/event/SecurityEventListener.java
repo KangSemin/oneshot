@@ -16,6 +16,6 @@ public class SecurityEventListener {
     @EventListener
     public void onTokenInvalidation(TokenInvalidationEvent event) {
         log.debug("토큰 무효화 이벤트 발생");
-        blacklistCacheRepository.save(event.getToken());
+        blacklistCacheRepository.save(event.getToken(), event.getExpirationTime());
     }
 }

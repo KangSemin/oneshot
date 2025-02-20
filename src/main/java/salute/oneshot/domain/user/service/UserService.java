@@ -52,8 +52,9 @@ public class UserService {
 
         addressRepository.deleteAllByUserId(serviceDto.getUserId());
 
+        String token = jwtProvider.extractToken(serviceDto.getToken());
         eventPublisher.publishEvent(TokenInvalidationEvent.of(
-                jwtProvider.extractToken(serviceDto.getToken())));
+                token, jwtProvider.getRemainMilliSeconds(token)));
 
         refreshTokenRepository.deleteById(serviceDto.getUserId());
 

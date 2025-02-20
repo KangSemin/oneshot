@@ -91,4 +91,11 @@ public class JwtProvider {
         }
     }
 
+    public long getRemainMilliSeconds(String token) {
+        Claims claims = parseClaims(token);
+        long expirationTime = claims.getExpiration().getTime();
+        long currentTime = System.currentTimeMillis();
+
+        return Math.max(expirationTime - currentTime, 0);
+    }
 }

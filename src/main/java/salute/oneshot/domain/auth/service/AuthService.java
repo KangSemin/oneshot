@@ -10,7 +10,6 @@ import salute.oneshot.domain.auth.dto.response.TokenInfo;
 import salute.oneshot.domain.auth.dto.service.SignInSDto;
 import salute.oneshot.domain.auth.dto.service.AuthSDto;
 import salute.oneshot.domain.auth.dto.service.SignOutSDto;
-import salute.oneshot.domain.auth.entity.RefreshToken;
 import salute.oneshot.domain.auth.repository.RefreshTokenRepository;
 import salute.oneshot.domain.common.dto.error.ErrorCode;
 import salute.oneshot.domain.user.entity.User;
@@ -67,24 +66,24 @@ public class AuthService {
 
     @Transactional
     public AuthResponseDto signOut(SignOutSDto serviceDto) {
-        User user = userRepository.findByIdAndIsDeletedIsFalse(serviceDto.getId())
+        User user = userRepository
+                .findByIdAndIsDeletedIsFalse(serviceDto.getId())
                 .orElseThrow(() ->
                         new NotFoundException(ErrorCode.USER_NOT_FOUND));
 
+        String token = jwtProvider.extractToken(serviceDto.getToken());
+
         eventPublisher.publishEvent(TokenInvalidationEvent.of(
-                jwtProvider.extractToken(serviceDto.getToken())));
+                token, jwtProvider.getRemainMilliSeconds(token)));
 
         return AuthResponseDto.from(user);
     }
 
+    @Transactional
     public String reissueAccessToken(String refreshToken) {
         Long userId = jwtProvider.getUserIdFromToken(refreshToken);
 
-        RefreshToken storedToken = refreshTokenRepository
-                .findByUserId(userId)
-                .orElseThrow(() -> new InvalidException(ErrorCode.INVALID_TOKEN));
-
-        if (!storedToken.getToken().equals(refreshToken)) {
+        if (refreshTokenRepository.validateAndUseToken(userId, refreshToken) == 0) {
             throw new InvalidException(ErrorCode.INVALID_TOKEN);
         }
 

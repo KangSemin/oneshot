@@ -9,11 +9,14 @@ import java.util.concurrent.TimeUnit;
 @Component
 @RequiredArgsConstructor
 public class BlacklistCacheRepository {
+
     private final RedisTemplate<String, Object> redisTemplate;
 
-    public void save(String token) {
+    public void save(String token, long expirationTime) {
         String key = "blacklist:" + token;
-        redisTemplate.opsForValue().set(key, "blacklisted", 75, TimeUnit.MINUTES);
+        redisTemplate.opsForValue().set(key, "blacklisted",
+                expirationTime + TimeUnit.MINUTES.toMillis(5),
+                TimeUnit.MILLISECONDS);
     }
 
     public boolean exists(String token) {
