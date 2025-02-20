@@ -40,6 +40,11 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
+	//엘라스틱 서치
+	implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch'
+	implementation 'co.elastic.clients:elasticsearch-java:8.11.2'
+
+
 	compileOnly 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-docker-compose'
 	runtimeOnly 'com.mysql:mysql-connector-j'
@@ -66,6 +71,8 @@ dependencies {
 	// openfeign for payments
 	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
 	implementation 'org.springframework.cloud:spring-cloud-config-server'
+
+
 }
 
 tasks.named('test') {
