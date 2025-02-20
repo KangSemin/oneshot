@@ -28,7 +28,7 @@ public class PaymentController {
                 .body(ApiResponse.success(ApiResponseConst.ADD_PMNT_SUCCESS, responseDto));
     }
 
-    @PostMapping("/payments/{paymentId}")
+    @GetMapping("/payments/{paymentId}")
     public ResponseEntity<ApiResponse<PaymentResponseDto>> findPayment(
             @PathVariable Long paymentId
     ) {

@@ -167,13 +167,8 @@ public class OrderService {
     }
 
     public GetOrderDetailsResponseDto getOrderDetails(GetOrderDetailsSDto sDto) {
-
-        Order order = orderRepository.findById(sDto.getOrderId())
+        Order order = orderRepository.findByIdAndUserId(sDto.getOrderId(), sDto.getUserId())
                 .orElseThrow(() -> new NotFoundException(ErrorCode.ORDER_NOT_FOUND));
-
-        if(!order.getUser().getId().equals(sDto.getUserId())) {
-            throw new ForbiddenException(ErrorCode.ORDER_GET_FORBIDDEN);
-        }
 
         return GetOrderDetailsResponseDto.from(order);
     }

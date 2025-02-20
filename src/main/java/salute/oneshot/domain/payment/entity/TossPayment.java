@@ -3,7 +3,6 @@ package salute.oneshot.domain.payment.entity;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import salute.oneshot.domain.payment.dto.response.PaymentResponseDto;
 
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -49,10 +48,6 @@ public class TossPayment {
     private final Long vat;
     private final Long taxFreeAmount;
     private final Map<String, String> metadata;
-
-    public static PaymentResponseDto from(TossPayment tossResponseDto) {
-        return null;
-    }
 
     @Getter
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
