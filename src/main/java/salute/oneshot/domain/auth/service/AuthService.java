@@ -60,7 +60,7 @@ public class AuthService {
 
         TokenInfo tokenInfo = jwtProvider.createToken(user.getId());
 
-        saveRefreshToken(user.getId(), tokenInfo.getRefreshToken(), tokenInfo.getRefreshExpiresAt());
+        saveRefreshToken(user.getId(), tokenInfo);
 
         return tokenInfo;
     }
@@ -91,10 +91,10 @@ public class AuthService {
         return jwtProvider.createAccessToken(userId);
     }
 
-    private void saveRefreshToken(Long userId, String refreshToken, long refreshExpiresAt) {
-        refreshTokenRepository.save(RefreshToken.of(
+    private void saveRefreshToken(Long userId, TokenInfo tokenInfo) {
+        refreshTokenRepository.upsertRefreshToken(
                 userId,
-                refreshToken,
-                refreshExpiresAt));
+                tokenInfo.getRefreshToken(),
+                tokenInfo.getRefreshExpiresAt());
     }
 }
