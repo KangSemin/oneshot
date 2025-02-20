@@ -4,8 +4,8 @@ import io.lettuce.core.dynamic.annotation.Param;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import salute.oneshot.domain.user.entity.User;
+import salute.oneshot.domain.user.entity.UserRole;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long> {
@@ -17,11 +17,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findByIdAndIsDeletedIsFalse(Long id);
 
-    @Query("SELECT EXISTS(" +
-            "SELECT 1 FROM User u " +
-            "WHERE u.id = :userId " +
-            "AND (u.lastLogoutAt IS NULL OR u.lastLogoutAt < :issuedAt))")
-    boolean isValidToken(
-            @Param("userId") Long userId ,
-            @Param("issuedAt") LocalDateTime issuedAt);
+    @Query("SELECT u.userRole FROM User u WHERE u.id = :id")
+    Optional<UserRole> findUserRoleById(@Param("id") Long id);
 }

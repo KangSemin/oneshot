@@ -12,7 +12,9 @@ import salute.oneshot.global.exception.ConflictException;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "users")
+@Table(name = "users", indexes = {
+        @Index(name = "idx_user_email_is_deleted", columnList = "email, is_deleted")
+})
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User extends BaseEntity {
@@ -41,9 +43,6 @@ public class User extends BaseEntity {
     @Column(name = "is_deleted")
     @ColumnDefault("false")
     private boolean isDeleted = false;
-
-    @Column(name = "last_logout_at")
-    private LocalDateTime lastLogoutAt;
 
     private User(
             String email,
@@ -76,9 +75,5 @@ public class User extends BaseEntity {
         }
         this.isDeleted = true;
         this.isDeletedAt = LocalDateTime.now();
-    }
-
-    public void logout() {
-        this.lastLogoutAt = LocalDateTime.now();
     }
 }
