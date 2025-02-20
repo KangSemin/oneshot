@@ -1,32 +1,35 @@
 package salute.oneshot.domain.auth.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import salute.oneshot.domain.auth.dto.response.SignInResponseDto;
 import salute.oneshot.domain.auth.dto.response.AuthResponseDto;
+import salute.oneshot.domain.auth.dto.response.TokenInfo;
 import salute.oneshot.domain.auth.dto.service.SignInSDto;
 import salute.oneshot.domain.auth.dto.service.AuthSDto;
+import salute.oneshot.domain.auth.dto.service.SignOutSDto;
+import salute.oneshot.domain.auth.entity.RefreshToken;
+import salute.oneshot.domain.auth.repository.RefreshTokenRepository;
 import salute.oneshot.domain.common.dto.error.ErrorCode;
 import salute.oneshot.domain.user.entity.User;
 import salute.oneshot.domain.user.repository.UserRepository;
+import salute.oneshot.global.event.TokenInvalidationEvent;
 import salute.oneshot.global.exception.ConflictException;
 import salute.oneshot.global.exception.InvalidException;
 import salute.oneshot.global.exception.NotFoundException;
-import salute.oneshot.global.security.SecurityConst;
 import salute.oneshot.global.security.jwt.JwtProvider;
-import salute.oneshot.global.security.service.CustomUserDetailsService;
 
 @Service
 @RequiredArgsConstructor
 public class AuthService {
 
-    private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtProvider jwtProvider;
-    private final CustomUserDetailsService userDetailsService;
+    private final ApplicationEventPublisher eventPublisher;
+    private final UserRepository userRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     @Transactional
     public AuthResponseDto userSignUp(AuthSDto serviceDto) {
@@ -38,14 +41,13 @@ public class AuthService {
                 serviceDto.getEmail(),
                 passwordEncoder.encode(serviceDto.getPassword()),
                 serviceDto.getNickName());
-
         userRepository.save(user);
 
         return AuthResponseDto.from(user);
     }
 
-    @Transactional(readOnly = true)
-    public SignInResponseDto userSignIn(SignInSDto serviceDto) {
+    @Transactional
+    public TokenInfo userSignIn(SignInSDto serviceDto) {
         User user = userRepository
                 .findByEmailAndIsDeletedIsFalse(serviceDto.getEmail())
                 .orElseThrow(() ->
@@ -56,24 +58,43 @@ public class AuthService {
             throw new InvalidException(ErrorCode.LOGIN_FAILED);
         }
 
-        Authentication authentication =
-                userDetailsService.createAuthentication(
-                        user.getId(),
-                        user.getEmail(),
-                        user.getUserRole());
+        TokenInfo tokenInfo = jwtProvider.createToken(user.getId());
 
-        String token = jwtProvider.createToken(authentication);
+        saveRefreshToken(user.getId(), tokenInfo.getRefreshToken(), tokenInfo.getRefreshExpiresAt());
 
-        return SignInResponseDto.of(token, SecurityConst.TOKEN_TYPE);
+        return tokenInfo;
     }
 
     @Transactional
-    public AuthResponseDto signOut(Long id) {
-        User user = userRepository.findByIdAndIsDeletedIsFalse(id)
+    public AuthResponseDto signOut(SignOutSDto serviceDto) {
+        User user = userRepository.findByIdAndIsDeletedIsFalse(serviceDto.getId())
                 .orElseThrow(() ->
                         new NotFoundException(ErrorCode.USER_NOT_FOUND));
-        user.logout();
+
+        eventPublisher.publishEvent(TokenInvalidationEvent.of(
+                jwtProvider.extractToken(serviceDto.getToken())));
 
         return AuthResponseDto.from(user);
+    }
+
+    public String reissueAccessToken(String refreshToken) {
+        Long userId = jwtProvider.getUserIdFromToken(refreshToken);
+
+        RefreshToken storedToken = refreshTokenRepository
+                .findByUserId(userId)
+                .orElseThrow(() -> new InvalidException(ErrorCode.INVALID_TOKEN));
+
+        if (!storedToken.getToken().equals(refreshToken)) {
+            throw new InvalidException(ErrorCode.INVALID_TOKEN);
+        }
+
+        return jwtProvider.createAccessToken(userId);
+    }
+
+    private void saveRefreshToken(Long userId, String refreshToken, long refreshExpiresAt) {
+        refreshTokenRepository.save(RefreshToken.of(
+                userId,
+                refreshToken,
+                refreshExpiresAt));
     }
 }
