@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 import salute.oneshot.domain.common.dto.entity.BaseEntity;
 
 @Entity
@@ -13,13 +14,17 @@ import salute.oneshot.domain.common.dto.entity.BaseEntity;
 public class RefreshToken extends BaseEntity {
 
     @Id
-     private Long userId;
+    private Long userId;
 
     @Column(nullable = false)
     private String token;
 
     @Column(nullable = false)
     private long expireAt;
+
+    @Column(nullable = false)
+    @ColumnDefault("false")
+    private boolean isUsed = false;
 
     public RefreshToken(
             Long userId,
@@ -36,6 +41,10 @@ public class RefreshToken extends BaseEntity {
             String token,
             long expireAt
     ) {
-        return new RefreshToken(userId, token, expireAt);
+        return new RefreshToken(
+                userId,
+                token,
+                expireAt
+        );
     }
 }
