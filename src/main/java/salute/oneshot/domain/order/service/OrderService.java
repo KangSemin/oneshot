@@ -2,8 +2,6 @@ package salute.oneshot.domain.order.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import salute.oneshot.domain.address.entity.Address;
@@ -29,8 +27,8 @@ import salute.oneshot.global.exception.CustomRuntimeException;
 import salute.oneshot.global.exception.ForbiddenException;
 import salute.oneshot.global.exception.InvalidException;
 import salute.oneshot.global.exception.NotFoundException;
-
-import java.time.LocalDate;
+import java.security.SecureRandom;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -81,7 +79,6 @@ public class OrderService {
         for (OrderItem orderItem : orderItems) {
             orderItem.setOrder(order);
         }
-
         // 주문 저장
         orderRepository.save(order);
 
@@ -97,7 +94,7 @@ public class OrderService {
         Order order = orderRepository.findById(sDto.getOrderId())
                 .orElseThrow(() -> new NotFoundException(ErrorCode.ORDER_NOT_FOUND));
 
-        if(!order.getUser().getId().equals(sDto.getUserId())) {
+        if (!order.getUser().getId().equals(sDto.getUserId())) {
             throw new ForbiddenException(ErrorCode.ORDER_GET_FORBIDDEN);
         }
 
@@ -126,7 +123,7 @@ public class OrderService {
         User user = getUserById(sDto.getUserId());
         verifyAdmin(user);
 
-        if(!order.isValidStatusChange(order.getStatus(), OrderStatus.valueOf(sDto.getOrderStatus()))) {
+        if (!order.isValidStatusChange(order.getStatus(), OrderStatus.valueOf(sDto.getOrderStatus()))) {
             throw new InvalidException(ErrorCode.INVALID_ORDER_STATUS);
         }
 
@@ -141,11 +138,11 @@ public class OrderService {
         Order order = orderRepository.findById(sDto.getOrderId())
                 .orElseThrow(() -> new NotFoundException(ErrorCode.ORDER_NOT_FOUND));
 
-        if(!order.getUser().getId().equals(sDto.getUserId())) {
+        if (!order.getUser().getId().equals(sDto.getUserId())) {
             throw new ForbiddenException(ErrorCode.ORDER_CANCEL_FORBIDDEN);
         }
 
-        if(order.getStatus() == OrderStatus.SHIPPED) {
+        if (order.getStatus() == OrderStatus.SHIPPED) {
 
             throw new CustomRuntimeException(ErrorCode.CANNOT_CANCEL_SHIPPED_ORDER);
 
@@ -181,19 +178,17 @@ public class OrderService {
 
     private String generateOrderNumber() {
 
-        String orderDate = LocalDate.now().format(DateTimeFormatter.ofPattern("'O'yyMMdd"));
+        String orderDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyMMddHHmmss"));
 
-        Pageable pageable = PageRequest.of(0,1);
-        List<String> lastOrderNumberByDate = orderRepository.findLastOrderNumberByDate(orderDate, pageable);
+        String chars = "0123456789";
 
-        int serialNumber = 1;
+        SecureRandom random = new SecureRandom();
+        StringBuilder stringBuilder = new StringBuilder();
 
-        if(lastOrderNumberByDate != null) {
-            String lastOrderNumber = lastOrderNumberByDate.get(0);
-            String lastSerialNumber = lastOrderNumber.substring(7);
-            serialNumber = Integer.parseInt(lastSerialNumber) + 1;
+        for (int i = 0; i < 2; i++) {
+            int nextInt = random.nextInt(chars.length());
+            stringBuilder.append(chars.charAt(nextInt));
         }
-
-        return orderDate + String.format("%03d", serialNumber);
+        return orderDate + stringBuilder.toString();
     }
 }
