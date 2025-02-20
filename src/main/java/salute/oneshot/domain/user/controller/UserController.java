@@ -9,6 +9,7 @@ import salute.oneshot.domain.common.dto.success.ApiResponse;
 import salute.oneshot.domain.common.dto.success.ApiResponseConst;
 import salute.oneshot.domain.user.dto.repuest.UpdateUserRequestDto;
 import salute.oneshot.domain.user.dto.response.UserResponseDto;
+import salute.oneshot.domain.user.dto.service.DeleteUserSDto;
 import salute.oneshot.domain.user.dto.service.UpdateUserSDto;
 import salute.oneshot.domain.user.service.UserService;
 import salute.oneshot.global.security.entity.CustomUserDetails;
@@ -52,10 +53,14 @@ public class UserController {
 
     @DeleteMapping
     public ResponseEntity<ApiResponse<UserResponseDto>> deleteUser(
-            @AuthenticationPrincipal CustomUserDetails userDetails
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @RequestHeader("Authorization") String token
     ) {
+        DeleteUserSDto serviceDto =
+                DeleteUserSDto.of(userDetails.getId(), token);
+
         UserResponseDto responseDto =
-                userService.deleteUser(userDetails.getId());
+                userService.deleteUser(serviceDto);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ApiResponse.success(
