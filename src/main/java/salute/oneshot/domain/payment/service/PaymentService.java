@@ -32,14 +32,28 @@ public class PaymentService {
 //        log.info("amount: " + sdto.getAmount());
 //        log.info("paymentKey: " + sdto.getPaymentKey());
 
-        TossConfirmPaymentRequestDto tossRequestDto = TossConfirmPaymentRequestDto.of(sdto.getOrderId(), sdto.getAmount(), sdto.getPaymentKey());
+//        Order order = orderRepository.findByOrderNumber(sdto.getOrderId()).orElseThrow(() -> new NotFoundException(ErrorCode.ORDER_NOT_FOUND));
+//        if (!order.getAmount().equals(sdto.getAmount())) {
+//            throw new ConflictException(ErrorCode.WRONG_PAYMENT_AMOUNT);
+//        }
 
+        // 토스 페이먼츠 결제 승인 요청 API
+        TossConfirmPaymentRequestDto tossRequestDto = TossConfirmPaymentRequestDto.of(
+                sdto.getOrderId(),
+                sdto.getAmount(),
+                sdto.getPaymentKey()
+        );
         TossPayment tossPayment = paymentClient.confirmPayment(tossRequestDto);
+
+//        if (!order.getAmount().equals(tossPayment.getTotalAmount())) {
+//            throw new ConflictException(ErrorCode.WRONG_PAYMENT_AMOUNT);
+//        }
 
         Payment payment = Payment.fromDto(tossPayment);
         paymentRepository.save(payment);
 
-////        NOT FOUND 처리해야 하나? 트랜잭션 때문에 결제 저장 안되면 망하는데
+//        TODO: Order 상태 변경
+////        NOT FOUND 처리해야 하나? 트랜잭션 때문에 결제 저장 안되면 안되는데
 //        Order order = orderRepository.findByOrderNoAndUserId(orderNo, sdto.getUserId()).orElseThrow();
 ////        이것도 뭔가 필요없는 검증같기도 하고
 //        if (!order.isValidStatusChange(order.getStatus(), OrderStatus.PROCESSING)) {
@@ -67,6 +81,7 @@ public class PaymentService {
 //        return PaymentResponseDto.from(tossResponseDto);
 //    }
 
+//    TODO: 결제취소
 //    @Transactional
 //    public PaymentResponseDto cancelPayment(String reason) {
 //        TossCancelPaymentRequestDto tossRequestDto = TossCancelPaymentRequestDto.from(reason);

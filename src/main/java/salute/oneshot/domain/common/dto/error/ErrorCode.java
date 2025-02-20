@@ -56,6 +56,7 @@ public enum ErrorCode {
     PAYMENT_FORBIDDEN(HttpStatus.NOT_FOUND, "본인의 결제 내역만 조회할 수 있습니다."),
     PAYMENT_ALREADY_CONFIRMED(HttpStatus.CONFLICT, "이미 만료된 결제입니다."),
     ORDER_ALREADY_PAID(HttpStatus.CONFLICT, "이미 결제가 된 주문입니다."),
+    WRONG_PAYMENT_AMOUNT(HttpStatus.CONFLICT, "결제 금액과 주문 금액이 다릅니다."),
 
     // 레시피 관련 익셉션
     RECIPE_NOT_FOUND(HttpStatus.NOT_FOUND, "레시피가 존재하지 않습니다."),

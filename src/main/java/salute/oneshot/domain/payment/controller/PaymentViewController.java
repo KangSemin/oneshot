@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import salute.oneshot.domain.order.dto.response.GetOrderDetailsResponseDto;
-import salute.oneshot.domain.order.dto.service.GetOrderSDto;
+import salute.oneshot.domain.order.dto.service.GetOrderDetailsSDto;
 import salute.oneshot.domain.order.service.OrderService;
 import salute.oneshot.domain.payment.service.PaymentService;
 import salute.oneshot.domain.payment.util.PaymentClient;
@@ -32,7 +32,9 @@ public class PaymentViewController {
             @PathVariable Long orderId,
             Model model
     ) {
-        GetOrderDetailsResponseDto orderResponseDto = orderService.getOrderDetails(GetOrderSDto.of(userDetails.getId(), orderId));
+
+        GetOrderDetailsResponseDto orderResponseDto = orderService.getOrderDetails(GetOrderDetailsSDto.of(userDetails.getId(), orderId));
+
         model.addAttribute("order", orderResponseDto);
 
         return "payment/toss-payment";

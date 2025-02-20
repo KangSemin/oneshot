@@ -9,10 +9,10 @@ import lombok.Getter;
 public class TossConfirmPaymentRequestDto {
 
     private final String orderId;
-    private final String amount;
+    private final Long amount;
     private final String paymentKey;
 
-    public static TossConfirmPaymentRequestDto of(String orderId, String amount, String paymentKey) {
+    public static TossConfirmPaymentRequestDto of(String orderId, Long amount, String paymentKey) {
         return new TossConfirmPaymentRequestDto(
                 orderId,
                 amount,

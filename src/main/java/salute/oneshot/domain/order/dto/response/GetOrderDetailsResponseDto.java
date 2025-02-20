@@ -5,13 +5,13 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import salute.oneshot.domain.order.entity.Order;
 
-import java.util.List;
-
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class GetOrderDetailsResponseDto {
 
     private final Long orderId;
+
+    // TODO: Validation 필요!
     private final Long amountValue;
     private final String orderNumber;
     private final String orderName;
@@ -23,11 +23,13 @@ public class GetOrderDetailsResponseDto {
         return new GetOrderDetailsResponseDto(
                 order.getId(),
                 order.getAmount(),
-                order.getOrderNumber(),
-                order.getOrderName(),
-                order.getCustomerEmail(),
-                order.getCustomerName(),
-                order.getCustomerKey()
+//                order.getOrderNumber(),
+                "Order-000-" + order.getId(),
+                order.getName(),
+                order.getUser().getEmail(),
+                order.getUser().getNickName(),
+                // TODO: customerKey 로직 위치
+                "User-"+ order.getUser().getId()
         );
     }
 }

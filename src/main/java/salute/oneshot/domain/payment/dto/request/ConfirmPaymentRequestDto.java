@@ -8,6 +8,6 @@ import lombok.Getter;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class ConfirmPaymentRequestDto {
     private final String orderId;
-    private final String amount;
+    private final Long amount;
     private final String paymentKey;
 }

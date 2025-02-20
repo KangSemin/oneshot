@@ -10,10 +10,7 @@ import salute.oneshot.domain.cart.entity.Cart;
 import salute.oneshot.domain.cart.entity.CartItem;
 import salute.oneshot.domain.cart.repository.CartRepository;
 import salute.oneshot.domain.common.dto.error.ErrorCode;
-import salute.oneshot.domain.order.dto.response.GetOrderResponseDto;
-import salute.oneshot.domain.order.dto.response.OrderItemListResponseDto;
-import salute.oneshot.domain.order.dto.response.CreateOrderResponseDto;
-import salute.oneshot.domain.order.dto.response.UpdateOrderResponseDto;
+import salute.oneshot.domain.order.dto.response.*;
 import salute.oneshot.domain.order.dto.service.*;
 import salute.oneshot.domain.order.entity.Order;
 import salute.oneshot.domain.order.entity.OrderItem;
@@ -167,5 +164,17 @@ public class OrderService {
             return cart.getItemList().get(0).getProduct().getName() + " 외 " +
                     (cart.getItemList().size() - 1) + "개";
         }
+    }
+
+    public GetOrderDetailsResponseDto getOrderDetails(GetOrderDetailsSDto sDto) {
+
+        Order order = orderRepository.findById(sDto.getOrderId())
+                .orElseThrow(() -> new NotFoundException(ErrorCode.ORDER_NOT_FOUND));
+
+        if(!order.getUser().getId().equals(sDto.getUserId())) {
+            throw new ForbiddenException(ErrorCode.ORDER_GET_FORBIDDEN);
+        }
+
+        return GetOrderDetailsResponseDto.from(order);
     }
 }
