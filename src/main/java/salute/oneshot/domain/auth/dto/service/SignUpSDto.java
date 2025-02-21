@@ -6,18 +6,18 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class AuthSDto {
+public class SignUpSDto {
 
-    private String email;
-    private String password;
-    private String nickName;
+    private final String email;
+    private final String password;
+    private final String nickName;
 
-    public static AuthSDto of(
+    public static SignUpSDto of(
             String email,
             String password,
             String nickName
     ) {
-      return new AuthSDto(email, password, nickName);
+      return new SignUpSDto(email, password, nickName);
     }
 }
 

@@ -9,7 +9,7 @@ import salute.oneshot.domain.user.dto.UserValidationConst;
 
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class SignInRequestDto {
+public class LogInRequestDto {
 
     @NotBlank(message = UserValidationConst.EMAIL_BLANK_MESSAGE)
     @Pattern(

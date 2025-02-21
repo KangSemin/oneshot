@@ -52,18 +52,18 @@ public class UserController {
     }
 
     @DeleteMapping
-    public ResponseEntity<ApiResponse<UserResponseDto>> deleteUser(
+    public ResponseEntity<ApiResponse<Long>> deleteUser(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @RequestHeader("Authorization") String token
     ) {
         DeleteUserSDto serviceDto =
                 DeleteUserSDto.of(userDetails.getId(), token);
 
-        UserResponseDto responseDto =
+        Long userId =
                 userService.deleteUser(serviceDto);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ApiResponse.success(
-                        ApiResponseConst.DELETE_USER_SUCCESS, responseDto));
+                        ApiResponseConst.DELETE_USER_SUCCESS, userId));
     }
 }

@@ -6,12 +6,12 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class SignInSDto {
+public class LogOutSDto {
 
-    private String email;
-    private String password;
+    private final Long id;
+    private final String token;
 
-    public static SignInSDto of(String email, String password) {
-        return new SignInSDto(email, password);
+    public static LogOutSDto of(Long id, String token) {
+        return new LogOutSDto(id, token);
     }
 }
