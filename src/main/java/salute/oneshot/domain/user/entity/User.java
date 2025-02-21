@@ -12,7 +12,9 @@ import salute.oneshot.global.exception.ConflictException;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "users")
+@Table(name = "users", indexes = {
+        @Index(name = "idx_user_email_is_deleted", columnList = "email, is_deleted")
+})
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User extends BaseEntity {
@@ -42,9 +44,6 @@ public class User extends BaseEntity {
     @ColumnDefault("false")
     private boolean isDeleted = false;
 
-    @Column(name = "last_logout_at")
-    private LocalDateTime lastLogoutAt;
-
     private User(
             String email,
             String password,
@@ -68,17 +67,5 @@ public class User extends BaseEntity {
     public void update(String nickName, String password) {
         this.nickName = nickName;
         this.password = password;
-    }
-
-    public void softDelete() {
-        if (this.isDeleted) {
-            throw new ConflictException(ErrorCode.DUPLICATE_USER_DELETE);
-        }
-        this.isDeleted = true;
-        this.isDeletedAt = LocalDateTime.now();
-    }
-
-    public void logout() {
-        this.lastLogoutAt = LocalDateTime.now();
     }
 }

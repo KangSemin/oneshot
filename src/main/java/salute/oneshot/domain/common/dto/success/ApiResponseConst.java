@@ -5,6 +5,7 @@ public class ApiResponseConst {
     public static final String SIGNUP_SUCCESS = "회원가입이 완료되었습니다.";
     public static final String LOGIN_SUCCESS = "로그인이 완료되었습니다.";
     public static final String LOGOUT_SUCCESS = "로그아웃이 완료되었습니다.";
+    public static final String GET_ACS_TOKEN_SUCCESS = "토큰 발급이 완료되었습니다.";
 
     // 유저, 셀러 관련 메시지
     public static final String GET_USER_SUCCESS = "사용자 조회가 완료되었습니다.";
