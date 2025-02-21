@@ -2,6 +2,7 @@ package salute.oneshot.domain.auth.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
@@ -85,15 +86,24 @@ public class AuthController {
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<ApiResponse<String>> refreshAccessToken(
+    public ResponseEntity<ApiResponse<AccessTokenDto>> refreshAccessToken(
             @CookieValue(name = "refreshToken") String refreshToken
     ) {
-        String newAccessToken =
+        TokenInfo tokenInfo =
                 authService.refreshAccessToken(refreshToken);
+        ResponseCookie refreshCookie = ResponseCookie.from(
+                        "refreshToken", tokenInfo.getRefreshToken())
+                .httpOnly(true)  // XSS 방어 JavaScript에서 쿠키에 접근하는 것을 차단(프로토콜과 무관)
+                .secure(false)   // HTTPS 환경에서만 전송(일단 false)
+                .sameSite("Strict")  // CSRF 방어
+                .path("/api/auth/refresh")  // 특정 경로에서만 전송
+                .maxAge(7 * 24 * 60 * 60)  // 7일간 유효
+                .build();
 
         return ResponseEntity.status(HttpStatus.OK)
+                .header(HttpHeaders.SET_COOKIE, refreshCookie.toString())
                 .body(ApiResponse.success(
                         ApiResponseConst.GET_ACS_TOKEN_SUCCESS,
-                        newAccessToken));
+                        AccessTokenDto.from(tokenInfo)));
     }
 }

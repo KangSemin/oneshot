@@ -9,20 +9,17 @@ import lombok.Getter;
 public class TokenInfo {
 
     private final String accessToken;
-    private final long accessExpiresAt;
     private final String refreshToken;
-    private final long refreshExpiresAt;
+    private final long accessExpiresAt;
 
     public static TokenInfo of(
             String accessToken,
-            long expiresAt,
             String refreshToken,
-            long refreshExpiresAt
+            long expiresAt
     ) {
         return new TokenInfo(
                 accessToken,
-                expiresAt,
                 refreshToken,
-                refreshExpiresAt);
+                expiresAt);
     }
 }
