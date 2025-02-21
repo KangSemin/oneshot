@@ -12,9 +12,9 @@ public class TossConfirmPaymentRequestDto {
     private final Long amount;
     private final String paymentKey;
 
-    public static TossConfirmPaymentRequestDto of(String orderId, Long amount, String paymentKey) {
+    public static TossConfirmPaymentRequestDto of(String orderNumber, Long amount, String paymentKey) {
         return new TossConfirmPaymentRequestDto(
-                orderId,
+                orderNumber,
                 amount,
                 paymentKey
         );

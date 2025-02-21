@@ -15,14 +15,14 @@ public class Payment {
     @Column(columnDefinition = "BIGINT")
     private Long id;
 
-    private String orderId;
+    private String orderNumber;
     private String paymentKey;
     private PaymentStatus status;
     private String orderName;
     private Long totalAmount;
 
-    public Payment(String orderId, String paymentKey, PaymentStatus status, String orderName, Long totalAmount) {
-        this.orderId = orderId;
+    public Payment(String orderNumber, String paymentKey, PaymentStatus status, String orderName, Long totalAmount) {
+        this.orderNumber = orderNumber;
         this.paymentKey = paymentKey;
         this.status = status;
         this.orderName = orderName;
