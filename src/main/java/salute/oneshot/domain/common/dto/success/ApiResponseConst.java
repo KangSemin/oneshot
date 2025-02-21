@@ -11,6 +11,7 @@ public class ApiResponseConst {
     public static final String GET_USER_SUCCESS = "사용자 조회가 완료되었습니다.";
     public static final String UPDATE_USER_SUCCESS = "사용자 수정이 완료되었습니다.";
     public static final String DELETE_USER_SUCCESS = "사용자 삭제가 완료되었습니다.";
+    public static final String UPDATE_ROLE_SUCCESS = "권한 변경이 완료되었습니다.";
 
     // 칵테일 관련 메시지
     public static final String GET_CCKTL_LIST_SUCCESS = "칵테일 목록 조회가 완료되었습니다.";

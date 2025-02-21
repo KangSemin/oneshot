@@ -6,7 +6,7 @@ import salute.oneshot.global.exception.InvalidException;
 import java.util.Arrays;
 
 public enum UserRole {
-    USER, ADMIN;
+    USER, ADMIN, SUPER_ADMIN;
 
     public static UserRole of(String role) {
         return Arrays.stream(UserRole.values())

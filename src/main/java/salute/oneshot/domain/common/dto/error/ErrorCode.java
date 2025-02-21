@@ -13,6 +13,7 @@ public enum ErrorCode {
     INVALID_USER_ROLE(HttpStatus.BAD_REQUEST, "유효하지 않은 UerRole 입니다."),
     DUPLICATE_EMAIL(HttpStatus.CONFLICT, "이미 사용중인 이메일 입니다."),
     DUPLICATE_USER_DELETE(HttpStatus.CONFLICT, "이미 탈퇴한 사용자입니다."),
+    DUPLICATE_ROLE(HttpStatus.CONFLICT, "동일한 권한입니다."),
 
     // 칵테일 관련 익셉션
     COCKTAIL_NOT_FOUND(HttpStatus.NOT_FOUND, "칵테일이 존재하지 않습니다."),
