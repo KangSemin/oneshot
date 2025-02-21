@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import salute.oneshot.domain.auth.dto.response.TokenInfo;
 import salute.oneshot.domain.auth.repository.RedisBlacklistRepository;
-import salute.oneshot.domain.user.entity.User;
 import salute.oneshot.domain.user.entity.UserRole;
 import salute.oneshot.global.security.SecurityConst;
 

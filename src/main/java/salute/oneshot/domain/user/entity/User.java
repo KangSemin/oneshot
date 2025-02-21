@@ -6,8 +6,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 import salute.oneshot.domain.common.dto.entity.BaseEntity;
-import salute.oneshot.domain.common.dto.error.ErrorCode;
-import salute.oneshot.global.exception.ConflictException;
 
 import java.time.LocalDateTime;
 

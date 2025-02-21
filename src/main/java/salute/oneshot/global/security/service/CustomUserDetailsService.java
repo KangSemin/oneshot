@@ -13,8 +13,8 @@ import salute.oneshot.global.security.entity.CustomUserDetails;
 @RequiredArgsConstructor
 public class CustomUserDetailsService {
 
-    public Authentication createAuthentication(Long userId, UserRole role) {
-        CustomUserDetails userDetails = CustomUserDetails.of(userId, role);
+    public Authentication createAuthentication(Long userId, UserRole userRole) {
+        CustomUserDetails userDetails = CustomUserDetails.of(userId, userRole);
 
         return new UsernamePasswordAuthenticationToken(
                 userDetails,

@@ -15,11 +15,11 @@ import java.util.List;
 public class CustomUserDetails implements UserDetails {
 
     private final Long id;
-    private final UserRole role;
+    private final UserRole userRole;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(() -> "ROLE_" + role.name());
+        return List.of(() -> "ROLE_" + userRole.name());
     }
 
     @Override
@@ -32,9 +32,9 @@ public class CustomUserDetails implements UserDetails {
         return null;
     }
 
-    public static CustomUserDetails of(Long userId, UserRole role) {
+    public static CustomUserDetails of(Long userId, UserRole userRole) {
         return new CustomUserDetails(
                 userId,
-                role);
+                userRole);
     }
 }

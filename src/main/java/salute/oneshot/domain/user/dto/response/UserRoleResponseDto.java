@@ -11,11 +11,11 @@ import salute.oneshot.domain.user.entity.UserRole;
 public class UserRoleResponseDto {
 
     private final Long userId;
-    private final UserRole role;
+    private final UserRole userRole;
 
     public static UserRoleResponseDto from(UpdateRoleSDto serviceDto) {
         return new UserRoleResponseDto(
                 serviceDto.getUserId(),
-                serviceDto.getRole());
+                serviceDto.getUserRole());
     }
 }

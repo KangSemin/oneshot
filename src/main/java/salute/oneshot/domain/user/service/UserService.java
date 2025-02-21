@@ -69,7 +69,7 @@ public class UserService {
     public UserRoleResponseDto updateUserRole(UpdateRoleSDto serviceDto) {
         if (userRepository.updateUserRole(
                 serviceDto.getUserId(),
-                serviceDto.getRole()) == 0
+                serviceDto.getUserRole()) == 0
         ) {
             throw new ConflictException(ErrorCode.DUPLICATE_ROLE);
         }

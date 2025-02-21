@@ -10,12 +10,12 @@ import salute.oneshot.domain.user.entity.UserRole;
 public class UpdateRoleSDto {
 
     private final Long userId;
-    private final UserRole role;
+    private final UserRole userRole;
 
     public static UpdateRoleSDto of(
             Long userId,
-            UserRole role
+            UserRole userRole
     ) {
-        return new UpdateRoleSDto(userId, role);
+        return new UpdateRoleSDto(userId, userRole);
     }
 }
