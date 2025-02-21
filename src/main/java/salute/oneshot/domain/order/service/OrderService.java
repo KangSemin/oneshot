@@ -75,7 +75,7 @@ public class OrderService {
         String orderNumber = generateOrderNumber();
 
         // 주문 생성
-        Order order = Order.of(orderName, orderAmount, cart.getUser(), cart, address, orderItems);
+        Order order = Order.of(orderNumber ,orderName, orderAmount, cart.getUser(), cart, address, orderItems);
 
         for (OrderItem orderItem : orderItems) {
             orderItem.setOrder(order);
