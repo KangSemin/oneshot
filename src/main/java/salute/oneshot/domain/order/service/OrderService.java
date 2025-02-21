@@ -145,6 +145,13 @@ public class OrderService {
     }
 
 
+    public GetOrderDetailsResponseDto getOrderDetails(GetOrderDetailsSDto sDto) {
+        Order order = orderRepository.findByIdAndUserId(sDto.getOrderId(), sDto.getUserId())
+                .orElseThrow(() -> new NotFoundException(ErrorCode.ORDER_NOT_FOUND));
+
+        return GetOrderDetailsResponseDto.from(order);
+    }
+
     private User getUserById(Long userId) {
         return userRepository.findByIdAndIsDeletedIsFalse(userId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
@@ -164,12 +171,5 @@ public class OrderService {
             return cart.getItemList().get(0).getProduct().getName() + " 외 " +
                     (cart.getItemList().size() - 1) + "개";
         }
-    }
-
-    public GetOrderDetailsResponseDto getOrderDetails(GetOrderDetailsSDto sDto) {
-        Order order = orderRepository.findByIdAndUserId(sDto.getOrderId(), sDto.getUserId())
-                .orElseThrow(() -> new NotFoundException(ErrorCode.ORDER_NOT_FOUND));
-
-        return GetOrderDetailsResponseDto.from(order);
     }
 }
