@@ -59,21 +59,6 @@ public class JwtFilter extends OncePerRequestFilter {
         }
     }
 
-    private boolean isAuthEndpoint(HttpServletRequest request) {
-        return request.getRequestURI().startsWith("/api/auth/") ||
-                request.getRequestURI().startsWith("/api/payments") ||
-                request.getRequestURI().startsWith("/addresses") ||
-                request.getRequestURI().startsWith("/payments");
-    }
-
-    private String extractToken(String bearerToken) {
-        if (!StringUtils.hasText(bearerToken) ||
-                !bearerToken.startsWith(SecurityConst.BEARER_PREFIX)) {
-            throw new MalformedJwtException(SecurityConst.MALFORMED_TOKEN);
-        }
-        return bearerToken.substring(SecurityConst.BEARER_PREFIX.length());
-    }
-
     private Authentication createAuthentication(Claims claims) {
         Long id = Long.parseLong(claims.getSubject());
         UserRole role = UserRole.of(claims.get("role", String.class));
