@@ -68,12 +68,4 @@ public class User extends BaseEntity {
         this.nickName = nickName;
         this.password = password;
     }
-
-    public void softDelete() {
-        if (this.isDeleted) {
-            throw new ConflictException(ErrorCode.DUPLICATE_USER_DELETE);
-        }
-        this.isDeleted = true;
-        this.isDeletedAt = LocalDateTime.now();
-    }
 }

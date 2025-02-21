@@ -1,19 +1,21 @@
 package salute.oneshot.domain.user.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import salute.oneshot.domain.address.repository.AddressRepository;
-import salute.oneshot.domain.auth.repository.RefreshTokenRepository;
+import salute.oneshot.domain.auth.repository.RedisBlacklistRepository;
+import salute.oneshot.domain.auth.repository.RedisRefreshTokenRepository;
 import salute.oneshot.domain.common.dto.error.ErrorCode;
 import salute.oneshot.domain.user.dto.response.UserResponseDto;
+import salute.oneshot.domain.user.dto.response.UserRoleResponseDto;
 import salute.oneshot.domain.user.dto.service.DeleteUserSDto;
+import salute.oneshot.domain.user.dto.service.UpdateRoleSDto;
 import salute.oneshot.domain.user.dto.service.UpdateUserSDto;
 import salute.oneshot.domain.user.entity.User;
 import salute.oneshot.domain.user.repository.UserRepository;
-import salute.oneshot.global.event.TokenInvalidationEvent;
+import salute.oneshot.global.exception.ConflictException;
 import salute.oneshot.global.exception.NotFoundException;
 import salute.oneshot.global.security.jwt.JwtProvider;
 
@@ -21,12 +23,12 @@ import salute.oneshot.global.security.jwt.JwtProvider;
 @RequiredArgsConstructor
 public class UserService {
 
+    private final JwtProvider jwtProvider;
+    private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
     private final AddressRepository addressRepository;
-    private final RefreshTokenRepository refreshTokenRepository;
-    private final ApplicationEventPublisher eventPublisher;
-    private final PasswordEncoder passwordEncoder;
-    private final JwtProvider jwtProvider;
+    private final RedisRefreshTokenRepository refreshTokenRepository;
+    private final RedisBlacklistRepository blacklistRepository;
 
     @Transactional(readOnly = true)
     public UserResponseDto getUserInfo(Long userId) {
@@ -47,20 +49,20 @@ public class UserService {
     }
 
     @Transactional
-    public UserResponseDto deleteUser(DeleteUserSDto serviceDto) {
-        User user = getUserById(serviceDto.getUserId());
+    public Long deleteUser(DeleteUserSDto serviceDto) {
+        Long userId = serviceDto.getUserId();
+        if (userRepository.softDelete(userId) == 1) {
+            addressRepository.deleteAllByUserId(userId);
 
-        addressRepository.deleteAllByUserId(serviceDto.getUserId());
+            String token = jwtProvider.extractToken(serviceDto.getToken());
+            refreshTokenRepository.delete(userId);
+            blacklistRepository.save(
+                    token,
+                    jwtProvider.getRemainMilliSeconds(token));
 
-        String token = jwtProvider.extractToken(serviceDto.getToken());
-        eventPublisher.publishEvent(TokenInvalidationEvent.of(
-                token, jwtProvider.getRemainMilliSeconds(token)));
-
-        refreshTokenRepository.deleteById(serviceDto.getUserId());
-
-        user.softDelete();
-
-        return UserResponseDto.from(user);
+            return userId;
+        }
+        throw new ConflictException(ErrorCode.DUPLICATE_USER_DELETE);
     }
 
     private User getUserById(Long userId) {
