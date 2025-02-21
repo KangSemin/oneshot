@@ -2,8 +2,12 @@ package salute.oneshot.domain.payment.entity;
 
 public enum PaymentStatus {
 
-    APPROVED,
-    DECLINED,
-    PENDING
-//    EXPIRED
+    READY,
+    IN_PROGRESS,
+    WAITING_FOR_DEPOSIT,
+    DONE,
+    CANCELED,
+    PARTIAL_CANCELED,
+    ABORTED,
+    EXPIRED
 }

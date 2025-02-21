@@ -4,40 +4,42 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import salute.oneshot.domain.order.entity.Order;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Payment {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(columnDefinition = "BIGINT")
     private Long id;
 
-    // TODO: fetch type 고민
-    @ManyToOne
-    @JoinColumn(name = "order_id")
-    private Order order;
+    private String orderId;
+    private String paymentKey;
+    private PaymentStatus status;
+    private String orderName;
+    private Long totalAmount;
 
-    private Long amount;
+    public Payment(String orderId, String paymentKey, PaymentStatus status, String orderName, Long totalAmount) {
+        this.orderId = orderId;
+        this.paymentKey = paymentKey;
+        this.status = status;
+        this.orderName = orderName;
+        this.totalAmount = totalAmount;
+    }
 
-    @Enumerated(EnumType.STRING)
-    private PaymentStatus status = PaymentStatus.PENDING;
-
-    public static Payment from(Order order) {
+    public static Payment fromDto(TossPayment tossPayment) {
         return new Payment(
-                order,
-                order.getAmount()
+                tossPayment.getOrderId(),
+                tossPayment.getPaymentKey(),
+                tossPayment.getStatus(),
+                tossPayment.getOrderName(),
+                tossPayment.getTotalAmount()
         );
     }
 
-    public Payment(Order order, Long amount) {
-        this.order = order;
-        this.amount = amount;
-    }
-
-    public void updateStatus(PaymentStatus paymentStatus) {
-        this.status = paymentStatus;
+    public void updateStatus(PaymentStatus status) {
+        this.status = status;
     }
 }

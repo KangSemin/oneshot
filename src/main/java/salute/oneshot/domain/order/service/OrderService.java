@@ -10,10 +10,7 @@ import salute.oneshot.domain.cart.entity.Cart;
 import salute.oneshot.domain.cart.entity.CartItem;
 import salute.oneshot.domain.cart.repository.CartRepository;
 import salute.oneshot.domain.common.dto.error.ErrorCode;
-import salute.oneshot.domain.order.dto.response.GetOrderResponseDto;
-import salute.oneshot.domain.order.dto.response.OrderItemListResponseDto;
-import salute.oneshot.domain.order.dto.response.CreateOrderResponseDto;
-import salute.oneshot.domain.order.dto.response.UpdateOrderResponseDto;
+import salute.oneshot.domain.order.dto.response.*;
 import salute.oneshot.domain.order.dto.service.*;
 import salute.oneshot.domain.order.entity.Order;
 import salute.oneshot.domain.order.entity.OrderItem;
@@ -147,6 +144,13 @@ public class OrderService {
         order.updateOrderStatus(OrderStatus.CANCELLED);
     }
 
+
+    public GetOrderDetailsResponseDto getOrderDetails(GetOrderDetailsSDto sDto) {
+        Order order = orderRepository.findByIdAndUserId(sDto.getOrderId(), sDto.getUserId())
+                .orElseThrow(() -> new NotFoundException(ErrorCode.ORDER_NOT_FOUND));
+
+        return GetOrderDetailsResponseDto.from(order);
+    }
 
     private User getUserById(Long userId) {
         return userRepository.findByIdAndIsDeletedIsFalse(userId)
