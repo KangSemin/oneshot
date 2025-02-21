@@ -65,6 +65,17 @@ public class UserService {
         throw new ConflictException(ErrorCode.DUPLICATE_USER_DELETE);
     }
 
+    @Transactional
+    public UserRoleResponseDto updateUserRole(UpdateRoleSDto serviceDto) {
+        if (userRepository.updateUserRole(
+                serviceDto.getUserId(),
+                serviceDto.getRole()) == 0
+        ) {
+            throw new ConflictException(ErrorCode.DUPLICATE_ROLE);
+        }
+        return UserRoleResponseDto.from(serviceDto);
+    }
+
     private User getUserById(Long userId) {
         return userRepository.findByIdAndIsDeletedIsFalse(userId)
                 .orElseThrow(() ->
