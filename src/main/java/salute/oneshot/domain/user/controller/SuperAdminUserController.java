@@ -10,6 +10,7 @@ import salute.oneshot.domain.common.dto.success.ApiResponseConst;
 import salute.oneshot.domain.user.dto.repuest.UpdateRoleRequestDto;
 import salute.oneshot.domain.user.dto.response.UserRoleResponseDto;
 import salute.oneshot.domain.user.dto.service.UpdateRoleSDto;
+import salute.oneshot.domain.user.entity.UserRole;
 import salute.oneshot.domain.user.service.UserService;
 
 @RestController
@@ -26,7 +27,7 @@ public class SuperAdminUserController {
             @RequestBody UpdateRoleRequestDto requestDto
     ) {
         UpdateRoleSDto serviceDto =
-                UpdateRoleSDto.of(userId, requestDto.getRole());
+                UpdateRoleSDto.of(userId, UserRole.of(requestDto.getUserRole()));
         UserRoleResponseDto responseDto =
                 userService.updateUserRole(serviceDto);
 
