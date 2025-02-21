@@ -157,6 +157,13 @@ public class OrderService {
     }
 
 
+    public GetOrderDetailsResponseDto getOrderDetails(GetOrderDetailsSDto sDto) {
+        Order order = orderRepository.findByIdAndUserId(sDto.getOrderId(), sDto.getUserId())
+                .orElseThrow(() -> new NotFoundException(ErrorCode.ORDER_NOT_FOUND));
+
+        return GetOrderDetailsResponseDto.from(order);
+    }
+
     private User getUserById(Long userId) {
         return userRepository.findByIdAndIsDeletedIsFalse(userId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
@@ -178,13 +185,6 @@ public class OrderService {
         }
     }
 
-    public GetOrderDetailsResponseDto getOrderDetails(GetOrderDetailsSDto sDto) {
-        Order order = orderRepository.findByIdAndUserId(sDto.getOrderId(), sDto.getUserId())
-                .orElseThrow(() -> new NotFoundException(ErrorCode.ORDER_NOT_FOUND));
-
-        return GetOrderDetailsResponseDto.from(order);
-    }
-
     private String generateOrderNumber() {
 
         String orderDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyMMddHHmmss"));
@@ -200,4 +200,5 @@ public class OrderService {
         }
         return orderDate + stringBuilder.toString();
     }
+
 }
