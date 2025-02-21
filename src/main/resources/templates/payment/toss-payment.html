@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8" />
+    <!-- SDK 추가 -->
+    <script src="https://js.tosspayments.com/v2/standard"></script>
+</head>
+<body>
+<h1 th:text="${order.orderNumber}" style="font-size: 120px;"></h1>
+<!--<h2 th:text="${order.status}" style="font-size: 60px;"></h2>-->
+<!-- 결제하기 버튼 -->
+<button class="button" style="margin-top: 30px" onclick="requestPayment()">결제하기</button>
+<script th:inline="javascript">
+    // ------  SDK 초기화 ------
+    // @docs https://docs.tosspayments.com/sdk/v2/js#토스페이먼츠-초기화
+    const clientKey = "test_ck_nRQoOaPz8LENQzY2zy953y47BMw6";
+    const customerKey = [[${order.customerKey}]];
+    const tossPayments = TossPayments(clientKey);
+    // 회원 결제
+    // @docs https://docs.tosspayments.com/sdk/v2/js#tosspaymentspayment
+    const payment = tossPayments.payment({ customerKey });
+    // 비회원 결제
+    // const payment = tossPayments.payment({customerKey: TossPayments.ANONYMOUS})
+    // ------ '결제하기' 버튼 누르면 결제창 띄우기 ------
+    // @docs https://docs.tosspayments.com/sdk/v2/js#paymentrequestpayment
+    async function requestPayment() {
+        // 결제를 요청하기 전에 orderId, amount를 서버에 저장하세요.
+        // 결제 과정에서 악의적으로 결제 금액이 바뀌는 것을 확인하는 용도입니다.
+        await payment.requestPayment({
+            method: "CARD", // 카드 및 간편결제
+            amount: {
+                currency: "KRW",
+                value: [[${order.amountValue}]],
+            },
+            orderId: [[${order.orderNumber}]], // 고유 주문번호
+            orderName: [[${order.orderName}]],
+            successUrl: window.location.origin + "/payments/success", // 결제 요청이 성공하면 리다이렉트되는 URL
+            failUrl: window.location.origin + "/payments/fail", // 결제 요청이 실패하면 리다이렉트되는 URL
+            customerEmail: [[${order.customerEmail}]],
+            customerName: [[${order.customerName}]],
+            // customerMobilePhone: "01025628192"
+        });
+    }
+</script>
+</body>
+</html>

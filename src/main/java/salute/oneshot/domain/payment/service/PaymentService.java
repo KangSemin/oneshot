@@ -1,100 +1,96 @@
 package salute.oneshot.domain.payment.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import salute.oneshot.domain.common.dto.error.ErrorCode;
-import salute.oneshot.domain.order.entity.Order;
-import salute.oneshot.domain.order.entity.OrderStatus;
 import salute.oneshot.domain.order.repository.OrderRepository;
+import salute.oneshot.domain.payment.dto.feign.TossConfirmPaymentRequestDto;
 import salute.oneshot.domain.payment.dto.response.PaymentResponseDto;
 import salute.oneshot.domain.payment.dto.service.ConfirmPaymentSDto;
 import salute.oneshot.domain.payment.entity.Payment;
-import salute.oneshot.domain.payment.entity.PaymentStatus;
+import salute.oneshot.domain.payment.entity.TossPayment;
 import salute.oneshot.domain.payment.repository.PaymentRepository;
-import salute.oneshot.global.exception.ConflictException;
+import salute.oneshot.domain.payment.util.PaymentClient;
 import salute.oneshot.global.exception.NotFoundException;
-import salute.oneshot.global.exception.UnauthorizedException;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
+@EnableAspectJAutoProxy
 public class PaymentService {
     private final PaymentRepository paymentRepository;
     private final OrderRepository orderRepository;
-    private final PasswordEncoder passwordEncoder;
-//    private final PaymentClient paymentClient;
-
-    @Transactional
-    public PaymentResponseDto createPayment(Long orderId) {
-        Order foundOrder = orderRepository.findById(orderId).orElseThrow(() -> new NotFoundException(ErrorCode.ORDER_NOT_FOUND));
-        isOrderStatusPendingPayment(foundOrder);
-
-        // 다른 대기 중인 경제가 있을 경우 처리
-
-        Payment newPayment = Payment.from(foundOrder);
-        paymentRepository.save(newPayment);
-
-        return PaymentResponseDto.from(newPayment);
-    }
-
-    // TODO: 트랜잭션을 조회에 쓰는 이유가 같은 시점의 정보임을 보장하기 위해서라면 -> 이 경우는 값이 바뀔 가능성이 없어서 사용할 필요 X?
-    @Transactional(readOnly = true)
-    public PaymentResponseDto findPayment(Long userId, Long paymentId) {
-        Payment foundPayment = getPayment(paymentId);
-
-        // TODO: 쓸 데 없는 엔티티 조회가 많이 이루어진다 vs 중복된 값을 가진 필드를 Order나 Payment에 추가한다 -> 필요한 값만 가져오는 쿼리를 생성?
-        isPaymentOwnedByUser(foundPayment, userId);
-
-        return PaymentResponseDto.from(foundPayment);
-    }
+    private final PaymentClient paymentClient;
 
     @Transactional
     public PaymentResponseDto confirmPayment(ConfirmPaymentSDto sdto) {
-        Payment foundPayment = getPayment(sdto.getPaymentId());
 
-        isPaymentOwnedByUser(foundPayment, sdto.getUserId());
+//        log.info("orderId: " + sdto.getOrderId());
+//        log.info("amount: " + sdto.getAmount());
+//        log.info("paymentKey: " + sdto.getPaymentKey());
 
-        if (!foundPayment.getStatus().equals(PaymentStatus.PENDING)) {
-            throw new ConflictException(ErrorCode.PAYMENT_ALREADY_CONFIRMED);
-        }
+//        Order order = orderRepository.findByOrderNumber(sdto.getOrderId()).orElseThrow(() -> new NotFoundException(ErrorCode.ORDER_NOT_FOUND));
+//        if (!order.getAmount().equals(sdto.getAmount())) {
+//            throw new ConflictException(ErrorCode.WRONG_PAYMENT_AMOUNT);
+//        }
 
-        isOrderStatusPendingPayment(foundPayment.getOrder());
+        // 토스 페이먼츠 결제 승인 요청 API
+        TossConfirmPaymentRequestDto tossRequestDto = TossConfirmPaymentRequestDto.of(
+                sdto.getOrderId(),
+                sdto.getAmount(),
+                sdto.getPaymentKey()
+        );
+        TossPayment tossPayment = paymentClient.confirmPayment(tossRequestDto);
 
-        // 비밀번호가 확인되면 결제 승인
-        boolean matches = passwordEncoder.matches(sdto.getPassword(), foundPayment.getOrder().getUser().getPassword());
+//        if (!order.getAmount().equals(tossPayment.getTotalAmount())) {
+//            throw new ConflictException(ErrorCode.WRONG_PAYMENT_AMOUNT);
+//        }
 
-        if (matches) {
-            foundPayment.getOrder().updateStatus(OrderStatus.PROCESSING);
-            foundPayment.updateStatus(PaymentStatus.APPROVED);
-        } else {
-            foundPayment.updateStatus(PaymentStatus.DECLINED);
-        }
+        Payment payment = Payment.fromDto(tossPayment);
+        paymentRepository.save(payment);
 
+//        TODO: Order 상태 변경
+////        NOT FOUND 처리해야 하나? 트랜잭션 때문에 결제 저장 안되면 안되는데
+//        Order order = orderRepository.findByOrderNoAndUserId(orderNo, sdto.getUserId()).orElseThrow();
+////        이것도 뭔가 필요없는 검증같기도 하고
+//        if (!order.isValidStatusChange(order.getStatus(), OrderStatus.PROCESSING)) {
+//            throw new ConflictException(ErrorCode.INVALID_ORDER_STATUS);
+//        }
+//        order.updateStatus(OrderStatus.PROCESSING);
+
+        return PaymentResponseDto.from(tossPayment);
+    }
+
+    private void logStatus(ConfirmPaymentSDto sdto) {
+        TossPayment tossResponseDto = paymentClient.getPaymentByOrderId(sdto.getOrderId());
+        log.info(tossResponseDto.getStatus().toString());
+    }
+
+    public PaymentResponseDto getPayment(Long paymentId) {
+        Payment foundPayment = paymentRepository.findById(paymentId).orElseThrow(() -> new NotFoundException(ErrorCode.PAYMENT_NOT_FOUND));
         return PaymentResponseDto.from(foundPayment);
     }
 
-    private Payment getPayment(Long paymentId) {
-        return paymentRepository.findById(paymentId).orElseThrow(() -> new NotFoundException(ErrorCode.PAYMENT_NOT_FOUND));
-    }
-
-    private void isPaymentOwnedByUser(Payment payment, Long userId) {
-        if (!payment.getOrder().getUser().getId().equals(userId)) {
-            throw new UnauthorizedException(ErrorCode.PAYMENT_UNAUTHORIZED);
-        }
-    }
-
-    private void isOrderStatusPendingPayment(Order order) {
-        if (!order.getStatus().equals(OrderStatus.PENDING_PAYMENT)) {
-            throw new ConflictException(ErrorCode.ORDER_ALREADY_PAID);
-        }
-    }
-
-//    public ConfirmPaymentResponseDto confirmPayment(ConfirmPaymentSDto sdto) {
-//        final ConfirmPaymentResponseDto responseDto = paymentClient.confirmPayment(sdto);
-////        final Payment payment = responseDto.toPayment(sdto.getOrderId());
+//    @Transactional
+//    public GetDetailedPaymentResponseDto GetPaymentDetails(Long orderId) {
+//        TossPaymentResponseDto tossResponseDto = paymentClient.getPaymentByOrderId(orderId);
 //
-////        paymentRepository.save(payment);
-//        return responseDto;
+//        return PaymentResponseDto.from(tossResponseDto);
+//    }
+
+//    TODO: 결제취소
+//    @Transactional
+//    public PaymentResponseDto cancelPayment(String reason) {
+//        TossCancelPaymentRequestDto tossRequestDto = TossCancelPaymentRequestDto.from(reason);
+//        TossPayment tossPayment = paymentClient.cancelPayment(tossRequestDto);
+//
+//        Payment payment = paymentRepository.findPaymentByPaymentKey(tossPayment.getPaymentKey()).orElseThorw(() -> new NotFoundException(ErrorCode.PAYMENT_NOT_FOUND));
+//        payment.updateStatus(tossPayment.getStatus());
+//        paymentRepository.save(payment);
+//
+//        return PaymentResponseDto.from(tossPayment);
 //    }
 }

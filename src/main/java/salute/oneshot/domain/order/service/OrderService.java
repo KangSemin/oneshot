@@ -14,6 +14,7 @@ import salute.oneshot.domain.order.dto.response.CreateOrderResponseDto;
 import salute.oneshot.domain.order.dto.response.GetOrderResponseDto;
 import salute.oneshot.domain.order.dto.response.OrderItemListResponseDto;
 import salute.oneshot.domain.order.dto.response.UpdateOrderResponseDto;
+import salute.oneshot.domain.order.dto.response.*;
 import salute.oneshot.domain.order.dto.service.*;
 import salute.oneshot.domain.order.entity.Order;
 import salute.oneshot.domain.order.entity.OrderItem;
@@ -74,11 +75,12 @@ public class OrderService {
         String orderNumber = generateOrderNumber();
 
         // 주문 생성
-        Order order = Order.of(orderNumber, orderName, orderAmount, cart.getUser(), cart, address, orderItems);
+        Order order = Order.of(orderName, orderAmount, cart.getUser(), cart, address, orderItems);
 
         for (OrderItem orderItem : orderItems) {
             orderItem.setOrder(order);
         }
+
         // 주문 저장
         orderRepository.save(order);
 
@@ -174,6 +176,13 @@ public class OrderService {
             return cart.getItemList().get(0).getProduct().getName() + " 외 " +
                     (cart.getItemList().size() - 1) + "개";
         }
+    }
+
+    public GetOrderDetailsResponseDto getOrderDetails(GetOrderDetailsSDto sDto) {
+        Order order = orderRepository.findByIdAndUserId(sDto.getOrderId(), sDto.getUserId())
+                .orElseThrow(() -> new NotFoundException(ErrorCode.ORDER_NOT_FOUND));
+
+        return GetOrderDetailsResponseDto.from(order);
     }
 
     private String generateOrderNumber() {
