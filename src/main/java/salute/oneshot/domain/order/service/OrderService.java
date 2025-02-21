@@ -10,6 +10,10 @@ import salute.oneshot.domain.cart.entity.Cart;
 import salute.oneshot.domain.cart.entity.CartItem;
 import salute.oneshot.domain.cart.repository.CartRepository;
 import salute.oneshot.domain.common.dto.error.ErrorCode;
+import salute.oneshot.domain.order.dto.response.CreateOrderResponseDto;
+import salute.oneshot.domain.order.dto.response.GetOrderResponseDto;
+import salute.oneshot.domain.order.dto.response.OrderItemListResponseDto;
+import salute.oneshot.domain.order.dto.response.UpdateOrderResponseDto;
 import salute.oneshot.domain.order.dto.response.*;
 import salute.oneshot.domain.order.dto.service.*;
 import salute.oneshot.domain.order.entity.Order;
@@ -20,8 +24,13 @@ import salute.oneshot.domain.product.entity.Product;
 import salute.oneshot.domain.user.entity.User;
 import salute.oneshot.domain.user.entity.UserRole;
 import salute.oneshot.domain.user.repository.UserRepository;
-import salute.oneshot.global.exception.*;
-
+import salute.oneshot.global.exception.CustomRuntimeException;
+import salute.oneshot.global.exception.ForbiddenException;
+import salute.oneshot.global.exception.InvalidException;
+import salute.oneshot.global.exception.NotFoundException;
+import java.security.SecureRandom;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -62,8 +71,11 @@ public class OrderService {
         String orderName = generateOrderName(cart);
         long orderAmount = orderItems.stream().mapToLong(OrderItem::getPrice).sum();
 
+        //주문번호 생성
+        String orderNumber = generateOrderNumber();
+
         // 주문 생성
-        Order order = Order.of(orderName, orderAmount, cart.getUser(), cart, address, orderItems);
+        Order order = Order.of(orderNumber ,orderName, orderAmount, cart.getUser(), cart, address, orderItems);
 
         for (OrderItem orderItem : orderItems) {
             orderItem.setOrder(order);
@@ -84,7 +96,7 @@ public class OrderService {
         Order order = orderRepository.findById(sDto.getOrderId())
                 .orElseThrow(() -> new NotFoundException(ErrorCode.ORDER_NOT_FOUND));
 
-        if(!order.getUser().getId().equals(sDto.getUserId())) {
+        if (!order.getUser().getId().equals(sDto.getUserId())) {
             throw new ForbiddenException(ErrorCode.ORDER_GET_FORBIDDEN);
         }
 
@@ -113,7 +125,7 @@ public class OrderService {
         User user = getUserById(sDto.getUserId());
         verifyAdmin(user);
 
-        if(!order.isValidStatusChange(order.getStatus(), OrderStatus.valueOf(sDto.getOrderStatus()))) {
+        if (!order.isValidStatusChange(order.getStatus(), OrderStatus.valueOf(sDto.getOrderStatus()))) {
             throw new InvalidException(ErrorCode.INVALID_ORDER_STATUS);
         }
 
@@ -128,11 +140,11 @@ public class OrderService {
         Order order = orderRepository.findById(sDto.getOrderId())
                 .orElseThrow(() -> new NotFoundException(ErrorCode.ORDER_NOT_FOUND));
 
-        if(!order.getUser().getId().equals(sDto.getUserId())) {
+        if (!order.getUser().getId().equals(sDto.getUserId())) {
             throw new ForbiddenException(ErrorCode.ORDER_CANCEL_FORBIDDEN);
         }
 
-        if(order.getStatus() == OrderStatus.SHIPPED) {
+        if (order.getStatus() == OrderStatus.SHIPPED) {
 
             throw new CustomRuntimeException(ErrorCode.CANNOT_CANCEL_SHIPPED_ORDER);
 
@@ -172,4 +184,21 @@ public class OrderService {
                     (cart.getItemList().size() - 1) + "개";
         }
     }
+
+    private String generateOrderNumber() {
+
+        String orderDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyMMddHHmmss"));
+
+        String chars = "0123456789";
+
+        SecureRandom random = new SecureRandom();
+        StringBuilder stringBuilder = new StringBuilder();
+
+        for (int i = 0; i < 2; i++) {
+            int nextInt = random.nextInt(chars.length());
+            stringBuilder.append(chars.charAt(nextInt));
+        }
+        return orderDate + stringBuilder.toString();
+    }
+
 }
