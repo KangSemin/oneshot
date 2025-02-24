@@ -88,7 +88,7 @@ public class IngredientController {
 
     @DeleteMapping("/{ingredientId}")
     public ResponseEntity<ApiResponse<Void>> deleteIngredient(
-        @PathVariable Long ingredientId) {
+        @PathVariable Long ingredientId) throws IOException{
 
         ingredientService.deleteIngredient(ingredientId);
 
