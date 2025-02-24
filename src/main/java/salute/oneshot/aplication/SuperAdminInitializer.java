@@ -4,12 +4,12 @@ import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import salute.oneshot.domain.user.entity.User;
 import salute.oneshot.domain.user.entity.UserRole;
 import salute.oneshot.domain.user.repository.UserRepository;
 
-@Service
+@Component
 @RequiredArgsConstructor
 public class SuperAdminInitializer {
 
