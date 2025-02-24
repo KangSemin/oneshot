@@ -13,7 +13,7 @@ import salute.oneshot.domain.ingredient.entity.Ingredient;
 
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@Document(indexName = "cocktail")
+@Document(indexName = "cocktails")
 @JsonIgnoreProperties(ignoreUnknown = true)
 //@Setting(settingPath = "resources/esIndexes/cocktail-settings.json")
 //@Mapping(mappingPath = "resources/esIndexes/cocktail-mappings.json")

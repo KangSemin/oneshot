@@ -47,7 +47,7 @@ public class CocktailService {
     private final UserRepository userRepository;
     private final IngredientRepository ingredientRepository;
     private final CocktailIngredientRepository cocktailIngredientRepository;
-    private final ElasticsearchOperations elasticsearchOperations;
+    private final ElasticsearchOperations operations;
     private final RedisService redisService;
 
     @Transactional
@@ -72,7 +72,7 @@ public class CocktailService {
             .collect(Collectors.toList());
 
         cocktailIngredientRepository.saveAll(ingredientList);
-        elasticsearchOperations.save(CocktailDocument.of(cocktail,ingredientMap));
+        operations.save(CocktailDocument.of(cocktail,ingredientMap));
     }
 
     @Transactional(readOnly = true)
@@ -110,7 +110,7 @@ public class CocktailService {
     }
 
     @Transactional
-    @CachePut(value = "popular_cocktail", key ="#cocktailId")
+    @CachePut(value = "popular_cocktail", key ="#sDto.cocktailId")
     public CocktailResponseDto updateCocktail(UpdateCocktailSDto sDto) {
 
         Cocktail cocktail = findById(sDto.getCocktailId());
@@ -126,6 +126,7 @@ public class CocktailService {
             }).toList();
 
         cocktail.update(sDto.getName(),sDto.getDescription(),sDto.getRecipe(),ingredientList);
+        operations.update(CocktailDocument.from(cocktail));
 
         return CocktailResponseDto.from(cocktail);
     }
