@@ -52,11 +52,15 @@ public class AuthController {
                 requestDto.getEmail(), requestDto.getPassword());
         TokenInfo tokenInfo =
                 authService.logIn(logInSDto);
+
         ResponseCookie refreshCookie =
                 createRefreshTokenCookie(tokenInfo.getRefreshToken());
+        ResponseCookie accessCookie =
+                createAccessTokenCookie(tokenInfo.getAccessToken());
 
         return ResponseEntity.status(HttpStatus.OK)
                 .header(HttpHeaders.SET_COOKIE, refreshCookie.toString())
+                .header(HttpHeaders.SET_COOKIE, accessCookie.toString())
                 .body(ApiResponse.success(
                         ApiResponseConst.LOGIN_SUCCESS,
                         AccessTokenDto.from(tokenInfo)));
@@ -97,9 +101,19 @@ public class AuthController {
         return ResponseCookie.from("refreshToken", refreshToken)
                 .httpOnly(true)  // XSS 방어 JavaScript에서 쿠키에 접근하는 것을 차단(프로토콜과 무관)
                 .secure(false)   // HTTPS 환경에서만 전송(일단 false)
-                .sameSite("Strict")  // CSRF 방어
-                .path("/api/auth/refresh")  // 특정 경로에서만 전송
+                .sameSite("Lax")  // CSRF 방어
+                .path("/")  // 특정 경로에서만 전송
                 .maxAge(7 * 24 * 60 * 60)  // 7일간 유효
+                .build();
+    }
+
+    private ResponseCookie createAccessTokenCookie(String accessToken) {
+        return ResponseCookie.from("accessToken", accessToken)
+                .httpOnly(true)  // XSS 방어 JavaScript에서 쿠키에 접근하는 것을 차단(프로토콜과 무관)
+                .secure(false)   // HTTPS 환경에서만 전송(일단 false)
+                .sameSite("Lax")  // CSRF 방어
+                .path("/")  // 특정 경로에서만 전송
+                .maxAge(60 * 60)  // 1시간 유효
                 .build();
     }
 }
