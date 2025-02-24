@@ -1,5 +1,8 @@
 package salute.oneshot.domain.cocktail.service;
 
+import co.elastic.clients.elasticsearch.ElasticsearchClient;
+import co.elastic.clients.elasticsearch.core.DeleteRequest;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +37,7 @@ import salute.oneshot.domain.common.dto.error.ErrorCode;
 import salute.oneshot.domain.ingredient.entity.Ingredient;
 import salute.oneshot.domain.ingredient.repository.IngredientRepository;
 import salute.oneshot.domain.user.entity.User;
+import salute.oneshot.domain.user.entity.UserRole;
 import salute.oneshot.domain.user.repository.UserRepository;
 import salute.oneshot.global.exception.NotFoundException;
 import salute.oneshot.global.exception.UnauthorizedException;
@@ -48,6 +52,7 @@ public class CocktailService {
     private final IngredientRepository ingredientRepository;
     private final CocktailIngredientRepository cocktailIngredientRepository;
     private final ElasticsearchOperations operations;
+    private final ElasticsearchClient client;
     private final RedisService redisService;
 
     @Transactional
@@ -55,8 +60,11 @@ public class CocktailService {
 
         User user = userRepository.getReferenceById(sDto.getUserId());
 
+        RecipeType recipeType =
+            sDto.getUserRole().equals(UserRole.USER) ? RecipeType.CUSTOM : RecipeType.OFFICIAL;
+
         Cocktail cocktail = Cocktail.of(sDto.getName(), sDto.getDescription(), sDto.getRecipe(),
-            RecipeType.CUSTOM, user, new ArrayList<>());
+            recipeType, user, new ArrayList<>());
 
         cocktailRepository.save(cocktail);
 
@@ -64,41 +72,49 @@ public class CocktailService {
             .map(IngredientRequestDto::getIngredientId)
             .toList();
 
-        Map<Long, Ingredient> ingredientMap = ingredientRepository.findAllById(ingredientIds).stream()
+        Map<Long, Ingredient> ingredientMap = ingredientRepository.findAllById(ingredientIds)
+            .stream()
             .collect(Collectors.toMap(Ingredient::getId, Function.identity()));
 
         List<CocktailIngredient> ingredientList = sDto.getIngredientList().stream()
-            .map(req -> CocktailIngredient.of(cocktail, ingredientMap.get(req.getIngredientId()), req.getVolume()))
+            .map(req -> CocktailIngredient.of(cocktail, ingredientMap.get(req.getIngredientId()),
+                req.getVolume()))
             .collect(Collectors.toList());
 
         cocktailIngredientRepository.saveAll(ingredientList);
-        operations.save(CocktailDocument.of(cocktail,ingredientMap));
+        operations.save(CocktailDocument.of(cocktail, ingredientMap));
     }
 
     @Transactional(readOnly = true)
     public Page<CocktailResponseDto> findCocktailsByIngr(SearchCocktailSDto sDto) {
 
-        Pageable pageable = PageRequest.of(sDto.getPage()-1,sDto.getSize());
+        Pageable pageable = PageRequest.of(sDto.getPage() - 1, sDto.getSize());
 
         List<Ingredient> ingredientList = ingredientRepository.findAllById(sDto.getIngredientIds());
 
-        Page<Cocktail> cocktailPage = cocktailRepository.searchCocktailsByIngredients(ingredientList,pageable);
+        Page<Cocktail> cocktailPage = cocktailRepository.searchCocktailsByIngredients(
+            ingredientList, pageable);
 
         return cocktailPage.map(CocktailResponseDto::from);
 
     }
 
     @Transactional
-    public void deleteCocktail(DeleteCocktailSDto sDto) {
+    public void deleteCocktail(DeleteCocktailSDto sDto) throws IOException {
 
-        if (!cocktailRepository.existsByIdAndUserId(sDto.getCocktailId(), sDto.getUserId())) {
+        if (!(cocktailRepository.existsByIdAndUserId(sDto.getCocktailId(), sDto.getUserId())
+            && sDto.getUserRole().equals(UserRole.ADMIN))) {
             throw new UnauthorizedException(ErrorCode.FORBIDDEN_ACCESS);
         }
+
+        DeleteRequest deleteRequest = new DeleteRequest.Builder().index("cocktails")
+            .id(sDto.getCocktailId().toString()).build();
+        client.delete(deleteRequest);
         cocktailRepository.deleteById(sDto.getCocktailId());
     }
 
     @Transactional
-    @Cacheable(value = "popular_cocktail", key ="#cocktailId")
+    @Cacheable(value = "popular_cocktail", key = "#cocktailId")
     public CocktailResponseDto getCocktail(Long cocktailId) {
 
         Cocktail cocktail = findById(cocktailId);
@@ -110,7 +126,7 @@ public class CocktailService {
     }
 
     @Transactional
-    @CachePut(value = "popular_cocktail", key ="#sDto.cocktailId")
+    @CachePut(value = "popular_cocktail", key = "#sDto.cocktailId")
     public CocktailResponseDto updateCocktail(UpdateCocktailSDto sDto) {
 
         Cocktail cocktail = findById(sDto.getCocktailId());
@@ -120,33 +136,37 @@ public class CocktailService {
         }
 
         List<CocktailIngredient> ingredientList = sDto.getIngredientList().stream()
-            .map( req-> {
-                Ingredient ingredient = ingredientRepository.getReferenceById(req.getIngredientId());
-                return CocktailIngredient.of(cocktail, ingredient , req.getVolume());
+            .map(req -> {
+                Ingredient ingredient = ingredientRepository.getReferenceById(
+                    req.getIngredientId());
+                return CocktailIngredient.of(cocktail, ingredient, req.getVolume());
             }).toList();
 
-        cocktail.update(sDto.getName(),sDto.getDescription(),sDto.getRecipe(),ingredientList);
+        cocktail.update(sDto.getName(), sDto.getDescription(), sDto.getRecipe(), ingredientList);
         operations.update(CocktailDocument.from(cocktail));
 
         return CocktailResponseDto.from(cocktail);
     }
 
-    public Page<CocktailResponseDto> getCocktails(findCocktailSDto sDto){
+    public Page<CocktailResponseDto> getCocktails(findCocktailSDto sDto) {
 
-        RecipeType type = (sDto.getRecipeType() != null) ? RecipeType.valueOf(sDto.getRecipeType()) : null;
+        RecipeType type =
+            (sDto.getRecipeType() != null) ? RecipeType.valueOf(sDto.getRecipeType()) : null;
 
-        Page<Cocktail> cocktailPage = cocktailRepository.findCocktails(sDto.getPageable(), sDto.getKeyword(), type);
+        Page<Cocktail> cocktailPage = cocktailRepository.findCocktails(sDto.getPageable(),
+            sDto.getKeyword(), type);
         return cocktailPage.map(CocktailResponseDto::from);
 
     }
 
 
-    @Cacheable(value = "popular_cocktail", key ="'popular'")
+    @Cacheable(value = "popular_cocktail", key = "'popular'")
     public Page<CocktailResponseDto> getPopularCocktails(Pageable pageable) {
 
-        List<CocktailResponseDto> responseDtoList = redisService.getPopularCocktails(pageable.getPageSize())
-                .stream().map(this::findById)
-                .map(CocktailResponseDto::from).toList();
+        List<CocktailResponseDto> responseDtoList = redisService.getPopularCocktails(
+                pageable.getPageSize())
+            .stream().map(this::findById)
+            .map(CocktailResponseDto::from).toList();
 
         return new PageImpl<>(responseDtoList, pageable, responseDtoList.size());
     }
@@ -160,6 +180,6 @@ public class CocktailService {
 
     private Cocktail findById(Long cocktailId) {
         return cocktailRepository.findById(cocktailId)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.COCKTAIL_NOT_FOUND));
+            .orElseThrow(() -> new NotFoundException(ErrorCode.COCKTAIL_NOT_FOUND));
     }
 }
