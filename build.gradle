@@ -40,9 +40,11 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
+
+
 	//엘라스틱 서치
 	implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch'
-	implementation 'co.elastic.clients:elasticsearch-java:8.11.2'
+	implementation 'co.elastic.clients:elasticsearch-java:8.15.1'
 
 
 	compileOnly 'org.projectlombok:lombok'

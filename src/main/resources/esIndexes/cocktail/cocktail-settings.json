@@ -1,0 +1,23 @@
+{
+  "index": {
+    "analysis": {
+      "analyzer": {
+        "desc_anal": {
+          "filter": [
+            "lowercase",
+            "stop",
+            "snowball",
+            "unique"
+          ],
+          "tokenizer": "whitespace"
+        },
+        "name_anal": {
+          "filter": [
+            "lowercase"
+          ],
+          "tokenizer": "whitespace"
+        }
+      }
+    }
+  }
+}
