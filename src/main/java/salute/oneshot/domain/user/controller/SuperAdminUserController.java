@@ -27,7 +27,7 @@ public class SuperAdminUserController {
             @RequestBody UpdateRoleRequestDto requestDto
     ) {
         UpdateRoleSDto serviceDto =
-                UpdateRoleSDto.of(userId, UserRole.of(requestDto.getUserRole()));
+                UpdateRoleSDto.of(userId, requestDto);
         UserRoleResponseDto responseDto =
                 userService.updateUserRole(serviceDto);
 

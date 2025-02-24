@@ -3,6 +3,7 @@ package salute.oneshot.domain.user.dto.service;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import salute.oneshot.domain.user.dto.repuest.UpdateRoleRequestDto;
 import salute.oneshot.domain.user.entity.UserRole;
 
 @Getter
@@ -14,8 +15,9 @@ public class UpdateRoleSDto {
 
     public static UpdateRoleSDto of(
             Long userId,
-            UserRole userRole
-    ) {
-        return new UpdateRoleSDto(userId, userRole);
+            UpdateRoleRequestDto requestDto) {
+        return new UpdateRoleSDto(
+                userId,
+                UserRole.of(requestDto.getUserRole()));
     }
 }
