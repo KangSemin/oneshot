@@ -6,7 +6,6 @@ import org.springframework.data.elasticsearch.client.elc.ElasticsearchConfigurat
 import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories;
 
 @Configuration
-@EnableElasticsearchRepositories
 public class ElasticSearchConfig extends ElasticsearchConfiguration {
 
 
@@ -17,4 +16,5 @@ public class ElasticSearchConfig extends ElasticsearchConfiguration {
                 .connectedTo("host.docker.internal:9200")
                 .build();
     }
+
 }

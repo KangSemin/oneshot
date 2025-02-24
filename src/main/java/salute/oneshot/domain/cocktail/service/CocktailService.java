@@ -1,8 +1,10 @@
 package salute.oneshot.domain.cocktail.service;
 
-import java.nio.file.AccessDeniedException;
+import java.util.ArrayList;
 import java.util.List;
-
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CachePut;
@@ -11,9 +13,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import salute.oneshot.domain.cocktail.dto.request.IngredientRequestDto;
 import salute.oneshot.domain.cocktail.dto.response.CocktailResponseDto;
 import salute.oneshot.domain.cocktail.dto.service.CreateCocktailSDto;
 import salute.oneshot.domain.cocktail.dto.service.DeleteCocktailSDto;
@@ -21,6 +25,7 @@ import salute.oneshot.domain.cocktail.dto.service.SearchCocktailSDto;
 import salute.oneshot.domain.cocktail.dto.service.UpdateCocktailSDto;
 import salute.oneshot.domain.cocktail.dto.service.findCocktailSDto;
 import salute.oneshot.domain.cocktail.entity.Cocktail;
+import salute.oneshot.domain.cocktail.entity.CocktailDocument;
 import salute.oneshot.domain.cocktail.entity.CocktailIngredient;
 import salute.oneshot.domain.cocktail.entity.RecipeType;
 import salute.oneshot.domain.cocktail.repository.CocktailIngredientRepository;
@@ -42,6 +47,7 @@ public class CocktailService {
     private final UserRepository userRepository;
     private final IngredientRepository ingredientRepository;
     private final CocktailIngredientRepository cocktailIngredientRepository;
+    private final ElasticsearchOperations elasticsearchOperations;
     private final RedisService redisService;
 
     @Transactional
@@ -50,20 +56,23 @@ public class CocktailService {
         User user = userRepository.getReferenceById(sDto.getUserId());
 
         Cocktail cocktail = Cocktail.of(sDto.getName(), sDto.getDescription(), sDto.getRecipe(),
-            RecipeType.CUSTOM, user, null);
+            RecipeType.CUSTOM, user, new ArrayList<>());
 
         cocktailRepository.save(cocktail);
 
+        List<Long> ingredientIds = sDto.getIngredientList().stream()
+            .map(IngredientRequestDto::getIngredientId)
+            .toList();
+
+        Map<Long, Ingredient> ingredientMap = ingredientRepository.findAllById(ingredientIds).stream()
+            .collect(Collectors.toMap(Ingredient::getId, Function.identity()));
+
         List<CocktailIngredient> ingredientList = sDto.getIngredientList().stream()
-            .map(req -> {
-                Ingredient ingredient = ingredientRepository.getReferenceById(
-                    req.getIngredientId());
-                return CocktailIngredient.of(cocktail, ingredient, req.getVolume());
-            }).toList();
+            .map(req -> CocktailIngredient.of(cocktail, ingredientMap.get(req.getIngredientId()), req.getVolume()))
+            .collect(Collectors.toList());
 
         cocktailIngredientRepository.saveAll(ingredientList);
-
-
+        elasticsearchOperations.save(CocktailDocument.of(cocktail,ingredientMap));
     }
 
     @Transactional(readOnly = true)
