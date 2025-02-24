@@ -3,6 +3,7 @@ package salute.oneshot.domain.common.facade;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import salute.oneshot.domain.order.dto.response.CreateOrderResponseDto;
 import salute.oneshot.domain.order.dto.response.GetOrderDetailsResponseDto;
 import salute.oneshot.domain.order.dto.response.GetOrderResponseDto;
@@ -40,7 +41,7 @@ public class OrderPaymentFacade {
         orderService.deleteOrder(sDto);
     }
 
-
+    @Transactional
     public GetOrderDetailsResponseDto getOrderDetails(GetOrderDetailsSDto sDto) {
         return orderService.getOrderDetails(sDto);
     }

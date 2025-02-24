@@ -1,46 +1,94 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="utf-8" />
-    <!-- SDK 추가 -->
     <script src="https://js.tosspayments.com/v2/standard"></script>
+    <title>주문 결제</title>
 </head>
 <body>
-<h1 th:text="${order.orderNumber}" style="font-size: 120px;"></h1>
-<!--<h2 th:text="${order.status}" style="font-size: 60px;"></h2>-->
-<!-- 결제하기 버튼 -->
-<button class="button" style="margin-top: 30px" onclick="requestPayment()">결제하기</button>
-<script th:inline="javascript">
-    // ------  SDK 초기화 ------
-    // @docs https://docs.tosspayments.com/sdk/v2/js#토스페이먼츠-초기화
-    const clientKey = "test_ck_nRQoOaPz8LENQzY2zy953y47BMw6";
-    const customerKey = [[${order.customerKey}]];
-    const tossPayments = TossPayments(clientKey);
-    // 회원 결제
-    // @docs https://docs.tosspayments.com/sdk/v2/js#tosspaymentspayment
-    const payment = tossPayments.payment({ customerKey });
-    // 비회원 결제
-    // const payment = tossPayments.payment({customerKey: TossPayments.ANONYMOUS})
-    // ------ '결제하기' 버튼 누르면 결제창 띄우기 ------
-    // @docs https://docs.tosspayments.com/sdk/v2/js#paymentrequestpayment
-    async function requestPayment() {
-        // 결제를 요청하기 전에 orderId, amount를 서버에 저장하세요.
-        // 결제 과정에서 악의적으로 결제 금액이 바뀌는 것을 확인하는 용도입니다.
-        await payment.requestPayment({
-            method: "CARD", // 카드 및 간편결제
-            amount: {
-                currency: "KRW",
-                value: [[${order.amountValue}]],
-            },
-            orderId: [[${order.orderNumber}]], // 고유 주문번호
-            orderName: [[${order.orderName}]],
-            successUrl: window.location.origin + "/payments/success", // 결제 요청이 성공하면 리다이렉트되는 URL
-            failUrl: window.location.origin + "/payments/fail", // 결제 요청이 실패하면 리다이렉트되는 URL
-            customerEmail: [[${order.customerEmail}]],
-            customerName: [[${order.customerName}]],
-            // customerMobilePhone: "01025628192"
-        });
-    }
+<h1 id="orderNumber" style="font-size: 120px;"></h1>
+<button class="button" style="margin-top: 30px" id="paymentButton">결제하기</button>
+
+<div id="orderData"
+     th:data-order-number="${order.orderNumber}"
+     th:data-amount="${order.amountValue}"
+     th:data-order-name="${order.orderName}"
+     th:data-customer-email="${order.customerEmail}"
+     th:data-customer-name="${order.customerName}"
+     th:data-customer-key="${order.customerKey}"></div>
+
+<script th:nonce="${scriptNonce}">
+    document.addEventListener('DOMContentLoaded', function () {
+        // Thymeleaf에서 전달된 주문 정보 추출
+        const orderElement = document.getElementById('orderData');
+        const order = {
+            orderNumber: orderElement.getAttribute('data-order-number'),
+            amountValue: orderElement.getAttribute('data-amount'),
+            orderName: orderElement.getAttribute('data-order-name'),
+            customerEmail: orderElement.getAttribute('data-customer-email'),
+            customerName: orderElement.getAttribute('data-customer-name'),
+            customerKey: orderElement.getAttribute('data-customer-key')
+        };
+
+        // Toss Payments 초기화
+        const clientKey = "test_ck_nRQoOaPz8LENQzY2zy953y47BMw6";
+        const tossPayments = TossPayments(clientKey);
+        const payment = tossPayments.payment({ customerKey: order.customerKey });
+
+        // 결제 요청 함수
+        async function requestPayment() {
+            try {
+                // 서버에 결제 요청
+                const response = await fetch(`http://localhost:8080/orders/${order.orderNumber}/payments`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    credentials: "include", // 쿠키 자동 포함
+                    body: JSON.stringify({
+                        amount: order.amountValue,
+                        orderId: order.orderNumber,
+                        orderName: order.orderName,
+                        customerEmail: order.customerEmail,
+                        customerName: order.customerName
+                    }),
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log("결제 요청 성공:", data);
+
+                    // Toss Payments 결제 진행
+                    await payment.requestPayment({
+                        method: "CARD",
+                        amount: {
+                            currency: "KRW",
+                            value: order.amountValue,
+                        },
+                        orderId: order.orderNumber,
+                        orderName: order.orderName,
+                        successUrl: window.location.origin + "/payments/success",
+                        failUrl: window.location.origin + "/payments/fail",
+                        customerEmail: order.customerEmail,
+                        customerName: order.customerName,
+                    });
+                } else {
+                    const errorData = await response.json();
+                    console.error("결제 요청 실패:", errorData);
+                    alert("결제 요청에 실패했습니다.");
+                }
+            } catch (error) {
+                console.error("결제 요청 중 오류 발생:", error);
+                alert("결제 요청 중 오류가 발생했습니다.");
+            }
+        }
+
+        // 주문 번호 표시
+        document.getElementById("orderNumber").innerText = order.orderNumber;
+
+        // 결제 버튼 이벤트 리스너
+        document.getElementById("paymentButton").addEventListener("click", requestPayment);
+    });
 </script>
 </body>
 </html>
