@@ -1,7 +1,11 @@
 package salute.oneshot.domain.ingredient.entity;
 
-import lombok.Getter;
-import lombok.Setter;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.persistence.Id;
+import lombok.*;
+import org.springframework.data.elasticsearch.annotations.Document;
+import org.springframework.data.elasticsearch.annotations.Field;
+import org.springframework.data.elasticsearch.annotations.FieldType;
 
 @Getter
 @Setter
@@ -27,9 +31,11 @@ public class IngredientDocument {
 
 
     public static IngredientDocument from(Ingredient ingredient){
-        return new IngredientDocument(ingredient.getId(),
+
+        String id = String.valueOf(ingredient.getId());
+
+        return new IngredientDocument(id,
                 ingredient.getName(),
-                // ingredient.getAvb(),
                 ingredient.getDescription(),
                 ingredient.getCategory().name());
     }
