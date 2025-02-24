@@ -1,5 +1,8 @@
 package salute.oneshot.domain.cocktail.service;
 
+import co.elastic.clients.elasticsearch.ElasticsearchClient;
+import co.elastic.clients.elasticsearch.core.DeleteRequest;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -48,6 +51,7 @@ public class CocktailService {
     private final IngredientRepository ingredientRepository;
     private final CocktailIngredientRepository cocktailIngredientRepository;
     private final ElasticsearchOperations operations;
+    private final ElasticsearchClient client;
     private final RedisService redisService;
 
     @Transactional
@@ -89,13 +93,16 @@ public class CocktailService {
     }
 
     @Transactional
-    public void deleteCocktail(DeleteCocktailSDto sDto) {
+    public void deleteCocktail(DeleteCocktailSDto sDto) throws IOException {
 
         if (!cocktailRepository.existsByIdAndUserId(sDto.getCocktailId(), sDto.getUserId())) {
             throw new UnauthorizedException(ErrorCode.FORBIDDEN_ACCESS);
         }
+
+        DeleteRequest deleteRequest = new DeleteRequest.Builder().index("cocktails").id(sDto.getCocktailId().toString()).build();
+        client.delete(deleteRequest);
         cocktailRepository.deleteById(sDto.getCocktailId());
-    }
+   }
 
     @Transactional
     @Cacheable(value = "popular_cocktail", key ="#cocktailId")

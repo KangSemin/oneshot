@@ -1,5 +1,6 @@
 package salute.oneshot.domain.cocktail.controller;
 
+import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -83,8 +84,8 @@ public class CocktailController {
     }
 
     @DeleteMapping("/{cocktailId}")
-    public ResponseEntity<ApiResponse<Void>> deleteCocktail(@PathVariable Long cocktailId,
-        @AuthenticationPrincipal CustomUserDetails userDetails) {
+    public ResponseEntity<ApiResponse<Void>> deleteCocktail (@PathVariable Long cocktailId,
+        @AuthenticationPrincipal CustomUserDetails userDetails) throws IOException {
 
         DeleteCocktailSDto sDto = DeleteCocktailSDto.of(userDetails.getId(), cocktailId);
         cocktailService.deleteCocktail(sDto);
