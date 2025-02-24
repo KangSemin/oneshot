@@ -1,4 +1,4 @@
-version: '3.8'
+version: '2.4'
 
 services:
   database:
@@ -21,7 +21,7 @@ services:
       - '6379:6379'
 
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:8.15.1
+    image: 'elasticsearch:8.15.1'
     container_name: elasticsearch
     environment:
       - discovery.type=single-node
@@ -33,21 +33,25 @@ services:
     ports:
       - "9200:9200"
       - "9300:9300"
-    #    networks:
-    #      - elastic
+    volumes:
+      - esdata:/usr/share/elasticsearch/data
     command: >
       bash -c "if [ ! -f /usr/share/elasticsearch/plugins/analysis-nori/plugin-descriptor.properties ]; then
       elasticsearch-plugin install --batch analysis-nori; fi && /usr/local/bin/docker-entrypoint.sh"
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:9200 || exit 1" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
 
   kibana:
-    image: docker.elastic.co/kibana/kibana:8.15.1
+    image: 'kibana:8.15.1'
     container_name: kibana
     environment:
-      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      - ELASTICSEARCH_HOSTS=${ELASTICSEARCH_HOST}
     ports:
       - "5601:5601"
-    #    networks:
-    #      - elastic
     depends_on:
       - elasticsearch
 
@@ -56,8 +60,6 @@ services:
     container_name: cerebro
     ports:
       - "9000:9000"
-    #    networks:
-    #      - elastic
     depends_on:
       - elasticsearch
 
@@ -74,19 +76,27 @@ services:
       SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
       SPRING_DATA_REDIS_HOST: redis
       SPRING_DATA_REDIS_PORT: 6379
-      SPRING_ELASTICSEARCH_URIS: http://elasticsearch:9200  # Elasticsearch 설정 추가
+      SPRING_ELASTICSEARCH_URIS: ${ELASTICSEARCH_HOST}
       JWT_SECRET_KEY: ${JWT_SECRET_KEY}
-      JAVA_TOOL_OPTIONS: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
     depends_on:
-      - database
-      - redis
-      - elasticsearch
+      elasticsearch:
+        condition: service_healthy
+      database:
+        condition: service_started
+      redis:
+        condition: service_started
+
     ports:
       - "8080:8080"
       - "5005:5005"
-#networks:
-#  elastic:
-#    driver: bridge
+
 
 volumes:
   mysql_data:
+  esdata:
+
+
+
+
+
+

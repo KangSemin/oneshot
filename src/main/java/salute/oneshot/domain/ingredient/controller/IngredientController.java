@@ -22,6 +22,7 @@ import salute.oneshot.domain.ingredient.dto.request.CreateIngrRequestDto;
 import salute.oneshot.domain.ingredient.dto.request.UpdateIngrRequestDto;
 import salute.oneshot.domain.ingredient.dto.response.IngrResponseDto;
 import salute.oneshot.domain.ingredient.dto.service.CreateIngrSDto;
+import salute.oneshot.domain.ingredient.dto.service.SearchIngrSDto;
 import salute.oneshot.domain.ingredient.dto.service.UpdateIngrSDto;
 import salute.oneshot.domain.ingredient.entity.IngredientCategory;
 import salute.oneshot.domain.ingredient.service.IngredientService;
@@ -68,6 +69,19 @@ public class IngredientController {
 
         return ResponseEntity.ok(
             ApiResponse.success(ApiResponseConst.GET_INGR_SUCCESS, responseDto));
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<ApiResponse<Page<IngrResponseDto>>> getIngredientByCondition(@RequestParam(name = "name", required = false)String name,
+                                                                                       @RequestParam(name = "description", required = false)String description,
+                                                                                       @RequestParam(name = "category", required = false)String category,
+                                                                                       @RequestParam(name = "size", defaultValue = "10") int size,
+                                                                                       @RequestParam(name = "page", defaultValue = "1") int page)throws IOException{
+        Pageable pageable = PageRequest.of(page - 1, size);
+        SearchIngrSDto sDto = SearchIngrSDto.of(name, description, category, pageable);
+        Page<IngrResponseDto> responseDtoPage = ingredientService.searchByCondition(sDto);
+
+        return ResponseEntity.ok(ApiResponse.success(ApiResponseConst.GET_INGR_LIST_SUCCESS, responseDtoPage));
     }
 
 

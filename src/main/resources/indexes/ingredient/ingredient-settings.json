@@ -1,0 +1,32 @@
+{
+  "settings": {
+    "index": {
+      "analysis": {
+        "filter": {
+          "synonym_filter": {
+            "type": "synonym",
+            "synonyms_path": "resources/analysis/synonyms.txt"
+          }
+        },
+        "analyzer": {
+          "desc_anal": {
+            "tokenizer": "whitespace",
+            "filter": [
+              "lowercase",
+              "stop",
+              "snowball",
+              "unique",
+              "synonym_filter"
+            ]
+          },
+          "name_anal": {
+            "tokenizer": "whitespace",
+            "filter": [
+              "lowercase"
+            ]
+          }
+        }
+      }
+    }
+  }
+}

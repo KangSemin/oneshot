@@ -3,19 +3,21 @@ package salute.oneshot.domain.ingredient.entity;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.Id;
 import lombok.*;
-import org.springframework.data.elasticsearch.annotations.Document;
-import org.springframework.data.elasticsearch.annotations.Field;
-import org.springframework.data.elasticsearch.annotations.FieldType;
+import org.springframework.data.elasticsearch.annotations.*;
 
 @Getter
-@Document(indexName = "ingredients")
+@Document(indexName = "ingredients", createIndex = true)
+
 @NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @JsonIgnoreProperties(ignoreUnknown = true)
+@Setting(settingPath = "indexes/ingredient/ingredient-settings.json")
+@Mapping(mappingPath = "indexes/ingredient/ingredient-mappings.json")
+
 public class IngredientDocument {
 
+
     @Id
-    @Field(type = FieldType.Long)
     private String id;
 
     @Field(type = FieldType.Text)
