@@ -17,9 +17,8 @@ public class CreateCocktailRequestDto {
     private final String description;
     @NotBlank
     private final String recipe;
-
     @NotNull
-    List<IngredientRequestDto> ingredientList;
+    private final List<IngredientRequestDto> ingredientList;
 
 
 }
