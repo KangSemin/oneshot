@@ -1,63 +1,100 @@
 package salute.oneshot.global.security.jwt;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.*;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
+import salute.oneshot.domain.auth.dto.response.TokenInfo;
+import salute.oneshot.domain.auth.repository.RedisBlacklistRepository;
+import salute.oneshot.domain.user.entity.UserRole;
 import salute.oneshot.global.security.SecurityConst;
-import salute.oneshot.global.security.entity.CustomUserDetails;
 
 import javax.crypto.SecretKey;
-import java.util.Base64;
 import java.util.Date;
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class JwtProvider {
 
     private final SecretKey secretKey;
-    private final JwtValidator jwtValidator;
+    private final RedisBlacklistRepository blacklistCacheRepository;
 
-    public JwtProvider(
-            @Value("${jwt.secret.key}") String secret,
-            JwtValidator jwtValidator) {
-        byte[] keyBytes = Base64.getDecoder().decode(secret);
-        this.secretKey = Keys.hmacShaKeyFor(keyBytes);
-        this.jwtValidator = jwtValidator;
+    public String createAccessToken(Long userId, UserRole role) {
+        Date now = new Date();
+        return Jwts.builder()
+                .subject(userId.toString())
+                .claim("role", role.name())
+                .issuedAt(now)
+                .expiration(new Date(now.getTime() +
+                        SecurityConst.ACCESS_TTL))
+                .signWith(secretKey)
+                .compact();
+    }
+
+    public String createRefreshToken(Long userId) {
+        return Jwts.builder()
+                .subject(userId.toString())
+                .issuedAt(new Date())
+                .signWith(secretKey)
+                .compact();
+    }
+
+    public TokenInfo createToken(Long userId, UserRole role) {
+        String accessToken =
+                createAccessToken(userId, role);
+        String refreshToken =
+                createRefreshToken(userId);
+        long accessExpiresAt = System.currentTimeMillis() +
+                SecurityConst.ACCESS_TTL;
+
+        return TokenInfo.of(
+                accessToken,
+                refreshToken,
+                accessExpiresAt);
     }
 
     public Claims parseClaims(String token) {
+        return Jwts.parser()
+                .verifyWith(secretKey)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+    }
+
+    public Long getUserIdFromToken(String token) {
         Claims claims = Jwts.parser()
                 .verifyWith(secretKey)
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();
 
-        validateToken(claims);
-        return claims;
+        return Long.parseLong(claims.getSubject());
     }
 
-    public String createToken(Authentication authentication) {
-        CustomUserDetails principal = (CustomUserDetails) authentication.getPrincipal();
-        Date now = new Date();
-
-        return Jwts.builder()
-                .subject(principal.getId().toString())
-                .claim("email", principal.getUsername())
-                .claim("role", principal.getRole().name())
-                .issuedAt(now)
-                .expiration(new Date(now.getTime() + SecurityConst.TOKEN_TIME))
-                .signWith(secretKey)
-                .compact();
+    public String extractToken(String authorizationHeader) {
+        if (!StringUtils.hasText(authorizationHeader) ||
+                !authorizationHeader.startsWith(SecurityConst.BEARER_PREFIX)
+        ) {
+            log.warn("잘못된 토큰 형식 또는 Bearer 접두사 누락: {}", authorizationHeader);
+            throw new JwtException(SecurityConst.INVALID_TOKEN);
+        }
+        return authorizationHeader.substring(SecurityConst.BEARER_PREFIX.length());
     }
 
-    private void validateToken(Claims claims) {
-        Long userId = Long.parseLong(claims.getSubject());
-        Date issuedAt = claims.getIssuedAt();
+    public void validateToken(String token) {
+        if (blacklistCacheRepository.existsByToken (token)) {
+            log.warn("블랙리스트에 등록된 토큰 : {}", token);
+            throw new JwtException(SecurityConst.INVALID_TOKEN);
+        }
+    }
 
-        jwtValidator.validateToken(userId, issuedAt);
+    public long getRemainMilliSeconds(String token) {
+        Claims claims = parseClaims(token);
+        long expirationTime = claims.getExpiration().getTime();
+        long currentTime = System.currentTimeMillis();
+
+        return Math.max(expirationTime - currentTime, 0);
     }
 }

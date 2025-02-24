@@ -13,13 +13,14 @@ import java.time.LocalDateTime;
 public class CreateOrderResponseDto {
 
     private final Long orderId;
+    private final String orderNumber;
     private final String name;
     private final Long amount;
     private final OrderStatus status;
     private final LocalDateTime orderDate;
 
     public static CreateOrderResponseDto from(Order order) {
-        return new CreateOrderResponseDto(order.getId(), order.getName(),
+        return new CreateOrderResponseDto(order.getId(), order.getOrderNumber(),order.getName(),
                 order.getAmount(), order.getStatus(), order.getCreatedAt());
     }
 }

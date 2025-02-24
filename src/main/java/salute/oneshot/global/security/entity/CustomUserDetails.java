@@ -1,5 +1,6 @@
 package salute.oneshot.global.security.entity;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
@@ -10,16 +11,15 @@ import java.util.Collection;
 import java.util.List;
 
 @Getter
-@AllArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class CustomUserDetails implements UserDetails {
 
-    private Long id;
-    private String email;
-    private UserRole role;
+    private final Long id;
+    private final UserRole userRole;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(() -> "ROLE_" + role.name());
+        return List.of(() -> "ROLE_" + userRole.name());
     }
 
     @Override
@@ -29,10 +29,12 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public String getUsername() {
-        return email;
+        return null;
     }
 
-    public static CustomUserDetails of(Long id, String email, UserRole role) {
-        return new CustomUserDetails(id, email, role);
+    public static CustomUserDetails of(Long userId, UserRole userRole) {
+        return new CustomUserDetails(
+                userId,
+                userRole);
     }
 }

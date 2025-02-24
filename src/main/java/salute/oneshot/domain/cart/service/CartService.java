@@ -16,9 +16,9 @@ import salute.oneshot.domain.product.entity.Product;
 import salute.oneshot.domain.product.repository.ProductRepository;
 import salute.oneshot.domain.user.entity.User;
 import salute.oneshot.domain.user.repository.UserRepository;
+import salute.oneshot.global.exception.ForbiddenException;
 import salute.oneshot.global.exception.InvalidException;
 import salute.oneshot.global.exception.NotFoundException;
-import salute.oneshot.global.exception.UnauthorizedException;
 
 import java.util.Optional;
 
@@ -60,7 +60,7 @@ public class CartService {
 
     @Transactional
     public CartItemResponseDto updateItemQuantity(UpdateItemQuantitySDto sdto) {
-        CartItem item = getItemById(sdto.getItemId());
+        CartItem item = getItemByIdIfItemIsNotOrdered(sdto.getItemId());
         isCartItemOwnedByUser(sdto.getUserId(), item);
 
         item.updateQuantity(sdto);
@@ -70,7 +70,7 @@ public class CartService {
 
     @Transactional
     public void removeItem(Long userId, Long itemId) {
-        CartItem item = getItemById(itemId);
+        CartItem item = getItemByIdIfItemIsNotOrdered(itemId);
         isCartItemOwnedByUser(userId, item);
         cartItemRepository.deleteByIdAndCartUserId(itemId, userId);
     }
@@ -80,7 +80,7 @@ public class CartService {
         cartRepository.findByUserIdAndIsOrderedFalse(userId).ifPresent(cart -> cart.getItemList().clear());
     }
 
-    private CartItem getItemById(Long itemId) {
+    private CartItem getItemByIdIfItemIsNotOrdered(Long itemId) {
         CartItem item = cartItemRepository.findById(itemId).orElseThrow(() -> new NotFoundException(ErrorCode.CART_ITEM_NOT_FOUND));
         isCartItemOrdered(item);
         return item;
@@ -94,7 +94,7 @@ public class CartService {
 
     private static void isCartItemOwnedByUser(Long userId, CartItem item) {
         if (!item.getCart().getUser().getId().equals(userId)) {
-            throw new UnauthorizedException(ErrorCode.CART_ITEM_UNAUTHORIZED);
+            throw new ForbiddenException(ErrorCode.CART_ITEM_FORBIDDEN);
         }
     }
 

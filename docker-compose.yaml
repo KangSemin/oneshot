@@ -68,11 +68,9 @@ services:
       SPRING_DATA_REDIS_PORT: 6379
       SPRING_ELASTICSEARCH_URIS: ${ELASTICSEARCH_HOST}
       JWT_SECRET_KEY: ${JWT_SECRET_KEY}
-      JAVA_TOOL_OPTIONS: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
     depends_on:
       - database
       - redis
-      - elasticsearch
     ports:
       - "8080:8080"
       - "5005:5005"
@@ -80,4 +78,3 @@ services:
 
 volumes:
   mysql_data:
-

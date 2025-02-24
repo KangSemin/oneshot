@@ -13,6 +13,7 @@ public enum ErrorCode {
     INVALID_USER_ROLE(HttpStatus.BAD_REQUEST, "유효하지 않은 UerRole 입니다."),
     DUPLICATE_EMAIL(HttpStatus.CONFLICT, "이미 사용중인 이메일 입니다."),
     DUPLICATE_USER_DELETE(HttpStatus.CONFLICT, "이미 탈퇴한 사용자입니다."),
+    DUPLICATE_ROLE(HttpStatus.CONFLICT, "동일한 권한입니다."),
 
     // 칵테일 관련 익셉션
     COCKTAIL_NOT_FOUND(HttpStatus.NOT_FOUND, "칵테일이 존재하지 않습니다."),
@@ -41,7 +42,7 @@ public enum ErrorCode {
     CART_ITEM_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 항목이 존재하지 않습니다."),
     FULL_CART(HttpStatus.NOT_FOUND, "장바구니에 항목을 더 추가할 수 없습니다."),
     INVALID_CART_ITEM_QUANTITY(HttpStatus.NOT_FOUND, "수량이 1보다 작을 수 없습니다."),
-    CART_ITEM_UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "본인의 장바구니만 변경할 수 있습니다."),
+    CART_ITEM_FORBIDDEN(HttpStatus.FORBIDDEN, "본인의 장바구니만 변경할 수 있습니다."),
 
     // 주문 관련 익셉션
     ORDER_NOT_FOUND(HttpStatus.NOT_FOUND, "주문이 존재하지 않습니다."),
@@ -53,9 +54,10 @@ public enum ErrorCode {
 
     // 결제 관련 익셉션
     PAYMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 결제 내역이 존재하지 않습니다."),
-    PAYMENT_UNAUTHORIZED(HttpStatus.NOT_FOUND, "본인의 결제 내역만 조회할 수 있습니다."),
+    PAYMENT_FORBIDDEN(HttpStatus.NOT_FOUND, "본인의 결제 내역만 조회할 수 있습니다."),
     PAYMENT_ALREADY_CONFIRMED(HttpStatus.CONFLICT, "이미 만료된 결제입니다."),
     ORDER_ALREADY_PAID(HttpStatus.CONFLICT, "이미 결제가 된 주문입니다."),
+    WRONG_PAYMENT_AMOUNT(HttpStatus.CONFLICT, "결제 금액과 주문 금액이 다릅니다."),
 
     // 레시피 관련 익셉션
     RECIPE_NOT_FOUND(HttpStatus.NOT_FOUND, "레시피가 존재하지 않습니다."),
@@ -80,12 +82,8 @@ public enum ErrorCode {
     // 인증 관련 익셉션
     UNAUTHORIZED_ACCESS(HttpStatus.UNAUTHORIZED, "로그인이 필요합니다."),
     LOGIN_FAILED(HttpStatus.UNAUTHORIZED, "잘못된 아이디 또는 비밀번호입니다."),
-    TOKEN_NOT_FOUND(HttpStatus.BAD_REQUEST, "JWT 토큰이 없습니다."),
-    TOKEN_VALIDATION_FAIL(HttpStatus.UNAUTHORIZED, "JWT 보안 검증에 실패했습니다."),
-    MALFORMED_TOKEN(HttpStatus.UNAUTHORIZED, "잘못된 JWT 형식입니다."),
     EXPIRED_TOKEN(HttpStatus.UNAUTHORIZED, "만료된 JWT 토큰입니다."),
-    UNSUPPORTED_TOKEN(HttpStatus.BAD_REQUEST, "지원되지 않는 JWT 토큰입니다."),
-    TOKEN_INVALID_STATE(HttpStatus.UNAUTHORIZED, "유효하지 않은 토큰입니다."),
+    INVALID_TOKEN(HttpStatus.FORBIDDEN, "유효하지 않은 토큰입니다."),
 
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류가 발생했습니다.");
 

@@ -6,11 +6,11 @@ import salute.oneshot.global.exception.InvalidException;
 import java.util.Arrays;
 
 public enum UserRole {
-    USER, ADMIN;
+    USER, ADMIN, SUPER_ADMIN;
 
-    public static UserRole of(String role) {
+    public static UserRole of(String userRole) {
         return Arrays.stream(UserRole.values())
-                .filter(r -> r.name().equalsIgnoreCase(role))
+                .filter(r -> r.name().equalsIgnoreCase(userRole))
                 .findFirst()
                 .orElseThrow(() -> new InvalidException(ErrorCode.INVALID_USER_ROLE));
     }
