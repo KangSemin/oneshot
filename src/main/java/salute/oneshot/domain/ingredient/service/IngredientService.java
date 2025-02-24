@@ -58,7 +58,7 @@ public class IngredientService {
 
         IngredientDocument ingrDoc = IngredientDocument.from(ingredient);
 
-        operations.save(ingrDoc);
+        operations.update(ingrDoc);
 
 //        String id = String.valueOf(request.getId());
 
