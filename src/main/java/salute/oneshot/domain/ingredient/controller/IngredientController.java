@@ -72,9 +72,9 @@ public class IngredientController {
 
 
     @PatchMapping("/{ingredientId}")
-    public ResponseEntity<ApiResponse<IngrResponseDto>> updateIngredient(
+    public ResponseEntity<ApiResponse<IngrResponseDto>> updateIngredient (
         @PathVariable Long ingredientId,
-        @Valid @RequestBody UpdateIngrRequestDto request) {
+        @Valid @RequestBody UpdateIngrRequestDto request) throws IOException{
 
         UpdateIngrSDto sdto = UpdateIngrSDto.of(ingredientId, request.getName(),
             request.getDescription(),

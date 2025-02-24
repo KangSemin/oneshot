@@ -9,9 +9,9 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
 
 @Getter
 @Document(indexName = "ingredients")
+@NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @JsonIgnoreProperties(ignoreUnknown = true)
-@NoArgsConstructor
 public class IngredientDocument {
 
     @Id
