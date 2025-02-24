@@ -23,9 +23,7 @@ public class GetOrderDetailsResponseDto {
         return new GetOrderDetailsResponseDto(
                 order.getId(),
                 order.getAmount(),
-                // TODO: OrderNumber로 변경
-//                order.getOrderNumber(),
-                "Order-000-" + order.getId(),
+                order.getOrderNumber(),
                 order.getName(),
                 order.getUser().getEmail(),
                 order.getUser().getNickName(),
