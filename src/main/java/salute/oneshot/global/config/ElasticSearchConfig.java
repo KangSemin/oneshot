@@ -17,20 +17,4 @@ public class ElasticSearchConfig extends ElasticsearchConfiguration {
                 .build();
     }
 
-    @Bean
-    public ElasticsearchClient elasticsearchClient() {
-
-        // RestClient 생성 (호스트, 포트, 프로토콜 지정)
-        RestClient restClient = RestClient.builder(
-            new HttpHost(host[0])
-        ).build();
-
-        // Transport 생성 (JSON 매퍼 설정)
-        ElasticsearchTransport transport = new RestClientTransport(
-            restClient, new JacksonJsonpMapper());
-
-        // ElasticsearchClient 생성 후 반환
-        return new ElasticsearchClient(transport);
-    }
-
 }
