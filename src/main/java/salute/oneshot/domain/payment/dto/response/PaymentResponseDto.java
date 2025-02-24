@@ -33,7 +33,7 @@ public class PaymentResponseDto {
         return new PaymentResponseDto(
                 payment.getPaymentKey(),
                 payment.getStatus(),
-                payment.getOrderId(),
+                payment.getOrderNumber(),
                 payment.getOrderName(),
                 payment.getTotalAmount()
         );

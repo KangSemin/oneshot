@@ -37,8 +37,10 @@ public class OrderPaymentFacade {
         return orderService.updateOrder(sDto);
     }
 
+    @Transactional
     public void deleteOrder(DeleteOrderSDto sDto) {
         orderService.deleteOrder(sDto);
+        paymentService.cancelPayment("구매자가 주문을 취소했습니다.");
     }
 
     @Transactional
@@ -46,10 +48,11 @@ public class OrderPaymentFacade {
         return orderService.getOrderDetails(sDto);
     }
 
-
     // PaymentService
     public PaymentResponseDto confirmPayment(ConfirmPaymentSDto sDto) {
-        return paymentService.confirmPayment(sDto);
+        PaymentResponseDto paymentResponseDto = paymentService.confirmPayment(sDto);
+        orderService.updateOrderStatusAfterPaymentIsDone(sDto.getOrderNumber());
+        return paymentResponseDto;
     }
 
     public PaymentResponseDto getPayment(Long paymentId) {

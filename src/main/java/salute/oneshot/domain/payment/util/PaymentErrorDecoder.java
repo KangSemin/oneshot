@@ -20,8 +20,10 @@ public class PaymentErrorDecoder implements ErrorDecoder {
         String bodyContent = "null";
 
         if (response.body() != null) {
-            try (InputStream inputStream = response.body().asInputStream();
-                 BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
+            try (
+                    InputStream inputStream = response.body().asInputStream();
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
+            ) {
                 bodyContent = reader.lines().collect(Collectors.joining(System.lineSeparator()));
             } catch (Exception e) {
                 log.warn("직렬화 과정 중 예외 발생", e);

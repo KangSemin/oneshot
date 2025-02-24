@@ -18,6 +18,41 @@ services:
     ports:
       - '6379:6379'
 
+  elasticsearch:
+    image: 'elasticsearch:8.15.1'
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false  # 보안 비활성화 (테스트용)
+      - http.cors.enabled=true
+      - http.cors.allow-origin="*"
+      - http.cors.allow-methods=OPTIONS,HEAD,GET,POST,PUT,DELETE
+      - http.cors.allow-headers=X-Requested-With,Content-Type,Content-Length,Authorization
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    command: >
+      bash -c "if [ ! -f /usr/share/elasticsearch/plugins/analysis-nori/plugin-descriptor.properties ]; then
+      elasticsearch-plugin install --batch analysis-nori; fi && /usr/local/bin/docker-entrypoint.sh"
+
+  kibana:
+    image: 'kibana:8.15.1'
+    container_name: kibana
+    environment:
+      - ELASTICSEARCH_HOSTS=${ELASTICSEARCH_HOST}
+    ports:
+      - "5601:5601"
+    depends_on:
+      - elasticsearch
+
+  cerebro:
+    image: yannart/cerebro
+    container_name: cerebro
+    ports:
+      - "9000:9000"
+    depends_on:
+      - elasticsearch
+
   app:
     build: .
     image: oneshot:latest
@@ -31,12 +66,15 @@ services:
       SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
       SPRING_DATA_REDIS_HOST: redis
       SPRING_DATA_REDIS_PORT: 6379
+      SPRING_ELASTICSEARCH_URIS: ${ELASTICSEARCH_HOST}
       JWT_SECRET_KEY: ${JWT_SECRET_KEY}
     depends_on:
       - database
       - redis
     ports:
       - "8080:8080"
+      - "5005:5005"
+
 
 volumes:
   mysql_data:

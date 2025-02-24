@@ -26,6 +26,8 @@ import salute.oneshot.domain.ingredient.dto.service.UpdateIngrSDto;
 import salute.oneshot.domain.ingredient.entity.IngredientCategory;
 import salute.oneshot.domain.ingredient.service.IngredientService;
 
+import java.io.IOException;
+
 @RestController
 @RequestMapping("/api/ingredients")
 @RequiredArgsConstructor
@@ -34,8 +36,8 @@ public class IngredientController {
     private final IngredientService ingredientService;
 
     @PostMapping
-    public ResponseEntity<ApiResponse<IngrResponseDto>> createIngredient(
-        @Valid @RequestBody CreateIngrRequestDto request) {
+    public ResponseEntity<ApiResponse<IngrResponseDto>> createIngredient (
+        @Valid @RequestBody CreateIngrRequestDto request) throws IOException {
 
         CreateIngrSDto sdto = CreateIngrSDto.of(request.getName(), request.getDescription(),
             IngredientCategory.valueOf(request.getCategory()), request.getAvb());
@@ -70,9 +72,9 @@ public class IngredientController {
 
 
     @PatchMapping("/{ingredientId}")
-    public ResponseEntity<ApiResponse<IngrResponseDto>> updateIngredient(
+    public ResponseEntity<ApiResponse<IngrResponseDto>> updateIngredient (
         @PathVariable Long ingredientId,
-        @Valid @RequestBody UpdateIngrRequestDto request) {
+        @Valid @RequestBody UpdateIngrRequestDto request) throws IOException{
 
         UpdateIngrSDto sdto = UpdateIngrSDto.of(ingredientId, request.getName(),
             request.getDescription(),
@@ -86,7 +88,7 @@ public class IngredientController {
 
     @DeleteMapping("/{ingredientId}")
     public ResponseEntity<ApiResponse<Void>> deleteIngredient(
-        @PathVariable Long ingredientId) {
+        @PathVariable Long ingredientId) throws IOException{
 
         ingredientService.deleteIngredient(ingredientId);
 
