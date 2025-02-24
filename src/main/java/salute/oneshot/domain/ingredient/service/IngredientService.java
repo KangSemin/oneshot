@@ -4,9 +4,7 @@ import java.io.IOException;
 import java.util.Optional;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
-import co.elastic.clients.elasticsearch.core.IndexResponse;
-import co.elastic.clients.elasticsearch.core.UpdateRequest;
-import co.elastic.clients.elasticsearch.core.UpdateResponse;
+import co.elastic.clients.elasticsearch.core.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -88,9 +86,14 @@ public class IngredientService {
     }
 
     @Transactional
-    public void deleteIngredient(Long ingredientId) {
+    public void deleteIngredient(Long ingredientId) throws IOException{
+        String id = String.valueOf(ingredientId);
+
+        DeleteRequest deleteRequest = new DeleteRequest.Builder().index("ingredients").id(id).build();
+        DeleteResponse deleteResponse = client.delete(deleteRequest);
 
         ingredientRepository.deleteById(ingredientId);
+
     }
 
     private Ingredient findById(Long id) {
