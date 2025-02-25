@@ -25,7 +25,13 @@ public class AdminBannerController {
     public ResponseEntity<ApiResponse<BannerResponseDto>> createBanner(
             @RequestBody BannerRequestDto requestDto
     ) {
-        BannerSDto serviceDto = BannerSDto.from(requestDto);
+        BannerSDto serviceDto = BannerSDto.of(
+                requestDto.getEventId(),
+                requestDto.getImageUrl(),
+                requestDto.getStartDate(),
+                requestDto.getStartTime(),
+                requestDto.getEndDate(),
+                requestDto.getEndTime());
         BannerResponseDto responseDto =
                 bannerService.createBanner(serviceDto);
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -40,8 +46,13 @@ public class AdminBannerController {
             @PathVariable Long bannerId,
             @RequestBody BannerRequestDto requestDto
     ) {
-        UpdateBannerSDto serviceDto =
-                UpdateBannerSDto.of(bannerId, requestDto);
+        UpdateBannerSDto serviceDto = UpdateBannerSDto.of(
+                bannerId, requestDto.getEventId(),
+                requestDto.getImageUrl(),
+                requestDto.getStartDate(),
+                requestDto.getStartTime(),
+                requestDto.getEndDate(),
+                requestDto.getEndTime());
         BannerResponseDto responseDto =
                 bannerService.updateBanner(serviceDto);
 
@@ -57,7 +68,7 @@ public class AdminBannerController {
             @PathVariable Long bannerId
     ) {
         Long deletedId =
-        bannerService.deleteBanner(bannerId);
+                bannerService.deleteBanner(bannerId);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ApiResponse.success(
                         ApiResponseConst.DELETE_BANNER_SUCCESS,

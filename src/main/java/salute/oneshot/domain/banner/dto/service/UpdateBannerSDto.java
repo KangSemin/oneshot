@@ -3,7 +3,6 @@ package salute.oneshot.domain.banner.dto.service;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import salute.oneshot.domain.banner.dto.request.BannerRequestDto;
 import salute.oneshot.global.util.DateTimeUtil;
 
 import java.time.LocalDateTime;
@@ -20,17 +19,22 @@ public class UpdateBannerSDto {
 
     public static UpdateBannerSDto of(
             Long bannerId,
-            BannerRequestDto requestDto
+            Long eventId,
+            String imageUrl,
+            String startDate,
+            String startTime,
+            String endDate,
+            String endTime
     ) {
         return new UpdateBannerSDto(
                 bannerId,
-                requestDto.getEventId(),
-                requestDto.getImageUrl(),
+                eventId,
+                imageUrl,
                 DateTimeUtil.parseStartDateTime(
-                        requestDto.getStartDate(),
-                        requestDto.getStartTime()),
+                        startDate,
+                        startTime),
                 DateTimeUtil.parseEndDateTime(
-                        requestDto.getEndDate(),
-                        requestDto.getEndTime()));
+                        endDate,
+                        endTime));
     }
 }

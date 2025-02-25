@@ -3,12 +3,9 @@ package salute.oneshot.domain.banner.dto.service;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import salute.oneshot.domain.banner.dto.request.BannerRequestDto;
 import salute.oneshot.global.util.DateTimeUtil;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -19,15 +16,22 @@ public class BannerSDto {
     private final LocalDateTime startTime;
     private final LocalDateTime endTime;
 
-    public static BannerSDto from(BannerRequestDto requestDto) {
+    public static BannerSDto of(
+            Long eventId,
+            String imageUrl,
+            String startDate,
+            String startTime,
+            String endDate,
+            String endTime
+    ) {
         return new BannerSDto(
-                requestDto.getEventId(),
-                requestDto.getImageUrl(),
+                eventId,
+                imageUrl,
                 DateTimeUtil.parseStartDateTime(
-                        requestDto.getStartDate(),
-                        requestDto.getStartTime()),
+                        startDate,
+                        startTime),
                 DateTimeUtil.parseEndDateTime(
-                        requestDto.getEndDate(),
-                        requestDto.getEndTime()));
+                        endDate,
+                        endTime));
     }
 }

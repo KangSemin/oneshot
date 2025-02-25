@@ -31,7 +31,7 @@ public class Banner extends BaseEntity {
     @Column(nullable = false)
     private LocalDateTime endTime;
 
-    public Banner(
+    private Banner(
             Event event,
             String imageUrl,
             LocalDateTime startTime,
