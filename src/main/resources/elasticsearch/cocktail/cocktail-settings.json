@@ -3,6 +3,16 @@
     "number_of_shards": "1",
     "number_of_replicas": "0",
     "analysis": {
+      "tokenizer": {
+        "ngram_tokenizer": {
+          "type": "ngram",
+          "min_gram": 2,
+          "max_gram": 5,
+          "token_chars": [
+            "letter"
+          ]
+        }
+      },
       "analyzer": {
         "desc_anal": {
           "filter": [
@@ -11,13 +21,13 @@
             "snowball",
             "unique"
           ],
-          "tokenizer": "whitespace"
+          "tokenizer": "ngram_tokenizer"
         },
         "name_anal": {
           "filter": [
             "lowercase"
           ],
-          "tokenizer": "whitespace"
+          "tokenizer": "ngram_tokenizer"
         }
       }
     }

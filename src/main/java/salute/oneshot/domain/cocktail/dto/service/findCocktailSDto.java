@@ -10,11 +10,11 @@ import org.springframework.data.domain.Pageable;
 public class findCocktailSDto {
     private Pageable pageable;
     private String keyword;
-    private String recipeType;
+    private Boolean recipeType;
 
 
 
-    public static findCocktailSDto of(Pageable pageable, String keyword, String recipeType){
+    public static findCocktailSDto of(Pageable pageable, String keyword, Boolean recipeType){
         return new findCocktailSDto(pageable, keyword, recipeType);
     }
 

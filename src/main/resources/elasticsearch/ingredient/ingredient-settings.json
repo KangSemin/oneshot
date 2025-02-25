@@ -2,7 +2,7 @@
   "index": {
     "analysis": {
       "tokenizer": {
-        "edge_ngram_tokenizer": {
+        "ngram_tokenizer": {
           "type": "ngram",
           "min_gram": 2,
           "max_gram": 5,

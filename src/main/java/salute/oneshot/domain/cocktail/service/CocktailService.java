@@ -1,13 +1,20 @@
 package salute.oneshot.domain.cocktail.service;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
+import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery;
+import co.elastic.clients.elasticsearch._types.query_dsl.Query;
+import co.elastic.clients.elasticsearch._types.query_dsl.QueryBuilders;
 import co.elastic.clients.elasticsearch.core.DeleteRequest;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import co.elastic.clients.elasticsearch.core.SearchRequest;
+import co.elastic.clients.elasticsearch.core.SearchResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CachePut;
@@ -34,6 +41,7 @@ import salute.oneshot.domain.cocktail.entity.RecipeType;
 import salute.oneshot.domain.cocktail.repository.CocktailIngredientRepository;
 import salute.oneshot.domain.cocktail.repository.CocktailRepository;
 import salute.oneshot.domain.common.dto.error.ErrorCode;
+import salute.oneshot.domain.ingredient.dto.response.IngrResponseDto;
 import salute.oneshot.domain.ingredient.entity.Ingredient;
 import salute.oneshot.domain.ingredient.repository.IngredientRepository;
 import salute.oneshot.domain.user.entity.User;
@@ -54,6 +62,8 @@ public class CocktailService {
     private final ElasticsearchOperations operations;
     private final ElasticsearchClient client;
     private final RedisService redisService;
+
+    private final String COCKTAIL_INDEX = "cocktails";
 
     @Transactional
     public void createCocktail(CreateCocktailSDto sDto) {
@@ -148,15 +158,42 @@ public class CocktailService {
         return CocktailResponseDto.from(cocktail);
     }
 
-    public Page<CocktailResponseDto> getCocktails(findCocktailSDto sDto) {
+    public List<CocktailResponseDto> searchByCondition(findCocktailSDto sDto) throws IOException{
 
-        RecipeType type =
-            (sDto.getRecipeType() != null) ? RecipeType.valueOf(sDto.getRecipeType()) : null;
+        BoolQuery.Builder builder = QueryBuilders.bool();
 
-        Page<Cocktail> cocktailPage = cocktailRepository.findCocktails(sDto.getPageable(),
-            sDto.getKeyword(), type);
-        return cocktailPage.map(CocktailResponseDto::from);
+        if (!sDto.getKeyword().isBlank()) {
+            addShouldIfNotNull(builder, sDto.getKeyword(), "name", 3.0f);
+            addShouldIfNotNull(builder, sDto.getKeyword(), "description", 2.0f);
+        }
 
+        if (sDto.getRecipeType() != null) {
+            builder.should(Query.of(q -> q.match(m -> m.field("isOfficial")
+                    .query(sDto.getRecipeType()).boost(1.0f))));
+        }
+
+        SearchRequest searchRequest = new SearchRequest.Builder()
+                .index(COCKTAIL_INDEX)
+                .query(q -> q.bool(builder.build())).build();
+
+        SearchResponse<CocktailDocument> response = client.search(searchRequest, CocktailDocument.class);
+
+        Map<Long, Integer> responseInr = response.hits().hits().stream()
+                .filter(hit -> hit.source() != null)
+                .collect(Collectors.toMap(
+
+                        hit -> Long.valueOf(hit.source().getId()),
+                        hit -> hit.score().intValue()
+                ));
+
+        List<CocktailResponseDto> cocktailResponseDtoList = cocktailRepository.findAllById(responseInr.keySet())
+                .stream().map(CocktailResponseDto::from)
+                .sorted(Comparator.comparing(
+                        doc -> responseInr.get(doc.getId()),
+                        Comparator.reverseOrder()))
+                .toList();
+
+        return cocktailResponseDtoList;
     }
 
 
@@ -181,5 +218,10 @@ public class CocktailService {
     private Cocktail findById(Long cocktailId) {
         return cocktailRepository.findById(cocktailId)
             .orElseThrow(() -> new NotFoundException(ErrorCode.COCKTAIL_NOT_FOUND));
+    }
+
+    private void addShouldIfNotNull(BoolQuery.Builder builder, String condition, String fieldName, float boost){
+        builder.should(Query.of(q -> q.match(m -> m.field(fieldName)
+                .query(condition.toLowerCase()).boost(boost))));
     }
 }

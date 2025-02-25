@@ -1,6 +1,8 @@
 package salute.oneshot.domain.cocktail.controller;
 
 import java.io.IOException;
+import java.util.List;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -94,17 +96,17 @@ public class CocktailController {
     }
 
     @GetMapping//조건별 검색
-    public ResponseEntity<ApiResponse<Page<CocktailResponseDto>>> getCocktails(
+    public ResponseEntity<ApiResponse<List<CocktailResponseDto>>> getCocktailsByCondition(
         @RequestParam(name = "page", defaultValue = "1") int page,
         @RequestParam(name = "size", defaultValue = "10") int size,
         @RequestParam(name = "keyword", required = false) String keyword,
-        @RequestParam(name = "recipeType", required = false) String recipeType
-    ) {
+        @RequestParam(name = "recipeType", required = false) Boolean recipeType
+    )throws IOException {
         Pageable pageable = PageRequest.of(page - 1, size);
 
         findCocktailSDto sDto = findCocktailSDto.of(pageable, keyword, recipeType);
 
-        Page<CocktailResponseDto> responsePage = cocktailService.getCocktails(sDto);
+        List<CocktailResponseDto> responsePage = cocktailService.searchByCondition(sDto);
 
         return ResponseEntity.ok(
             ApiResponse.success(ApiResponseConst.GET_CCKTL_LIST_SUCCESS, responsePage));

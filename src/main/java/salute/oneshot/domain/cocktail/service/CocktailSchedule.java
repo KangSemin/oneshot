@@ -22,7 +22,6 @@ public class CocktailSchedule {
     private final RedisTemplate<String, String> redisTemplate;
     private final CocktailQueryDslRepositoryImpl cocktailQueryRepository;
 
-
     @Scheduled(cron = "0 0/1 * * * ?")
     @CacheEvict(value = "popular_cocktail", allEntries = true)
     public void updateCocktailViewCountToDB() {
