@@ -9,7 +9,9 @@ import salute.oneshot.domain.common.dto.success.ApiResponse;
 import salute.oneshot.domain.common.dto.success.ApiResponseConst;
 import salute.oneshot.domain.coupon.dto.request.CpnRequestDto;
 import salute.oneshot.domain.coupon.dto.response.CpnBriefResponseDto;
+import salute.oneshot.domain.coupon.dto.response.CpnDetailResponseDto;
 import salute.oneshot.domain.coupon.dto.service.CreateCpnSDto;
+import salute.oneshot.domain.coupon.dto.service.UpdateCpnSDto;
 import salute.oneshot.domain.coupon.service.CouponService;
 
 @RestController
@@ -38,6 +40,23 @@ public class AdminCouponController {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.success(
                         ApiResponseConst.ADD_CPN_SUCCESS,
+                        responseDto));
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PatchMapping("/{couponId}")
+    public ResponseEntity<ApiResponse<CpnDetailResponseDto>> updateCoupon(
+            @PathVariable Long couponId,
+            @RequestBody CpnRequestDto requestDto
+    ) {
+        UpdateCpnSDto serviceDto =
+                UpdateCpnSDto.of(couponId, requestDto);
+        CpnDetailResponseDto responseDto =
+                couponService.updateCoupon(serviceDto);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ApiResponse.success(
+                        ApiResponseConst.UPDATE_CPN_SUCCESS,
                         responseDto));
     }
 }
