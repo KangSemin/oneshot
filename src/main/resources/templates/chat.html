@@ -14,10 +14,10 @@
     <button onclick="sendMessage()">어드민에게 전송</button>
 </div>
 
-<script>
+<script th:nonce="${scriptNonce}">
     let stompClient = null;
     // 본인 유저의 식별자 (서버 Principal로 설정됨)
-    const userId = "2";
+    const userId = `${userId}`;
 
     function connect() {
         const socket = new SockJS('/ws');
@@ -26,7 +26,7 @@
             console.log('Connected: ' + frame);
             // 유저는 자신의 전용 채널을 구독 (/user/queue/chat)
             // stompClient.subscribe('/user/queue/chat', function(messageOutput) {
-            stompClient.subscribe('/queue/chat/' + userId, function(messageOutput) {
+            stompClient.subscribe('/user/queue/chat/', function(messageOutput) {
                 // showMessage(JSON.parse(messageOutput.body));
                 showMessage(messageOutput.body, "admin");
             });
