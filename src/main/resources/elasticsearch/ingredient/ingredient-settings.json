@@ -1,30 +1,35 @@
 {
-    "index": {
-      "analysis": {
-        "filter": {
-          "synonym_filter": {
-            "type": "synonym",
-            "synonyms_path": "resources/analysis/synonyms.txt"
-          }
+  "index": {
+    "analysis": {
+      "tokenizer": {
+        "edge_ngram_tokenizer": {
+          "type": "ngram",
+          "min_gram": 2,
+          "max_gram": 5,
+          "token_chars": [
+            "letter"
+          ]
+        }
+      },
+      "analyzer": {
+        "desc_anal": {
+          "type": "custom",
+          "tokenizer": "ngram_tokenizer",
+          "filter": [
+            "lowercase",
+            "stop",
+            "snowball",
+            "unique"
+          ]
         },
-        "analyzer": {
-          "desc_anal": {
-            "tokenizer": "whitespace",
-            "filter": [
-              "lowercase",
-              "stop",
-              "snowball",
-              "unique",
-              "synonym_filter"
-            ]
-          },
-          "name_anal": {
-            "tokenizer": "whitespace",
-            "filter": [
-              "lowercase"
-            ]
-          }
+        "name_anal": {
+          "type": "custom",
+          "tokenizer": "ngram_tokenizer",
+          "filter": [
+            "lowercase"
+          ]
         }
       }
     }
   }
+}

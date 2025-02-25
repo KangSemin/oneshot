@@ -24,7 +24,8 @@ import salute.oneshot.domain.ingredient.dto.service.SearchIngrSDto;
 import salute.oneshot.domain.ingredient.dto.service.UpdateIngrSDto;
 import salute.oneshot.domain.ingredient.entity.Ingredient;
 import salute.oneshot.domain.ingredient.entity.IngredientDocument;
-import salute.oneshot.domain.ingredient.repository.IngredientElasticRepository;
+
+import salute.oneshot.domain.ingredient.repository.IngredientElasticSearchRepository;
 import salute.oneshot.domain.ingredient.repository.IngredientRepository;
 import salute.oneshot.global.exception.NotFoundException;
 
@@ -34,7 +35,7 @@ import salute.oneshot.global.exception.NotFoundException;
 public class IngredientService {
 
     private final IngredientRepository ingredientRepository;
-    private final IngredientElasticRepository elasticRepository;
+    private final IngredientElasticSearchRepository elasticRepository;
     private final ElasticsearchClient client;
 
     private final String INGREDIENT_INDEX = "ingredients";
@@ -94,16 +95,12 @@ public class IngredientService {
         BoolQuery.Builder builder = QueryBuilders.bool();
 
         if (sDto.getKeyword() != null) {
-            builder.should(Query.of(q -> q.match(m -> m.field("name")
-                    .query(sDto.getKeyword().toLowerCase()).boost(3.0F))));
-
-            builder.should(Query.of(q -> q.match(m -> m.field("description")
-                    .query(sDto.getKeyword().toLowerCase()).boost(1.0F))));
+            addShouldIfNotNull(builder, sDto.getKeyword(), "name", 3.0f);
+            addShouldIfNotNull(builder, sDto.getKeyword(), "description", 2.0f);
         }
 
         if (sDto.getCategory() != null) {
-            builder.should(Query.of(q -> q.match(m -> m.field("category")
-                    .query(sDto.getCategory().toLowerCase()))));
+            addShouldIfNotNull(builder, sDto.getCategory(), "category", 1.0f);
         }
 
         SearchRequest searchRequest = new SearchRequest.Builder()
@@ -129,6 +126,11 @@ public class IngredientService {
                 .collect(Collectors.toList());
 
         return ingredientList;
+    }
+
+    private void addShouldIfNotNull(BoolQuery.Builder builder, String condition, String fieldName, float boost){
+        builder.should(Query.of(q -> q.match(m -> m.field(fieldName)
+                .query(condition.toLowerCase()).boost(boost))));
     }
 
     private Ingredient findById(Long id) {
