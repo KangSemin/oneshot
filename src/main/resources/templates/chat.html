@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User Chat</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.1/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+</head>
+<body>
+<h2>User Chat</h2>
+<div id="chat-log"></div>
+<div>
+    <input type="text" id="message" placeholder="메시지 입력" />
+    <button onclick="sendMessage()">어드민에게 전송</button>
+</div>
+
+<script>
+    let stompClient = null;
+    // 본인 유저의 식별자 (서버 Principal로 설정됨)
+    const userId = "2";
+
+    function connect() {
+        const socket = new SockJS('/ws');
+        stompClient = Stomp.over(socket);
+        stompClient.connect({}, function(frame) {
+            console.log('Connected: ' + frame);
+            // 유저는 자신의 전용 채널을 구독 (/user/queue/chat)
+            // stompClient.subscribe('/user/queue/chat', function(messageOutput) {
+            stompClient.subscribe('/queue/chat/' + userId, function(messageOutput) {
+                // showMessage(JSON.parse(messageOutput.body));
+                showMessage(messageOutput.body, "admin");
+            });
+        });
+    }
+
+    function sendMessage() {
+        const message = document.getElementById("message").value;
+        const chatMessage = message;
+        // const chatMessage = {
+        //     // from는 서버에서 Principal로 설정됨
+        //     content: msgContent
+        // };
+        stompClient.send("/app/chat/sendToAdmin", {}, chatMessage);
+        // stompClient.send("/app/chat/sendToAdmin", {}, JSON.stringify(chatMessage));
+        document.getElementById("message").value = "";
+        showMessage(message, "user");
+    }
+
+    function showMessage(message, sender) {
+        const chatLog = document.getElementById("chat-log");
+        // chatLog.innerHTML += `<div><b>${message.from}</b>: ${message.content}</div>`;
+        chatLog.innerHTML += `<div><b>${sender}</b>: ${message}</div>`;
+    }
+
+    connect();
+</script>
+</body>
+</html>
