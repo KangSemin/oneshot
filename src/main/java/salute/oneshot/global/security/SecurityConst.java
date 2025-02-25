@@ -7,7 +7,7 @@ public class SecurityConst {
     public static final long ACCESS_TTL = 60 * 60 * 1000L; // 1hour
 
     // 에러 메시지
-    public static final String INVALID_TOKEN = "유요하지 않은 토큰입니다.";
+    public static final String INVALID_TOKEN = "유효하지 않은 토큰입니다.";
 
     // 로그 메시지
     public static final String AUTH_ERROR_LOG = "Security Authentication error: {}, Message: {}";
