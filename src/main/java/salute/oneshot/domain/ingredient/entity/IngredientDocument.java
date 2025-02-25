@@ -6,16 +6,13 @@ import lombok.*;
 import org.springframework.data.elasticsearch.annotations.*;
 
 @Getter
-@Document(indexName = "ingredients", createIndex = true)
-
-@NoArgsConstructor
+@Document(indexName = "ingredients")
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-@Setting(settingPath = "indexes/ingredient/ingredient-settings.json")
-@Mapping(mappingPath = "indexes/ingredient/ingredient-mappings.json")
-
+@Setting(settingPath = "elasticsearch/ingredient/ingredient-settings.json")
+@Mapping(mappingPath = "elasticsearch/ingredient/ingredient-mappings.json")
 public class IngredientDocument {
-
 
     @Id
     private String id;
@@ -30,14 +27,14 @@ public class IngredientDocument {
     private String category;
 
 
-
     public static IngredientDocument from(Ingredient ingredient){
 
         String id = String.valueOf(ingredient.getId());
+        String name = ingredient.getCategory().name().toLowerCase();
 
         return new IngredientDocument(id,
                 ingredient.getName(),
                 ingredient.getDescription(),
-                ingredient.getCategory().name());
+                name);
     }
 }

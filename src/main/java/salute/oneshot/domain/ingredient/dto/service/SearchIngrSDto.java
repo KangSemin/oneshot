@@ -8,12 +8,11 @@ import org.springframework.data.domain.Pageable;
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class SearchIngrSDto {
-    private String name;
-    private String description;
+    private String keyword;
     private String category;
     private Pageable pageable;
 
-    public static SearchIngrSDto of(String name, String description, String category, Pageable pageable){
-        return new SearchIngrSDto(name, description, category, pageable);
+    public static SearchIngrSDto of(String keyword, String category, Pageable pageable){
+        return new SearchIngrSDto(keyword, category, pageable);
     }
 }
