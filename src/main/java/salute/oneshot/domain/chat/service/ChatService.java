@@ -42,18 +42,14 @@ public class ChatService {
     }
 
     public void processMessageFromClient(String message, Long userId, UserRole role) {
-//        message;
         ListOperations<String, String> ops = redisTemplate.opsForList();
         String key = CHAT_KEY_PREFIX + userId;
 
-        String messagePrefix = role == UserRole.USER ? "u::" : "a::";
-        ops.rightPush(key, messagePrefix + message + "::" + System.currentTimeMillis());
+        String messagePrefix = (role == UserRole.USER) ? "u::" : "a::";
+        String formattedMessage = messagePrefix + message + "::" + System.currentTimeMillis();
+        ops.rightPush(key, formattedMessage);
 
         redisTemplate.expire(key, Duration.ofDays(3));
-
-        Long size = ops.size(key);
-        if (size != null && size > MAX_CHAT_SIZE) {
-            ops.trim(key, -MAX_CHAT_SIZE, -1);
-        }
+        ops.trim(key, -MAX_CHAT_SIZE, -1);
     }
 }
