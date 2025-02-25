@@ -30,11 +30,10 @@ public class IngredientDocument {
     public static IngredientDocument from(Ingredient ingredient){
 
         String id = String.valueOf(ingredient.getId());
-        String name = ingredient.getCategory().name().toLowerCase();
 
         return new IngredientDocument(id,
                 ingredient.getName(),
                 ingredient.getDescription(),
-                name);
+                ingredient.getName());
     }
 }

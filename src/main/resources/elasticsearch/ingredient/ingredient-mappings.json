@@ -9,7 +9,8 @@
         "analyzer": "desc_anal"
       },
       "category": {
-        "type": "keyword"
+        "type": "keyword",
+        "normalizer": "lowercase"
       }
     }
   }

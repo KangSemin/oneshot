@@ -94,7 +94,7 @@ public class IngredientService {
 
         BoolQuery.Builder builder = QueryBuilders.bool();
 
-        if (sDto.getKeyword() != null) {
+        if (!sDto.getKeyword().isBlank()) {
             addShouldIfNotNull(builder, sDto.getKeyword(), "name", 3.0f);
             addShouldIfNotNull(builder, sDto.getKeyword(), "description", 2.0f);
         }
@@ -121,9 +121,9 @@ public class IngredientService {
         List<IngrResponseDto> ingredientList = ingredientRepository.findAllById(responseInr.keySet())
                 .stream().map(IngrResponseDto::from)
                 .sorted(Comparator.comparing(
-                        doc -> responseInr.getOrDefault(Long.valueOf(doc.getId()), 0),
+                        doc -> responseInr.get(doc.getId()),
                         Comparator.reverseOrder()))
-                .collect(Collectors.toList());
+                .toList();
 
         return ingredientList;
     }
