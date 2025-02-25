@@ -1,11 +1,20 @@
 package salute.oneshot.domain.cocktail.service;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
+import co.elastic.clients.elasticsearch._types.Script;
+import co.elastic.clients.elasticsearch._types.Script.Builder;
+import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery;
+import co.elastic.clients.elasticsearch._types.query_dsl.QueryBuilders;
+import co.elastic.clients.elasticsearch._types.query_dsl.TermsSetQuery;
 import co.elastic.clients.elasticsearch.core.DeleteRequest;
+import co.elastic.clients.elasticsearch.core.SearchRequest;
+import co.elastic.clients.elasticsearch.core.SearchResponse;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +44,7 @@ import salute.oneshot.domain.cocktail.repository.CocktailIngredientRepository;
 import salute.oneshot.domain.cocktail.repository.CocktailRepository;
 import salute.oneshot.domain.common.dto.error.ErrorCode;
 import salute.oneshot.domain.ingredient.entity.Ingredient;
+import salute.oneshot.domain.ingredient.entity.IngredientCategory;
 import salute.oneshot.domain.ingredient.repository.IngredientRepository;
 import salute.oneshot.domain.user.entity.User;
 import salute.oneshot.domain.user.entity.UserRole;
@@ -46,6 +56,9 @@ import salute.oneshot.global.exception.UnauthorizedException;
 @Slf4j
 @RequiredArgsConstructor
 public class CocktailService {
+
+    private static final String COCKTAIL_INDEX = "cocktails";
+    private static final String INGR_FIELD = "ingredients";
 
     private final CocktailRepository cocktailRepository;
     private final UserRepository userRepository;
@@ -86,14 +99,46 @@ public class CocktailService {
     }
 
     @Transactional(readOnly = true)
-    public Page<CocktailResponseDto> findCocktailsByIngr(SearchCocktailSDto sDto) {
+    public Page<CocktailResponseDto> findCocktailsByIngr(SearchCocktailSDto sDto)
+        throws IOException {
 
         Pageable pageable = PageRequest.of(sDto.getPage() - 1, sDto.getSize());
 
         List<Ingredient> ingredientList = ingredientRepository.findAllById(sDto.getIngredientIds());
 
-        Page<Cocktail> cocktailPage = cocktailRepository.searchCocktailsByIngredients(
-            ingredientList, pageable);
+        Set<String> terms = new HashSet<>();
+        ingredientList.forEach(
+            ingr -> {
+                terms.add(ingr.getName());
+                IngredientCategory category = ingr.getCategory();
+                if (!category.equals(IngredientCategory.OTHER)) {
+                    terms.add(category.toString());
+                }
+            }
+        );
+
+
+
+        BoolQuery.Builder builder = QueryBuilders.bool();
+        Script script = new Builder().source("doc['ingredients'].size()").build();
+
+        TermsSetQuery queryBuilder = QueryBuilders.termsSet().field(INGR_FIELD).terms(new ArrayList<>(terms))
+            .minimumShouldMatchScript(script).build();
+
+        SearchRequest searchRequest = new SearchRequest.Builder()
+            .index(COCKTAIL_INDEX)
+            .query(q -> q.bool(builder.filter(queryBuilder._toQuery()).build())).build();
+
+        SearchResponse<CocktailDocument> response = client.search(searchRequest,
+            CocktailDocument.class);
+
+        List<Long> responseList = response.hits().hits().stream()
+            .map(h -> {
+            assert h.source() != null;
+            return Long.parseLong(h.source().getId());
+        }).toList();
+
+        Page<Cocktail> cocktailPage = cocktailRepository.findAllById(responseList, pageable);
 
         return cocktailPage.map(CocktailResponseDto::from);
 

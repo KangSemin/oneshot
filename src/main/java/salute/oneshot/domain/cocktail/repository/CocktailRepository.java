@@ -2,6 +2,7 @@ package salute.oneshot.domain.cocktail.repository;
 
 
 import io.lettuce.core.dynamic.annotation.Param;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -31,5 +32,14 @@ public interface CocktailRepository extends JpaRepository<Cocktail, Long> , Cock
         AND (:keyword IS NULL OR c.name LIKE CONCAT('%', :keyword ,'%') )
         """)
     Page<Cocktail> findCocktails(Pageable pageable, @Param("keyword") String keyword, @Param("type") RecipeType type);
+
+    @Query("""
+        SELECT c FROM Cocktail c
+        LEFT JOIN FETCH c.user
+        LEFT JOIN FETCH c.ingredientList ci
+        LEFT JOIN FETCH ci.ingredient
+        WHERE c.id in :ids
+        """)
+    Page<Cocktail> findAllById(List<Long> ids, Pageable pageable);
 
 }
