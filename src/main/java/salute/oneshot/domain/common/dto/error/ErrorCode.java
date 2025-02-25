@@ -76,6 +76,25 @@ public enum ErrorCode {
     SAME_STATUS_UPDATE(HttpStatus.BAD_REQUEST, "이미 해당 배송 상태입니다"),
     INVALID_STATUS_CHANGE(HttpStatus.BAD_REQUEST, "유효하지 않은 배송 상태 변경입니다"),
 
+    // 배너 관련 익셉션
+    BANNER_NOT_FOUND(HttpStatus.NOT_FOUND, "배너가 존재하지 않습니다."),
+
+    // 쿠폰 관련 익셉션
+    COUPON_NOT_FOUND(HttpStatus.NOT_FOUND, "쿠폰이 존재하지 않습니다"),
+    INVALID_COUPON_STATUS(HttpStatus.BAD_REQUEST, "유효하지 않은 쿠폰 상태입니다."),
+    INVALID_USER_COUPON_STATUS(HttpStatus.BAD_REQUEST, "유효하지 않은 유저쿠폰 상태입니다."),
+    VALID_DAYS_REQUIRED(HttpStatus.BAD_REQUEST, "유효 기간을 입력해주세요."),
+    VALID_DAYS_NOT_ALLOWED(HttpStatus.BAD_REQUEST, "만료 기간이 없는 쿠폰입니다."),
+    EXPIRED_COUPON(HttpStatus.BAD_REQUEST, "만료된 쿠폰입니다."),
+
+    // 이벤트 관련 익셉션
+    EVENT_NOT_FOUND(HttpStatus.NOT_FOUND, "이벤트가 존재하지 않습니다."),
+    INVALID_EVENT_STATUS(HttpStatus.BAD_REQUEST, "유효하지 않은 이벤트 상태입니다."),
+    EXPIRED_EVENT(HttpStatus.BAD_REQUEST, "이벤트 종료일이 현재 시간보다 이전입니다."),
+    INVALID_EVENT_PERIOD(HttpStatus.BAD_REQUEST, "이벤트 시작일이 종료일보다 이후입니다."),
+    CPN_EXPIRES_BEFORE_EVENT(HttpStatus.BAD_REQUEST, "쿠폰이 이벤트 종료일보다 먼저 만료됩니다."),
+    INVALID_DATETIME(HttpStatus.BAD_REQUEST, "유효하지 않은 날짜 또는 시간 형식입니다."),
+
     // 인가 관련 익셉션
     FORBIDDEN_ACCESS(HttpStatus.FORBIDDEN, "접근 권한이 없습니다."),
 
