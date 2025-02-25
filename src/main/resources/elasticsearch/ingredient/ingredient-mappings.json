@@ -1,0 +1,15 @@
+{
+    "properties": {
+      "name": {
+        "type": "text",
+        "analyzer": "name_anal"
+      },
+      "description": {
+        "type": "text",
+        "analyzer": "desc_anal"
+      },
+      "category": {
+        "type": "keyword"
+      }
+    }
+  }
