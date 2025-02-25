@@ -43,6 +43,7 @@ public class OrderPaymentFacade {
         paymentService.cancelPayment("구매자가 주문을 취소했습니다.");
     }
 
+    @Transactional
     public GetOrderDetailsResponseDto getOrderDetails(GetOrderDetailsSDto sDto) {
         return orderService.getOrderDetails(sDto);
     }

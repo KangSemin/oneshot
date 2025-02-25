@@ -3,6 +3,7 @@ package salute.oneshot.global.security.jwt;
 import io.jsonwebtoken.*;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
@@ -12,7 +13,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 import salute.oneshot.domain.common.dto.error.ErrorCode;
 import salute.oneshot.domain.user.entity.UserRole;
@@ -20,6 +20,8 @@ import salute.oneshot.global.security.SecurityConst;
 import salute.oneshot.global.security.service.CustomUserDetailsService;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Optional;
 
 @Slf4j
 @Component
@@ -35,14 +37,17 @@ public class JwtFilter extends OncePerRequestFilter {
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain) throws ServletException, IOException {
 
-        String authorizationHeader = request.getHeader(SecurityConst.AUTHORIZATION_HEADER);
-        if (!StringUtils.hasText(authorizationHeader)) {
+        String token =
+                Optional.ofNullable(request.getHeader(SecurityConst.AUTHORIZATION_HEADER))
+                .map(jwtProvider::extractToken)
+                .orElseGet(() -> getTokenFromCookie(request));
+
+        if (token == null) {
             filterChain.doFilter(request, response);
             return;
         }
 
         try {
-            String token = jwtProvider.extractToken(authorizationHeader);
             setAuthentication(token);
             filterChain.doFilter(request, response);
 
@@ -72,4 +77,12 @@ public class JwtFilter extends OncePerRequestFilter {
         Authentication authentication = createAuthentication(claims);
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }
+
+    private String getTokenFromCookie(HttpServletRequest request) {
+        return Arrays.stream(Optional.ofNullable(request.getCookies()).orElse(new Cookie[0]))
+                .filter(c -> c.getName().equals("accessToken"))
+                .findFirst()
+                .map(Cookie::getValue)
+                .orElse(null);
+        }
 }
