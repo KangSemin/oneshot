@@ -12,7 +12,7 @@ import org.springframework.security.messaging.access.intercept.MessageMatcherDel
 
 @Configuration
 @EnableWebSocketSecurity
-public class SecurityWebSocketConfig {
+public class WebSocketSecurityConfig {
 
     @Bean
     AuthorizationManager<Message<?>> messageAuthorizationManager(MessageMatcherDelegatingAuthorizationManager.Builder messages) {
@@ -32,7 +32,6 @@ public class SecurityWebSocketConfig {
     @Bean(name = "csrfChannelInterceptor")
     ChannelInterceptor csrfChannelInterceptor() {
         return new ChannelInterceptor() {
-
             @Override
             public Message<?> preSend(Message<?> message, MessageChannel channel) {
                 return message;
