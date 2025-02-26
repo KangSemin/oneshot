@@ -9,6 +9,7 @@ import co.elastic.clients.elasticsearch._types.query_dsl.TermsSetQuery;
 import co.elastic.clients.elasticsearch.core.DeleteRequest;
 import co.elastic.clients.elasticsearch.core.SearchRequest;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
+import com.querydsl.core.BooleanBuilder;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -17,6 +18,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CachePut;
@@ -99,49 +101,43 @@ public class CocktailService {
     }
 
     @Transactional(readOnly = true)
-    public Page<CocktailResponseDto> findCocktailsByIngr(SearchCocktailSDto sDto)
-        throws IOException {
 
-        Pageable pageable = PageRequest.of(sDto.getPage() - 1, sDto.getSize());
+        public Page<CocktailResponseDto> findCocktailsByIngr(SearchCocktailSDto sDto)
+            throws IOException {
 
-        List<Ingredient> ingredientList = ingredientRepository.findAllById(sDto.getIngredientIds());
+            Pageable pageable = PageRequest.of(sDto.getPage() - 1, sDto.getSize());
 
-        Set<String> terms = new HashSet<>();
-        ingredientList.forEach(
-            ingr -> {
-                terms.add(ingr.getName());
-                IngredientCategory category = ingr.getCategory();
-                if (!category.equals(IngredientCategory.OTHER)) {
-                    terms.add(category.toString());
-                }
-            }
-        );
+            List<Ingredient> ingredientList = ingredientRepository.findAllById(sDto.getIngredientIds());
 
+            Set<String> termSet = ingredientList.stream()
+                .flatMap(ingr -> ingr.getCategory().equals(IngredientCategory.OTHER)
+                    ? Stream.of(ingr.getName())
+                    : Stream.of(ingr.getName(), ingr.getCategory().toString()))
+                .collect(Collectors.toSet());
 
+            Script script = new Builder().source("doc['ingredients'].size()").build();
 
-        BoolQuery.Builder builder = QueryBuilders.bool();
-        Script script = new Builder().source("doc['ingredients'].size()").build();
+            TermsSetQuery termsSetQuery = QueryBuilders.termsSet().field(INGR_FIELD)
+                .terms(new ArrayList<>(termSet))
+                .minimumShouldMatchScript(script).build();
 
-        TermsSetQuery queryBuilder = QueryBuilders.termsSet().field(INGR_FIELD).terms(new ArrayList<>(terms))
-            .minimumShouldMatchScript(script).build();
+            BoolQuery.Builder queryBuilder = QueryBuilders.bool();
+            queryBuilder.filter(termsSetQuery._toQuery());
 
-        SearchRequest searchRequest = new SearchRequest.Builder()
-            .index(COCKTAIL_INDEX)
-            .query(q -> q.bool(builder.filter(queryBuilder._toQuery()).build())).build();
+            SearchRequest searchRequest = new SearchRequest.Builder()
+                .index(COCKTAIL_INDEX)
+                .query(q -> q.bool(queryBuilder.build())).build();
 
-        SearchResponse<CocktailDocument> response = client.search(searchRequest,
-            CocktailDocument.class);
+            SearchResponse<CocktailDocument> response = client.search(searchRequest,
+                CocktailDocument.class);
 
-        List<Long> responseList = response.hits().hits().stream()
-            .map(h -> {
-            assert h.source() != null;
-            return Long.parseLong(h.source().getId());
-        }).toList();
+            List<Long> cocktailIds = response.hits().hits().stream()
+                .map(hit -> Long.parseLong(hit.source().getId()))
+                .toList();
 
-        Page<Cocktail> cocktailPage = cocktailRepository.findAllById(responseList, pageable);
+            Page<Cocktail> cocktailPage = cocktailRepository.findAllById(cocktailIds, pageable);
 
-        return cocktailPage.map(CocktailResponseDto::from);
-
+            return cocktailPage.map(CocktailResponseDto::from);
     }
 
     @Transactional
