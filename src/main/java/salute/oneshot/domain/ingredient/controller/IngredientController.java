@@ -22,11 +22,13 @@ import salute.oneshot.domain.ingredient.dto.request.CreateIngrRequestDto;
 import salute.oneshot.domain.ingredient.dto.request.UpdateIngrRequestDto;
 import salute.oneshot.domain.ingredient.dto.response.IngrResponseDto;
 import salute.oneshot.domain.ingredient.dto.service.CreateIngrSDto;
+import salute.oneshot.domain.ingredient.dto.service.SearchIngrSDto;
 import salute.oneshot.domain.ingredient.dto.service.UpdateIngrSDto;
 import salute.oneshot.domain.ingredient.entity.IngredientCategory;
 import salute.oneshot.domain.ingredient.service.IngredientService;
 
 import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/ingredients")
@@ -68,6 +70,18 @@ public class IngredientController {
 
         return ResponseEntity.ok(
             ApiResponse.success(ApiResponseConst.GET_INGR_SUCCESS, responseDto));
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<ApiResponse<List<IngrResponseDto>>> getIngredientByCondition(@RequestParam(name = "keyword", required = false)String keyword,
+                                                                                       @RequestParam(name = "category", required = false)String category,
+                                                                                       @RequestParam(name = "size", defaultValue = "10") int size,
+                                                                                       @RequestParam(name = "page", defaultValue = "1") int page)throws IOException{
+        Pageable pageable = PageRequest.of(page - 1, size);
+        SearchIngrSDto sDto = SearchIngrSDto.of(keyword, category, pageable);
+        List<IngrResponseDto> responseDtoPage = ingredientService.searchByCondition(sDto);
+
+        return ResponseEntity.ok(ApiResponse.success(ApiResponseConst.GET_INGR_LIST_SUCCESS, responseDtoPage));
     }
 
 

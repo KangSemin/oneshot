@@ -94,4 +94,23 @@ public class ApiResponseConst {
     public static final String ADD_DELIVERY_SUCCESS = "배송 정보 등록이 완료되었습니다.";
     public static final String GET_DELIVERY_SUCCESS = "배송 정보 조회가 완료되었습니다.";
     public static final String UPDATE_DELIVERY_SUCCESS = "배송 정보 수정이 완료되었습니다.";
+
+    // 배너 관련 메시지
+    public static final String ADD_BANNER_SUCCESS = "배너 등록이 완료되었습니다.";
+    public static final String UPDATE_BANNER_SUCCESS = "배너 수정이 완료되었습니다.";
+    public static final String DELETE_BANNER_SUCCESS = "배너 삭제가 완료되었습니다.";
+    public static final String GET_BANNER_SUCCESS = "배너 조회가 완료되었습니다.";
+
+    // 쿠폰 관련 메시지
+    public static final String ADD_CPN_SUCCESS = "쿠폰 등록이 완료되었습니다.";
+    public static final String UPDATE_CPN_SUCCESS = "쿠폰 수정이 완료되었습니다.";
+    public static final String DELETE_CPN_SUCCESS = "쿠폰 삭제가 완료되었습니다.";
+    public static final String ADD_USER_CPN_SUCCESS = "쿠폰 지급이 완료되었습니다.";
+    public static final String USE_USER_CPN_SUCCESS = "쿠폰 사용이 완료되었습니다.";
+    public static final String GET_CPN_SUCCESS = "쿠폰 조회가 완료되었습니다.";
+    public static final String GET_CPN_LIST_SUCCESS = "쿠폰 목록 조회가 완료되었습니다.";
+
+    public static final String ADD_EVENT_SUCCESS = "이벤트 등록이 완료되었습니다.";
+    public static final String UPDATE_EVENT_SUCCESS = "이벤트 수정이 완료되었습니다.";
+    public static final String DELETE_EVENT_SUCCESS = "이벤트 삭제가 완료되었습니다.";
 }
