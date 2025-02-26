@@ -41,4 +41,17 @@ public class RedisConfig {
 
         return redisTemplate;
     }
+
+//    @Bean
+//    public MessageListenerAdapter messageListener(MessageSubscriber subscriber) {
+//        return new MessageListenerAdapter(subscriber, "onMessage");
+//    }
+//
+//    @Bean
+//    public RedisMessageListenerContainer redisContainer(RedisConnectionFactory connectionFactory, MessageListenerAdapter listenerAdapter) {
+//        RedisMessageListenerContainer container = new RedisMessageListenerContainer();
+//        container.setConnectionFactory(connectionFactory);
+//        container.addMessageListener(listenerAdapter, new ChannelTopic("notification"));
+//        return container;
+//    }
 }
