@@ -1,6 +1,7 @@
 package salute.oneshot.domain.coupon.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import salute.oneshot.domain.common.dto.error.ErrorCode;
@@ -48,7 +49,7 @@ public class CouponService {
     }
 
     @Transactional
-    public UserCpnBriefResponseDto creatUserCoupon(CreateUserCpnSDto serviceDto) {
+    public UserCpnBriefResponseDto grantUserCoupon(CreateUserCpnSDto serviceDto) {
         User user = userRepository
                 .getReferenceById(serviceDto.getUserId());
         Coupon coupon = couponRepository
@@ -68,6 +69,49 @@ public class CouponService {
                         new NotFoundException(ErrorCode.COUPON_NOT_FOUND));
 
         userCoupon.useUserCoupon();
+        return UserCpnDetailResponseDto.of(userCoupon);
+    }
+
+    @Transactional(readOnly = true)
+    public CpnPageResponseDto getCoupons(GetCpnSDto serviceDto) {
+        Page<Coupon> coupons = couponRepository.findCoupons(
+                serviceDto.getStarTime(),
+                serviceDto.getEndTime(),
+                serviceDto.getPageable());
+
+        Page<CpnBriefResponseDto> couponPage =
+                coupons.map(CpnBriefResponseDto::from);
+
+        return CpnPageResponseDto.from(couponPage);
+    }
+
+    @Transactional(readOnly = true)
+    public CpnDetailResponseDto getCoupon(Long couponId) {
+        Coupon coupon = getCouponById(couponId);
+
+        return CpnDetailResponseDto.from(coupon);
+    }
+
+    @Transactional(readOnly = true)
+    public UserCpnPageResponseDto getUserCoupons(GetUserCpnSDto serviceDto) {
+        Page<UserCoupon> userCoupons = userCouponRepository.findUserCoupons(
+                serviceDto.getUserId(),
+                serviceDto.getStatus(),
+                serviceDto.getPageable());
+
+        Page<UserCpnBriefResponseDto> UserCouponPage =
+                userCoupons.map(UserCpnBriefResponseDto::from);
+
+        return UserCpnPageResponseDto.from(UserCouponPage);
+    }
+
+    @Transactional(readOnly = true)
+    public UserCpnDetailResponseDto getUserCoupon(UserCpnSDto serviceDto) {
+        UserCoupon userCoupon = userCouponRepository.findByIdAndUserId(
+                        serviceDto.getUserCouponId(),
+                        serviceDto.getUserId())
+                .orElseThrow(() -> new NotFoundException(ErrorCode.COUPON_NOT_FOUND));
+
         return UserCpnDetailResponseDto.of(userCoupon);
     }
 

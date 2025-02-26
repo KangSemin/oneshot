@@ -79,14 +79,14 @@ public class AdminCouponController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/{couponId}/users")
-    public ResponseEntity<ApiResponse<UserCpnBriefResponseDto>> creatUserCoupon(
+    public ResponseEntity<ApiResponse<UserCpnBriefResponseDto>> grantUserCoupon(
             @PathVariable Long couponId,
             @RequestBody UserCpnRequestDto requestDto
     ) {
         CreateUserCpnSDto serviceDto =
                 CreateUserCpnSDto.of(couponId, requestDto);
         UserCpnBriefResponseDto responseDto =
-                couponService.creatUserCoupon(serviceDto);
+                couponService.grantUserCoupon(serviceDto);
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.success(
