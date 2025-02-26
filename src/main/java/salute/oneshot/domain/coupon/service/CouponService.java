@@ -49,7 +49,7 @@ public class CouponService {
     }
 
     @Transactional
-    public UserCpnBriefResponseDto creatUserCoupon(CreateUserCpnSDto serviceDto) {
+    public UserCpnBriefResponseDto grantUserCoupon(CreateUserCpnSDto serviceDto) {
         User user = userRepository
                 .getReferenceById(serviceDto.getUserId());
         Coupon coupon = couponRepository
