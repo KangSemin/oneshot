@@ -101,43 +101,44 @@ public class CocktailService {
     }
 
     @Transactional(readOnly = true)
+    public Page<CocktailResponseDto> findCocktailsByIngr(SearchCocktailSDto sDto)
+        throws IOException {
 
-        public Page<CocktailResponseDto> findCocktailsByIngr(SearchCocktailSDto sDto)
-            throws IOException {
+        Pageable pageable = PageRequest.of(sDto.getPage() - 1, sDto.getSize());
 
-            Pageable pageable = PageRequest.of(sDto.getPage() - 1, sDto.getSize());
+        List<Ingredient> ingredientList = ingredientRepository.findAllById(sDto.getIngredientIds());
 
-            List<Ingredient> ingredientList = ingredientRepository.findAllById(sDto.getIngredientIds());
+        Set<String> termSet = ingredientList.stream()
+            .flatMap(ingr -> ingr.getCategory().equals(IngredientCategory.OTHER)
+                ? Stream.of(ingr.getName())
+                : Stream.of(ingr.getName(), ingr.getCategory().toString()))
+            .collect(Collectors.toSet());
 
-            Set<String> termSet = ingredientList.stream()
-                .flatMap(ingr -> ingr.getCategory().equals(IngredientCategory.OTHER)
-                    ? Stream.of(ingr.getName())
-                    : Stream.of(ingr.getName(), ingr.getCategory().toString()))
-                .collect(Collectors.toSet());
+        Script script = new Builder().source("doc['ingredients'].size()").build();
 
-            Script script = new Builder().source("doc['ingredients'].size()").build();
+        TermsSetQuery termsSetQuery = QueryBuilders.termsSet().field(INGR_FIELD)
+            .terms(new ArrayList<>(termSet))
+            .minimumShouldMatchScript(script).build();
 
-            TermsSetQuery termsSetQuery = QueryBuilders.termsSet().field(INGR_FIELD)
-                .terms(new ArrayList<>(termSet))
-                .minimumShouldMatchScript(script).build();
+        BoolQuery.Builder queryBuilder = QueryBuilders.bool();
+        queryBuilder.filter(termsSetQuery._toQuery());
 
-            BoolQuery.Builder queryBuilder = QueryBuilders.bool();
-            queryBuilder.filter(termsSetQuery._toQuery());
+        SearchRequest searchRequest = new SearchRequest.Builder()
+            .index(COCKTAIL_INDEX)
+            .query(q -> q.bool(queryBuilder.build())).build();
 
-            SearchRequest searchRequest = new SearchRequest.Builder()
-                .index(COCKTAIL_INDEX)
-                .query(q -> q.bool(queryBuilder.build())).build();
+        SearchResponse<CocktailDocument> response = client.search(searchRequest,
+            CocktailDocument.class);
 
-            SearchResponse<CocktailDocument> response = client.search(searchRequest,
-                CocktailDocument.class);
+        List<Long> cocktailIds = response.hits().hits().stream()
+            .map(hit -> Long.parseLong(hit.source().getId()))
+            .toList();
 
-            List<Long> cocktailIds = response.hits().hits().stream()
-                .map(hit -> Long.parseLong(hit.source().getId()))
-                .toList();
+        Page<Cocktail> cocktailPage = cocktailRepository.findAllById(cocktailIds, pageable);
 
-            Page<Cocktail> cocktailPage = cocktailRepository.findAllById(cocktailIds, pageable);
+        return cocktailPage.map(CocktailResponseDto::from);
 
-            return cocktailPage.map(CocktailResponseDto::from);
+
     }
 
     @Transactional
