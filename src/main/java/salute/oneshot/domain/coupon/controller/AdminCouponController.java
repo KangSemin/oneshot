@@ -8,9 +8,12 @@ import org.springframework.web.bind.annotation.*;
 import salute.oneshot.domain.common.dto.success.ApiResponse;
 import salute.oneshot.domain.common.dto.success.ApiResponseConst;
 import salute.oneshot.domain.coupon.dto.request.CpnRequestDto;
+import salute.oneshot.domain.coupon.dto.request.UserCpnRequestDto;
 import salute.oneshot.domain.coupon.dto.response.CpnBriefResponseDto;
 import salute.oneshot.domain.coupon.dto.response.CpnDetailResponseDto;
+import salute.oneshot.domain.coupon.dto.response.UserCpnBriefResponseDto;
 import salute.oneshot.domain.coupon.dto.service.CreateCpnSDto;
+import salute.oneshot.domain.coupon.dto.service.CreateUserCpnSDto;
 import salute.oneshot.domain.coupon.dto.service.UpdateCpnSDto;
 import salute.oneshot.domain.coupon.service.CouponService;
 
@@ -72,5 +75,22 @@ public class AdminCouponController {
                 .body(ApiResponse.success(
                         ApiResponseConst.DELETE_CPN_SUCCESS,
                         deletedId));
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping("/{couponId}/users")
+    public ResponseEntity<ApiResponse<UserCpnBriefResponseDto>> creatUserCoupon(
+            @PathVariable Long couponId,
+            @RequestBody UserCpnRequestDto requestDto
+    ) {
+        CreateUserCpnSDto serviceDto =
+                CreateUserCpnSDto.of(couponId, requestDto);
+        UserCpnBriefResponseDto responseDto =
+                couponService.creatUserCoupon(serviceDto);
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponse.success(
+                        ApiResponseConst.ADD_USER_CPN_SUCCESS,
+                        responseDto));
     }
 }
