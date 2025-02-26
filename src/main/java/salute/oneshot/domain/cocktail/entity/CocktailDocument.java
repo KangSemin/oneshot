@@ -13,7 +13,6 @@ import org.springframework.data.elasticsearch.annotations.Mapping;
 import org.springframework.data.elasticsearch.annotations.Setting;
 import salute.oneshot.domain.ingredient.entity.Ingredient;
 
-
 @Getter
 @NoArgsConstructor
 @Document(indexName = "cocktails")
