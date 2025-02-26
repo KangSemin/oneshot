@@ -5,7 +5,9 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import salute.oneshot.domain.common.dto.entity.BaseEntity;
+import salute.oneshot.domain.common.dto.error.ErrorCode;
 import salute.oneshot.domain.user.entity.User;
+import salute.oneshot.global.exception.InvalidException;
 
 import java.time.LocalDateTime;
 
@@ -48,5 +50,24 @@ public class UserCoupon extends BaseEntity {
         return new UserCoupon(
                 user,
                 coupon);
+    }
+
+    public void useUserCoupon() {
+        if (LocalDateTime.now().isAfter(this.coupon.getEndTime())) {
+            expire();
+            throw new InvalidException(ErrorCode.EXPIRED_COUPON);
+        }
+
+        if (!this.status.equals(UserCouponStatus.ISSUED)) {
+            throw new InvalidException(ErrorCode.INVALID_USER_COUPON_STATUS);
+        }
+
+        this.usedTime = LocalDateTime.now();
+        this.status = UserCouponStatus.USED;
+    }
+
+
+    public void expire() {
+        this.status = UserCouponStatus.EXPIRED;
     }
 }

@@ -12,6 +12,7 @@ import salute.oneshot.domain.coupon.repository.CouponRepository;
 import salute.oneshot.domain.coupon.repository.UserCouponRepository;
 import salute.oneshot.domain.user.entity.User;
 import salute.oneshot.domain.user.repository.UserRepository;
+import salute.oneshot.global.exception.InvalidException;
 import salute.oneshot.global.exception.NotFoundException;
 
 @Service
@@ -56,6 +57,18 @@ public class CouponService {
 
         userCouponRepository.save(userCoupon);
         return UserCpnBriefResponseDto.from(userCoupon);
+    }
+
+    @Transactional(noRollbackFor = InvalidException.class)
+    public UserCpnDetailResponseDto useUserCoupon(UserCpnSDto serviceDto) {
+        UserCoupon userCoupon = userCouponRepository.findByIdAndUserId(
+                        serviceDto.getUserCouponId(),
+                        serviceDto.getUserId())
+                .orElseThrow(() ->
+                        new NotFoundException(ErrorCode.COUPON_NOT_FOUND));
+
+        userCoupon.useUserCoupon();
+        return UserCpnDetailResponseDto.of(userCoupon);
     }
 
     private Coupon getCouponById(Long couponId) {
