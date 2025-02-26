@@ -92,6 +92,29 @@ public class CouponService {
         return CpnDetailResponseDto.from(coupon);
     }
 
+    @Transactional(readOnly = true)
+    public UserCpnPageResponseDto getUserCoupons(GetUserCpnSDto serviceDto) {
+        Page<UserCoupon> userCoupons = userCouponRepository.findUserCoupons(
+                serviceDto.getUserId(),
+                serviceDto.getStatus(),
+                serviceDto.getPageable());
+
+        Page<UserCpnBriefResponseDto> UserCouponPage =
+                userCoupons.map(UserCpnBriefResponseDto::from);
+
+        return UserCpnPageResponseDto.from(UserCouponPage);
+    }
+
+    @Transactional(readOnly = true)
+    public UserCpnDetailResponseDto getUserCoupon(UserCpnSDto serviceDto) {
+        UserCoupon userCoupon = userCouponRepository.findByIdAndUserId(
+                        serviceDto.getUserCouponId(),
+                        serviceDto.getUserId())
+                .orElseThrow(() -> new NotFoundException(ErrorCode.COUPON_NOT_FOUND));
+
+        return UserCpnDetailResponseDto.of(userCoupon);
+    }
+
     private Coupon getCouponById(Long couponId) {
         return couponRepository.findById(couponId)
                 .orElseThrow(() ->
