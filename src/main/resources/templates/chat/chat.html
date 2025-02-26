@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>User Chat</title>
@@ -11,13 +11,20 @@
 <div id="chat-log"></div>
 <div>
     <input type="text" id="message" placeholder="메시지 입력" />
-    <button onclick="sendMessage()">어드민에게 전송</button>
+    <button id="sendButton">어드민에게 전송</button>
 </div>
 
+<div id="data"
+     th:data-user-id="${userId}"></div>
+
 <script th:nonce="${scriptNonce}">
+    const dataElement = document.getElementById('data');
+    const targetUser = dataElement.getAttribute('data-user-id');
+
     let stompClient = null;
     // 본인 유저의 식별자 (서버 Principal로 설정됨)
-    const userId = `${userId}`;
+    // TODO: userId 필요없나?
+    const userId = targetUser;
 
     function connect() {
         const socket = new SockJS('/ws');
@@ -26,7 +33,7 @@
             console.log('Connected: ' + frame);
             // 유저는 자신의 전용 채널을 구독 (/user/queue/chat)
             // stompClient.subscribe('/user/queue/chat', function(messageOutput) {
-            stompClient.subscribe('/user/queue/chat/', function(messageOutput) {
+            stompClient.subscribe('/user/queue/chat', function(messageOutput) {
                 // showMessage(JSON.parse(messageOutput.body));
                 showMessage(messageOutput.body, "admin");
             });
@@ -52,7 +59,11 @@
         chatLog.innerHTML += `<div><b>${sender}</b>: ${message}</div>`;
     }
 
-    connect();
+
+    document.addEventListener('DOMContentLoaded', function () {
+        connect();
+        document.getElementById('sendButton').addEventListener('click', sendMessage);
+    });
 </script>
 </body>
 </html>

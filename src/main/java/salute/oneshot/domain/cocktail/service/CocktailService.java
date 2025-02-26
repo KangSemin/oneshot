@@ -1,10 +1,10 @@
 package salute.oneshot.domain.cocktail.service;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
-import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 import co.elastic.clients.elasticsearch._types.Script;
 import co.elastic.clients.elasticsearch._types.Script.Builder;
 import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery;
+import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 import co.elastic.clients.elasticsearch._types.query_dsl.QueryBuilders;
 import co.elastic.clients.elasticsearch._types.query_dsl.TermsSetQuery;
 import co.elastic.clients.elasticsearch.core.DeleteRequest;
@@ -33,11 +33,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import salute.oneshot.domain.cocktail.dto.request.IngredientRequestDto;
 import salute.oneshot.domain.cocktail.dto.response.CocktailResponseDto;
-import salute.oneshot.domain.cocktail.dto.service.CreateCocktailSDto;
-import salute.oneshot.domain.cocktail.dto.service.DeleteCocktailSDto;
-import salute.oneshot.domain.cocktail.dto.service.SearchCocktailSDto;
-import salute.oneshot.domain.cocktail.dto.service.UpdateCocktailSDto;
-import salute.oneshot.domain.cocktail.dto.service.findCocktailSDto;
+import salute.oneshot.domain.cocktail.dto.service.*;
 import salute.oneshot.domain.cocktail.entity.Cocktail;
 import salute.oneshot.domain.cocktail.entity.CocktailDocument;
 import salute.oneshot.domain.cocktail.entity.CocktailIngredient;
@@ -53,6 +49,8 @@ import salute.oneshot.domain.user.entity.UserRole;
 import salute.oneshot.domain.user.repository.UserRepository;
 import salute.oneshot.global.exception.NotFoundException;
 import salute.oneshot.global.exception.UnauthorizedException;
+
+import java.util.*;
 
 @Service
 @Slf4j
