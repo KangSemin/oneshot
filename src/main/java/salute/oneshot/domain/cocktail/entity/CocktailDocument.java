@@ -7,6 +7,7 @@ import java.util.Map;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Mapping;
 import org.springframework.data.elasticsearch.annotations.Setting;
@@ -14,6 +15,7 @@ import salute.oneshot.domain.ingredient.entity.Ingredient;
 
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor
 @Document(indexName = "cocktails")
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Setting(settingPath = "elasticsearch/cocktail/cocktail-settings.json")

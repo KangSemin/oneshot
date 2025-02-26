@@ -1,13 +1,11 @@
 {
   "index": {
-    "number_of_shards": "1",
-    "number_of_replicas": "0",
     "analysis": {
       "tokenizer": {
-        "ngram_tokenizer": {
+        "gram_tokenizer": {
           "type": "ngram",
           "min_gram": 2,
-          "max_gram": 5,
+          "max_gram": 3,
           "token_chars": [
             "letter"
           ]
@@ -21,15 +19,16 @@
             "snowball",
             "unique"
           ],
-          "tokenizer": "ngram_tokenizer"
+          "tokenizer": "gram_tokenizer"
         },
         "name_anal": {
           "filter": [
             "lowercase"
           ],
-          "tokenizer": "ngram_tokenizer"
+          "tokenizer": "gram_tokenizer"
         }
       }
     }
   }
 }
+

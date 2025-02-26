@@ -100,11 +100,12 @@ public class CocktailController {
         @RequestParam(name = "page", defaultValue = "1") int page,
         @RequestParam(name = "size", defaultValue = "10") int size,
         @RequestParam(name = "keyword", required = false) String keyword,
-        @RequestParam(name = "recipeType", required = false) Boolean recipeType
+        @RequestParam(name = "type", required = false) Boolean type,
+        @RequestParam(name = "recipe", required = false)String recipe
     )throws IOException {
         Pageable pageable = PageRequest.of(page - 1, size);
 
-        findCocktailSDto sDto = findCocktailSDto.of(pageable, keyword, recipeType);
+        findCocktailSDto sDto = findCocktailSDto.of(pageable, keyword, type, recipe);
 
         List<CocktailResponseDto> responsePage = cocktailService.searchByCondition(sDto);
 

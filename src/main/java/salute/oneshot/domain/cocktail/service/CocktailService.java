@@ -163,13 +163,14 @@ public class CocktailService {
         BoolQuery.Builder builder = QueryBuilders.bool();
 
         if (!sDto.getKeyword().isBlank()) {
-            addShouldIfNotNull(builder, sDto.getKeyword(), "name", 3.0f);
-            addShouldIfNotNull(builder, sDto.getKeyword(), "description", 2.0f);
+            addShouldIfNotNull(builder, sDto.getKeyword(), "name", 4.0f);
+            addShouldIfNotNull(builder, sDto.getKeyword(), "description", 3.0f);
+            addShouldIfNotNull(builder, sDto.getKeyword(), "recipe", 2.0f);
         }
 
-        if (sDto.getRecipeType() != null) {
+        if (sDto.getType() != null) {
             builder.should(Query.of(q -> q.match(m -> m.field("isOfficial")
-                    .query(sDto.getRecipeType()).boost(1.0f))));
+                    .query(sDto.getType()).boost(1.0f))));
         }
 
         SearchRequest searchRequest = new SearchRequest.Builder()
