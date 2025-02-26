@@ -12,11 +12,7 @@ public class findCocktailSDto {
     private String keyword;
     private String recipeType;
 
-
-
     public static findCocktailSDto of(Pageable pageable, String keyword, String recipeType){
         return new findCocktailSDto(pageable, keyword, recipeType);
     }
-
-
 }

@@ -117,7 +117,6 @@ public class IngredientService {
                         hit -> hit.score().intValue()
                 ));
 
-
         List<IngrResponseDto> ingredientList = ingredientRepository.findAllById(responseInr.keySet())
                 .stream().map(IngrResponseDto::from)
                 .sorted(Comparator.comparing(
