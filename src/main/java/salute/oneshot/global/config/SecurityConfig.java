@@ -53,13 +53,13 @@ public class SecurityConfig {
                                         .policyDirectives(
                                                 "default-src 'self'; " +     // 기본적으로 모든 리소스는 같은 출처에서만
                                                 "script-src 'self' https://t1.daumcdn.net https://spi.maps.daum.net " +
-                                                "https://js.tosspayments.com https://log.tosspayments.com 'nonce-" + nonce + "'; " +
+                                                "https://js.tosspayments.com https://log.tosspayments.com https://cdnjs.cloudflare.com 'nonce-" + nonce + "'; " +
                                                 "frame-src 'self' http://postcode.map.daum.net https://payment-gateway-sandbox.tosspayments.com; " +
                                                 "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " + // Google Fonts 스타일 시트 URL 추가
                                                 "font-src 'self' https://fonts.gstatic.com; " + // Google Fonts 폰트 도메인 추가
                                                 "img-src 'self'; " +         // 이미지 파일
                                                 "form-action 'self'; " +     // 폼 제출 대상
-                                                "connect-src 'self' https://log.tosspayments.com https://event.tosspayments.com https://apigw-sandbox.tosspayments.com;"// 네트워크 연결을 위한 'connect-src' 추가
+                                                "connect-src 'self' https://log.tosspayments.com https://event.tosspayments.com https://apigw-sandbox.tosspayments.com ws;"// 네트워크 연결을 위한 'connect-src' 추가
 
                                         ))
 

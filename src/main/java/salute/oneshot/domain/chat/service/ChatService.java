@@ -1,10 +1,11 @@
 package salute.oneshot.domain.chat.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.core.ListOperations;
-import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.*;
 import org.springframework.stereotype.Service;
+import salute.oneshot.domain.chat.dto.response.ChatPreviewResponseDto;
 import salute.oneshot.domain.chat.dto.response.FindChatResponseDto;
+import salute.oneshot.domain.chat.dto.response.FindChatsResponseDto;
 import salute.oneshot.domain.chat.dto.response.MessageResponseDto;
 import salute.oneshot.domain.user.entity.UserRole;
 
@@ -41,7 +42,7 @@ public class ChatService {
         return FindChatResponseDto.from(messageList);
     }
 
-    public void processMessageFromClient(String message, Long userId, UserRole role) {
+    public void processMessageFromClient(String message, String userId, UserRole role) {
         ListOperations<String, String> ops = redisTemplate.opsForList();
         String key = CHAT_KEY_PREFIX + userId;
 
@@ -51,5 +52,41 @@ public class ChatService {
 
         redisTemplate.expire(key, Duration.ofDays(3));
         ops.trim(key, -MAX_CHAT_SIZE, -1);
+    }
+
+    public FindChatsResponseDto findChats(String cursor, int limit) {
+        // 커서가 없으면 "0"으로 설정 (SCAN 시작)
+        String scanCursor = (cursor == null || cursor.isEmpty()) ? "0" : cursor;
+
+        return redisTemplate.execute((RedisCallback<FindChatsResponseDto>) connection -> {
+            List<ChatPreviewResponseDto> chatList = new ArrayList<>();
+
+            // Lettuce 환경: Spring Data Redis의 scan 사용 (Cursor<byte[]>에는 native 커서가 없음)
+            ScanOptions options = ScanOptions.scanOptions().match("chat::*").count(limit).build();
+            Cursor<byte[]> cursorObj = connection.scan(options);
+
+            // limit 개수만큼 키를 읽음
+            while (cursorObj.hasNext() && chatList.size() < limit) {
+                byte[] keyBytes = cursorObj.next();
+                String key = new String(keyBytes);
+                // 키 형식: "chat::{userId}" -> "::" 기준 분리
+                String[] parts = key.split("::");
+                if (parts.length < 2) continue;
+                String userId = parts[1];
+                // 해당 키의 리스트에서 마지막 요소를 가져옴
+                String lastMessage = redisTemplate.opsForList().index(key, -1);
+                chatList.add(ChatPreviewResponseDto.of(userId, lastMessage));
+            }
+            // Lettuce Cursor는 native 커서를 제공하지 않으므로, 추가 데이터가 있는지 여부를 별도로 처리해야 합니다.
+            // 여기서는 단순히 다음 커서를 빈 문자열("")로 설정합니다.
+            String nextCursor = "";
+
+            try {
+                cursorObj.close();
+            } catch (Exception e) {
+                // 예외는 로깅 또는 무시
+            }
+            return FindChatsResponseDto.of(chatList, nextCursor);
+        });
     }
 }
