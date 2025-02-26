@@ -1,6 +1,7 @@
 package salute.oneshot.domain.coupon.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import salute.oneshot.domain.common.dto.error.ErrorCode;
@@ -69,6 +70,26 @@ public class CouponService {
 
         userCoupon.useUserCoupon();
         return UserCpnDetailResponseDto.of(userCoupon);
+    }
+
+    @Transactional(readOnly = true)
+    public CpnPageResponseDto getCoupons(GetCpnSDto serviceDto) {
+        Page<Coupon> coupons = couponRepository.findCoupons(
+                serviceDto.getStarTime(),
+                serviceDto.getEndTime(),
+                serviceDto.getPageable());
+
+        Page<CpnBriefResponseDto> couponPage =
+                coupons.map(CpnBriefResponseDto::from);
+
+        return CpnPageResponseDto.from(couponPage);
+    }
+
+    @Transactional(readOnly = true)
+    public CpnDetailResponseDto getCoupon(Long couponId) {
+        Coupon coupon = getCouponById(couponId);
+
+        return CpnDetailResponseDto.from(coupon);
     }
 
     private Coupon getCouponById(Long couponId) {
