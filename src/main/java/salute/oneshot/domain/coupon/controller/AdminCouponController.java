@@ -59,4 +59,18 @@ public class AdminCouponController {
                         ApiResponseConst.UPDATE_CPN_SUCCESS,
                         responseDto));
     }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @DeleteMapping("/{couponId}")
+    public ResponseEntity<ApiResponse<Long>> deleteCoupon(
+            @PathVariable Long couponId
+    ) {
+        Long deletedId =
+                couponService.deleteCoupon(couponId);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ApiResponse.success(
+                        ApiResponseConst.DELETE_CPN_SUCCESS,
+                        deletedId));
+    }
 }

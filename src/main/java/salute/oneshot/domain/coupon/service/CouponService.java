@@ -8,7 +8,6 @@ import salute.oneshot.domain.coupon.dto.response.*;
 import salute.oneshot.domain.coupon.dto.service.*;
 import salute.oneshot.domain.coupon.entity.Coupon;
 import salute.oneshot.domain.coupon.repository.CouponRepository;
-import salute.oneshot.domain.coupon.repository.UserCouponRepository;
 import salute.oneshot.global.exception.NotFoundException;
 
 @Service
@@ -16,8 +15,6 @@ import salute.oneshot.global.exception.NotFoundException;
 public class CouponService {
 
     private final CouponRepository couponRepository;
-    private final UserCouponRepository userCouponRepository;
-
 
     @Transactional
     public CpnBriefResponseDto createCoupon(CreateCpnSDto serviceDto) {
@@ -33,6 +30,14 @@ public class CouponService {
         coupon.updateCoupon(serviceDto);
 
         return CpnDetailResponseDto.from(coupon);
+    }
+
+    @Transactional
+    public Long deleteCoupon(Long couponId) {
+        if (couponRepository.deleteCouponById(couponId) == 1) {
+            return couponId;
+        }
+        throw new NotFoundException(ErrorCode.COUPON_NOT_FOUND);
     }
 
     private Coupon getCouponById(Long couponId) {
