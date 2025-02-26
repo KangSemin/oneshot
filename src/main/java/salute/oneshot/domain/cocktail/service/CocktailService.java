@@ -1,20 +1,26 @@
 package salute.oneshot.domain.cocktail.service;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
-import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery;
 import co.elastic.clients.elasticsearch._types.query_dsl.Query;
+import co.elastic.clients.elasticsearch._types.Script;
+import co.elastic.clients.elasticsearch._types.Script.Builder;
+import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery;
 import co.elastic.clients.elasticsearch._types.query_dsl.QueryBuilders;
+import co.elastic.clients.elasticsearch._types.query_dsl.TermsSetQuery;
 import co.elastic.clients.elasticsearch.core.DeleteRequest;
+import co.elastic.clients.elasticsearch.core.SearchRequest;
+import co.elastic.clients.elasticsearch.core.SearchResponse;
+import com.querydsl.core.BooleanBuilder;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
-import co.elastic.clients.elasticsearch.core.SearchRequest;
-import co.elastic.clients.elasticsearch.core.SearchResponse;
+import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CachePut;
@@ -43,6 +49,7 @@ import salute.oneshot.domain.cocktail.repository.CocktailRepository;
 import salute.oneshot.domain.common.dto.error.ErrorCode;
 import salute.oneshot.domain.ingredient.dto.response.IngrResponseDto;
 import salute.oneshot.domain.ingredient.entity.Ingredient;
+import salute.oneshot.domain.ingredient.entity.IngredientCategory;
 import salute.oneshot.domain.ingredient.repository.IngredientRepository;
 import salute.oneshot.domain.user.entity.User;
 import salute.oneshot.domain.user.entity.UserRole;
@@ -54,6 +61,9 @@ import salute.oneshot.global.exception.UnauthorizedException;
 @Slf4j
 @RequiredArgsConstructor
 public class CocktailService {
+
+    private static final String COCKTAIL_INDEX = "cocktails";
+    private static final String INGR_FIELD = "ingredients";
 
     private final CocktailRepository cocktailRepository;
     private final UserRepository userRepository;
@@ -96,16 +106,43 @@ public class CocktailService {
     }
 
     @Transactional(readOnly = true)
-    public Page<CocktailResponseDto> findCocktailsByIngr(SearchCocktailSDto sDto) {
+    public Page<CocktailResponseDto> findCocktailsByIngr(SearchCocktailSDto sDto)
+        throws IOException {
 
         Pageable pageable = PageRequest.of(sDto.getPage() - 1, sDto.getSize());
 
         List<Ingredient> ingredientList = ingredientRepository.findAllById(sDto.getIngredientIds());
 
-        Page<Cocktail> cocktailPage = cocktailRepository.searchCocktailsByIngredients(
-            ingredientList, pageable);
+        Set<String> termSet = ingredientList.stream()
+            .flatMap(ingr -> ingr.getCategory().equals(IngredientCategory.OTHER)
+                ? Stream.of(ingr.getName())
+                : Stream.of(ingr.getName(), ingr.getCategory().toString()))
+            .collect(Collectors.toSet());
+
+        Script script = new Builder().source("doc['ingredients'].size()").build();
+
+        TermsSetQuery termsSetQuery = QueryBuilders.termsSet().field(INGR_FIELD)
+            .terms(new ArrayList<>(termSet))
+            .minimumShouldMatchScript(script).build();
+
+        BoolQuery.Builder queryBuilder = QueryBuilders.bool();
+        queryBuilder.filter(termsSetQuery._toQuery());
+
+        SearchRequest searchRequest = new SearchRequest.Builder()
+            .index(COCKTAIL_INDEX)
+            .query(q -> q.bool(queryBuilder.build())).build();
+
+        SearchResponse<CocktailDocument> response = client.search(searchRequest,
+            CocktailDocument.class);
+
+        List<Long> cocktailIds = response.hits().hits().stream()
+            .map(hit -> Long.parseLong(hit.source().getId()))
+            .toList();
+
+        Page<Cocktail> cocktailPage = cocktailRepository.findAllById(cocktailIds, pageable);
 
         return cocktailPage.map(CocktailResponseDto::from);
+
 
     }
 

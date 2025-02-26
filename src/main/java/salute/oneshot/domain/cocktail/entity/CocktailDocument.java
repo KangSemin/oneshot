@@ -14,10 +14,10 @@ import org.springframework.data.elasticsearch.annotations.Setting;
 import salute.oneshot.domain.ingredient.entity.Ingredient;
 
 @Getter
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor
 @Document(indexName = "cocktails")
 @JsonIgnoreProperties(ignoreUnknown = true)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Setting(settingPath = "elasticsearch/cocktail/cocktail-settings.json")
 @Mapping(mappingPath = "elasticsearch/cocktail/cocktail-mappings.json")
 public class CocktailDocument {
@@ -31,7 +31,6 @@ public class CocktailDocument {
     private List<String> ingredients;
 
     private Boolean isOfficial;
-
 
     public static CocktailDocument from(Cocktail cocktail) {
         return new CocktailDocument(cocktail.getId().toString(),

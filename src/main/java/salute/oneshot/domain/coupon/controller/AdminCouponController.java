@@ -8,8 +8,13 @@ import org.springframework.web.bind.annotation.*;
 import salute.oneshot.domain.common.dto.success.ApiResponse;
 import salute.oneshot.domain.common.dto.success.ApiResponseConst;
 import salute.oneshot.domain.coupon.dto.request.CpnRequestDto;
+import salute.oneshot.domain.coupon.dto.request.UserCpnRequestDto;
 import salute.oneshot.domain.coupon.dto.response.CpnBriefResponseDto;
+import salute.oneshot.domain.coupon.dto.response.CpnDetailResponseDto;
+import salute.oneshot.domain.coupon.dto.response.UserCpnBriefResponseDto;
 import salute.oneshot.domain.coupon.dto.service.CreateCpnSDto;
+import salute.oneshot.domain.coupon.dto.service.CreateUserCpnSDto;
+import salute.oneshot.domain.coupon.dto.service.UpdateCpnSDto;
 import salute.oneshot.domain.coupon.service.CouponService;
 
 @RestController
@@ -38,6 +43,54 @@ public class AdminCouponController {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.success(
                         ApiResponseConst.ADD_CPN_SUCCESS,
+                        responseDto));
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PatchMapping("/{couponId}")
+    public ResponseEntity<ApiResponse<CpnDetailResponseDto>> updateCoupon(
+            @PathVariable Long couponId,
+            @RequestBody CpnRequestDto requestDto
+    ) {
+        UpdateCpnSDto serviceDto =
+                UpdateCpnSDto.of(couponId, requestDto);
+        CpnDetailResponseDto responseDto =
+                couponService.updateCoupon(serviceDto);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ApiResponse.success(
+                        ApiResponseConst.UPDATE_CPN_SUCCESS,
+                        responseDto));
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @DeleteMapping("/{couponId}")
+    public ResponseEntity<ApiResponse<Long>> deleteCoupon(
+            @PathVariable Long couponId
+    ) {
+        Long deletedId =
+                couponService.deleteCoupon(couponId);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ApiResponse.success(
+                        ApiResponseConst.DELETE_CPN_SUCCESS,
+                        deletedId));
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping("/{couponId}/users")
+    public ResponseEntity<ApiResponse<UserCpnBriefResponseDto>> grantUserCoupon(
+            @PathVariable Long couponId,
+            @RequestBody UserCpnRequestDto requestDto
+    ) {
+        CreateUserCpnSDto serviceDto =
+                CreateUserCpnSDto.of(couponId, requestDto);
+        UserCpnBriefResponseDto responseDto =
+                couponService.grantUserCoupon(serviceDto);
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponse.success(
+                        ApiResponseConst.ADD_USER_CPN_SUCCESS,
                         responseDto));
     }
 }

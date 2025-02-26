@@ -42,7 +42,7 @@
         //     content: replyMessage
         // };
         // 어드민은 /app/chat/reply/{userId}로 메시지를 전송하면 해당 유저에게 답변 전달
-        stompClient.send("/app/chat/reply/" + targetUser, {}, chatMessage);
+        stompClient.send("/app/chat/sendToUser/" + targetUser, {}, chatMessage);
         // stompClient.send("/app/chat/reply/" + targetUser, {}, JSON.stringify(chatMessage));
         document.getElementById("message").value = "";
         showMessage(message, "admin");

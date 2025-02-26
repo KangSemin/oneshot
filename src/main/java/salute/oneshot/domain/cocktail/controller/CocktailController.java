@@ -59,7 +59,7 @@ public class CocktailController {
     public ResponseEntity<ApiResponse<Page<CocktailResponseDto>>> searchWithIngredients(
         @RequestBody SearchCocktailByIngrsReqDto request,
         @RequestParam(defaultValue = "1") int page,
-        @RequestParam(defaultValue = "10") int size) {
+        @RequestParam(defaultValue = "10") int size) throws IOException{
 
         SearchCocktailSDto sDto = SearchCocktailSDto.of(request.getIngredientIds(), page, size);
 

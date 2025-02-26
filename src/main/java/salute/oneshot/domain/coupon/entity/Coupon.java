@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import salute.oneshot.domain.common.dto.entity.BaseEntity;
 import salute.oneshot.domain.coupon.dto.service.CreateCpnSDto;
+import salute.oneshot.domain.coupon.dto.service.UpdateCpnSDto;
 
 import java.time.LocalDateTime;
 
@@ -51,5 +52,12 @@ public class Coupon extends BaseEntity {
                 serviceDtd.getDiscountValue(),
                 serviceDtd.getStartTime(),
                 serviceDtd.getEndTime());
+    }
+
+    public void updateCoupon(UpdateCpnSDto serviceDto) {
+        this.couponName = serviceDto.getCouponName();
+        this.discountValue = serviceDto.getDiscountValue();
+        this.startTime = serviceDto.getStartTime();
+        this.endTime = serviceDto.getEndTime();
     }
 }
