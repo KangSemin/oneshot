@@ -19,7 +19,7 @@ public class EventDetail {
     private Event event;
 
     @Column(columnDefinition = "TEXT")
-    private String detailData;    // JSON 형태로 저장
+    private String detailData;   // JSON 형태로 저장
 
     private EventDetail(
             Event event,
@@ -30,5 +30,9 @@ public class EventDetail {
 
     public static EventDetail of(Event event, String detailData) {
         return new EventDetail(event, detailData);
+    }
+
+    public void updateDetailData(String detailData) {
+        this.detailData = detailData;
     }
 }

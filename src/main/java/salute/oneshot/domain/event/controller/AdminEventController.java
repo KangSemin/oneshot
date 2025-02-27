@@ -10,7 +10,9 @@ import salute.oneshot.domain.common.dto.success.ApiResponse;
 import salute.oneshot.domain.common.dto.success.ApiResponseConst;
 import salute.oneshot.domain.event.dto.response.EventBriefResponseDto;
 import salute.oneshot.domain.event.dto.request.EventRequestDto;
+import salute.oneshot.domain.event.dto.response.EventDetailResponseDto;
 import salute.oneshot.domain.event.dto.service.CreateEventSDto;
+import salute.oneshot.domain.event.dto.service.UpdateEventSDto;
 import salute.oneshot.domain.event.service.EventService;
 import salute.oneshot.global.exception.InvalidException;
 
@@ -35,7 +37,7 @@ public class AdminEventController {
                 requestDto.getEndDate(),
                 requestDto.getEndTime(),
                 requestDto.getEventType(),
-                requestDto.getEventDetailJson());
+                requestDto.getEventDetail());
         validateEventDate(
                 serviceDto.getStartTime(),
                 serviceDto.getEndTime());
@@ -47,6 +49,34 @@ public class AdminEventController {
                         ApiResponseConst.ADD_EVENT_SUCCESS,
                         responseDto));
     }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PatchMapping("/{eventId}")
+    public ResponseEntity<ApiResponse<EventDetailResponseDto>> updateEvent(
+            @PathVariable Long eventId,
+            @RequestBody EventRequestDto requestDto
+    ) {
+        UpdateEventSDto serviceDto = UpdateEventSDto.of(
+                eventId,
+                requestDto.getName(),
+                requestDto.getStartDate(),
+                requestDto.getStartTime(),
+                requestDto.getEndDate(),
+                requestDto.getEndTime(),
+                requestDto.getEventType(),
+                requestDto.getEventDetail());
+        validateEventDate(
+                serviceDto.getStartTime(),
+                serviceDto.getEndTime());
+        EventDetailResponseDto responseDto =
+                eventService.updateEvent(serviceDto);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ApiResponse.success(
+                        ApiResponseConst.UPDATE_EVENT_SUCCESS,
+                        responseDto));
+    }
+
 
     private void validateEventDate(LocalDateTime startTime, LocalDateTime endTime) {
         if (endTime.isBefore(LocalDateTime.now())) {

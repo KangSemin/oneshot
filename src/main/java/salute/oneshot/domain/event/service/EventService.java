@@ -14,6 +14,7 @@ import salute.oneshot.domain.event.dto.response.EventDetailResponseDto;
 import salute.oneshot.domain.event.dto.response.EventPageResponseDto;
 import salute.oneshot.domain.event.dto.service.CreateEventSDto;
 import salute.oneshot.domain.event.dto.service.GetEventsSDto;
+import salute.oneshot.domain.event.dto.service.UpdateEventSDto;
 import salute.oneshot.domain.event.entity.Event;
 import salute.oneshot.domain.event.entity.EventDetail;
 import salute.oneshot.domain.event.procssor.EventProcessor;
@@ -38,11 +39,12 @@ public class EventService {
                 serviceDto.getEndTime(),
                 serviceDto.getEventType());
 
-        EventProcessor processor =
-                eventProcessorFactory.getProcessor(serviceDto.getEventType());
-        String eventDetailJson =
-                processor.convertToJson(serviceDto.getEventDetailJson());
+        EventProcessor processor = eventProcessorFactory
+                .getProcessor(serviceDto.getEventType());
+        processor.validateEventDetail(serviceDto.getEventDetail());
 
+        String eventDetailJson = processor
+                .convertEventDetailToJson(serviceDto.getEventDetail());
         EventDetail eventDetail = EventDetail.of(event, eventDetailJson);
         event.addEventDetail(eventDetail);
 
@@ -50,11 +52,33 @@ public class EventService {
         return EventBriefResponseDto.from(event);
     }
 
+    @Transactional
+    public EventDetailResponseDto updateEvent(UpdateEventSDto serviceDto) {
+        Event event = getEventById(serviceDto.getEventId());
+
+        EventProcessor processor = eventProcessorFactory
+                .getProcessor(serviceDto.getEventType());
+        processor.validateEventDetail(serviceDto.getEventDetail());
+
+        String eventDetailJson = processor
+                .convertEventDetailToJson(serviceDto.getEventDetail());
+
+        event.updateEvent(
+                serviceDto.getName(),
+                serviceDto.getEventType(),
+                serviceDto.getStartTime(),
+                serviceDto.getEndTime(),
+                eventDetailJson);
+
+        Object eventDetail =
+                parseJsonToNode(eventDetailJson);
+
+        return EventDetailResponseDto.of(event, eventDetail);
+    }
+
     @Transactional(readOnly = true)
     public EventDetailResponseDto getEvent(Long eventId) {
-        Event event = eventRepository.findById(eventId)
-                .orElseThrow(() ->
-                        new NotFoundException(ErrorCode.EVENT_NOT_FOUND));
+        Event event = getEventById(eventId);
 
         Object eventDetail =
                 parseJsonToNode(event.getEventDetail().getDetailData());
@@ -75,6 +99,12 @@ public class EventService {
                 events.map(EventBriefResponseDto::from);
 
         return EventPageResponseDto.from(eventPage);
+    }
+
+    private Event getEventById(Long eventId) {
+        return eventRepository.findById(eventId)
+                .orElseThrow(() ->
+                        new NotFoundException(ErrorCode.EVENT_NOT_FOUND));
     }
 
     // DB에 저장된 JSON 계층 구조로 변환
