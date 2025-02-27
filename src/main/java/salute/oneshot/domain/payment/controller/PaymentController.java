@@ -35,6 +35,6 @@ public class PaymentController {
         PaymentResponseDto responseDto = orderPaymentFacade.getPayment(paymentId);
 
         return ResponseEntity.ok()
-                .body(ApiResponse.success(ApiResponseConst.ADD_PMNT_SUCCESS, responseDto));
+                .body(ApiResponse.success(ApiResponseConst.GET_PMNT_SUCCESS, responseDto));
     }
 }
