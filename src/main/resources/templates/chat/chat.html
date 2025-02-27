@@ -67,7 +67,7 @@
     // 채팅 기록 로딩
     function loadChat() {
         document.getElementById('loading').style.display = 'block';
-        fetch(`/api/admin/chats/${targetUser}`)
+        fetch(`/api/chats`)
             .then(response => response.json())
             .then(data => {
                 data.messageList.forEach(message => {
