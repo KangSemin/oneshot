@@ -16,7 +16,7 @@ import salute.oneshot.domain.cocktail.dto.request.UpdateCocktailRequestDto;
 import salute.oneshot.domain.cocktail.dto.response.CocktailResponseDto;
 import salute.oneshot.domain.cocktail.dto.service.*;
 import salute.oneshot.domain.cocktail.service.CocktailService;
-import salute.oneshot.domain.cocktail.service.RedisService;
+import salute.oneshot.domain.cocktail.service.FavoriteAndViewCounter;
 import salute.oneshot.domain.common.dto.success.ApiResponse;
 import salute.oneshot.domain.common.dto.success.ApiResponseConst;
 import salute.oneshot.global.security.entity.CustomUserDetails;
@@ -27,7 +27,8 @@ import salute.oneshot.global.security.entity.CustomUserDetails;
 public class CocktailController {
 
     private final CocktailService cocktailService;
-    private final RedisService redisService;
+    private final FavoriteAndViewCounter favoriteAndViewCounter;
+
 
     @PostMapping
     public ResponseEntity<ApiResponse<CocktailResponseDto>> createCocktail(
@@ -48,7 +49,7 @@ public class CocktailController {
     public ResponseEntity<ApiResponse<CocktailResponseDto>> getCocktail(
         @PathVariable Long cocktailId) {
 
-        redisService.increaseViewScore(cocktailId);
+        favoriteAndViewCounter.incrementViewCountAndScore(cocktailId);
         CocktailResponseDto response = cocktailService.getCocktail(cocktailId);
 
         return ResponseEntity.ok(

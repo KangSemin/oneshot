@@ -10,11 +10,10 @@ import co.elastic.clients.elasticsearch._types.query_dsl.TermsSetQuery;
 import co.elastic.clients.elasticsearch.core.DeleteRequest;
 import co.elastic.clients.elasticsearch.core.SearchRequest;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
-import com.querydsl.core.BooleanBuilder;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -47,7 +46,6 @@ import salute.oneshot.domain.cocktail.entity.RecipeType;
 import salute.oneshot.domain.cocktail.repository.CocktailIngredientRepository;
 import salute.oneshot.domain.cocktail.repository.CocktailRepository;
 import salute.oneshot.domain.common.dto.error.ErrorCode;
-import salute.oneshot.domain.ingredient.dto.response.IngrResponseDto;
 import salute.oneshot.domain.ingredient.entity.Ingredient;
 import salute.oneshot.domain.ingredient.entity.IngredientCategory;
 import salute.oneshot.domain.ingredient.repository.IngredientRepository;
@@ -71,9 +69,8 @@ public class CocktailService {
     private final CocktailIngredientRepository cocktailIngredientRepository;
     private final ElasticsearchOperations operations;
     private final ElasticsearchClient client;
-    private final RedisService redisService;
-
-    private final String COCKTAIL_INDEX = "cocktails";
+    private final FavoriteAndViewCounter favoriteAndViewCounter;
+    private final PopularCocktailUpdater popularCocktailUpdater;
 
     @Transactional
     public void createCocktail(CreateCocktailSDto sDto) {
@@ -161,13 +158,10 @@ public class CocktailService {
     }
 
     @Transactional
-    @Cacheable(value = "popular_cocktail", key = "#cocktailId")
     public CocktailResponseDto getCocktail(Long cocktailId) {
 
         Cocktail cocktail = findById(cocktailId);
-        cocktail.incrementCount();
-
-        redisService.increaseViewScore(cocktailId);// 조회점수가 올라간다
+        favoriteAndViewCounter.incrementViewCountAndScore(cocktailId);// 조회점수가 올라간다
 
         return CocktailResponseDto.from(cocktail);
     }
@@ -238,24 +232,13 @@ public class CocktailService {
         return cocktailResponseDtoList;
     }
 
-
-    @Cacheable(value = "popular_cocktail", key = "'popular'")
     public Page<CocktailResponseDto> getPopularCocktails(Pageable pageable) {
 
-        List<CocktailResponseDto> responseDtoList = redisService.getPopularCocktails(
-                pageable.getPageSize())
-            .stream().map(this::findById)
-            .map(CocktailResponseDto::from).toList();
+        List<CocktailResponseDto> popularCocktailList = popularCocktailUpdater.updatePopularCocktails();
 
-        return new PageImpl<>(responseDtoList, pageable, responseDtoList.size());
+        return new PageImpl<>(popularCocktailList, pageable, popularCocktailList.size());
     }
 
-    @CachePut(value = "popular_cocktail", key = "'popular'")
-    @Scheduled(cron = "0 0 * * * ?") // 1시간마다 캐시데이터 갱신되어 인기칵테일 반영
-    public Page<CocktailResponseDto> updatePopularCocktailsCache() {
-        log.info("ttl이 실행된다");
-        return getPopularCocktails(PageRequest.of(0, 10)); // 기본 Pageable 설정
-    }
 
     private Cocktail findById(Long cocktailId) {
         return cocktailRepository.findById(cocktailId)

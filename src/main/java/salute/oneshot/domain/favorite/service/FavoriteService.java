@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import salute.oneshot.domain.cocktail.entity.Cocktail;
 import salute.oneshot.domain.cocktail.repository.CocktailRepository;
+import salute.oneshot.domain.cocktail.service.FavoriteAndViewCounter;
 import salute.oneshot.domain.common.dto.error.ErrorCode;
 import salute.oneshot.domain.favorite.dto.response.FavoritePageResponseDto;
 import salute.oneshot.domain.favorite.dto.response.FavoriteResponseDto;
@@ -15,7 +16,6 @@ import salute.oneshot.domain.favorite.dto.service.FavoriteSDto;
 import salute.oneshot.domain.favorite.dto.service.GetFavoritesSDto;
 import salute.oneshot.domain.favorite.entity.Favorite;
 import salute.oneshot.domain.favorite.repository.FavoriteRepository;
-import salute.oneshot.domain.user.entity.User;
 import salute.oneshot.domain.user.repository.UserRepository;
 import salute.oneshot.global.exception.ConflictException;
 import salute.oneshot.global.exception.ForbiddenException;
@@ -28,6 +28,8 @@ public class FavoriteService {
     private final FavoriteRepository favoriteRepository;
     private final CocktailRepository cocktailRepository;
     private final UserRepository userRepository;
+
+    private final FavoriteAndViewCounter favoriteAndViewCounter;
 
     @Transactional
     public FavoriteResponseDto createFavorite(FavoriteSDto serviceDto) {
@@ -44,6 +46,8 @@ public class FavoriteService {
 
         Favorite favorite = Favorite.from(userId, cocktail);
         favoriteRepository.save(favorite);
+
+        favoriteAndViewCounter.incrementFavoriteScore(cocktailId);
 
         return FavoriteResponseDto.from(cocktail, favorite);
     }

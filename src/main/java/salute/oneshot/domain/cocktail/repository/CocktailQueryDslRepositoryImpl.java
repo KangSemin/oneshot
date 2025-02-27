@@ -64,12 +64,22 @@ public class CocktailQueryDslRepositoryImpl implements CocktailQueryDslRepositor
 
     }
 
-    @Transactional
-    public void addViewCntFromRedis(Long cocktailId, Integer viewCount){
-       Integer addViewCount = (viewCount == null ? 0 : viewCount);
+
+    public void addViewCntFromRedis(Long cocktailId, Integer viewCnt){
+       Integer addViewCnt = ( viewCnt == null ? 0 : viewCnt );
 
         queryFactory.update(cocktail)
-                .set(cocktail.viewCount, cocktail.viewCount.add(addViewCount))
+                .set(cocktail.viewCount, cocktail.viewCount.add(addViewCnt))
+                .where(cocktail.id.eq(cocktailId))
+                .execute();
+    }
+
+
+    public void addFavoriteCntFromRedis(Long cocktailId, Integer favoriteCnt){
+        Integer addFavoriteCnt = (favoriteCnt == null ? 0 : favoriteCnt);
+
+        queryFactory.update(cocktail)
+                .set(cocktail.favoriteCount, cocktail.favoriteCount.add(addFavoriteCnt))
                 .where(cocktail.id.eq(cocktailId))
                 .execute();
     }
