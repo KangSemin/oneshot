@@ -22,9 +22,10 @@ public class ChatStompController {
             @Payload String message,
             Principal principal
     ) {
-        chatService.processMessageFromClient(message, principal.getName(), UserRole.USER);
+        String userId = principal.getName();
+        chatService.processMessageFromClient(message, userId, UserRole.USER);
 
-        messagingTemplate.convertAndSend("/queue/admin", message);
+        messagingTemplate.convertAndSend("/queue/admin/" + userId, message);
     }
 
     @MessageMapping("/chat/sendToUser/{userId}")

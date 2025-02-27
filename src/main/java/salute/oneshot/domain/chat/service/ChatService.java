@@ -42,6 +42,11 @@ public class ChatService {
         return FindChatResponseDto.from(messageList);
     }
 
+    public FindChatResponseDto findChatForAdmin(Long adminId, Long userId) {
+//        validateAdmin();
+        return findChat(userId);
+    }
+
     public void processMessageFromClient(String message, String userId, UserRole role) {
         ListOperations<String, String> ops = redisTemplate.opsForList();
         String key = CHAT_KEY_PREFIX + userId;

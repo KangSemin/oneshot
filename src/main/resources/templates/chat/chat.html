@@ -5,64 +5,144 @@
     <title>User Chat</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.1/sockjs.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+    <style>
+        .admin-label { color: orange; }
+        .user-label { color: blue; }
+        #disconnect-message {
+            display: none;
+            background-color: #ffcccc;
+            color: #ff0000;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        #chat-log {
+            margin: 20px 0;
+            padding: 10px;
+            border: 1px solid #ddd;
+            height: 300px;
+            overflow-y: auto;
+        }
+        #loading { display: none; }
+        input[disabled], button[disabled] {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+    </style>
 </head>
 <body>
 <h2>User Chat</h2>
+<div id="disconnect-message">연결이 끊어졌습니다.</div>
+<div id="loading">Loading...</div>
 <div id="chat-log"></div>
 <div>
     <input type="text" id="message" placeholder="메시지 입력" />
-    <button id="sendButton">어드민에게 전송</button>
+    <button id="sendButton">전송</button>
 </div>
 
-<div id="data"
-     th:data-user-id="${userId}"></div>
+<div id="data" th:data-user-id="${userId}"></div>
 
 <script th:nonce="${scriptNonce}">
     const dataElement = document.getElementById('data');
     const targetUser = dataElement.getAttribute('data-user-id');
-
     let stompClient = null;
-    // 본인 유저의 식별자 (서버 Principal로 설정됨)
-    // TODO: userId 필요없나?
-    const userId = targetUser;
+
+    function showDisconnectMessage() {
+        document.getElementById('disconnect-message').style.display = 'block';
+    }
+
+    function hideDisconnectMessage() {
+        document.getElementById('disconnect-message').style.display = 'none';
+    }
+
+    function enableUI() {
+        document.getElementById('message').disabled = false;
+        document.getElementById('sendButton').disabled = false;
+    }
+
+    function disableUI() {
+        document.getElementById('message').disabled = true;
+        document.getElementById('sendButton').disabled = true;
+    }
+
+    // 채팅 기록 로딩
+    function loadChat() {
+        document.getElementById('loading').style.display = 'block';
+        fetch(`/api/chats`)
+            .then(response => response.json())
+            .then(data => {
+                data.messageList.forEach(message => {
+                    showMessage(message.content, message.sender);
+                });
+            })
+            .catch(console.error)
+            .finally(() => {
+                document.getElementById('loading').style.display = 'none';
+            });
+    }
 
     function connect() {
         const socket = new SockJS('/ws');
+
+        socket.onclose = function() {
+            showDisconnectMessage();
+            disableUI();
+        };
+
         stompClient = Stomp.over(socket);
-        stompClient.connect({}, function(frame) {
-            console.log('Connected: ' + frame);
-            // 유저는 자신의 전용 채널을 구독 (/user/queue/chat)
-            // stompClient.subscribe('/user/queue/chat', function(messageOutput) {
-            stompClient.subscribe('/user/queue/chat', function(messageOutput) {
-                // showMessage(JSON.parse(messageOutput.body));
-                showMessage(messageOutput.body, "admin");
-            });
-        });
+        stompClient.connect({},
+            (frame) => {
+                hideDisconnectMessage();
+                enableUI();
+                stompClient.subscribe('/user/queue/chat', (message) => {
+                    showMessage(message.body, "admin");
+                });
+            },
+            (error) => {
+                showDisconnectMessage();
+                disableUI();
+            }
+        );
     }
 
     function sendMessage() {
-        const message = document.getElementById("message").value;
-        const chatMessage = message;
-        // const chatMessage = {
-        //     // from는 서버에서 Principal로 설정됨
-        //     content: msgContent
-        // };
-        stompClient.send("/app/chat/sendToAdmin", {}, chatMessage);
-        // stompClient.send("/app/chat/sendToAdmin", {}, JSON.stringify(chatMessage));
-        document.getElementById("message").value = "";
-        showMessage(message, "user");
+        if (!stompClient || !stompClient.connected) {
+            alert('연결이 끊어져 메시지를 보낼 수 없습니다.');
+            return;
+        }
+
+        const messageInput = document.getElementById("message");
+        const message = messageInput.value.trim();
+
+        if (message) {
+            stompClient.send("/app/chat/sendToAdmin", {}, message);
+            showMessage(message, "user");
+            messageInput.value = "";
+        }
     }
 
-    function showMessage(message, sender) {
+    function showMessage(content, sender) {
         const chatLog = document.getElementById("chat-log");
-        // chatLog.innerHTML += `<div><b>${message.from}</b>: ${message.content}</div>`;
-        chatLog.innerHTML += `<div><b>${sender}</b>: ${message}</div>`;
-    }
+        const labelClass = sender === 'admin' ? 'admin-label' : 'user-label';
+        const label = sender === 'admin' ? 'admin' : targetUser;
 
+        chatLog.innerHTML += `
+                <div>
+                    <b class="${labelClass}">${label}</b>: ${content}
+                </div>
+            `;
+        chatLog.scrollTop = chatLog.scrollHeight;
+    }
 
     document.addEventListener('DOMContentLoaded', function () {
+        loadChat();
         connect();
+
         document.getElementById('sendButton').addEventListener('click', sendMessage);
+        document.getElementById('message').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !document.getElementById('sendButton').disabled) {
+                sendMessage();
+            }
+        });
     });
 </script>
 </body>
