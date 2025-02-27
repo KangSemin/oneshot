@@ -43,7 +43,7 @@ public class CocktailResponseDto implements Serializable{
 
         return new CocktailResponseDto(cocktail.getId(), cocktail.getName(),
             cocktail.getDescription(), cocktail.getRecipe(), cocktail.getType(), userResponse,
-            ingrReponseList, cocktail.getLikeCounts(), cocktail.getStarRate(), cocktail.getViewCount(), cocktail.getCreatedAt(),
+            ingrReponseList, cocktail.getLikeCount(), cocktail.getStarRate(), cocktail.getViewCount(), cocktail.getCreatedAt(),
             cocktail.getModifiedAt());
     }
 }

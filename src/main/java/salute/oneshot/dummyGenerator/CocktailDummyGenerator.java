@@ -1,13 +1,14 @@
 package salute.oneshot.dummyGenerator;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
 public class CocktailDummyGenerator {
 
-    private static final String FILE_NAME = "cocktails.csv";
-    private static final String HEADER = "ID,Name,Description,Recipe,RecipeType,UserId,LikeCount,StarRate,ViewCount";
+    private static final String TABLE_NAME = "cocktails";
+    private static final String COLUMNS = "id,name,description,recipe,type,created_at,modified_at,user_id,like_count,star_rate,view_count";
     private static final List<String> COCKTAIL_NAME_START = new ArrayList<>();
     private static final List<String> COCKTAIL_NAME_MID = new ArrayList<>();
     private static final List<String> COCKTAIL_NAME_END = new ArrayList<>();
@@ -355,6 +356,14 @@ public class CocktailDummyGenerator {
                     builder.append(isOfficial ? "OFFICIAL" : "CUSTOM");
                     builder.append(',');
 
+                    //createdAt
+                    builder.append(LocalDateTime.now());
+                    builder.append(',');
+
+                    //modifiedAt
+                    builder.append(LocalDateTime.now());
+                    builder.append(',');
+
                     //userId
                     builder.append(userId);
                     builder.append(',');
@@ -374,7 +383,7 @@ public class CocktailDummyGenerator {
                 }
             }
         }
-        CSVGenerator.generate(FILE_NAME, HEADER, dataList);
+        CSVGenerator.generate(TABLE_NAME, COLUMNS, dataList);
     }
 
 
@@ -382,8 +391,8 @@ public class CocktailDummyGenerator {
 
 class CocktailIngrDummyGenerator {
 
-    private static final String FILE_NAME = "cocktailIngr.csv";
-    private static final String HEADER = "ID,CocktailId,IngredientId,Volume";
+    private static final String TABLE_NAME = "cocktail_ingredients";
+    private static final String COLUMNS = "id,cocktail_id,ingredient_id,volume";
 
     public static void main(String[] args) {
         List<String> dataList = new ArrayList<>();
@@ -417,7 +426,7 @@ class CocktailIngrDummyGenerator {
             }
 
         }
-        CSVGenerator.generate(FILE_NAME,HEADER,dataList);
+        CSVGenerator.generate(TABLE_NAME,COLUMNS,dataList);
     }
 
 }

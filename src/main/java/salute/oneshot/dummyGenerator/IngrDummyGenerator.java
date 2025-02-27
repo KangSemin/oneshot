@@ -1,5 +1,6 @@
 package salute.oneshot.dummyGenerator;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -8,8 +9,8 @@ import java.util.Random;
 
 public class IngrDummyGenerator {
 
-    private static final String FILE_NAME = "ingredients.csv";
-    private static final String HEADER = "ID,Name,AVB,Description,Category";
+    private static final String TABLE_NAME = "ingredients";
+    private static final String COLUMNS = "id,name,avb,description,category,created_at,modified_at";
     private static final List<String> BASE_PREFIX = new ArrayList<>();
     private static final Map<String, String> SPIRIT_CATEGORY_MAP = new HashMap<>();
 
@@ -244,6 +245,7 @@ public class IngrDummyGenerator {
             for (String spirit : SPIRIT_CATEGORY_MAP.keySet()) {
 
                 StringBuilder builder = new StringBuilder();
+                String name = base+' '+spirit;
 
                 //id
                 builder.append(++id);
@@ -253,7 +255,6 @@ public class IngrDummyGenerator {
                 builder.append(base);
                 builder.append(' ');
                 builder.append(spirit);
-                String name = builder.toString();
                 builder.append(',');
 
                 //avb
@@ -267,11 +268,19 @@ public class IngrDummyGenerator {
 
                 //category
                 builder.append(SPIRIT_CATEGORY_MAP.get(spirit));
+                builder.append(',');
+
+                //createdAt
+                builder.append(LocalDateTime.now());
+                builder.append(',');
+
+                //modifiedAt
+                builder.append(LocalDateTime.now());
 
                 dataList.add(builder.toString());
             }
         }
-        CSVGenerator.generate(FILE_NAME,HEADER,dataList);
+        CSVGenerator.generate(TABLE_NAME,COLUMNS,dataList);
     }
 
 
