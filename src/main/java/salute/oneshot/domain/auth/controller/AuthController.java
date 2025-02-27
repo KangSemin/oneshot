@@ -107,7 +107,7 @@ public class AuthController {
                 .build();
     }
 
-    private ResponseCookie createAccessTokenCookie(String accessToken) {
+    public static ResponseCookie createAccessTokenCookie(String accessToken) {
         return ResponseCookie.from("accessToken", accessToken)
                 .httpOnly(true)  // XSS 방어 JavaScript에서 쿠키에 접근하는 것을 차단(프로토콜과 무관)
                 .secure(false)   // HTTPS 환경에서만 전송(일단 false)
