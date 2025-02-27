@@ -16,9 +16,19 @@ public class ChatViewController {
 
     private final NonceGenerator nonceGenerator;
 
+    @GetMapping("/chats")
+    public String chatPage(
+            Model model,
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        model.addAttribute("scriptNonce", nonceGenerator.getNonce());
+        model.addAttribute("userId", userDetails.getId());
+        return "chat/chat";
+    }
+
     @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     @GetMapping("/admin/chats/{userId}")
-    public String adminChat(@PathVariable Long userId, Model model) {
+    public String adminChatPage(@PathVariable Long userId, Model model) {
         model.addAttribute("scriptNonce", nonceGenerator.getNonce());
         model.addAttribute("userId", userId);
         return "chat/admin-chat";
@@ -26,18 +36,8 @@ public class ChatViewController {
 
     @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     @GetMapping("/admin/chats")
-    public String adminChat(Model model) {
+    public String adminChatListPage(Model model) {
         model.addAttribute("scriptNonce", nonceGenerator.getNonce());
         return "chat/admin-chat-list";
-    }
-
-    @GetMapping("/chats")
-    public String chat(
-            Model model,
-            @AuthenticationPrincipal CustomUserDetails userDetails
-    ) {
-        model.addAttribute("scriptNonce", nonceGenerator.getNonce());
-        model.addAttribute("userId", userDetails.getId());
-        return "chat/chat";
     }
 }

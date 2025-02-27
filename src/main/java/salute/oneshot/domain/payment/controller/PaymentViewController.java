@@ -38,13 +38,13 @@ public class PaymentViewController {
     }
 
     @GetMapping("/payments/success")
-    public String paymentSuccess(Model model) {
+    public String paymentSuccessPage(Model model) {
         model.addAttribute("scriptNonce", nonceGenerator.getNonce());
         return "payment/success";
     }
 
     @GetMapping("/payments/fail")
-    public String paymentFail(Model model) {
+    public String paymentFailPage(Model model) {
         model.addAttribute("scriptNonce", nonceGenerator.getNonce());
         return "payment/fail";
     }

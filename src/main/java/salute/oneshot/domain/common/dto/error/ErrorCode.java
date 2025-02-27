@@ -43,6 +43,7 @@ public enum ErrorCode {
     FULL_CART(HttpStatus.NOT_FOUND, "장바구니에 항목을 더 추가할 수 없습니다."),
     INVALID_CART_ITEM_QUANTITY(HttpStatus.NOT_FOUND, "수량이 1보다 작을 수 없습니다."),
     CART_ITEM_FORBIDDEN(HttpStatus.FORBIDDEN, "본인의 장바구니만 변경할 수 있습니다."),
+    CART_ITEM_MORE_THAN_STOCK_QUANTITY(HttpStatus.CONFLICT, "장바구니에 추가하려면 상품의 갯수가 남은 재고의 수보다 많습니다."),
 
     // 주문 관련 익셉션
     ORDER_NOT_FOUND(HttpStatus.NOT_FOUND, "주문이 존재하지 않습니다."),

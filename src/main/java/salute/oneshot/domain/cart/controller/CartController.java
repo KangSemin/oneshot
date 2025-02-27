@@ -82,7 +82,7 @@ public class CartController {
         cartService.emptyCart(userDetails.getId());
 
         return ResponseEntity.ok(
-                ApiResponse.success(ApiResponseConst.EMPTY_CART_SUCCESS)
+                ApiResponse.success(ApiResponseConst.GET_PMNT_SUCCESS)
         );
     }
 }

@@ -8,12 +8,12 @@ import java.util.List;
 
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class FindChatsResponseDto {
+public class FindChatListResponseDto {
 
     private final List<ChatPreviewResponseDto> chatList;
     private final String nextCursor;
 
-    public static FindChatsResponseDto of(List<ChatPreviewResponseDto> chatList, String nextCursor) {
-        return new FindChatsResponseDto(chatList, nextCursor);
+    public static FindChatListResponseDto of(List<ChatPreviewResponseDto> chatList, String nextCursor) {
+        return new FindChatListResponseDto(chatList, nextCursor);
     }
 }

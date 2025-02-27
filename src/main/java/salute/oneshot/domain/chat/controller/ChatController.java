@@ -5,7 +5,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import salute.oneshot.domain.chat.dto.response.FindChatResponseDto;
-import salute.oneshot.domain.chat.dto.response.FindChatsResponseDto;
+import salute.oneshot.domain.chat.dto.response.FindChatListResponseDto;
 import salute.oneshot.domain.chat.service.ChatService;
 import salute.oneshot.global.security.entity.CustomUserDetails;
 
@@ -23,7 +23,7 @@ public class ChatController {
 
     @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     @GetMapping("/api/admin/chats/{userId}")
-    public FindChatResponseDto findChat(
+    public FindChatResponseDto findChatForAdmin(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @PathVariable Long userId
     ) {
@@ -32,11 +32,11 @@ public class ChatController {
 
     @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     @GetMapping("/api/admin/chats")
-    public FindChatsResponseDto findChats(
+    public FindChatListResponseDto findChatListForAdmin(
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
             @RequestParam(value = "cursor", required = false) String cursor,
             @RequestParam(value = "limit", defaultValue = "10") int limit
     ) {
-        return chatService.findChats(cursor, limit);
+        return chatService.findChatList(cursor, limit);
     }
 }

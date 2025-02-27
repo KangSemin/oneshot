@@ -11,13 +11,13 @@ import salute.oneshot.domain.payment.dto.response.PaymentResponseDto;
 import salute.oneshot.domain.payment.dto.service.ConfirmPaymentSDto;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/payments")
 @RequiredArgsConstructor
 public class PaymentController {
 
     private final OrderPaymentFacade orderPaymentFacade;
 
-    @PostMapping("/payments/confirm")
+    @PostMapping("/confirm")
     public ResponseEntity<ApiResponse<PaymentResponseDto>> confirmPayment(
             @RequestBody ConfirmPaymentRequestDto requestDto
     ) {
@@ -28,7 +28,7 @@ public class PaymentController {
                 .body(ApiResponse.success(ApiResponseConst.ADD_PMNT_SUCCESS, responseDto));
     }
 
-    @GetMapping("/payments/{paymentId}")
+    @GetMapping("/{paymentId}")
     public ResponseEntity<ApiResponse<PaymentResponseDto>> findPayment(
             @PathVariable Long paymentId
     ) {
