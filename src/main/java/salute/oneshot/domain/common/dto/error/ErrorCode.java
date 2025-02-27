@@ -94,6 +94,15 @@ public enum ErrorCode {
     INVALID_EVENT_PERIOD(HttpStatus.BAD_REQUEST, "이벤트 시작일이 종료일보다 이후입니다."),
     CPN_EXPIRES_BEFORE_EVENT(HttpStatus.BAD_REQUEST, "쿠폰이 이벤트 종료일보다 먼저 만료됩니다."),
     INVALID_DATETIME(HttpStatus.BAD_REQUEST, "유효하지 않은 날짜 또는 시간 형식입니다."),
+    INVALID_EVENT_TYPE(HttpStatus.BAD_REQUEST,"유효하지 않은 이벤트 타입 입니다."),
+    INVALID_JSON_DATA(HttpStatus.BAD_REQUEST, "JSON 데이터 검증 중 오류가 발생했습니다."),
+    MISSING_COUPON(HttpStatus.BAD_REQUEST, "쿠폰 정보가 누락되었습니다."),
+    INVALID_LIMIT_COUNT(HttpStatus.BAD_REQUEST, "투표 제한 횟수가 유효하지 않습니다."),
+    INVALID_COUPON_COUNT(HttpStatus.BAD_REQUEST, "쿠폰 갯수가 유효하지 않습니다."),
+
+    // VOTE 이벤트 관련 익셉션
+    INVALID_CANDIDATE(HttpStatus.BAD_REQUEST, "후보자 정보가 유효하지 않습니다."),
+    INVALID_CANDIDATE_COUNT(HttpStatus.BAD_REQUEST, "후보자 수가 유효하지 않습니다."),
 
     // 인가 관련 익셉션
     FORBIDDEN_ACCESS(HttpStatus.FORBIDDEN, "접근 권한이 없습니다."),
