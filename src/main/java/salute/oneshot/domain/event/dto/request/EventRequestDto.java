@@ -15,5 +15,5 @@ public class EventRequestDto {
     private final String endDate;
     private final String endTime;
     private final EventType eventType;
-    private final Object eventDetailJson;
+    private final Object eventDetail;
 }

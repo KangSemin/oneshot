@@ -3,12 +3,10 @@ package salute.oneshot.domain.event.dto.service;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import salute.oneshot.domain.event.dto.request.EventRequestDto;
 import salute.oneshot.domain.event.entity.EventType;
 import salute.oneshot.global.util.DateTimeUtil;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -19,22 +17,28 @@ public class UpdateEventSDto {
     private final LocalDateTime startTime;
     private final LocalDateTime endTime;
     private final EventType eventType;
-    private final Object eventDetailJson;
+    private final Object eventDetail;
 
     public static UpdateEventSDto of(
             Long eventId,
-            EventRequestDto requestDto
+            String name,
+            String startDate,
+            String startTime,
+            String endDate,
+            String endTime,
+            EventType eventType,
+            Object eventDetail
     ) {
         return new UpdateEventSDto(
                 eventId,
-                requestDto.getName(),
+                name,
                 DateTimeUtil.parseStartDateTime(
-                        requestDto.getStartDate(),
-                        requestDto.getStartTime()),
+                        startDate,
+                        startTime),
                 DateTimeUtil.parseEndDateTime(
-                        requestDto.getEndDate(),
-                        requestDto.getEndTime()),
-                requestDto.getEventType(),
-                requestDto.getEventDetailJson());
+                        endDate,
+                        endTime),
+                eventType,
+                eventDetail);
     }
 }
