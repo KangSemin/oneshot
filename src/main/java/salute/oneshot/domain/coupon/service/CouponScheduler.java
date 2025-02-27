@@ -16,7 +16,7 @@ public class CouponScheduler {
 
     private final UserCouponRepository userCouponRepository;
 
-    @Scheduled(cron = "0 0 0 * * *")
+    @Scheduled(cron = "0 0 0 * * *") // 매일 자정(00:00)에 실행, 만료된 사용자 쿠폰을 처리
     @Transactional
     public void expireUserCoupons() {
         LocalDateTime now = LocalDateTime.now();
