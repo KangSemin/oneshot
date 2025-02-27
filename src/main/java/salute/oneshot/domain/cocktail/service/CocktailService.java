@@ -232,11 +232,10 @@ public class CocktailService {
         return cocktailResponseDtoList;
     }
 
-    public Page<CocktailResponseDto> getPopularCocktails(Pageable pageable) {
 
-        List<CocktailResponseDto> popularCocktailList = popularCocktailUpdater.updatePopularCocktails();
-
-        return new PageImpl<>(popularCocktailList, pageable, popularCocktailList.size());
+    @Cacheable(cacheNames = "popular_cocktail", key = "'popualr'")
+    public List<CocktailResponseDto> getPopularCocktails() {
+        return popularCocktailUpdater.updatePopularCocktails();
     }
 
 

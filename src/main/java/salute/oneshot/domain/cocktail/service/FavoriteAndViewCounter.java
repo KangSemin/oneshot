@@ -17,12 +17,14 @@ import java.util.Set;
 
 @Slf4j
 @Component
+@Transactional
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
+
 public class FavoriteAndViewCounter {
 
     private final RedisTemplate<String, String> redisTemplate;
     private final CocktailQueryDslRepositoryImpl cocktailQueryRepository;
+
 
 
     public void incrementViewCountAndScore(Long cocktailId) {
@@ -32,22 +34,23 @@ public class FavoriteAndViewCounter {
         redisTemplate.opsForHash().increment(cocktailCountKey,"viewCount",1);// cocktail_count::1 이라는 키의 viewcount를 1 증가 시킨다
         redisTemplate.opsForZSet().incrementScore(RedisConst.COCKTAIL_SCORE_KEY, cocktailScoreKey, 1);// cocktail_score Set에 cocktail_score::1 의 점수가 올라간다
 
-
-       String temp = redisTemplate.opsForZSet().randomMember(RedisConst.COCKTAIL_SCORE_KEY);
     }
+
 
     public void incrementFavoriteScore(Long cocktailId) {
         String cocktailCountKey = RedisConst.COCKTAIL_COUNT_KEY_PREFIX + cocktailId;
         String cocktailScoreKey = RedisConst.COCKTAIL_SCORE_KEY_PREFIX + cocktailId;
 
-        redisTemplate.opsForHash().increment(cocktailCountKey, "favoriteCount", 1);
+        redisTemplate.opsForHash().increment(cocktailCountKey, "favoriteCount",1);
         redisTemplate.opsForZSet().incrementScore(RedisConst.COCKTAIL_SCORE_KEY,cocktailScoreKey, 2);
     }
 
 
-    @Transactional
-    @Scheduled(cron = "0 0/2 * * * ?")
+
+    @Scheduled(cron = "0 0/5 * * * ?")
     public void updateCocktailViewAndFavoriteCountToDB() {//cocktail_count::*라는 키를 모두 지운다
+
+        log.info("데이터 정합성 반영");
 
         Set<String> scoreKeys = redisTemplate.keys(RedisConst.COCKTAIL_COUNT_KEY_PREFIX + "*");
         Iterator<String> it = scoreKeys.iterator();
@@ -55,9 +58,17 @@ public class FavoriteAndViewCounter {
         while (it.hasNext()) {
             String key = it.next();
 
+            log.info(key);
+
             Long cocktailId = Long.parseLong(key.split("::")[1]);
 
-            Integer viewCnt = (Integer) redisTemplate.opsForHash().get(key, "viewCnt");
+            String viewCntStr = (String) redisTemplate.opsForHash().get(key, "viewCount");
+            Integer viewCnt = (viewCntStr != null) ? Integer.parseInt(viewCntStr) : 0;
+
+            log.info("아이디 : "+ cocktailId);
+            log.info("조회수 : "+ viewCnt);
+
+
             cocktailQueryRepository.addViewCntFromRedis(cocktailId, viewCnt);
 
             Integer favoriteCnt = (Integer) redisTemplate.opsForHash().get(key, "favoriteCnt");

@@ -42,4 +42,5 @@ public interface CocktailRepository extends JpaRepository<Cocktail, Long> , Cock
         """)
     Page<Cocktail> findAllById(List<Long> ids, Pageable pageable);
 
+
 }
