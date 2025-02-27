@@ -1,6 +1,7 @@
 package salute.oneshot.domain.chat.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -15,6 +16,7 @@ public class ChatViewController {
 
     private final NonceGenerator nonceGenerator;
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     @GetMapping("/admin/chats/{userId}")
     public String adminChat(@PathVariable Long userId, Model model) {
         model.addAttribute("scriptNonce", nonceGenerator.getNonce());
@@ -22,6 +24,7 @@ public class ChatViewController {
         return "chat/admin-chat";
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     @GetMapping("/admin/chats")
     public String adminChat(Model model) {
         model.addAttribute("scriptNonce", nonceGenerator.getNonce());

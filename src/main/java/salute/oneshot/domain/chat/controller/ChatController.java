@@ -1,6 +1,7 @@
 package salute.oneshot.domain.chat.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import salute.oneshot.domain.chat.dto.response.FindChatResponseDto;
@@ -20,6 +21,7 @@ public class ChatController {
         return chatService.findChat(userDetails.getId());
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     @GetMapping("/api/admin/chats/{userId}")
     public FindChatResponseDto findChat(
             @AuthenticationPrincipal CustomUserDetails userDetails,
@@ -28,6 +30,7 @@ public class ChatController {
         return chatService.findChatForAdmin(userDetails.getId(), userId);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     @GetMapping("/api/admin/chats")
     public FindChatsResponseDto findChats(
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
