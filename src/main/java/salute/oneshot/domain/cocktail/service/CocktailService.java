@@ -24,11 +24,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
-import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import salute.oneshot.domain.cocktail.dto.request.IngredientRequestDto;
@@ -49,6 +48,7 @@ import salute.oneshot.domain.user.entity.UserRole;
 import salute.oneshot.domain.user.repository.UserRepository;
 import salute.oneshot.global.exception.NotFoundException;
 import salute.oneshot.global.exception.UnauthorizedException;
+import salute.oneshot.global.util.RedisConst;
 
 import java.util.*;
 
@@ -66,6 +66,8 @@ public class CocktailService {
     private final CocktailIngredientRepository cocktailIngredientRepository;
     private final ElasticsearchOperations operations;
     private final ElasticsearchClient client;
+    private final RedisTemplate<String, String> redisTemplate;
+    private final CocktailScheduler popularCocktailUpdater;
     private final RedisService redisService;
 
     @Transactional
@@ -152,19 +154,16 @@ public class CocktailService {
     }
 
     @Transactional
-    @Cacheable(value = "popular_cocktail", key = "#cocktailId")
     public CocktailResponseDto getCocktail(Long cocktailId) {
 
         Cocktail cocktail = findById(cocktailId);
-        cocktail.incrementCount();
-
-        redisService.increaseViewScore(cocktailId);// 조회점수가 올라간다
+        increaseViewCountAndScore(cocktailId);// 조회점수가 올라간다
 
         return CocktailResponseDto.from(cocktail);
     }
 
     @Transactional
-    @CachePut(value = "popular_cocktail", key = "#sDto.cocktailId")
+    @CachePut(value = RedisConst.POPULAR_COCKTAIL_KEY, key = "#sDto.cocktailId")
     public CocktailResponseDto updateCocktail(UpdateCocktailSDto sDto) {
 
         Cocktail cocktail = findById(sDto.getCocktailId());
@@ -229,6 +228,7 @@ public class CocktailService {
         return cocktailResponseDtoList;
     }
 
+
     @Cacheable(value = "popular_cocktail", key = "'popular'")
     public Page<CocktailResponseDto> getPopularCocktails(Pageable pageable) {
 
@@ -240,16 +240,19 @@ public class CocktailService {
         return new PageImpl<>(responseDtoList, pageable, responseDtoList.size());
     }
 
-    @CachePut(value = "popular_cocktail", key = "'popular'")
-    @Scheduled(cron = "0 0 * * * ?") // 1시간마다 캐시데이터 갱신되어 인기칵테일 반영
-    public Page<CocktailResponseDto> updatePopularCocktailsCache() {
-        log.info("ttl이 실행된다");
-        return getPopularCocktails(PageRequest.of(0, 10)); // 기본 Pageable 설정
-    }
 
     private Cocktail findById(Long cocktailId) {
         return cocktailRepository.findById(cocktailId)
             .orElseThrow(() -> new NotFoundException(ErrorCode.COCKTAIL_NOT_FOUND));
+    }
+
+    public void increaseViewCountAndScore(Long cocktailId) {
+        String cocktailCountKey = RedisConst.COCKTAIL_COUNT_KEY_PREFIX + cocktailId;
+        String cocktailScoreKey = RedisConst.COCKTAIL_SCORE_KEY_PREFIX + cocktailId;
+
+        redisTemplate.opsForHash().increment(cocktailCountKey,"viewCount",1);
+        redisTemplate.opsForZSet().incrementScore(RedisConst.COCKTAIL_SCORE_KEY, cocktailScoreKey, 1);
+
     }
 
     private void addShouldIfNotNull(BoolQuery.Builder builder, String condition, String fieldName, float boost){

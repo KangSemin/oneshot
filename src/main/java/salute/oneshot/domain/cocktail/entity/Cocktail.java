@@ -47,7 +47,9 @@ public class Cocktail extends BaseEntity {
     @OneToMany(mappedBy = "cocktail",cascade = CascadeType.REMOVE)
     private List<CocktailIngredient> ingredientList;
 
-    private Integer likeCounts;
+
+    @ColumnDefault("0")
+    private Integer favoriteCount = 0;
 
     @Column(nullable = false)
     @ColumnDefault("0")
@@ -78,8 +80,5 @@ public class Cocktail extends BaseEntity {
         this.description = description;
         this.recipe = recipe;
         this.ingredientList = ingredientList;
-    }
-    public void incrementCount() {
-        this.viewCount++;
     }
 }

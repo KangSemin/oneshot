@@ -5,6 +5,7 @@ import java.util.List;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +18,6 @@ import salute.oneshot.domain.cocktail.dto.response.CocktailResponseDto;
 import salute.oneshot.domain.cocktail.dto.service.*;
 import salute.oneshot.domain.cocktail.entity.RecipeType;
 import salute.oneshot.domain.cocktail.service.CocktailService;
-import salute.oneshot.domain.cocktail.service.RedisService;
 import salute.oneshot.domain.common.dto.success.ApiResponse;
 import salute.oneshot.domain.common.dto.success.ApiResponseConst;
 import salute.oneshot.global.security.entity.CustomUserDetails;
@@ -28,7 +28,6 @@ import salute.oneshot.global.security.entity.CustomUserDetails;
 public class CocktailController {
 
     private final CocktailService cocktailService;
-    private final RedisService redisService;
 
     @PostMapping
     public ResponseEntity<ApiResponse<CocktailResponseDto>> createCocktail(
@@ -49,7 +48,6 @@ public class CocktailController {
     public ResponseEntity<ApiResponse<CocktailResponseDto>> getCocktail(
         @PathVariable Long cocktailId) {
 
-        redisService.increaseViewScore(cocktailId);
         CocktailResponseDto response = cocktailService.getCocktail(cocktailId);
 
         return ResponseEntity.ok(
@@ -122,11 +120,10 @@ public class CocktailController {
         @RequestParam(name = "size", defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page - 1, size);
 
-        Page<CocktailResponseDto> responseDtoPage = cocktailService.getPopularCocktails(pageable);
+        List<CocktailResponseDto> dtoResponse = cocktailService.getPopularCocktails();
+        Page<CocktailResponseDto> responsePage = new PageImpl<>(dtoResponse, pageable, dtoResponse.size());
 
         return ResponseEntity.ok(
-            ApiResponse.success(ApiResponseConst.GET_CCKTL_LIST_SUCCESS, responseDtoPage));
+            ApiResponse.success(ApiResponseConst.GET_CCKTL_LIST_SUCCESS, responsePage));
     }
-
-
 }
