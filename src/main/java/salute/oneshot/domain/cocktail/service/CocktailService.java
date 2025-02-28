@@ -68,8 +68,7 @@ public class CocktailService {
     private final ElasticsearchClient client;
     private final RedisTemplate<String, String> redisTemplate;
     private final CocktailScheduler popularCocktailUpdater;
-    private final RedisService redisService;
-
+    
     @Transactional
     public void createCocktail(CreateCocktailSDto sDto) {
 
