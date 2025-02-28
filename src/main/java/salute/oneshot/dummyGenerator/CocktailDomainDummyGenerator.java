@@ -557,6 +557,10 @@ public class CocktailDomainDummyGenerator {
     }
 
 
+    private static final String COCKTAIL_INGR_TABLE_NAME = "cocktail_ingredients";
+    private static final String COCKTAIL_INGR_COLUMNS = "id,cocktail_id,ingredient_id,volume";
+
+
     public static void main(String[] args) {
         List<String> cokctailDataList = new ArrayList<>();
         List<String> ingrDataList = new ArrayList<>();
@@ -750,8 +754,10 @@ public class CocktailDomainDummyGenerator {
                 }
             }
             CSVGenerator.generate(COCKTAIL_TABLE_NAME, COCKTAIL_COLUMNS, cokctailDataList);
-            CSVGenerator.generate(COCKTAIL_TABLE_NAME, COCKTAIL_COLUMNS, cocktailIngrDataList);
+            CSVGenerator.generate(COCKTAIL_INGR_TABLE_NAME, COCKTAIL_INGR_COLUMNS, cocktailIngrDataList);
 
+            System.out.println("curl -XPOST \"localhost:9200/_bulk\" -H \"Content-Type: application/json\" --data-binary @bulkCocktail.json\n");
+            System.out.println("curl -XPOST \"localhost:9200/_bulk\" -H \"Content-Type: application/json\" --data-binary @bulkIngr.json\n");
         } catch (IOException e) {
             e.printStackTrace();
         }
