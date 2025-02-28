@@ -235,6 +235,7 @@ public class CocktailService {
 
     @Cacheable(cacheNames = "popular_cocktail", key = "'popualr'")
     public List<CocktailResponseDto> getPopularCocktails() {
+
         return popularCocktailUpdater.updatePopularCocktails();
     }
 
