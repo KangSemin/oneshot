@@ -228,15 +228,12 @@ public class CocktailService {
     }
 
 
-    @Cacheable(value = "popular_cocktail", key = "'popular'")
-    public Page<CocktailResponseDto> getPopularCocktails(Pageable pageable) {
 
-        List<CocktailResponseDto> responseDtoList = redisService.getPopularCocktails(
-                pageable.getPageSize())
-            .stream().map(this::findById)
-            .map(CocktailResponseDto::from).toList();
+    @Cacheable(cacheNames = "popular_cocktail", key = "'popular'")
+    public List<CocktailResponseDto> getPopularCocktails() {
 
-        return new PageImpl<>(responseDtoList, pageable, responseDtoList.size());
+        return popularCocktailUpdater.updatePopularCocktails();
+
     }
 
 
