@@ -28,6 +28,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import salute.oneshot.domain.cocktail.dto.request.IngredientRequestDto;
@@ -52,7 +53,6 @@ import salute.oneshot.domain.user.entity.UserRole;
 import salute.oneshot.domain.user.repository.UserRepository;
 import salute.oneshot.global.exception.NotFoundException;
 import salute.oneshot.global.exception.UnauthorizedException;
-import salute.oneshot.global.util.FavoriteAndViewCounter;
 import salute.oneshot.global.util.RedisConst;
 
 @Service
@@ -69,8 +69,8 @@ public class CocktailService {
     private final CocktailIngredientRepository cocktailIngredientRepository;
     private final ElasticsearchOperations operations;
     private final ElasticsearchClient client;
-    private final FavoriteAndViewCounter favoriteAndViewCounter;
-    private final PopularCocktailUpdater popularCocktailUpdater;
+    private final RedisTemplate<String, String> redisTemplate;
+    private final CocktailScheduler popularCocktailUpdater;
 
     @Transactional
     public void createCocktail(CreateCocktailSDto sDto) {
@@ -161,7 +161,7 @@ public class CocktailService {
     public CocktailResponseDto getCocktail(Long cocktailId) {
 
         Cocktail cocktail = findById(cocktailId);
-        favoriteAndViewCounter.incrementViewCountAndScore(cocktailId);// 조회점수가 올라간다
+        incrementViewCountAndScore(cocktailId);// 조회점수가 올라간다
 
         return CocktailResponseDto.from(cocktail);
     }
@@ -242,6 +242,15 @@ public class CocktailService {
     private Cocktail findById(Long cocktailId) {
         return cocktailRepository.findById(cocktailId)
             .orElseThrow(() -> new NotFoundException(ErrorCode.COCKTAIL_NOT_FOUND));
+    }
+
+    public void incrementViewCountAndScore(Long cocktailId) {
+        String cocktailCountKey = RedisConst.COCKTAIL_COUNT_KEY_PREFIX + cocktailId;
+        String cocktailScoreKey = RedisConst.COCKTAIL_SCORE_KEY_PREFIX + cocktailId;
+
+        redisTemplate.opsForHash().increment(cocktailCountKey,"viewCount",1);
+        redisTemplate.opsForZSet().incrementScore(RedisConst.COCKTAIL_SCORE_KEY, cocktailScoreKey, 1);
+
     }
 
     private void addShouldIfNotNull(BoolQuery.Builder builder, String condition, String fieldName, float boost){

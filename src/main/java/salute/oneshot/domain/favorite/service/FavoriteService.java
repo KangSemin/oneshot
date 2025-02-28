@@ -2,11 +2,11 @@ package salute.oneshot.domain.favorite.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import salute.oneshot.domain.cocktail.entity.Cocktail;
 import salute.oneshot.domain.cocktail.repository.CocktailRepository;
-import salute.oneshot.global.util.FavoriteAndViewCounter;
 import salute.oneshot.domain.common.dto.error.ErrorCode;
 import salute.oneshot.domain.favorite.dto.response.FavoritePageResponseDto;
 import salute.oneshot.domain.favorite.dto.response.FavoriteResponseDto;
@@ -20,6 +20,7 @@ import salute.oneshot.domain.user.repository.UserRepository;
 import salute.oneshot.global.exception.ConflictException;
 import salute.oneshot.global.exception.ForbiddenException;
 import salute.oneshot.global.exception.NotFoundException;
+import salute.oneshot.global.util.RedisConst;
 
 @Service
 @RequiredArgsConstructor
@@ -29,7 +30,7 @@ public class FavoriteService {
     private final CocktailRepository cocktailRepository;
     private final UserRepository userRepository;
 
-    private final FavoriteAndViewCounter favoriteAndViewCounter;
+    private final RedisTemplate<String, String> redisTemplate;
 
     @Transactional
     public FavoriteResponseDto createFavorite(FavoriteSDto serviceDto) {
@@ -47,7 +48,7 @@ public class FavoriteService {
         Favorite favorite = Favorite.from(userId, cocktail);
         favoriteRepository.save(favorite);
 
-        favoriteAndViewCounter.incrementFavoriteScore(cocktailId);
+        incrementFavoriteScore(cocktailId);
 
         return FavoriteResponseDto.from(cocktail, favorite);
     }
@@ -82,5 +83,13 @@ public class FavoriteService {
         favoriteRepository.delete(favorite);
 
         return FavoriteResponseDto.from(favorite.getCocktail(), favorite);
+    }
+
+    public void incrementFavoriteScore(Long cocktailId) {
+        String cocktailCountKey = RedisConst.COCKTAIL_COUNT_KEY_PREFIX + cocktailId;
+        String cocktailScoreKey = RedisConst.COCKTAIL_SCORE_KEY_PREFIX + cocktailId;
+
+        redisTemplate.opsForHash().increment(cocktailCountKey, "favoriteCount",1);
+        redisTemplate.opsForZSet().incrementScore(RedisConst.COCKTAIL_SCORE_KEY,cocktailScoreKey, 2);
     }
 }
