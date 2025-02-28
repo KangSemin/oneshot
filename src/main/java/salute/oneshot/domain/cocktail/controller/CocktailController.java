@@ -16,6 +16,7 @@ import salute.oneshot.domain.cocktail.dto.request.SearchCocktailByIngrsReqDto;
 import salute.oneshot.domain.cocktail.dto.request.UpdateCocktailRequestDto;
 import salute.oneshot.domain.cocktail.dto.response.CocktailResponseDto;
 import salute.oneshot.domain.cocktail.dto.service.*;
+import salute.oneshot.domain.cocktail.entity.RecipeType;
 import salute.oneshot.domain.cocktail.service.CocktailService;
 import salute.oneshot.domain.common.dto.success.ApiResponse;
 import salute.oneshot.domain.common.dto.success.ApiResponseConst;
@@ -56,10 +57,11 @@ public class CocktailController {
     @GetMapping("/search")
     public ResponseEntity<ApiResponse<Page<CocktailResponseDto>>> searchWithIngredients(
         @RequestBody SearchCocktailByIngrsReqDto request,
+        @RequestParam(required = false) RecipeType recipeType,
         @RequestParam(defaultValue = "1") int page,
         @RequestParam(defaultValue = "10") int size) throws IOException{
 
-        SearchCocktailSDto sDto = SearchCocktailSDto.of(request.getIngredientIds(), page, size);
+        SearchCocktailSDto sDto = SearchCocktailSDto.of(request.getIngredientIds(), recipeType, page, size);
 
         Page<CocktailResponseDto> response = cocktailService.findCocktailsByIngr(sDto);
 

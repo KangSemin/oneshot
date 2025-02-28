@@ -8,7 +8,7 @@ import lombok.Getter;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class MessageResponseDto {
 
-    private final Boolean isUser;
+    private final String sender;
     private final String content;
     private final Long timeMillis;
 
@@ -16,10 +16,10 @@ public class MessageResponseDto {
     public static MessageResponseDto from(String message) {
         int contentEnd = message.lastIndexOf("::");
 
-        Boolean isUser = message.charAt(0) == 'u';
+        String sender = (message.charAt(0) == 'u') ? "user" : "admin";
         String content = message.substring(3, contentEnd);
         Long timeMillis = Long.parseLong(message.substring(contentEnd + 2));
 
-        return new MessageResponseDto(isUser, content, timeMillis);
+        return new MessageResponseDto(sender, content, timeMillis);
     }
 }
