@@ -161,7 +161,7 @@ public class CocktailService {
     public CocktailResponseDto getCocktail(Long cocktailId) {
 
         Cocktail cocktail = findById(cocktailId);
-        incrementViewCountAndScore(cocktailId);// 조회점수가 올라간다
+        increaseViewCountAndScore(cocktailId);// 조회점수가 올라간다
 
         return CocktailResponseDto.from(cocktail);
     }
@@ -244,7 +244,7 @@ public class CocktailService {
             .orElseThrow(() -> new NotFoundException(ErrorCode.COCKTAIL_NOT_FOUND));
     }
 
-    public void incrementViewCountAndScore(Long cocktailId) {
+    public void increaseViewCountAndScore(Long cocktailId) {
         String cocktailCountKey = RedisConst.COCKTAIL_COUNT_KEY_PREFIX + cocktailId;
         String cocktailScoreKey = RedisConst.COCKTAIL_SCORE_KEY_PREFIX + cocktailId;
 

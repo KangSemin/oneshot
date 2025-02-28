@@ -48,7 +48,7 @@ public class FavoriteService {
         Favorite favorite = Favorite.from(userId, cocktail);
         favoriteRepository.save(favorite);
 
-        incrementFavoriteScore(cocktailId);
+        increaseFavoriteScore(cocktailId);
 
         return FavoriteResponseDto.from(cocktail, favorite);
     }
@@ -85,7 +85,7 @@ public class FavoriteService {
         return FavoriteResponseDto.from(favorite.getCocktail(), favorite);
     }
 
-    public void incrementFavoriteScore(Long cocktailId) {
+    public void increaseFavoriteScore(Long cocktailId) {
         String cocktailCountKey = RedisConst.COCKTAIL_COUNT_KEY_PREFIX + cocktailId;
         String cocktailScoreKey = RedisConst.COCKTAIL_SCORE_KEY_PREFIX + cocktailId;
 
