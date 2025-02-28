@@ -5,11 +5,13 @@ public class ApiResponseConst {
     public static final String SIGNUP_SUCCESS = "회원가입이 완료되었습니다.";
     public static final String LOGIN_SUCCESS = "로그인이 완료되었습니다.";
     public static final String LOGOUT_SUCCESS = "로그아웃이 완료되었습니다.";
+    public static final String GET_ACS_TOKEN_SUCCESS = "토큰 발급이 완료되었습니다.";
 
     // 유저, 셀러 관련 메시지
     public static final String GET_USER_SUCCESS = "사용자 조회가 완료되었습니다.";
     public static final String UPDATE_USER_SUCCESS = "사용자 수정이 완료되었습니다.";
     public static final String DELETE_USER_SUCCESS = "사용자 삭제가 완료되었습니다.";
+    public static final String UPDATE_ROLE_SUCCESS = "권한 변경이 완료되었습니다.";
 
     // 칵테일 관련 메시지
     public static final String GET_CCKTL_LIST_SUCCESS = "칵테일 목록 조회가 완료되었습니다.";
@@ -66,10 +68,6 @@ public class ApiResponseConst {
     public static final String EMPTY_CART_SUCCESS = "장바구니 비우기가 완료되었습니다.";
 
     // 결제 관련 메시지
-    public static final String ADD_PAYMENT_SUCCESS = "결제 생성이 완료되었습니다.";
-    public static final String GET_PAYMENT_SUCCESS = "결제 조회가 완료되었습니다.";
-    public static final String PAYMENT_APPROVED = "결제가 승인되었습니다.";
-    public static final String PAYMENT_DECLINED = "결제가 거부되었습니다.";
     public static final String ADD_PMNT_SUCCESS = "결제가 정상적으로 처리되었습니다.";
 
     // 주소 관련 메시지
@@ -93,6 +91,27 @@ public class ApiResponseConst {
     public static final String DELETE_ORD_SUCCESS = "주문이 취소되었습니다.";
 
     // 배송 관련 메시지
-    public static final String ADD_SHIPPING_SUCCESS = "배송 정보 등록이 완료되었습니다.";
-    public static final String GET_SHIPPING_SUCCESS = "배송 정보 조회가 완료되었습니다.";
+    public static final String ADD_DELIVERY_SUCCESS = "배송 정보 등록이 완료되었습니다.";
+    public static final String GET_DELIVERY_SUCCESS = "배송 정보 조회가 완료되었습니다.";
+    public static final String UPDATE_DELIVERY_SUCCESS = "배송 정보 수정이 완료되었습니다.";
+
+    // 배너 관련 메시지
+    public static final String ADD_BANNER_SUCCESS = "배너 등록이 완료되었습니다.";
+    public static final String UPDATE_BANNER_SUCCESS = "배너 수정이 완료되었습니다.";
+    public static final String DELETE_BANNER_SUCCESS = "배너 삭제가 완료되었습니다.";
+    public static final String GET_BANNER_SUCCESS = "배너 조회가 완료되었습니다.";
+
+    // 쿠폰 관련 메시지
+    public static final String ADD_CPN_SUCCESS = "쿠폰 등록이 완료되었습니다.";
+    public static final String UPDATE_CPN_SUCCESS = "쿠폰 수정이 완료되었습니다.";
+    public static final String DELETE_CPN_SUCCESS = "쿠폰 삭제가 완료되었습니다.";
+    public static final String ADD_USER_CPN_SUCCESS = "쿠폰 지급이 완료되었습니다.";
+    public static final String USE_USER_CPN_SUCCESS = "쿠폰 사용이 완료되었습니다.";
+    public static final String GET_CPN_SUCCESS = "쿠폰 조회가 완료되었습니다.";
+    public static final String GET_CPN_LIST_SUCCESS = "쿠폰 목록 조회가 완료되었습니다.";
+
+    public static final String ADD_EVENT_SUCCESS = "이벤트 등록이 완료되었습니다.";
+    public static final String UPDATE_EVENT_SUCCESS = "이벤트 수정이 완료되었습니다.";
+    public static final String DELETE_EVENT_SUCCESS = "이벤트 삭제가 완료되었습니다.";
+    public static final String GET_EVT_SUCCESS = "이벤트 조회가 완료되었습니다.";
 }

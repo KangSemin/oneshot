@@ -11,6 +11,7 @@ import salute.oneshot.domain.ingredientReview.dto.response.IngrReviewResponseDto
 import salute.oneshot.domain.ingredientReview.dto.response.IngredientResponseDto;
 import salute.oneshot.domain.ingredientReview.dto.response.UserResponseDto;
 import salute.oneshot.domain.ingredientReview.dto.service.CreateIngrReviewSDto;
+import salute.oneshot.domain.ingredientReview.dto.service.DeleteIngrReviewSDto;
 import salute.oneshot.domain.ingredientReview.dto.service.GetAllIngrReviewSDto;
 import salute.oneshot.domain.ingredientReview.dto.service.GetMyIngredientReviewSDto;
 import salute.oneshot.domain.ingredientReview.dto.service.UpdateIngrReviewSDto;
@@ -111,6 +112,14 @@ public class IngredientReviewService {
         IngredientResponseDto ingrResponseDto = IngredientResponseDto.from(ingredient);
 
         return IngrReviewResponseDto.from(ingrResponseDto, userResponseDto, ingredientReview);
+    }
+
+    @Transactional
+    public void deleteIngredientReview(DeleteIngrReviewSDto sDto) {
+
+        IngredientReview ingredientReview = validateUser(sDto.getReviewId(), sDto.getUserId());
+
+        ingredientReviewRepository.delete(ingredientReview);
     }
 
     private IngredientReview validateUser(Long reviewId, Long userId) {

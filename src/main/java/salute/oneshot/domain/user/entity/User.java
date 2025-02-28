@@ -6,13 +6,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 import salute.oneshot.domain.common.dto.entity.BaseEntity;
-import salute.oneshot.domain.common.dto.error.ErrorCode;
-import salute.oneshot.global.exception.ConflictException;
 
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "users")
+@Table(name = "users", indexes = {
+        @Index(name = "idx_user_email_is_deleted", columnList = "email, is_deleted")
+})
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User extends BaseEntity {
@@ -42,9 +42,6 @@ public class User extends BaseEntity {
     @ColumnDefault("false")
     private boolean isDeleted = false;
 
-    @Column(name = "last_logout_at")
-    private LocalDateTime lastLogoutAt;
-
     private User(
             String email,
             String password,
@@ -65,20 +62,17 @@ public class User extends BaseEntity {
         return new User(email, password, nickName, UserRole.USER);
     }
 
+    public static User of(
+            String email,
+            String password,
+            String nickName,
+            UserRole role
+    ) {
+        return new User(email, password, nickName, role);
+    }
+
     public void update(String nickName, String password) {
         this.nickName = nickName;
         this.password = password;
-    }
-
-    public void softDelete() {
-        if (this.isDeleted) {
-            throw new ConflictException(ErrorCode.DUPLICATE_USER_DELETE);
-        }
-        this.isDeleted = true;
-        this.isDeletedAt = LocalDateTime.now();
-    }
-
-    public void logout() {
-        this.lastLogoutAt = LocalDateTime.now();
     }
 }

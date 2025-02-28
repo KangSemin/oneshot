@@ -1,8 +1,13 @@
 package salute.oneshot.domain.order.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Recover;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import salute.oneshot.domain.address.entity.Address;
 import salute.oneshot.domain.address.repository.AddressRepository;
@@ -10,23 +15,30 @@ import salute.oneshot.domain.cart.entity.Cart;
 import salute.oneshot.domain.cart.entity.CartItem;
 import salute.oneshot.domain.cart.repository.CartRepository;
 import salute.oneshot.domain.common.dto.error.ErrorCode;
-import salute.oneshot.domain.order.dto.response.GetOrderResponseDto;
-import salute.oneshot.domain.order.dto.response.OrderItemListResponseDto;
-import salute.oneshot.domain.order.dto.response.OrderResponseDto;
-import salute.oneshot.domain.order.dto.service.CreateOrderSDto;
-import salute.oneshot.domain.order.dto.service.GetAllOrderSDto;
-import salute.oneshot.domain.order.dto.service.GetOrderSDto;
+import salute.oneshot.domain.order.dto.response.*;
+import salute.oneshot.domain.order.dto.service.*;
 import salute.oneshot.domain.order.entity.Order;
 import salute.oneshot.domain.order.entity.OrderItem;
+import salute.oneshot.domain.order.entity.OrderStatus;
 import salute.oneshot.domain.order.repository.OrderRepository;
+import salute.oneshot.domain.payment.repository.PaymentRepository;
 import salute.oneshot.domain.product.entity.Product;
+import salute.oneshot.domain.user.entity.User;
+import salute.oneshot.domain.user.entity.UserRole;
+import salute.oneshot.domain.user.repository.UserRepository;
+import salute.oneshot.global.exception.CustomRuntimeException;
 import salute.oneshot.global.exception.ForbiddenException;
+import salute.oneshot.global.exception.InvalidException;
 import salute.oneshot.global.exception.NotFoundException;
 
+import java.security.SecureRandom;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class OrderService {
@@ -34,9 +46,11 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final CartRepository cartRepository;
     private final AddressRepository addressRepository;
+    private final UserRepository userRepository;
+    private final PaymentRepository paymentRepository;
 
     @Transactional
-    public OrderResponseDto createOrder(CreateOrderSDto sDto) {
+    public CreateOrderResponseDto createOrder(CreateOrderSDto sDto) {
 
         //유저 아이디로 장바구니가 존재 하는지 조회
         Cart cart = cartRepository.findByUserIdAndIsOrderedFalse(sDto.getUserId())
@@ -62,8 +76,11 @@ public class OrderService {
         String orderName = generateOrderName(cart);
         long orderAmount = orderItems.stream().mapToLong(OrderItem::getPrice).sum();
 
+        //주문번호 생성
+        String orderNumber = generateOrderNumber();
+
         // 주문 생성
-        Order order = Order.of(orderName, orderAmount, cart.getUser(), cart, address, orderItems);
+        Order order = Order.of(orderNumber ,orderName, orderAmount, cart.getUser(), cart, address, orderItems);
 
         for (OrderItem orderItem : orderItems) {
             orderItem.setOrder(order);
@@ -75,7 +92,7 @@ public class OrderService {
         // 카트 상태 변경
         cart.setIsOrdered();
 
-        return OrderResponseDto.from(order);
+        return CreateOrderResponseDto.from(order);
     }
 
     @Transactional
@@ -84,7 +101,7 @@ public class OrderService {
         Order order = orderRepository.findById(sDto.getOrderId())
                 .orElseThrow(() -> new NotFoundException(ErrorCode.ORDER_NOT_FOUND));
 
-        if(!order.getUser().getId().equals(sDto.getUserId())) {
+        if (!order.getUser().getId().equals(sDto.getUserId())) {
             throw new ForbiddenException(ErrorCode.ORDER_GET_FORBIDDEN);
         }
 
@@ -94,15 +111,95 @@ public class OrderService {
         return GetOrderResponseDto.from(order, responseDtoList);
     }
 
-    public Page<OrderResponseDto> getAllOrder(GetAllOrderSDto sDto) {
+    @Transactional
+    public Page<CreateOrderResponseDto> getAllOrder(GetAllOrderSDto sDto) {
 
         Page<Order> orderPage = orderRepository.findByUser_Id(sDto.getUserId(), sDto.getPageable());
 
-        Page<OrderResponseDto> responseDtoPage = orderPage.map(OrderResponseDto::from);
+        Page<CreateOrderResponseDto> responseDtoPage = orderPage.map(CreateOrderResponseDto::from);
 
         return responseDtoPage;
     }
 
+    @Transactional
+    public UpdateOrderResponseDto updateOrder(UpdateOrderSDto sDto) {
+
+        Order order = orderRepository.findById(sDto.getOrderId())
+                .orElseThrow(() -> new NotFoundException(ErrorCode.ORDER_NOT_FOUND));
+
+        User user = getUserById(sDto.getUserId());
+        verifyAdmin(user);
+
+        if (!order.isValidStatusChange(order.getStatus(), OrderStatus.valueOf(sDto.getOrderStatus()))) {
+            throw new InvalidException(ErrorCode.INVALID_ORDER_STATUS);
+        }
+
+        order.updateOrderStatus(OrderStatus.valueOf(sDto.getOrderStatus()));
+
+        return UpdateOrderResponseDto.from(order);
+    }
+
+    // 컨트롤러와 직접 연결되지 않고 결제 승인 후 내부적으로 호출되는 로직
+    // 결제 정보 저장이 같이 롤백되지 않게 트랜잭션을 분리
+    @Retryable(
+            maxAttempts = 2,
+            backoff = @Backoff(delay = 2000, multiplier = 2)
+    )
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void updateOrderStatusAfterPaymentIsDone(String orderNumber) {
+        Order order = orderRepository.findByOrderNumber(orderNumber)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.ORDER_NOT_FOUND));
+
+        // 결제 페이지 요청에서 order staus를 검증하기 때문에 다시 검증하지 않음
+        order.updateOrderStatus(OrderStatus.PROCESSING);
+    }
+
+    @Recover
+    public void recover(Exception e, String orderNumber) {
+        log.error("Fail to change order status from PENDING_PAYMENT to PROCESSING: {}", orderNumber);
+    }
+
+
+    @Transactional
+    public void deleteOrder(DeleteOrderSDto sDto) {
+
+        Order order = orderRepository.findById(sDto.getOrderId())
+                .orElseThrow(() -> new NotFoundException(ErrorCode.ORDER_NOT_FOUND));
+
+        if (!order.getUser().getId().equals(sDto.getUserId())) {
+            throw new ForbiddenException(ErrorCode.ORDER_CANCEL_FORBIDDEN);
+        }
+
+        if (order.getStatus() == OrderStatus.SHIPPED) {
+
+            throw new CustomRuntimeException(ErrorCode.CANNOT_CANCEL_SHIPPED_ORDER);
+
+        } else if (order.getStatus() == OrderStatus.CANCELLED) {
+
+            throw new CustomRuntimeException(ErrorCode.ALREADY_CANCELLED_ORDER);
+        }
+
+        order.updateOrderStatus(OrderStatus.CANCELLED);
+    }
+
+
+    public GetOrderDetailsResponseDto getOrderDetails(GetOrderDetailsSDto sDto) {
+        Order order = orderRepository.findByIdAndUserId(sDto.getOrderId(), sDto.getUserId())
+                .orElseThrow(() -> new NotFoundException(ErrorCode.ORDER_NOT_FOUND));
+
+        return GetOrderDetailsResponseDto.from(order);
+    }
+
+    private User getUserById(Long userId) {
+        return userRepository.findByIdAndIsDeletedIsFalse(userId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
+    }
+
+    private void verifyAdmin(User user) {
+        if (user.getUserRole() != UserRole.ADMIN) {
+            throw new ForbiddenException(ErrorCode.FORBIDDEN_ACCESS);
+        }
+    }
 
     private String generateOrderName(Cart cart) {
 
@@ -112,8 +209,22 @@ public class OrderService {
             return cart.getItemList().get(0).getProduct().getName() + " 외 " +
                     (cart.getItemList().size() - 1) + "개";
         }
+    }
 
+    private String generateOrderNumber() {
 
+        String orderDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyMMddHHmmss"));
+
+        String chars = "0123456789";
+
+        SecureRandom random = new SecureRandom();
+        StringBuilder stringBuilder = new StringBuilder();
+
+        for (int i = 0; i < 2; i++) {
+            int nextInt = random.nextInt(chars.length());
+            stringBuilder.append(chars.charAt(nextInt));
+        }
+        return orderDate + stringBuilder.toString();
     }
 
 }

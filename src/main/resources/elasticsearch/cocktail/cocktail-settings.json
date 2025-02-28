@@ -1,0 +1,34 @@
+{
+  "index": {
+    "analysis": {
+      "tokenizer": {
+        "gram_tokenizer": {
+          "type": "ngram",
+          "min_gram": 2,
+          "max_gram": 3,
+          "token_chars": [
+            "letter"
+          ]
+        }
+      },
+      "analyzer": {
+        "desc_anal": {
+          "filter": [
+            "lowercase",
+            "stop",
+            "snowball",
+            "unique"
+          ],
+          "tokenizer": "gram_tokenizer"
+        },
+        "name_anal": {
+          "filter": [
+            "lowercase"
+          ],
+          "tokenizer": "gram_tokenizer"
+        }
+      }
+    }
+  }
+}
+

@@ -103,14 +103,8 @@ public class AddressService {
         return !addressRepository.existsByUserId(userId);
     }
 
-    private Address getAddressByIdAndUserId(Long addressId, Long userId) {
+    public Address getAddressByIdAndUserId(Long addressId, Long userId) {
         return addressRepository.findByIdAndUserId(addressId, userId)
-                .orElseThrow(() ->
-                        new NotFoundException(ErrorCode.ADR_NOT_FOUND));
-    }
-
-    public Address getAddressById(Long id) {
-        return addressRepository.findById(id)
                 .orElseThrow(() ->
                         new NotFoundException(ErrorCode.ADR_NOT_FOUND));
     }

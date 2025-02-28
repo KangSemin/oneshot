@@ -1,5 +1,6 @@
 package salute.oneshot.domain.cocktail.dto.request;
 
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.util.List;
 import lombok.AccessLevel;
@@ -10,11 +11,11 @@ import lombok.Getter;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class UpdateCocktailRequestDto {
 
-    @NotNull
+    @NotBlank
     private final String name;
-    @NotNull
+    @NotBlank
     private final String description;
-    @NotNull
+    @NotBlank
     private final String recipe;
     @NotNull
     private final List<IngredientRequestDto> ingredientList;

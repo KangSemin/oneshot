@@ -1,7 +1,11 @@
 package salute.oneshot.domain.cocktail.controller;
 
+import java.io.IOException;
+import java.util.List;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -12,8 +16,8 @@ import salute.oneshot.domain.cocktail.dto.request.SearchCocktailByIngrsReqDto;
 import salute.oneshot.domain.cocktail.dto.request.UpdateCocktailRequestDto;
 import salute.oneshot.domain.cocktail.dto.response.CocktailResponseDto;
 import salute.oneshot.domain.cocktail.dto.service.*;
+import salute.oneshot.domain.cocktail.entity.RecipeType;
 import salute.oneshot.domain.cocktail.service.CocktailService;
-import salute.oneshot.domain.cocktail.service.RedisService;
 import salute.oneshot.domain.common.dto.success.ApiResponse;
 import salute.oneshot.domain.common.dto.success.ApiResponseConst;
 import salute.oneshot.global.security.entity.CustomUserDetails;
@@ -24,16 +28,14 @@ import salute.oneshot.global.security.entity.CustomUserDetails;
 public class CocktailController {
 
     private final CocktailService cocktailService;
-    private final RedisService redisService;
 
     @PostMapping
     public ResponseEntity<ApiResponse<CocktailResponseDto>> createCocktail(
         @RequestBody CreateCocktailRequestDto request,
         @AuthenticationPrincipal CustomUserDetails userDetails) {
 
-        Long userId = userDetails.getId();
-
-        CreateCocktailSDto sDto = CreateCocktailSDto.of(userId, request.getName(),
+        CreateCocktailSDto sDto = CreateCocktailSDto.of(userDetails.getId(),
+            userDetails.getUserRole(), request.getName(),
             request.getDescription(), request.getRecipe(), request.getIngredientList());
 
         cocktailService.createCocktail(sDto);
@@ -42,12 +44,10 @@ public class CocktailController {
     }
 
 
-
     @GetMapping("/{cocktailId}")
     public ResponseEntity<ApiResponse<CocktailResponseDto>> getCocktail(
         @PathVariable Long cocktailId) {
 
-        redisService.increaseViewScore(cocktailId);
         CocktailResponseDto response = cocktailService.getCocktail(cocktailId);
 
         return ResponseEntity.ok(
@@ -56,14 +56,16 @@ public class CocktailController {
 
     @GetMapping("/search")
     public ResponseEntity<ApiResponse<Page<CocktailResponseDto>>> searchWithIngredients(
-        @RequestBody SearchCocktailByIngrsReqDto request, @RequestParam(defaultValue = "1") int page,
-        @RequestParam(defaultValue = "10") int size) {
+        @RequestBody SearchCocktailByIngrsReqDto request,
+        @RequestParam(required = false) RecipeType recipeType,
+        @RequestParam(defaultValue = "1") int page,
+        @RequestParam(defaultValue = "10") int size) throws IOException{
 
-        SearchCocktailSDto sDto = SearchCocktailSDto.of(request.getIngredientIds(),page,size);
+        SearchCocktailSDto sDto = SearchCocktailSDto.of(request.getIngredientIds(), recipeType, page, size);
 
         Page<CocktailResponseDto> response = cocktailService.findCocktailsByIngr(sDto);
 
-        return ResponseEntity.ok(ApiResponse.success(ApiResponseConst.GET_CCKTL_SUCCESS,response));
+        return ResponseEntity.ok(ApiResponse.success(ApiResponseConst.GET_CCKTL_SUCCESS, response));
     }
 
     @PatchMapping("/{cocktailId}")
@@ -84,42 +86,44 @@ public class CocktailController {
 
     @DeleteMapping("/{cocktailId}")
     public ResponseEntity<ApiResponse<Void>> deleteCocktail(@PathVariable Long cocktailId,
-        @AuthenticationPrincipal CustomUserDetails userDetails) {
+        @AuthenticationPrincipal CustomUserDetails userDetails) throws IOException {
 
-        DeleteCocktailSDto sDto = DeleteCocktailSDto.of(userDetails.getId(), cocktailId);
+        DeleteCocktailSDto sDto = DeleteCocktailSDto.of(userDetails.getId(),
+            userDetails.getUserRole(), cocktailId);
         cocktailService.deleteCocktail(sDto);
 
         return ResponseEntity.ok(ApiResponse.success(ApiResponseConst.DELETE_CCKTL_SUCCESS));
     }
 
     @GetMapping//조건별 검색
-    public ResponseEntity<ApiResponse<Page<CocktailResponseDto>>> getCocktails(@RequestParam(name = "page", defaultValue = "1")int page,
-                                                                               @RequestParam(name ="size", defaultValue = "10")int size,
-                                                                               @RequestParam(name ="keyword", required = false) String keyword,
-                                                                               @RequestParam(name = "recipeType", required = false) String recipeType
-    ){
+    public ResponseEntity<ApiResponse<List<CocktailResponseDto>>> getCocktailsByCondition(
+        @RequestParam(name = "page", defaultValue = "1") int page,
+        @RequestParam(name = "size", defaultValue = "10") int size,
+        @RequestParam(name = "keyword", required = false) String keyword,
+        @RequestParam(name = "recipeType", required = false) String  recipeType
+    )throws IOException {
         Pageable pageable = PageRequest.of(page - 1, size);
 
         findCocktailSDto sDto = findCocktailSDto.of(pageable, keyword, recipeType);
 
-        Page<CocktailResponseDto> responsePage = cocktailService.getCocktails(sDto);
+        List<CocktailResponseDto> responsePage = cocktailService.searchByCondition(sDto);
 
-        return ResponseEntity.ok(ApiResponse.success(ApiResponseConst.GET_CCKTL_LIST_SUCCESS, responsePage));
+        return ResponseEntity.ok(
+            ApiResponse.success(ApiResponseConst.GET_CCKTL_LIST_SUCCESS, responsePage));
 
     }
-
 
 
     @GetMapping("/popular")//인기 칵테일 조회
-    public ResponseEntity<ApiResponse<Page<CocktailResponseDto>>> getPopularCocktails(@RequestParam(name = "page", defaultValue = "1") int page,
-                                                                                        @RequestParam(name = "size", defaultValue = "10")int size)
-    {
+    public ResponseEntity<ApiResponse<Page<CocktailResponseDto>>> getPopularCocktails(
+        @RequestParam(name = "page", defaultValue = "1") int page,
+        @RequestParam(name = "size", defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page - 1, size);
 
-       Page<CocktailResponseDto> responseDtoPage = cocktailService.getPopularCocktails(pageable);
+        List<CocktailResponseDto> dtoResponse = cocktailService.getPopularCocktails();
+        Page<CocktailResponseDto> responsePage = new PageImpl<>(dtoResponse, pageable, dtoResponse.size());
 
-       return ResponseEntity.ok(ApiResponse.success(ApiResponseConst.GET_CCKTL_LIST_SUCCESS, responseDtoPage));
+        return ResponseEntity.ok(
+            ApiResponse.success(ApiResponseConst.GET_CCKTL_LIST_SUCCESS, responsePage));
     }
-
-
 }

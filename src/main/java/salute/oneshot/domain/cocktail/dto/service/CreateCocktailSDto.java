@@ -5,21 +5,23 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import salute.oneshot.domain.cocktail.dto.request.IngredientRequestDto;
+import salute.oneshot.domain.user.entity.UserRole;
 
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class CreateCocktailSDto {
 
     private final Long userId;
+    private final UserRole userRole;
     private final String name;
     private final String recipe;
     private final String description;
     private final List<IngredientRequestDto> ingredientList;
 
 
-    public static CreateCocktailSDto of(Long userId, String name, String recipe, String description,
+    public static CreateCocktailSDto of(Long userId, UserRole userRole, String name, String recipe, String description,
         List<IngredientRequestDto> ingredientList) {
-        return new CreateCocktailSDto(userId, name, recipe, description, ingredientList);
+        return new CreateCocktailSDto(userId, userRole, name, recipe, description, ingredientList);
     }
 
 }

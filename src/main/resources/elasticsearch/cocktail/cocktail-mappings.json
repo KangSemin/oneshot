@@ -1,0 +1,18 @@
+{
+  "properties": {
+    "description": {
+      "type": "text",
+      "analyzer": "desc_anal"
+    },
+    "ingredients": {
+      "type": "keyword"
+    },
+    "isOfficial": {
+      "type": "boolean"
+    },
+    "name": {
+      "type": "text",
+      "analyzer": "name_anal"
+    }
+  }
+}

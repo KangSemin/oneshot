@@ -20,6 +20,8 @@ public class CocktailResponseDto {
 
     public static CocktailResponseDto from(Cocktail cocktail) {
         return new CocktailResponseDto(cocktail.getId(), cocktail.getName(), cocktail.getDescription(), cocktail.getRecipe(), cocktail.getType(),
-                cocktail.getLikeCount(), cocktail.getId());
+
+                cocktail.getFavoriteCount(), cocktail.getId());
+
     }
 }
