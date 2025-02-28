@@ -14,6 +14,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import salute.oneshot.global.security.SecurityConst;
 import salute.oneshot.global.security.jwt.JwtAccessDeniedHandler;
 import salute.oneshot.global.security.jwt.JwtAuthenticationEntryPoint;
 import salute.oneshot.global.security.jwt.JwtFilter;
@@ -32,7 +33,6 @@ public class SecurityConfig {
     private final JwtAuthenticationEntryPoint authenticationEntryPoint;
     private final NonceGenerator nonceGenerator;
 
-
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         String nonce = nonceGenerator.getNonce();
@@ -45,25 +45,8 @@ public class SecurityConfig {
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .headers(headers -> headers
-                                // CSP: 웹 리소스 로딩 정책 설정
-                                // - 모든 리소스는 같은 출처(self)에서만 로드 허용
-                                // - XSS 방어 및 리소스 로딩 제어
-                                // 추후 외부에서 리소스 가져와야할 때 변경필요
                                 .contentSecurityPolicy(csp -> csp
-                                        .policyDirectives(
-                                                "default-src 'self'; " +     // 기본적으로 모든 리소스는 같은 출처에서만
-                                                "script-src 'self' https://t1.daumcdn.net https://spi.maps.daum.net " +
-                                                "https://js.tosspayments.com https://log.tosspayments.com 'nonce-" + nonce + "'; " +
-                                                "frame-src 'self' http://postcode.map.daum.net https://payment-gateway-sandbox.tosspayments.com; " +
-                                                "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " + // Google Fonts 스타일 시트 URL 추가
-                                                "font-src 'self' https://fonts.gstatic.com; " + // Google Fonts 폰트 도메인 추가
-                                                "img-src 'self'; " +         // 이미지 파일
-                                                "form-action 'self'; " +     // 폼 제출 대상
-                                                "connect-src 'self' https://log.tosspayments.com https://event.tosspayments.com https://apigw-sandbox.tosspayments.com;"// 네트워크 연결을 위한 'connect-src' 추가
-
-                                        ))
-
-                                // Clickjacking 방지: frame, iframe 에서 페이지 로드 차단
+                                        .policyDirectives(SecurityConst.CSP.buildFullPolicy(nonce)))
                                 .frameOptions(HeadersConfigurer.FrameOptionsConfig::deny)
 
                         // TODO: HTTPS 전환 후 HSTS 설정 활성화 필요

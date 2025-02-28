@@ -20,6 +20,7 @@ public class CustomHandshakeHandler extends DefaultHandshakeHandler {
             Map<String, Object> attributes
     ) {
         Long userId = ((CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
+        // TODO: UUID 리팩토링
         return new StompPrincipal(userId.toString());
     }
 }

@@ -7,8 +7,6 @@ import lombok.NoArgsConstructor;
 import salute.oneshot.domain.common.dto.entity.BaseEntity;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Table(name = "events")
@@ -30,38 +28,37 @@ public class Event extends BaseEntity {
     private LocalDateTime endTime;
 
     @Enumerated(EnumType.STRING)
+    private EventType eventType;
+
+    @Enumerated(EnumType.STRING)
     private EventStatus status;
 
-    @Column(name = "coupon_ids")
-    private String couponIds;
-
-    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<FreeEventWinner> winners = new ArrayList<>();
-
-    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<VoteEventCandidate> candidates = new ArrayList<>();
+    @OneToOne(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
+    private EventDetail eventDetail;
 
     private Event(
             String name,
             LocalDateTime startTime,
             LocalDateTime endTime,
-            String couponIds
+            EventType eventType
     ) {
         this.name = name;
         this.startTime = startTime;
         this.endTime = endTime;
+        this.eventType = eventType;
         this.status = EventStatus.UPCOMING;
-        this.couponIds = couponIds;
-        this.winners = new ArrayList<>();
-        this.candidates = new ArrayList<>();
     }
 
     public static Event of(
             String name,
             LocalDateTime startTime,
             LocalDateTime endTime,
-            String couponIds
+            EventType eventType
     ) {
-        return new Event(name, startTime, endTime, couponIds);
+        return new Event(name, startTime, endTime, eventType);
+    }
+
+    public void addEventDetail(EventDetail eventDetail) {
+        this.eventDetail = eventDetail;
     }
 }
