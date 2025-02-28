@@ -14,7 +14,7 @@ import java.util.Random;
 public class CocktailDomainDummyGenerator {
 
     private static final String COCKTAIL_TABLE_NAME = "cocktails";
-    private static final String COCKTAIL_COLUMNS = "id,name,description,recipe,type,created_at,modified_at,user_id,like_count,star_rate,view_count";
+    private static final String COCKTAIL_COLUMNS = "id,name,description,recipe,type,created_at,modified_at,user_id,favorite_count,star_rate,view_count";
     private static final List<String> COCKTAIL_NAME_START = new ArrayList<>();
     private static final List<String> COCKTAIL_NAME_MID = new ArrayList<>();
     private static final List<String> COCKTAIL_NAME_END = new ArrayList<>();
@@ -567,7 +567,6 @@ public class CocktailDomainDummyGenerator {
         List<String> cocktailIngrDataList = new ArrayList<>();
 
         Map<Integer, String> ingrName = new HashMap<>();
-        Map<Integer, String> cocktailName = new HashMap<>();
         Random random = new Random();
         int id = 0;
 
@@ -642,7 +641,6 @@ public class CocktailDomainDummyGenerator {
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter("bulkCocktail.json"))) {
 
-            List<Map<String, Object>> cocktailList = new ArrayList<>();
             id = 0;
             int ciId =0;
             for (String start : COCKTAIL_NAME_START) {
@@ -734,7 +732,7 @@ public class CocktailDomainDummyGenerator {
                             ingrCocktailBuilder.append(',');
 
                             //ingredientId
-                            ingrCocktailBuilder.append(random.nextInt(1, 10001));
+                            ingrCocktailBuilder.append(ingrId);
                             ingrCocktailBuilder.append(',');
 
                             //volume
@@ -757,7 +755,9 @@ public class CocktailDomainDummyGenerator {
             CSVGenerator.generate(COCKTAIL_INGR_TABLE_NAME, COCKTAIL_INGR_COLUMNS, cocktailIngrDataList);
 
             System.out.println("curl -XPOST \"localhost:9200/_bulk\" -H \"Content-Type: application/json\" --data-binary @bulkCocktail.json\n");
-            System.out.println("curl -XPOST \"localhost:9200/_bulk\" -H \"Content-Type: application/json\" --data-binary @bulkIngr.json\n");
+            System.out.println("""
+                split -l 20000 bulk_data.json bulk_chunk_ && for file in bulk_chunk_*; do curl -XPOST "localhost:9200/_bulk" -H "Content-Type: application/json" --data-binary "@$file"; done
+                """);
         } catch (IOException e) {
             e.printStackTrace();
         }
