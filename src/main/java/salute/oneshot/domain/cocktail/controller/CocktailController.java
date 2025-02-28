@@ -17,7 +17,6 @@ import salute.oneshot.domain.cocktail.dto.request.UpdateCocktailRequestDto;
 import salute.oneshot.domain.cocktail.dto.response.CocktailResponseDto;
 import salute.oneshot.domain.cocktail.dto.service.*;
 import salute.oneshot.domain.cocktail.service.CocktailService;
-import salute.oneshot.domain.cocktail.service.FavoriteAndViewCounter;
 import salute.oneshot.domain.common.dto.success.ApiResponse;
 import salute.oneshot.domain.common.dto.success.ApiResponseConst;
 import salute.oneshot.global.security.entity.CustomUserDetails;

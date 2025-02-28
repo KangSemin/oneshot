@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import salute.oneshot.domain.cocktail.entity.Cocktail;
 import salute.oneshot.domain.cocktail.repository.CocktailRepository;
-import salute.oneshot.domain.cocktail.service.FavoriteAndViewCounter;
+import salute.oneshot.global.util.FavoriteAndViewCounter;
 import salute.oneshot.domain.common.dto.error.ErrorCode;
 import salute.oneshot.domain.favorite.dto.response.FavoritePageResponseDto;
 import salute.oneshot.domain.favorite.dto.response.FavoriteResponseDto;

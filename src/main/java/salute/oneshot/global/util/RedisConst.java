@@ -1,4 +1,4 @@
-package salute.oneshot.domain.cocktail.service;
+package salute.oneshot.global.util;
 
 import org.springframework.stereotype.Component;
 

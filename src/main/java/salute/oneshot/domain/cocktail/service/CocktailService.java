@@ -25,11 +25,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import salute.oneshot.domain.cocktail.dto.request.IngredientRequestDto;
@@ -54,6 +52,8 @@ import salute.oneshot.domain.user.entity.UserRole;
 import salute.oneshot.domain.user.repository.UserRepository;
 import salute.oneshot.global.exception.NotFoundException;
 import salute.oneshot.global.exception.UnauthorizedException;
+import salute.oneshot.global.util.FavoriteAndViewCounter;
+import salute.oneshot.global.util.RedisConst;
 
 @Service
 @Slf4j
@@ -167,7 +167,7 @@ public class CocktailService {
     }
 
     @Transactional
-    @CachePut(value = "popular_cocktail", key = "#sDto.cocktailId")
+    @CachePut(value = RedisConst.POPULAR_COCKTAIL_KEY, key = "#sDto.cocktailId")
     public CocktailResponseDto updateCocktail(UpdateCocktailSDto sDto) {
 
         Cocktail cocktail = findById(sDto.getCocktailId());
