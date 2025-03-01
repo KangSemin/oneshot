@@ -105,6 +105,9 @@ public enum ErrorCode {
     INVALID_CANDIDATE(HttpStatus.BAD_REQUEST, "후보자 정보가 유효하지 않습니다."),
     INVALID_CANDIDATE_COUNT(HttpStatus.BAD_REQUEST, "후보자 수가 유효하지 않습니다."),
 
+    // 소셜로그인 관련 익셉션
+    INVALID_PROVIDER_NAME(HttpStatus.BAD_REQUEST, "유효하지 않은 소셜로그인 제공자 입니다"),
+
     // 인가 관련 익셉션
     FORBIDDEN_ACCESS(HttpStatus.FORBIDDEN, "접근 권한이 없습니다."),
 
@@ -114,7 +117,7 @@ public enum ErrorCode {
     EXPIRED_TOKEN(HttpStatus.UNAUTHORIZED, "만료된 JWT 토큰입니다."),
     INVALID_TOKEN(HttpStatus.FORBIDDEN, "유효하지 않은 토큰입니다."),
 
-    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류가 발생했습니다.");
+    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류가 발생했습니다."),;
 
     private final HttpStatus httpStatus;
     private final String message;

@@ -14,6 +14,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import salute.oneshot.domain.auth.handler.OAuth2FailureHandler;
+import salute.oneshot.domain.auth.handler.OAuth2SuccessHandler;
+import salute.oneshot.domain.auth.service.CustomOAuth2UserService;
 import salute.oneshot.global.security.SecurityConst;
 import salute.oneshot.global.security.jwt.JwtAccessDeniedHandler;
 import salute.oneshot.global.security.jwt.JwtAuthenticationEntryPoint;
@@ -32,6 +35,9 @@ public class SecurityConfig {
     private final JwtAccessDeniedHandler accessDeniedHandler;
     private final JwtAuthenticationEntryPoint authenticationEntryPoint;
     private final NonceGenerator nonceGenerator;
+    private final CustomOAuth2UserService oAuth2UserService;
+    private final OAuth2SuccessHandler oAuth2SuccessHandler;
+    private final OAuth2FailureHandler oAuth2FailureHandler;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -61,12 +67,19 @@ public class SecurityConfig {
 //                                .preload(true))
                 )
 
+                .oauth2Login(oauth -> oauth
+                        .userInfoEndpoint(userInfo -> userInfo.userService(oAuth2UserService))
+                        .successHandler(oAuth2SuccessHandler)
+                        .failureHandler(oAuth2FailureHandler))
+
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/**").permitAll()
+                        .requestMatchers("/oauth2/**").permitAll()
+                        .requestMatchers("/login/**").permitAll()
+                        .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/addresses/**").permitAll()
                         .requestMatchers("/payments/**").permitAll()
                         .requestMatchers("/orders/**").permitAll()
-                        .requestMatchers("/auth/**").permitAll()
                         .anyRequest().authenticated())
 
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)

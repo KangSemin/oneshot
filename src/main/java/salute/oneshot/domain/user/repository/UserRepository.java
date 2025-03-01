@@ -4,6 +4,7 @@ import io.lettuce.core.dynamic.annotation.Param;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import salute.oneshot.domain.auth.entity.OAuthProvider;
 import salute.oneshot.domain.user.entity.User;
 import salute.oneshot.domain.user.entity.UserRole;
 
@@ -26,4 +27,11 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Modifying
     @Query("UPDATE User u SET u.userRole = :role WHERE u.id = :userId AND u.userRole != :role")
     int updateUserRole(@Param("userId") Long userId, @Param("role") UserRole role);
+
+    @Query("SELECT u FROM User u JOIN FETCH u.socialUsers su " +
+            "WHERE su.providerId = :providerId " +
+            "AND su.provider = :provider")
+    Optional<User> findBySocialUser(
+            @Param("providerId") String providerId,
+            @Param("provider") OAuthProvider provider);
 }
