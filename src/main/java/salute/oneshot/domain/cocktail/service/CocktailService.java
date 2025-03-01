@@ -73,10 +73,7 @@ public class CocktailService {
 
         List<Ingredient> ingredientList = ingredientRepository.findAllById(sDto.getIngredientIds());
 
-        Page<Cocktail> cocktailPage = cocktailRepository.searchCocktailsByIngredients(ingredientList,pageable);
-
-        return cocktailPage.map(CocktailResponseDto::from);
-
+        return cocktailRepository.searchCocktailsByIngredients(ingredientList,pageable);
     }
 
     @Transactional
