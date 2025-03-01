@@ -83,6 +83,11 @@ dependencies {
 
 	// OAuth2.0
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+
+	//hide on bush
+	implementation 'net.datafaker:datafaker:1.5.0'
+
+
 }
 
 tasks.named('test') {
