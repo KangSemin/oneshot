@@ -5,7 +5,7 @@ import org.springframework.data.redis.core.*;
 import org.springframework.stereotype.Service;
 import salute.oneshot.domain.chat.dto.response.ChatPreviewResponseDto;
 import salute.oneshot.domain.chat.dto.response.FindChatResponseDto;
-import salute.oneshot.domain.chat.dto.response.FindChatsResponseDto;
+import salute.oneshot.domain.chat.dto.response.FindChatListResponseDto;
 import salute.oneshot.domain.chat.dto.response.MessageResponseDto;
 import salute.oneshot.domain.user.entity.UserRole;
 
@@ -59,11 +59,11 @@ public class ChatService {
         ops.trim(key, -MAX_CHAT_SIZE, -1);
     }
 
-    public FindChatsResponseDto findChats(String cursor, int limit) {
+    public FindChatListResponseDto findChatList(String cursor, int limit) {
         // 커서가 없으면 "0"으로 설정 (SCAN 시작)
         String scanCursor = (cursor == null || cursor.isEmpty()) ? "0" : cursor;
 
-        return redisTemplate.execute((RedisCallback<FindChatsResponseDto>) connection -> {
+        return redisTemplate.execute((RedisCallback<FindChatListResponseDto>) connection -> {
             List<ChatPreviewResponseDto> chatList = new ArrayList<>();
 
             // Lettuce 환경: Spring Data Redis의 scan 사용 (Cursor<byte[]>에는 native 커서가 없음)
@@ -76,7 +76,6 @@ public class ChatService {
                 String key = new String(keyBytes);
                 // 키 형식: "chat::{userId}" -> "::" 기준 분리
                 String[] parts = key.split("::");
-                if (parts.length < 2) continue;
                 String userId = parts[1];
                 // 해당 키의 리스트에서 마지막 요소를 가져옴
                 String lastMessage = redisTemplate.opsForList().index(key, -1);
@@ -91,7 +90,7 @@ public class ChatService {
             } catch (Exception e) {
                 // 예외는 로깅 또는 무시
             }
-            return FindChatsResponseDto.of(chatList, nextCursor);
+            return FindChatListResponseDto.of(chatList, nextCursor);
         });
     }
 }

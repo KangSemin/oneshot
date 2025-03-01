@@ -10,7 +10,7 @@ import salute.oneshot.domain.product.dto.response.ProductResponseDto;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class CartItemResponseDto {
     private final Long cartItemId;
-    private final ProductResponseDto productResponseDto;
+    private final ProductResponseDto product;
 
     private final Integer quantity;
 
