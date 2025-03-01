@@ -26,7 +26,7 @@ public class CSVGenerator {
                 FIELDS TERMINATED BY ','
                 LINES TERMINATED BY '\\n'
                 IGNORE 1 LINES
-                (%s);\n
+                (%s)\n
                 """,tableName,tableName,columns);
         } catch (IOException e) {
             e.printStackTrace();
