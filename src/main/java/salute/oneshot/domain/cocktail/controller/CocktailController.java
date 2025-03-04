@@ -102,7 +102,7 @@ public class CocktailController {
         @RequestParam(name = "keyword", required = false) String keyword,
         @RequestParam(name = "recipeType", required = false) String  recipeType
     )throws IOException {
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page - 1, size);
 
         findCocktailSDto sDto = findCocktailSDto.of(pageable, keyword, recipeType);
 

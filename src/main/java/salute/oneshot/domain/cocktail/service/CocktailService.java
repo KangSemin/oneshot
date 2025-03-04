@@ -207,7 +207,7 @@ public class CocktailService {
 
         SearchRequest searchRequest = new SearchRequest.Builder()
                 .index(COCKTAIL_INDEX)
-//                .size(sDto.getPageable().getPageSize())
+                .size(sDto.getPageable() .getPageSize() * (sDto.getPageable().getPageNumber() + 1))
                 .query(q -> q.bool(builder.build())).build();
 
         SearchResponse<CocktailDocument> response = client.search(searchRequest, CocktailDocument.class);
