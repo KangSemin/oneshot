@@ -187,6 +187,11 @@ public class CocktailService {
     }
 
     public Page<CocktailResponseDto> searchByCondition(findCocktailSDto sDto) throws IOException{
+
+        int size = sDto.getPageable().getPageSize();
+        int page = sDto.getPageable().getPageNumber();
+        int from = size * page;
+
         BoolQuery.Builder builder = QueryBuilders.bool();
 
         if(!sDto.getRecipeType().isBlank()){
@@ -206,22 +211,30 @@ public class CocktailService {
 
         SearchRequest searchRequest = new SearchRequest.Builder()
                 .index(COCKTAIL_INDEX)
-                .size(1000)//max
+                .from(from)
+                .size(size)
                 .query(q -> q.bool(builder.build())).build();
 
         SearchResponse<CocktailDocument> response = client.search(searchRequest, CocktailDocument.class);
 
-        Map<Long, Integer> responseCocktail = response.hits().hits().stream()
+        Map<Long, Double> responseCocktail = response.hits().hits().stream()
                 .filter(hit -> hit.source() != null)
                 .collect(Collectors.toMap(
 
                         hit -> Long.valueOf(hit.source().getId()),
-                        hit -> hit.score().intValue()
+                        hit -> hit.score().doubleValue()
                 ));
 
-        Page<CocktailResponseDto> cocktailPage = cocktailRepository.findAllById(responseCocktail.keySet().stream().toList(), sDto.getPageable())
-                                                                    .map(CocktailResponseDto::from);
-        return cocktailPage;
+        List<CocktailResponseDto> cocktailResponseDtoList = cocktailRepository.findAllById(responseCocktail.keySet().stream().toList())
+                .stream().map(CocktailResponseDto::from)
+                .sorted(Comparator.comparing(
+                        doc -> responseCocktail.get(doc.getId()),
+                        Comparator.reverseOrder()))
+                .toList();
+
+        long total = response.hits().total() == null ? 0 : response.hits().total().value();
+
+        return new PageImpl<>(cocktailResponseDtoList, sDto.getPageable(), total);
     }
 
 

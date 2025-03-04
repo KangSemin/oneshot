@@ -92,6 +92,11 @@ public class IngredientService {
 
     public Page<IngrResponseDto> searchByCondition(SearchIngrSDto sDto) throws IOException {
 
+        int size = sDto.getPageable().getPageSize();
+        int page = sDto.getPageable().getPageNumber();
+        int from = size * page;
+
+
         BoolQuery.Builder builder = QueryBuilders.bool();
 
         if (!sDto.getKeyword().isBlank()) {
@@ -105,7 +110,8 @@ public class IngredientService {
 
         SearchRequest searchRequest = new SearchRequest.Builder()
                 .index(INGREDIENT_INDEX)
-                .size(sDto.getPageable().getPageSize() * sDto.getPageable().getPageNumber())
+                .from(from)
+                .size(size)
                 .query(q -> q.bool(builder.build())).build();
 
         SearchResponse<IngredientDocument> response = client.search(searchRequest, IngredientDocument.class);
@@ -125,7 +131,9 @@ public class IngredientService {
                         Comparator.reverseOrder()))
                 .toList();
 
-        return new PageImpl<>(ingredientList, sDto.getPageable(), ingredientList.size());
+        long total = response.hits().total() == null ? 0 : response.hits().total().value();
+
+        return new PageImpl<>(ingredientList, sDto.getPageable(), total);
     }
 
     private void addShouldIfNotNull(BoolQuery.Builder builder, String condition, String fieldName, float boost){
