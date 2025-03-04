@@ -105,7 +105,7 @@ public class IngredientService {
 
         SearchRequest searchRequest = new SearchRequest.Builder()
                 .index(INGREDIENT_INDEX)
-                .size(sDto.getPageable().getPageSize())
+                .size(sDto.getPageable().getPageSize() * sDto.getPageable().getPageNumber())
                 .query(q -> q.bool(builder.build())).build();
 
         SearchResponse<IngredientDocument> response = client.search(searchRequest, IngredientDocument.class);
