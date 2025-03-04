@@ -102,7 +102,7 @@ public class CocktailController {
         @RequestParam(name = "keyword", required = false) String keyword,
         @RequestParam(name = "recipeType", required = false) String  recipeType
     )throws IOException {
-        Pageable pageable = PageRequest.of(page - 1, size);
+        Pageable pageable = PageRequest.of(page, size);
 
         findCocktailSDto sDto = findCocktailSDto.of(pageable, keyword, recipeType);
 
@@ -118,7 +118,7 @@ public class CocktailController {
     public ResponseEntity<ApiResponse<Page<CocktailResponseDto>>> getPopularCocktails(
         @RequestParam(name = "page", defaultValue = "1") int page,
         @RequestParam(name = "size", defaultValue = "10") int size) {
-        Pageable pageable = PageRequest.of(page - 1, size);
+        Pageable pageable = PageRequest.of(page , size);
 
         List<CocktailResponseDto> dtoResponse = cocktailService.getPopularCocktails();
         Page<CocktailResponseDto> responsePage = new PageImpl<>(dtoResponse, pageable, dtoResponse.size());

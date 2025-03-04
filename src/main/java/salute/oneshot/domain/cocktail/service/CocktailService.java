@@ -186,6 +186,7 @@ public class CocktailService {
     }
 
     public Page<CocktailResponseDto> searchByCondition(findCocktailSDto sDto) throws IOException{
+        log.info("서비스 호출");
 
         BoolQuery.Builder builder = QueryBuilders.bool();
 
@@ -206,7 +207,7 @@ public class CocktailService {
 
         SearchRequest searchRequest = new SearchRequest.Builder()
                 .index(COCKTAIL_INDEX)
-                .size(sDto.getPageable().getPageSize() * sDto.getPageable().getPageNumber())
+//                .size(sDto.getPageable().getPageSize())
                 .query(q -> q.bool(builder.build())).build();
 
         SearchResponse<CocktailDocument> response = client.search(searchRequest, CocktailDocument.class);
