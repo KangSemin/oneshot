@@ -29,6 +29,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import salute.oneshot.domain.cocktail.dto.request.IngredientRequestDto;
@@ -186,8 +187,6 @@ public class CocktailService {
     }
 
     public Page<CocktailResponseDto> searchByCondition(findCocktailSDto sDto) throws IOException{
-        log.info("서비스 호출");
-
         BoolQuery.Builder builder = QueryBuilders.bool();
 
         if(!sDto.getRecipeType().isBlank()){
@@ -207,12 +206,12 @@ public class CocktailService {
 
         SearchRequest searchRequest = new SearchRequest.Builder()
                 .index(COCKTAIL_INDEX)
-                .size(sDto.getPageable() .getPageSize() * (sDto.getPageable().getPageNumber() + 1))
+                .size(1000)//max
                 .query(q -> q.bool(builder.build())).build();
 
         SearchResponse<CocktailDocument> response = client.search(searchRequest, CocktailDocument.class);
 
-        Map<Long, Integer> responseInr = response.hits().hits().stream()
+        Map<Long, Integer> responseCocktail = response.hits().hits().stream()
                 .filter(hit -> hit.source() != null)
                 .collect(Collectors.toMap(
 
@@ -220,14 +219,9 @@ public class CocktailService {
                         hit -> hit.score().intValue()
                 ));
 
-        List<CocktailResponseDto> cocktailResponseDtoList = cocktailRepository.findAllById(responseInr.keySet())
-                .stream().map(CocktailResponseDto::from)
-                .sorted(Comparator.comparing(
-                        doc -> responseInr.get(doc.getId()),
-                        Comparator.reverseOrder()))
-                .toList();
-
-        return new PageImpl<>(cocktailResponseDtoList, sDto.getPageable(), cocktailResponseDtoList.size());
+        Page<CocktailResponseDto> cocktailPage = cocktailRepository.findAllById(responseCocktail.keySet().stream().toList(), sDto.getPageable())
+                                                                    .map(CocktailResponseDto::from);
+        return cocktailPage;
     }
 
 
