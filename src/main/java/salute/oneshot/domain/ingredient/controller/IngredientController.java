@@ -73,13 +73,13 @@ public class IngredientController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<ApiResponse<List<IngrResponseDto>>> getIngredientByCondition(@RequestParam(name = "keyword", required = false)String keyword,
+    public ResponseEntity<ApiResponse<Page<IngrResponseDto>>> getIngredientByCondition(@RequestParam(name = "keyword", required = false)String keyword,
                                                                                        @RequestParam(name = "category", required = false)String category,
                                                                                        @RequestParam(name = "size", defaultValue = "10") int size,
                                                                                        @RequestParam(name = "page", defaultValue = "1") int page)throws IOException{
         Pageable pageable = PageRequest.of(page - 1, size);
         SearchIngrSDto sDto = SearchIngrSDto.of(keyword, category, pageable);
-        List<IngrResponseDto> responseDtoPage = ingredientService.searchByCondition(sDto);
+        Page<IngrResponseDto> responseDtoPage = ingredientService.searchByCondition(sDto);
 
         return ResponseEntity.ok(ApiResponse.success(ApiResponseConst.GET_INGR_LIST_SUCCESS, responseDtoPage));
     }

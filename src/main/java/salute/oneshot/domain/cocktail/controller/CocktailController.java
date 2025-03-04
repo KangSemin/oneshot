@@ -96,7 +96,7 @@ public class CocktailController {
     }
 
     @GetMapping//조건별 검색
-    public ResponseEntity<ApiResponse<List<CocktailResponseDto>>> getCocktailsByCondition(
+    public ResponseEntity<ApiResponse<Page<CocktailResponseDto>>> getCocktailsByCondition(
         @RequestParam(name = "page", defaultValue = "1") int page,
         @RequestParam(name = "size", defaultValue = "10") int size,
         @RequestParam(name = "keyword", required = false) String keyword,
@@ -106,7 +106,7 @@ public class CocktailController {
 
         findCocktailSDto sDto = findCocktailSDto.of(pageable, keyword, recipeType);
 
-        List<CocktailResponseDto> responsePage = cocktailService.searchByCondition(sDto);
+        Page<CocktailResponseDto> responsePage = cocktailService.searchByCondition(sDto);
 
         return ResponseEntity.ok(
             ApiResponse.success(ApiResponseConst.GET_CCKTL_LIST_SUCCESS, responsePage));

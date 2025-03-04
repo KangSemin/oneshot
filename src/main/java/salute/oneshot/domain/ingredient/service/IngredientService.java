@@ -90,7 +90,7 @@ public class IngredientService {
         ingredientRepository.deleteById(ingredientId);
     }
 
-    public List<IngrResponseDto> searchByCondition(SearchIngrSDto sDto) throws IOException {
+    public Page<IngrResponseDto> searchByCondition(SearchIngrSDto sDto) throws IOException {
 
         BoolQuery.Builder builder = QueryBuilders.bool();
 
@@ -105,6 +105,7 @@ public class IngredientService {
 
         SearchRequest searchRequest = new SearchRequest.Builder()
                 .index(INGREDIENT_INDEX)
+                .size(sDto.getPageable().getPageSize())
                 .query(q -> q.bool(builder.build())).build();
 
         SearchResponse<IngredientDocument> response = client.search(searchRequest, IngredientDocument.class);
@@ -124,7 +125,7 @@ public class IngredientService {
                         Comparator.reverseOrder()))
                 .toList();
 
-        return ingredientList;
+        return new PageImpl<>(ingredientList, sDto.getPageable(), ingredientList.size());
     }
 
     private void addShouldIfNotNull(BoolQuery.Builder builder, String condition, String fieldName, float boost){
