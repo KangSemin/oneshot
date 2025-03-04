@@ -61,4 +61,18 @@ public class Event extends BaseEntity {
     public void addEventDetail(EventDetail eventDetail) {
         this.eventDetail = eventDetail;
     }
+
+    public void updateEvent(
+            String name,
+            EventType eventType,
+            LocalDateTime startTime,
+            LocalDateTime endTime,
+            String eventDetailJson
+    ) {
+        this.name = name;
+        this.eventType = eventType;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.eventDetail.updateDetailData(eventDetailJson);
+    }
 }
