@@ -90,6 +90,7 @@ public class IngredientService {
         ingredientRepository.deleteById(ingredientId);
     }
 
+    @Transactional(readOnly = true)
     public Page<IngrResponseDto> searchByCondition(SearchIngrSDto sDto) throws IOException {
 
         int size = sDto.getPageable().getPageSize();
@@ -135,6 +136,7 @@ public class IngredientService {
 
         return new PageImpl<>(ingredientList, sDto.getPageable(), total);
     }
+
 
     private void addShouldIfNotNull(BoolQuery.Builder builder, String condition, String fieldName, float boost){
         builder.should(Query.of(q -> q.match(m -> m.field(fieldName)

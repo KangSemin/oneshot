@@ -10,6 +10,7 @@ import co.elastic.clients.elasticsearch._types.query_dsl.TermsSetQuery;
 import co.elastic.clients.elasticsearch.core.DeleteRequest;
 import co.elastic.clients.elasticsearch.core.SearchRequest;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -19,6 +20,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CachePut;
@@ -70,32 +72,32 @@ public class CocktailService {
     private final ElasticsearchClient client;
     private final RedisTemplate<String, String> redisTemplate;
     private final CocktailScheduler popularCocktailUpdater;
-    
+
     @Transactional
     public void createCocktail(CreateCocktailSDto sDto) {
 
         User user = userRepository.getReferenceById(sDto.getUserId());
 
         RecipeType recipeType =
-            sDto.getUserRole().equals(UserRole.USER) ? RecipeType.CUSTOM : RecipeType.OFFICIAL;
+                sDto.getUserRole().equals(UserRole.USER) ? RecipeType.CUSTOM : RecipeType.OFFICIAL;
 
         Cocktail cocktail = Cocktail.of(sDto.getName(), sDto.getDescription(), sDto.getRecipe(),
-            recipeType, user, new ArrayList<>());
+                recipeType, user, new ArrayList<>());
 
         cocktailRepository.save(cocktail);
 
         List<Long> ingredientIds = sDto.getIngredientList().stream()
-            .map(IngredientRequestDto::getIngredientId)
-            .toList();
+                .map(IngredientRequestDto::getIngredientId)
+                .toList();
 
         Map<Long, Ingredient> ingredientMap = ingredientRepository.findAllById(ingredientIds)
-            .stream()
-            .collect(Collectors.toMap(Ingredient::getId, Function.identity()));
+                .stream()
+                .collect(Collectors.toMap(Ingredient::getId, Function.identity()));
 
         List<CocktailIngredient> ingredientList = sDto.getIngredientList().stream()
-            .map(req -> CocktailIngredient.of(cocktail, ingredientMap.get(req.getIngredientId()),
-                req.getVolume()))
-            .collect(Collectors.toList());
+                .map(req -> CocktailIngredient.of(cocktail, ingredientMap.get(req.getIngredientId()),
+                        req.getVolume()))
+                .collect(Collectors.toList());
 
         cocktailIngredientRepository.saveAll(ingredientList);
         operations.save(CocktailDocument.of(cocktail, ingredientMap));
@@ -103,53 +105,57 @@ public class CocktailService {
 
     @Transactional(readOnly = true)
     public Page<CocktailResponseDto> findCocktailsByIngr(SearchCocktailSDto sDto)
-        throws IOException {
+            throws IOException {
+
 
         List<Ingredient> ingredientList = ingredientRepository.findAllById(sDto.getIngredientIds());
 
         Set<String> termSet = ingredientList.stream()
-            .flatMap(ingr -> ingr.getCategory().equals(IngredientCategory.OTHER)
-                ? Stream.of(ingr.getName())
-                : Stream.of(ingr.getName(), ingr.getCategory().toString()))
-            .collect(Collectors.toSet());
+                .flatMap(ingr -> ingr.getCategory().equals(IngredientCategory.OTHER)
+                        ? Stream.of(ingr.getName())
+                        : Stream.of(ingr.getName(), ingr.getCategory().toString()))
+                .collect(Collectors.toSet());
 
         Script script = new Builder().source("doc['ingredients'].size()").build();
 
         BoolQuery.Builder queryBuilder = QueryBuilders.bool();
 
-        if(sDto.getRecipeType()!=null){
+        if (sDto.getRecipeType() != null) {
             queryBuilder.must(Query.of(q -> q.term(w -> w.field("isOfficial")
-                .value(sDto.getRecipeType().equals(RecipeType.OFFICIAL)))));
+                    .value(sDto.getRecipeType().equals(RecipeType.OFFICIAL)))));
         }
 
         TermsSetQuery termsSetQuery = QueryBuilders.termsSet().field(INGR_FIELD)
-            .terms(new ArrayList<>(termSet))
-            .minimumShouldMatchScript(script).build();
+                .terms(new ArrayList<>(termSet))
+                .minimumShouldMatchScript(script).build();
 
         queryBuilder.filter(termsSetQuery._toQuery());
 
-        SearchResponse<CocktailDocument> response = searchByQuery(queryBuilder.build());
+        SearchResponse<CocktailDocument> response = searchByQuery(queryBuilder.build(), sDto.getPage(), sDto.getSize());
 
         List<Long> cocktailIds = response.hits().hits().stream()
-            .map(hit -> Long.parseLong(hit.source().getId()))
-            .toList();
+                .map(hit -> Long.parseLong(hit.source().getId()))
+                .toList();
 
         Pageable pageable = PageRequest.of(sDto.getPage() - 1, sDto.getSize());
-        Page<Cocktail> cocktailPage = cocktailRepository.findAllById(cocktailIds, pageable);
+        List<CocktailResponseDto> cocktailList = cocktailRepository.findAllById(cocktailIds)
+                                                        .stream().map(CocktailResponseDto::from).toList();
 
-        return cocktailPage.map(CocktailResponseDto::from);
+        long total = response.hits().total() == null ? 0 : response.hits().total().value();
+
+        return new PageImpl<>(cocktailList, pageable, total);
     }
 
     @Transactional
     public void deleteCocktail(DeleteCocktailSDto sDto) throws IOException {
 
         if (!(cocktailRepository.existsByIdAndUserId(sDto.getCocktailId(), sDto.getUserId())
-            && sDto.getUserRole().equals(UserRole.ADMIN))) {
+                && sDto.getUserRole().equals(UserRole.ADMIN))) {
             throw new UnauthorizedException(ErrorCode.FORBIDDEN_ACCESS);
         }
 
         DeleteRequest deleteRequest = new DeleteRequest.Builder().index("cocktails")
-            .id(sDto.getCocktailId().toString()).build();
+                .id(sDto.getCocktailId().toString()).build();
         client.delete(deleteRequest);
         cocktailRepository.deleteById(sDto.getCocktailId());
     }
@@ -174,11 +180,11 @@ public class CocktailService {
         }
 
         List<CocktailIngredient> ingredientList = sDto.getIngredientList().stream()
-            .map(req -> {
-                Ingredient ingredient = ingredientRepository.getReferenceById(
-                    req.getIngredientId());
-                return CocktailIngredient.of(cocktail, ingredient, req.getVolume());
-            }).toList();
+                .map(req -> {
+                    Ingredient ingredient = ingredientRepository.getReferenceById(
+                            req.getIngredientId());
+                    return CocktailIngredient.of(cocktail, ingredient, req.getVolume());
+                }).toList();
 
         cocktail.update(sDto.getName(), sDto.getDescription(), sDto.getRecipe(), ingredientList);
         operations.update(CocktailDocument.from(cocktail));
@@ -186,15 +192,15 @@ public class CocktailService {
         return CocktailResponseDto.from(cocktail);
     }
 
-    public Page<CocktailResponseDto> searchByCondition(findCocktailSDto sDto) throws IOException{
+    @Transactional(readOnly = true)
+    public Page<CocktailResponseDto> searchByCondition(findCocktailSDto sDto) throws IOException {
 
-        int size = sDto.getPageable().getPageSize();
         int page = sDto.getPageable().getPageNumber();
-        int from = size * page;
+        int size = sDto.getPageable().getPageSize();
 
         BoolQuery.Builder builder = QueryBuilders.bool();
 
-        if(!sDto.getRecipeType().isBlank()){
+        if (!sDto.getRecipeType().isBlank()) {
 
             boolean isOfficial = (sDto.getRecipeType().toUpperCase().equals(RecipeType.OFFICIAL.name()));
 
@@ -209,13 +215,9 @@ public class CocktailService {
             addShouldIfNotNull(builder, sDto.getKeyword(), "recipe", 2.0f);
         }
 
-        SearchRequest searchRequest = new SearchRequest.Builder()
-                .index(COCKTAIL_INDEX)
-                .from(from)
-                .size(size)
-                .query(q -> q.bool(builder.build())).build();
 
-        SearchResponse<CocktailDocument> response = client.search(searchRequest, CocktailDocument.class);
+
+        SearchResponse<CocktailDocument> response = searchByQuery(builder.build(), page, size);
 
         Map<Long, Double> responseCocktail = response.hits().hits().stream()
                 .filter(hit -> hit.source() != null)
@@ -238,7 +240,6 @@ public class CocktailService {
     }
 
 
-
     @Cacheable(cacheNames = "popular_cocktail", key = "'popular'")
     public List<CocktailResponseDto> getPopularCocktails() {
 
@@ -249,27 +250,29 @@ public class CocktailService {
 
     private Cocktail findById(Long cocktailId) {
         return cocktailRepository.findById(cocktailId)
-            .orElseThrow(() -> new NotFoundException(ErrorCode.COCKTAIL_NOT_FOUND));
+                .orElseThrow(() -> new NotFoundException(ErrorCode.COCKTAIL_NOT_FOUND));
     }
 
     public void increaseViewCountAndScore(Long cocktailId) {
         String cocktailCountKey = RedisConst.COCKTAIL_COUNT_KEY_PREFIX + cocktailId;
         String cocktailScoreKey = RedisConst.COCKTAIL_SCORE_KEY_PREFIX + cocktailId;
 
-        redisTemplate.opsForHash().increment(cocktailCountKey,"viewCount",1);
+        redisTemplate.opsForHash().increment(cocktailCountKey, "viewCount", 1);
         redisTemplate.opsForZSet().incrementScore(RedisConst.COCKTAIL_SCORE_KEY, cocktailScoreKey, 1);
 
     }
 
-    private void addShouldIfNotNull(BoolQuery.Builder builder, String condition, String fieldName, float boost){
+    private void addShouldIfNotNull(BoolQuery.Builder builder, String condition, String fieldName, float boost) {
         builder.should(Query.of(q -> q.match(m -> m.field(fieldName)
                 .query(condition.toLowerCase()).boost(boost))));
     }
 
-    private SearchResponse<CocktailDocument> searchByQuery(BoolQuery query) throws IOException{
+    private SearchResponse<CocktailDocument> searchByQuery(BoolQuery query, int page, int size) throws IOException {
         SearchRequest searchRequest = new SearchRequest.Builder()
-            .index(COCKTAIL_INDEX)
-            .query(q -> q.bool(query)).build();
+                .index(COCKTAIL_INDEX)
+                .from(page * size)
+                .size(size)
+                .query(q -> q.bool(query)).build();
 
         return client.search(searchRequest, CocktailDocument.class);
     }
