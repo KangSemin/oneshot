@@ -24,6 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
@@ -184,7 +185,7 @@ public class CocktailService {
         return CocktailResponseDto.from(cocktail);
     }
 
-    public List<CocktailResponseDto> searchByCondition(findCocktailSDto sDto) throws IOException{
+    public Page<CocktailResponseDto> searchByCondition(findCocktailSDto sDto) throws IOException{
 
         BoolQuery.Builder builder = QueryBuilders.bool();
 
@@ -205,6 +206,7 @@ public class CocktailService {
 
         SearchRequest searchRequest = new SearchRequest.Builder()
                 .index(COCKTAIL_INDEX)
+                .size(sDto.getPageable().getPageSize() * sDto.getPageable().getPageNumber())
                 .query(q -> q.bool(builder.build())).build();
 
         SearchResponse<CocktailDocument> response = client.search(searchRequest, CocktailDocument.class);
@@ -224,7 +226,7 @@ public class CocktailService {
                         Comparator.reverseOrder()))
                 .toList();
 
-        return cocktailResponseDtoList;
+        return new PageImpl<>(cocktailResponseDtoList, sDto.getPageable(), cocktailResponseDtoList.size());
     }
 
 
