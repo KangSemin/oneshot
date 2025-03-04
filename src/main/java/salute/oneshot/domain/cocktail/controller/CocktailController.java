@@ -1,9 +1,19 @@
 package salute.oneshot.domain.cocktail.controller;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneOffset;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -22,6 +32,7 @@ import salute.oneshot.domain.common.dto.success.ApiResponse;
 import salute.oneshot.domain.common.dto.success.ApiResponseConst;
 import salute.oneshot.global.security.entity.CustomUserDetails;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/cocktails")
 @RequiredArgsConstructor
@@ -31,12 +42,12 @@ public class CocktailController {
 
     @PostMapping
     public ResponseEntity<ApiResponse<CocktailResponseDto>> createCocktail(
-        @RequestBody CreateCocktailRequestDto request,
-        @AuthenticationPrincipal CustomUserDetails userDetails) {
+            @RequestBody CreateCocktailRequestDto request,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
 
         CreateCocktailSDto sDto = CreateCocktailSDto.of(userDetails.getId(),
-            userDetails.getUserRole(), request.getName(),
-            request.getDescription(), request.getRecipe(), request.getIngredientList());
+                userDetails.getUserRole(), request.getName(),
+                request.getDescription(), request.getRecipe(), request.getIngredientList());
 
         cocktailService.createCocktail(sDto);
 
@@ -44,22 +55,107 @@ public class CocktailController {
     }
 
 
+//    @GetMapping("/{cocktailId}")
+//    public ResponseEntity<ApiResponse<CocktailResponseDto>> getCocktail(
+//            @PathVariable Long cocktailId) {
+//
+//        CocktailResponseDto response = cocktailService.getCocktail(cocktailId);
+//
+//        return ResponseEntity.ok(
+//                ApiResponse.success(ApiResponseConst.GET_CCKTL_SUCCESS, response));
+//    }
+
+
+    /*TODO: 현재 cookie가 null일 가능성이 있음*/
+
     @GetMapping("/{cocktailId}")
-    public ResponseEntity<ApiResponse<CocktailResponseDto>> getCocktail(
-        @PathVariable Long cocktailId) {
+    public ResponseEntity<ApiResponse> addCocktailViewCount(
+            HttpServletRequest request, HttpServletResponse httpResponse, @PathVariable(name = "cocktailId") Long cocktailId) {
 
-        CocktailResponseDto response = cocktailService.getCocktail(cocktailId);
+        Cookie[] cookies = request.getCookies();
+        Cookie cookie = null;
 
-        return ResponseEntity.ok(
-            ApiResponse.success(ApiResponseConst.GET_CCKTL_SUCCESS, response));
+        boolean isCookie = false;
+
+
+        if (cookies != null) {
+            Optional<Cookie> optionalCookie = Arrays.stream(cookies)
+                    .filter(cookie1 -> "viewCount".equals(cookie1.getName()))
+                    .findAny();
+
+            if (optionalCookie.isPresent()) {
+                cookie = optionalCookie.get();
+                isCookie = cookie.getValue() != null && cookie.getValue().contains("[" + cocktailId + "]");
+            }
+        }
+
+
+        if (cookie == null) {
+            cookie = new Cookie("viewCount", "[" + cocktailId + "]");
+        } else if (!isCookie) {
+            cookie.setValue(cookie.getValue() + "[" + cocktailId + "]");
+        }
+
+
+        if (!isCookie) {
+            cocktailService.increaseViewCountAndScore(cocktailId);
+        }
+
+
+        long todayEndTime = LocalDate.now().atTime(LocalTime.MAX).toEpochSecond(ZoneOffset.UTC);
+        long currentTime = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
+        cookie.setPath("/");
+        cookie.setMaxAge((int) (todayEndTime - currentTime));
+
+        httpResponse.addCookie(cookie);
+
+        log.info("컨트롤러에서의 칵테일 아이디" + cocktailId);
+        CocktailResponseDto responseDto = cocktailService.getCocktail(cocktailId);
+
+        return ResponseEntity.ok(ApiResponse.success(ApiResponseConst.GET_CCKTL_SUCCESS, responseDto));
     }
+
+//    public ResponseEntity<ApiResponse> addCocktailViewCount(
+//            HttpServletRequest request, HttpServletResponse httpResponse, Long cocktailId) {
+//
+//        Cookie[] cookies = request.getCookies(); // 가 null이 아니면,
+//        Cookie cookie = null;
+//
+//        boolean isCookie = false;
+//
+//        Optional<Cookie> optionalCookie = Arrays.stream(cookies)
+//                .filter(cookie1 -> cookie1.getName().equals("viewCount")).findAny();// viewCount라는 쿠키가 존재하는지 확인한다, null인지 확인
+//
+//
+//        if (!optionalCookie.isPresent()) {// 쿠키가 존재한다면
+//            cookie = optionalCookie.get();
+//            isCookie = cookie.getValue().contains("[" + cocktailId + "]");
+//        }
+//
+//        if (!isCookie) {
+//            cookie.setValue("[" + cocktailId + "]");
+//            cocktailService.increaseViewCountAndScore(cocktailId);
+//        }
+//
+//        long todayEndTime = LocalDate.now().atTime(LocalTime.MAX).toEpochSecond(ZoneOffset.UTC);
+//        long currentTime = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
+//        cookie.setPath("/");
+//        cookie.setMaxAge((int) (todayEndTime - currentTime));
+//
+//        httpResponse.addCookie(cookie);
+//
+//        CocktailResponseDto responseDto = cocktailService.getCocktail(cocktailId);
+//
+//        return ResponseEntity.ok(ApiResponse.success(ApiResponseConst.GET_CCKTL_SUCCESS, responseDto));
+//    }
+
 
     @GetMapping("/search")
     public ResponseEntity<ApiResponse<Page<CocktailResponseDto>>> searchWithIngredients(
-        @RequestBody SearchCocktailByIngrsReqDto request,
-        @RequestParam(required = false) RecipeType recipeType,
-        @RequestParam(defaultValue = "1") int page,
-        @RequestParam(defaultValue = "10") int size) throws IOException{
+            @RequestBody SearchCocktailByIngrsReqDto request,
+            @RequestParam(required = false) RecipeType recipeType,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size) throws IOException {
 
         SearchCocktailSDto sDto = SearchCocktailSDto.of(request.getIngredientIds(), recipeType, page, size);
 
@@ -70,26 +166,26 @@ public class CocktailController {
 
     @PatchMapping("/{cocktailId}")
     public ResponseEntity<ApiResponse<CocktailResponseDto>> updateCocktail(
-        @PathVariable Long cocktailId,
-        @RequestBody UpdateCocktailRequestDto request,
-        @AuthenticationPrincipal CustomUserDetails userDetails) {
+            @PathVariable Long cocktailId,
+            @RequestBody UpdateCocktailRequestDto request,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
 
         UpdateCocktailSDto sDto = UpdateCocktailSDto.of(cocktailId, userDetails.getId(),
-            request.getName(), request.getRecipe(),
-            request.getDescription(), request.getIngredientList());
+                request.getName(), request.getRecipe(),
+                request.getDescription(), request.getIngredientList());
 
         CocktailResponseDto response = cocktailService.updateCocktail(sDto);
 
         return ResponseEntity.ok(
-            ApiResponse.success(ApiResponseConst.UPDATE_CCKTL_SUCCESS, response));
+                ApiResponse.success(ApiResponseConst.UPDATE_CCKTL_SUCCESS, response));
     }
 
     @DeleteMapping("/{cocktailId}")
     public ResponseEntity<ApiResponse<Void>> deleteCocktail(@PathVariable Long cocktailId,
-        @AuthenticationPrincipal CustomUserDetails userDetails) throws IOException {
+                                                            @AuthenticationPrincipal CustomUserDetails userDetails) throws IOException {
 
         DeleteCocktailSDto sDto = DeleteCocktailSDto.of(userDetails.getId(),
-            userDetails.getUserRole(), cocktailId);
+                userDetails.getUserRole(), cocktailId);
         cocktailService.deleteCocktail(sDto);
 
         return ResponseEntity.ok(ApiResponse.success(ApiResponseConst.DELETE_CCKTL_SUCCESS));
@@ -97,11 +193,11 @@ public class CocktailController {
 
     @GetMapping//조건별 검색
     public ResponseEntity<ApiResponse<List<CocktailResponseDto>>> getCocktailsByCondition(
-        @RequestParam(name = "page", defaultValue = "1") int page,
-        @RequestParam(name = "size", defaultValue = "10") int size,
-        @RequestParam(name = "keyword", required = false) String keyword,
-        @RequestParam(name = "recipeType", required = false) String  recipeType
-    )throws IOException {
+            @RequestParam(name = "page", defaultValue = "1") int page,
+            @RequestParam(name = "size", defaultValue = "10") int size,
+            @RequestParam(name = "keyword", required = false) String keyword,
+            @RequestParam(name = "recipeType", required = false) String recipeType
+    ) throws IOException {
         Pageable pageable = PageRequest.of(page - 1, size);
 
         findCocktailSDto sDto = findCocktailSDto.of(pageable, keyword, recipeType);
@@ -109,21 +205,21 @@ public class CocktailController {
         List<CocktailResponseDto> responsePage = cocktailService.searchByCondition(sDto);
 
         return ResponseEntity.ok(
-            ApiResponse.success(ApiResponseConst.GET_CCKTL_LIST_SUCCESS, responsePage));
+                ApiResponse.success(ApiResponseConst.GET_CCKTL_LIST_SUCCESS, responsePage));
 
     }
 
 
     @GetMapping("/popular")//인기 칵테일 조회
     public ResponseEntity<ApiResponse<Page<CocktailResponseDto>>> getPopularCocktails(
-        @RequestParam(name = "page", defaultValue = "1") int page,
-        @RequestParam(name = "size", defaultValue = "10") int size) {
+            @RequestParam(name = "page", defaultValue = "1") int page,
+            @RequestParam(name = "size", defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page - 1, size);
 
         List<CocktailResponseDto> dtoResponse = cocktailService.getPopularCocktails();
         Page<CocktailResponseDto> responsePage = new PageImpl<>(dtoResponse, pageable, dtoResponse.size());
 
         return ResponseEntity.ok(
-            ApiResponse.success(ApiResponseConst.GET_CCKTL_LIST_SUCCESS, responsePage));
+                ApiResponse.success(ApiResponseConst.GET_CCKTL_LIST_SUCCESS, responsePage));
     }
 }

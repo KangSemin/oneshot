@@ -155,10 +155,18 @@ public class CocktailService {
     @Transactional
     public CocktailResponseDto getCocktail(Long cocktailId) {
 
-        Cocktail cocktail = findById(cocktailId);
-        increaseViewCountAndScore(cocktailId);// 조회점수가 올라간다
+        log.info("서비스에서의 칵테일 아이디:" + cocktailId );
 
+        Cocktail cocktail = findById(cocktailId);
         return CocktailResponseDto.from(cocktail);
+    }
+
+    public void increaseViewCountAndScore(Long cocktailId) {// 이거를 중복조회가 아닐때만 호출해야함
+        String cocktailCountKey = RedisConst.COCKTAIL_COUNT_KEY_PREFIX + cocktailId;
+        String cocktailScoreKey = RedisConst.COCKTAIL_SCORE_KEY_PREFIX + cocktailId;
+
+        redisTemplate.opsForHash().increment(cocktailCountKey,"viewCount",1);
+        redisTemplate.opsForZSet().incrementScore(RedisConst.COCKTAIL_SCORE_KEY, cocktailScoreKey, 1);
     }
 
     @Transactional
@@ -240,15 +248,6 @@ public class CocktailService {
     private Cocktail findById(Long cocktailId) {
         return cocktailRepository.findById(cocktailId)
             .orElseThrow(() -> new NotFoundException(ErrorCode.COCKTAIL_NOT_FOUND));
-    }
-
-    public void increaseViewCountAndScore(Long cocktailId) {
-        String cocktailCountKey = RedisConst.COCKTAIL_COUNT_KEY_PREFIX + cocktailId;
-        String cocktailScoreKey = RedisConst.COCKTAIL_SCORE_KEY_PREFIX + cocktailId;
-
-        redisTemplate.opsForHash().increment(cocktailCountKey,"viewCount",1);
-        redisTemplate.opsForZSet().incrementScore(RedisConst.COCKTAIL_SCORE_KEY, cocktailScoreKey, 1);
-
     }
 
     private void addShouldIfNotNull(BoolQuery.Builder builder, String condition, String fieldName, float boost){
