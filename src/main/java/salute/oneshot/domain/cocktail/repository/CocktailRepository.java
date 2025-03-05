@@ -43,4 +43,12 @@ public interface CocktailRepository extends JpaRepository<Cocktail, Long> , Cock
     Page<Cocktail> findAllById(List<Long> ids, Pageable pageable);
 
 
+    @Query("""
+    SELECT c FROM Cocktail c
+    LEFT JOIN FETCH c.user
+    LEFT JOIN FETCH c.ingredientList ci
+    LEFT JOIN FETCH ci.ingredient
+    WHERE c.id in :ids
+    """)
+    List<Cocktail> findAllById(List<Long> ids);
 }

@@ -15,7 +15,7 @@ import salute.oneshot.global.exception.InvalidException;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class FreeEventProcessor implements EventProcessor{
+public class FreeEventProcessor implements EventProcessor {
 
     private final ObjectMapper objectMapper;
 
@@ -25,8 +25,8 @@ public class FreeEventProcessor implements EventProcessor{
     }
 
     @Override
-        public void validateDetails(Object detailJson) {
-        FreeEventData data = parseDetailData(detailJson);
+    public void validateEventDetail(Object eventDetail) {
+        FreeEventData data = parseEventDetail(eventDetail);
 
         if (data.getCoupons().isEmpty()) {
             throw new InvalidException(ErrorCode.MISSING_COUPON);
@@ -42,16 +42,13 @@ public class FreeEventProcessor implements EventProcessor{
     }
 
     @Override
-    public FreeEventData parseDetailData(Object detailJson) {
-        if (detailJson == null) {
+    public FreeEventData parseEventDetail(Object eventDetail) {
+        if (eventDetail == null) {
             throw new InvalidException(ErrorCode.INVALID_JSON_DATA);
         }
 
         try {
-            if (detailJson instanceof String) {
-                return objectMapper.readValue((String) detailJson, FreeEventData.class);
-            }
-            return objectMapper.convertValue(detailJson, FreeEventData.class);
+            return objectMapper.convertValue(eventDetail, FreeEventData.class);
         } catch (Exception e) {
             log.error("Free event JSON 파싱 실패: {}", e.getMessage(), e);
             throw new InvalidException(ErrorCode.INVALID_JSON_DATA);
@@ -59,9 +56,9 @@ public class FreeEventProcessor implements EventProcessor{
     }
 
     @Override
-    public String convertToJson(Object data) {
+    public String convertEventDetailToJson(Object eventDetail) {
         try {
-            return objectMapper.writeValueAsString(data);
+            return objectMapper.writeValueAsString(eventDetail);
         } catch (JsonProcessingException e) {
             log.error("Free event DTO 파싱 실패: {}", e.getMessage(), e);
             throw new InvalidException(ErrorCode.INVALID_JSON_DATA);

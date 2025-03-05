@@ -25,8 +25,8 @@ public class VoteEventProcessor implements EventProcessor {
     }
 
     @Override
-    public void validateDetails(Object detailJson) {
-        VoteEventData data = parseDetailData(detailJson);
+    public void validateEventDetail(Object detailJson) {
+        VoteEventData data = parseEventDetail(detailJson);
 
         if (data.getCoupons().size() != 2) {
             throw new InvalidException(ErrorCode.INVALID_COUPON_COUNT);
@@ -55,15 +55,12 @@ public class VoteEventProcessor implements EventProcessor {
     }
 
     @Override
-    public VoteEventData parseDetailData(Object detailJson) {
+    public VoteEventData parseEventDetail(Object detailJson) {
         if (detailJson == null) {
             throw new InvalidException(ErrorCode.INVALID_JSON_DATA);
         }
 
         try {
-            if (detailJson instanceof String) {
-                return objectMapper.readValue((String) detailJson, VoteEventData.class);
-            }
             return objectMapper.convertValue(detailJson, VoteEventData.class);
         } catch (Exception e) {
             log.error("Vote event JSON 파싱 실패: {}", e.getMessage(), e);
@@ -72,7 +69,7 @@ public class VoteEventProcessor implements EventProcessor {
     }
 
     @Override
-    public String convertToJson(Object data) {
+    public String convertEventDetailToJson(Object data) {
         try {
             return objectMapper.writeValueAsString(data);
         } catch (JsonProcessingException e) {

@@ -16,7 +16,7 @@ public class CreateEventSDto {
     private final LocalDateTime startTime;
     private final LocalDateTime endTime;
     private final EventType eventType;
-    private final Object eventDetailJson;
+    private final Object eventDetail;
 
     public static CreateEventSDto of(
             String name,
@@ -25,7 +25,7 @@ public class CreateEventSDto {
             String endDate,
             String endTime,
             EventType eventType,
-            Object eventDetailJson
+            Object eventDetail
     ) {
         return new CreateEventSDto(
                 name,
@@ -36,6 +36,6 @@ public class CreateEventSDto {
                         endDate,
                         endTime),
                 eventType,
-                eventDetailJson);
+                eventDetail);
     }
 }

@@ -141,17 +141,17 @@ public class CocktailController {
     }
 
     @GetMapping//조건별 검색
-    public ResponseEntity<ApiResponse<List<CocktailResponseDto>>> getCocktailsByCondition(
-            @RequestParam(name = "page", defaultValue = "1") int page,
-            @RequestParam(name = "size", defaultValue = "10") int size,
-            @RequestParam(name = "keyword", required = false) String keyword,
-            @RequestParam(name = "recipeType", required = false) String recipeType
-    ) throws IOException {
+    public ResponseEntity<ApiResponse<Page<CocktailResponseDto>>> getCocktailsByCondition(
+        @RequestParam(name = "page", defaultValue = "1") int page,
+        @RequestParam(name = "size", defaultValue = "10") int size,
+        @RequestParam(name = "keyword", required = false) String keyword,
+        @RequestParam(name = "recipeType", required = false) String  recipeType
+    )throws IOException {
         Pageable pageable = PageRequest.of(page - 1, size);
 
         findCocktailSDto sDto = findCocktailSDto.of(pageable, keyword, recipeType);
 
-        List<CocktailResponseDto> responsePage = cocktailService.searchByCondition(sDto);
+        Page<CocktailResponseDto> responsePage = cocktailService.searchByCondition(sDto);
 
         return ResponseEntity.ok(
                 ApiResponse.success(ApiResponseConst.GET_CCKTL_LIST_SUCCESS, responsePage));
@@ -161,9 +161,10 @@ public class CocktailController {
 
     @GetMapping("/popular")//인기 칵테일 조회
     public ResponseEntity<ApiResponse<Page<CocktailResponseDto>>> getPopularCocktails(
-            @RequestParam(name = "page", defaultValue = "1") int page,
-            @RequestParam(name = "size", defaultValue = "10") int size) {
-        Pageable pageable = PageRequest.of(page - 1, size);
+        @RequestParam(name = "page", defaultValue = "1") int page,
+        @RequestParam(name = "size", defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page - 1 , size);
+
 
         List<CocktailResponseDto> dtoResponse = cocktailService.getPopularCocktails();
         Page<CocktailResponseDto> responsePage = new PageImpl<>(dtoResponse, pageable, dtoResponse.size());
