@@ -31,7 +31,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import salute.oneshot.domain.cocktail.dto.request.IngredientRequestDto;
@@ -53,8 +52,6 @@ import salute.oneshot.domain.user.repository.UserRepository;
 import salute.oneshot.global.exception.NotFoundException;
 import salute.oneshot.global.exception.UnauthorizedException;
 import salute.oneshot.global.util.RedisConst;
-
-import java.util.*;
 
 @Service
 @Slf4j
@@ -116,7 +113,6 @@ public class CocktailService {
                         : Stream.of(ingr.getName(), ingr.getCategory().toString()))
                 .collect(Collectors.toSet());
 
-        Script script = new Builder().source("doc['ingredients'].size()").build();
 
         BoolQuery.Builder queryBuilder = QueryBuilders.bool();
 
@@ -125,11 +121,23 @@ public class CocktailService {
                     .value(sDto.getRecipeType().equals(RecipeType.OFFICIAL)))));
         }
 
-        TermsSetQuery termsSetQuery = QueryBuilders.termsSet().field(INGR_FIELD)
-                .terms(new ArrayList<>(termSet))
-                .minimumShouldMatchScript(script).build();
 
-        queryBuilder.filter(termsSetQuery._toQuery());
+
+        if (sDto.getIsCraftable())
+        {
+            Script script = new Builder().source("doc['ingredients'].size()").build();
+            TermsSetQuery termsSetQuery = QueryBuilders.termsSet().field(INGR_FIELD)
+            .terms(new ArrayList<>(termSet))
+            .minimumShouldMatchScript(script)
+            .build();
+
+            queryBuilder.filter(termsSetQuery._toQuery());
+        }else {
+            for (String term : termSet) {
+                queryBuilder.should(Query.of(q -> q.match(m -> m.field(INGR_FIELD).query(term))));
+            }
+            queryBuilder.minimumShouldMatch("1");
+        }
 
         SearchResponse<CocktailDocument> response = searchByQuery(queryBuilder.build(), sDto.getPage(), sDto.getSize());
 

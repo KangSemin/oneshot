@@ -79,7 +79,7 @@ public class CocktailController {
         }
         // 파일 이름을 엔티티에 함께 저장
         // Url ex) https://oneshot-bucket2.s3.ap-northeast-2.amazonaws.com/(파일이름).jpg
-        // 사진을 조회할 때 -> amazonS3.getUrl(bucketName, s3FileName).toString()
+//         사진을 조회할 때 -> amazonS3.getUrl(bucketName, s3FileName).toString()
 
 
         CreateCocktailSDto sDto = CreateCocktailSDto.of(userDetails.getId(),
@@ -139,10 +139,11 @@ public class CocktailController {
     public ResponseEntity<ApiResponse<Page<CocktailResponseDto>>> searchWithIngredients(
             @RequestBody SearchCocktailByIngrsReqDto request,
             @RequestParam(required = false) RecipeType recipeType,
+            @RequestParam(defaultValue = "false") Boolean isCraftable,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size) throws IOException {
 
-        SearchCocktailSDto sDto = SearchCocktailSDto.of(request.getIngredientIds(), recipeType, page, size);
+        SearchCocktailSDto sDto = SearchCocktailSDto.of(request.getIngredientIds(), isCraftable, recipeType, page, size);
 
         Page<CocktailResponseDto> response = cocktailService.findCocktailsByIngr(sDto);
 
