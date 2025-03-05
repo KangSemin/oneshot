@@ -62,7 +62,7 @@
 
             try {
                 // Spring Boot 서버 주소 (예: 로컬호스트)
-                const response = await fetch('http://localhost:8080/api/cocktails', {
+                const response = await fetch('/api/cocktails/upload', {
                     method: 'POST',
                     body: formData,
                     // credentials: "include" // 쿠키가 포함되도록 설정

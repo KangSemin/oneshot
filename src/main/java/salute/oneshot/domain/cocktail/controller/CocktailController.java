@@ -1,14 +1,5 @@
 package salute.oneshot.domain.cocktail.controller;
 
-import java.io.IOException;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.ZoneOffset;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -21,6 +12,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import salute.oneshot.domain.cocktail.dto.request.CreateCocktailForUploadRequestDto;
 import salute.oneshot.domain.cocktail.dto.request.CreateCocktailRequestDto;
 import salute.oneshot.domain.cocktail.dto.request.SearchCocktailByIngrsReqDto;
 import salute.oneshot.domain.cocktail.dto.request.UpdateCocktailRequestDto;
@@ -31,6 +24,16 @@ import salute.oneshot.domain.cocktail.service.CocktailService;
 import salute.oneshot.domain.common.dto.success.ApiResponse;
 import salute.oneshot.domain.common.dto.success.ApiResponseConst;
 import salute.oneshot.global.security.entity.CustomUserDetails;
+import salute.oneshot.global.util.S3Uploader;
+
+import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneOffset;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @RestController
@@ -39,6 +42,7 @@ import salute.oneshot.global.security.entity.CustomUserDetails;
 public class CocktailController {
 
     private final CocktailService cocktailService;
+    private final S3Uploader s3Uploader;
 
     @PostMapping
     public ResponseEntity<ApiResponse<CocktailResponseDto>> createCocktail(
@@ -54,6 +58,38 @@ public class CocktailController {
         return ResponseEntity.ok(ApiResponse.success(ApiResponseConst.ADD_RCP_SUCCESS));
     }
 
+    // 이미지 업로드 API 코드 예시
+    // MultipartFile을 사용하는 방식은 Form 형태로 받기 위해서 @ModelAttribute 사용
+    @PostMapping("/upload")
+    public ResponseEntity<ApiResponse<CocktailResponseDto>> createCocktailForUpload(
+            @ModelAttribute CreateCocktailForUploadRequestDto request,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        // 예시코드
+        // S3Uploader 빈 의존성 주입 필요
+        MultipartFile imageFile = request.getImageFile();
+
+        String imageFileName;
+        if (imageFile != null) {
+            try {
+                imageFileName = s3Uploader.upload(imageFile);
+            } catch (IOException e) {
+                // IOException 예외처리
+            }
+        }
+        // 파일 이름을 엔티티에 함께 저장
+        // Url ex) https://oneshot-bucket2.s3.ap-northeast-2.amazonaws.com/(파일이름).jpg
+        // 사진을 조회할 때 -> amazonS3.getUrl(bucketName, s3FileName).toString()
+
+
+        CreateCocktailSDto sDto = CreateCocktailSDto.of(userDetails.getId(),
+                userDetails.getUserRole(), request.getName(),
+                request.getDescription(), request.getRecipe(), request.getIngredientList());
+
+        cocktailService.createCocktail(sDto);
+
+        return ResponseEntity.ok(ApiResponse.success(ApiResponseConst.ADD_RCP_SUCCESS));
+    }
 
     @GetMapping("/{cocktailId}")
     private ResponseEntity<ApiResponse<CocktailResponseDto>> getCocktail(HttpServletRequest request,
