@@ -84,7 +84,7 @@ public class AdminCouponController {
             @RequestBody UserCpnRequestDto requestDto
     ) {
         CreateUserCpnSDto serviceDto =
-                CreateUserCpnSDto.of(couponId, requestDto);
+                CreateUserCpnSDto.of(couponId, requestDto.getUserId());
         UserCpnBriefResponseDto responseDto =
                 couponService.grantUserCoupon(serviceDto);
 
