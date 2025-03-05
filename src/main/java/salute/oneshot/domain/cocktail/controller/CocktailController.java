@@ -24,7 +24,7 @@ import salute.oneshot.domain.cocktail.service.CocktailService;
 import salute.oneshot.domain.common.dto.success.ApiResponse;
 import salute.oneshot.domain.common.dto.success.ApiResponseConst;
 import salute.oneshot.global.security.entity.CustomUserDetails;
-import salute.oneshot.global.util.S3Uploader;
+import salute.oneshot.global.util.S3Util;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -42,7 +42,7 @@ import java.util.Optional;
 public class CocktailController {
 
     private final CocktailService cocktailService;
-    private final S3Uploader s3Uploader;
+    private final S3Util s3Util;
 
     @PostMapping
     public ResponseEntity<ApiResponse<CocktailResponseDto>> createCocktail(
@@ -72,14 +72,14 @@ public class CocktailController {
         String imageFileName;
         if (imageFile != null) {
             try {
-                imageFileName = s3Uploader.upload(imageFile);
+                imageFileName = s3Util.upload(imageFile);
             } catch (IOException e) {
                 // IOException 예외처리
             }
         }
         // 파일 이름을 엔티티에 함께 저장
         // Url ex) https://oneshot-bucket2.s3.ap-northeast-2.amazonaws.com/(파일이름).jpg
-        // 사진을 조회할 때 -> amazonS3.getUrl(bucketName, s3FileName).toString()
+        // 사진을 조회할 때 -> s3Uploader.getUrl(fileName)
 
 
         CreateCocktailSDto sDto = CreateCocktailSDto.of(userDetails.getId(),
