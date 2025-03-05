@@ -47,9 +47,7 @@ public class CouponController {
             @RequestParam(required = false) String startDate,
             @RequestParam(required = false) String endDate
     ) {
-        Pageable pageable = PageRequest.of(
-                page - 1, size, Sort.by("modifiedAt").descending()
-        );
+        Pageable pageable = getPageable(page, size);
         GetCpnSDto serviceDto =
                 GetCpnSDto.of(startDate, endDate, pageable);
         CpnPageResponseDto responseDto =
@@ -81,9 +79,7 @@ public class CouponController {
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) String status
     ) {
-        Pageable pageable = PageRequest.of(
-                page - 1, size, Sort.by("modifiedAt").descending()
-        );
+        Pageable pageable = getPageable(page, size);
         GetUserCpnSDto serviceDto =
                 GetUserCpnSDto.of(userDetails.getId(), status, pageable);
         UserCpnPageResponseDto responseDto =
@@ -109,5 +105,31 @@ public class CouponController {
                 .body(ApiResponse.success(
                         ApiResponseConst.GET_CPN_SUCCESS,
                         responseDto));
+    }
+
+    @GetMapping("/for-event")
+    public ResponseEntity<ApiResponse<CpnPageResponseDto>> getCouponsForEvent(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam String eventStartDate,
+            @RequestParam String eventEndDate
+    ) {
+        Pageable pageable = getPageable(page, size);
+        GetCpnSDto serviceDto =
+                GetCpnSDto.of(eventStartDate, eventEndDate, pageable);
+        CpnPageResponseDto responseDto =
+                couponService.getCouponsForEvent(serviceDto);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ApiResponse.success(
+                        ApiResponseConst.GET_CPN_LIST_SUCCESS,
+                        responseDto));
+    }
+
+    private Pageable getPageable(int page, int size) {
+        return PageRequest.of(
+                page - 1,
+                size,
+                Sort.by("modifiedAt").descending());
     }
 }
