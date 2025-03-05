@@ -77,6 +77,18 @@ public class AdminEventController {
                         responseDto));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
+    @DeleteMapping("/{eventId}")
+    public ResponseEntity<ApiResponse<Long>> deleteEvent(
+            @PathVariable Long eventId
+    ) {
+        Long deletedId = eventService.deleteEvent(eventId);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ApiResponse.success(
+                        ApiResponseConst.DELETE_EVENT_SUCCESS,
+                        deletedId));
+    }
 
     private void validateEventDate(LocalDateTime startTime, LocalDateTime endTime) {
         if (endTime.isBefore(LocalDateTime.now())) {

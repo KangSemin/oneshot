@@ -76,6 +76,14 @@ public class EventService {
         return EventDetailResponseDto.of(event, eventDetail);
     }
 
+    @Transactional
+    public Long deleteEvent(Long eventId) {
+        if (eventRepository.deleteEventById(eventId) == 1) {
+            return eventId;
+        }
+        throw new NotFoundException(ErrorCode.COUPON_NOT_FOUND);
+    }
+
     @Transactional(readOnly = true)
     public EventDetailResponseDto getEvent(Long eventId) {
         Event event = getEventById(eventId);
