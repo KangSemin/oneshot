@@ -66,41 +66,33 @@ public class CocktailController {
 //    }
 
 
-    /*TODO: 현재 cookie가 null일 가능성이 있음*/
 
     @GetMapping("/{cocktailId}")
-    public ResponseEntity<ApiResponse> addCocktailViewCount(
+    public ResponseEntity<ApiResponse<CocktailResponseDto>> getCocktailAndManageView(
             HttpServletRequest request, HttpServletResponse httpResponse, @PathVariable(name = "cocktailId") Long cocktailId) {
 
         Cookie[] cookies = request.getCookies();
+
         Cookie cookie = null;
 
-        boolean isCookie = false;
+        boolean isCookieExist = false;
 
+        Optional<Cookie> optionalCookie = Arrays.stream(cookies)//null일 수도 있음
+                .filter(cookie1 -> cookie1.getName().equals("viewCount")).findAny();
 
-        if (cookies != null) {
-            Optional<Cookie> optionalCookie = Arrays.stream(cookies)
-                    .filter(cookie1 -> "viewCount".equals(cookie1.getName()))
-                    .findAny();
-
-            if (optionalCookie.isPresent()) {
-                cookie = optionalCookie.get();
-                isCookie = cookie.getValue() != null && cookie.getValue().contains("[" + cocktailId + "]");
-            }
+        if(optionalCookie.isEmpty()){
+            cookie = new Cookie("viewCount", null);
         }
 
+        if (optionalCookie.isPresent()) {
+            cookie = optionalCookie.get();
+            isCookieExist = cookie.getValue().contains("[" + cocktailId + "]");
+        }
 
-        if (cookie == null) {
-            cookie = new Cookie("viewCount", "[" + cocktailId + "]");
-        } else if (!isCookie) {
+        if (!isCookieExist) {
             cookie.setValue(cookie.getValue() + "[" + cocktailId + "]");
-        }
-
-
-        if (!isCookie) {
             cocktailService.increaseViewCountAndScore(cocktailId);
         }
-
 
         long todayEndTime = LocalDate.now().atTime(LocalTime.MAX).toEpochSecond(ZoneOffset.UTC);
         long currentTime = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
@@ -109,45 +101,10 @@ public class CocktailController {
 
         httpResponse.addCookie(cookie);
 
-        log.info("컨트롤러에서의 칵테일 아이디" + cocktailId);
         CocktailResponseDto responseDto = cocktailService.getCocktail(cocktailId);
 
         return ResponseEntity.ok(ApiResponse.success(ApiResponseConst.GET_CCKTL_SUCCESS, responseDto));
     }
-
-//    public ResponseEntity<ApiResponse> addCocktailViewCount(
-//            HttpServletRequest request, HttpServletResponse httpResponse, Long cocktailId) {
-//
-//        Cookie[] cookies = request.getCookies(); // 가 null이 아니면,
-//        Cookie cookie = null;
-//
-//        boolean isCookie = false;
-//
-//        Optional<Cookie> optionalCookie = Arrays.stream(cookies)
-//                .filter(cookie1 -> cookie1.getName().equals("viewCount")).findAny();// viewCount라는 쿠키가 존재하는지 확인한다, null인지 확인
-//
-//
-//        if (!optionalCookie.isPresent()) {// 쿠키가 존재한다면
-//            cookie = optionalCookie.get();
-//            isCookie = cookie.getValue().contains("[" + cocktailId + "]");
-//        }
-//
-//        if (!isCookie) {
-//            cookie.setValue("[" + cocktailId + "]");
-//            cocktailService.increaseViewCountAndScore(cocktailId);
-//        }
-//
-//        long todayEndTime = LocalDate.now().atTime(LocalTime.MAX).toEpochSecond(ZoneOffset.UTC);
-//        long currentTime = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
-//        cookie.setPath("/");
-//        cookie.setMaxAge((int) (todayEndTime - currentTime));
-//
-//        httpResponse.addCookie(cookie);
-//
-//        CocktailResponseDto responseDto = cocktailService.getCocktail(cocktailId);
-//
-//        return ResponseEntity.ok(ApiResponse.success(ApiResponseConst.GET_CCKTL_SUCCESS, responseDto));
-//    }
 
 
     @GetMapping("/search")
