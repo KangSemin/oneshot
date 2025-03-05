@@ -11,7 +11,6 @@ import java.util.List;
 public class VoteEventData {
 
     private final List<Coupon> coupons;
-    private final int limitCount;
     private final List<Candidate> candidates;
 
     @Getter
