@@ -19,20 +19,20 @@ public class EventDetail {
     private Event event;
 
     @Column(columnDefinition = "TEXT")
-    private String detailData;   // JSON 형태로 저장
+    private String detailDataJson;
 
     private EventDetail(
             Event event,
-            String detailData) {
+            String detailDataJson) {
         this.event = event;
-        this.detailData = detailData;
+        this.detailDataJson = detailDataJson;
     }
 
-    public static EventDetail of(Event event, String detailData) {
-        return new EventDetail(event, detailData);
+    public static EventDetail of(Event event, String detailDataJson) {
+        return new EventDetail(event, detailDataJson);
     }
 
-    public void updateDetailData(String detailData) {
-        this.detailData = detailData;
+    public void updateDetailData(String detailDataJson) {
+        this.detailDataJson = detailDataJson;
     }
 }
