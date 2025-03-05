@@ -78,6 +78,9 @@ services:
       SPRING_DATA_REDIS_PORT: 6379
       SPRING_ELASTICSEARCH_URIS: ${ELASTICSEARCH_HOST}
       JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      CLOUD_AWS_CREDENTIALS_ACCESS_KEY: AKIA3LET5RE5TLALZ72Z
+      CLOUD_AWS_CREDENTIALS_SECRET_KEY: ${AWS_SECRET_KEY}
+      CLOUD_AWS_S3_BUCKET_NAME: oneshot-bucket2
     depends_on:
         elasticsearch:
           condition: service_healthy
