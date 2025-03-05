@@ -87,7 +87,10 @@ dependencies {
 	//hide on bush
 	implementation 'net.datafaker:datafaker:1.5.0'
 
-
+	// RabbitMQ
+	implementation 'org.springframework.boot:spring-boot-starter-amqp'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'com.fasterxml.jackson.core:jackson-databind'
 }
 
 tasks.named('test') {
