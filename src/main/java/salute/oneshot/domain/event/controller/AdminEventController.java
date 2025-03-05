@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import salute.oneshot.domain.common.dto.error.ErrorCode;
 import salute.oneshot.domain.common.dto.success.ApiResponse;
 import salute.oneshot.domain.common.dto.success.ApiResponseConst;
@@ -32,12 +33,14 @@ public class AdminEventController {
     ) {
         CreateEventSDto serviceDto = CreateEventSDto.of(
                 requestDto.getName(),
+                requestDto.getDescription(),
                 requestDto.getStartDate(),
                 requestDto.getStartTime(),
                 requestDto.getEndDate(),
                 requestDto.getEndTime(),
                 requestDto.getEventType(),
-                requestDto.getEventDetail());
+                requestDto.getLimitCount(),
+                requestDto.getEventDetailData());
         validateEventDate(
                 serviceDto.getStartTime(),
                 serviceDto.getEndTime());
@@ -59,12 +62,13 @@ public class AdminEventController {
         UpdateEventSDto serviceDto = UpdateEventSDto.of(
                 eventId,
                 requestDto.getName(),
+                requestDto.getDescription(),
                 requestDto.getStartDate(),
                 requestDto.getStartTime(),
                 requestDto.getEndDate(),
                 requestDto.getEndTime(),
                 requestDto.getEventType(),
-                requestDto.getEventDetail());
+                requestDto.getEventDetailData());
         validateEventDate(
                 serviceDto.getStartTime(),
                 serviceDto.getEndTime());
@@ -89,8 +93,20 @@ public class AdminEventController {
                         ApiResponseConst.DELETE_EVENT_SUCCESS,
                         deletedId));
     }
+    // 배너 클릭 -> 이벤트 GET 화면에서 SSE 구독
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/event-stream/{eventId}")
+    public SseEmitter streamEventUpdates(
+            @PathVariable Long eventId
+    ) {
+        return eventService.subscribeEvent(eventId);
+    }
 
-    private void validateEventDate(LocalDateTime startTime, LocalDateTime endTime) {
+    // 이벤트의 날짜 유효성 체크
+    private void validateEventDate(
+            LocalDateTime startTime,
+            LocalDateTime endTime
+    ) {
         if (endTime.isBefore(LocalDateTime.now())) {
             throw new InvalidException(ErrorCode.EXPIRED_EVENT);
         }
