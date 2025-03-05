@@ -55,21 +55,11 @@ public class CocktailController {
     }
 
 
-//    @GetMapping("/{cocktailId}")
-//    public ResponseEntity<ApiResponse<CocktailResponseDto>> getCocktail(
-//            @PathVariable Long cocktailId) {
-//
-//        CocktailResponseDto response = cocktailService.getCocktail(cocktailId);
-//
-//        return ResponseEntity.ok(
-//                ApiResponse.success(ApiResponseConst.GET_CCKTL_SUCCESS, response));
-//    }
-
-
-
     @GetMapping("/{cocktailId}")
-    public ResponseEntity<ApiResponse<CocktailResponseDto>> getCocktailAndManageView(
-            HttpServletRequest request, HttpServletResponse httpResponse, @PathVariable(name = "cocktailId") Long cocktailId) {
+    private ResponseEntity<ApiResponse<CocktailResponseDto>> getCocktail(HttpServletRequest request,
+                                                                                  HttpServletResponse httpResponse,
+                                                                                  @PathVariable(name = "cocktailId") Long cocktailId
+    ){
 
         Cookie[] cookies = request.getCookies();
 
@@ -77,16 +67,18 @@ public class CocktailController {
 
         boolean isCookieExist = false;
 
-        Optional<Cookie> optionalCookie = Arrays.stream(cookies)//null일 수도 있음
-                .filter(cookie1 -> cookie1.getName().equals("viewCount")).findAny();
+        Optional<Cookie> optionalCookie = Arrays.stream(cookies)
+                .filter(c -> c.getName().equals("viewCount")).findAny();
 
         if(optionalCookie.isEmpty()){
-            cookie = new Cookie("viewCount", null);
-        }
 
-        if (optionalCookie.isPresent()) {
+            cookie = new Cookie("viewCount", "");
+
+        }else {
+
             cookie = optionalCookie.get();
             isCookieExist = cookie.getValue().contains("[" + cocktailId + "]");
+
         }
 
         if (!isCookieExist) {
