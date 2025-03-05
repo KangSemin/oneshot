@@ -31,40 +31,27 @@ public class Banner extends BaseEntity {
     @Column(nullable = false)
     private LocalDateTime endTime;
 
-    private Banner(
-            Event event,
-            String imageUrl,
-            LocalDateTime startTime,
-            LocalDateTime endTime
-    ) {
+    private Banner(Event event, String imageUrl) {
         this.event = event;
         this.imageUrl = imageUrl;
-        this.startTime = startTime;
-        this.endTime = endTime;
+        this.startTime = event.getStartTime().minusDays(7);
+        this.endTime = event.getEndTime();
     }
 
-    public static Banner of(
-            Event event,
-            String imageUrl,
-            LocalDateTime startTime,
-            LocalDateTime endTime
-    ) {
-        return new Banner(
-                event,
-                imageUrl,
-                startTime,
-                endTime);
+    public static Banner of(Event event, String imageUrl) {
+        return new Banner(event, imageUrl);
     }
 
     public void updateBanner(
             Event event,
-            String imageUrl,
-            LocalDateTime startTime,
-            LocalDateTime endTime
+            String imageUrl
     ) {
         this.event = event;
         this.imageUrl = imageUrl;
-        this.startTime = startTime;
-        this. endTime = endTime;
+    }
+
+    public void syncWithEventTime() {
+        this.startTime = event.getStartTime().minusDays(7);
+        this.endTime = event.getEndTime();
     }
 }

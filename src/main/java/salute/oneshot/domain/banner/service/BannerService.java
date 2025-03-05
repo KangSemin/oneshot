@@ -16,6 +16,8 @@ import salute.oneshot.domain.event.entity.Event;
 import salute.oneshot.domain.event.repository.EventRepository;
 import salute.oneshot.global.exception.NotFoundException;
 
+import java.time.LocalDateTime;
+
 @Service
 @RequiredArgsConstructor
 public class BannerService {
@@ -25,12 +27,10 @@ public class BannerService {
 
     @Transactional
     public BannerResponseDto createBanner(BannerSDto serviceDto) {
-        Event event = eventRepository.getReferenceById(serviceDto.getEventId());
-        Banner banner = Banner.of(
-                event,
-                serviceDto.getImageUrl(),
-                serviceDto.getStartTime(),
-                serviceDto.getEndTime());
+        Event event = eventRepository.findById(serviceDto.getEventId())
+                .orElseThrow(() ->
+                        new NotFoundException(ErrorCode.BANNER_NOT_FOUND));
+        Banner banner = Banner.of(event, serviceDto.getImageUrl());
         bannerRepository.save(banner);
 
         return BannerResponseDto.from(banner);
@@ -41,12 +41,7 @@ public class BannerService {
         Event event = eventRepository.getReferenceById(serviceDto.getEventId());
         Banner banner = getBannerById(serviceDto.getBannerId());
 
-        banner.updateBanner(
-                event,
-                serviceDto.getImageUrl(),
-                serviceDto.getStartTime(),
-                serviceDto.getEndTime());
-
+        banner.updateBanner(event, serviceDto.getImageUrl());
         return BannerResponseDto.from(banner);
     }
 
@@ -75,6 +70,11 @@ public class BannerService {
     public BannerResponseDto getBanner(Long bannerId) {
         Banner banner = getBannerById(bannerId);
         return BannerResponseDto.from(banner);
+    }
+
+    @Transactional
+    public void deleteBannersByEndTime(LocalDateTime now) {
+        bannerRepository.deleteBannersByEndTime(now);
     }
 
     private Banner getBannerById(Long bannerId) {
