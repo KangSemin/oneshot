@@ -6,6 +6,7 @@ import org.springframework.cache.annotation.CachePut;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import salute.oneshot.domain.cocktail.dto.response.CocktailResponseDto;
 import salute.oneshot.domain.cocktail.entity.Cocktail;
 import salute.oneshot.domain.cocktail.repository.CocktailQueryDslRepositoryImpl;
@@ -49,6 +50,7 @@ public class CocktailScheduler {
         return responseDtoList;
     }
 
+    @Transactional
     @Scheduled(cron = "0 0/5 * * * ?")
     public void updateCocktailViewAndFavoriteCountToDB() {
         log.info("데이터 정합성 맞춤");
