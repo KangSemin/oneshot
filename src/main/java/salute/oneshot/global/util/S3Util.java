@@ -16,7 +16,7 @@ import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
-public class S3Uploader {
+public class S3Util {
     @Value("${cloud.aws.s3.bucketName}")
     private String bucketName;
 
@@ -54,8 +54,16 @@ public class S3Uploader {
             is.close();
         }
 
+
         return s3FileName;
     }
+
+
+    public String getUrl(String fileName) {
+        return amazonS3.getUrl(bucketName, fileName).toString();
+    }
+
+
 
 
 }
