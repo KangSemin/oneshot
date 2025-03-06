@@ -40,10 +40,12 @@ public class UserService {
     @Transactional
     public UserResponseDto updateUserInfo(UpdateUserSDto userUpdateSDto) {
         User user = getUserById(userUpdateSDto.getId());
-        user.update(
-                userUpdateSDto.getNickName(),
-                passwordEncoder.encode(userUpdateSDto.getPassword())
-        );
+
+        String password = userUpdateSDto.getPassword();
+        if (password != null) {
+            password = passwordEncoder.encode(password);
+        }
+        user.update(userUpdateSDto.getNickname(), password);
 
         return UserResponseDto.from(user);
     }
