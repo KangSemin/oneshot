@@ -98,7 +98,9 @@ public class User extends BaseEntity {
 
     public void update(String nickName, String password) {
         this.nickName = nickName;
-        this.password = password;
+        if (password != null) {
+            this.password = password;
+        }
     }
 
     public void addSocialUser(SocialUser socialUser) {
