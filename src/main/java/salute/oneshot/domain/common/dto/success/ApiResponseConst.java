@@ -116,4 +116,5 @@ public class ApiResponseConst {
     public static final String DELETE_EVENT_SUCCESS = "이벤트 삭제가 완료되었습니다.";
     public static final String GET_EVT_SUCCESS = "이벤트 조회가 완료되었습니다.";
     public static final String GET_EVT_LIST_SUCCESS = "이벤트 목록 조회가 완료되었습니다.";
+    public static final String PRT_EVENT_SUCCESS = "이벤트 참여를 완료했습니다.";
 }

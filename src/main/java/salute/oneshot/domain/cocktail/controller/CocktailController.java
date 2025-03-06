@@ -82,6 +82,7 @@ public class CocktailController {
         // 사진을 조회할 때 -> s3Uploader.getUrl(fileName)
 
 
+
         CreateCocktailSDto sDto = CreateCocktailSDto.of(userDetails.getId(),
                 userDetails.getUserRole(), request.getName(),
                 request.getDescription(), request.getRecipe(), request.getIngredientList());
@@ -139,10 +140,11 @@ public class CocktailController {
     public ResponseEntity<ApiResponse<Page<CocktailResponseDto>>> searchWithIngredients(
             @RequestBody SearchCocktailByIngrsReqDto request,
             @RequestParam(required = false) RecipeType recipeType,
+            @RequestParam(defaultValue = "false") Boolean isCraftable,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size) throws IOException {
 
-        SearchCocktailSDto sDto = SearchCocktailSDto.of(request.getIngredientIds(), recipeType, page, size);
+        SearchCocktailSDto sDto = SearchCocktailSDto.of(request.getIngredientIds(), isCraftable, recipeType, page, size);
 
         Page<CocktailResponseDto> response = cocktailService.findCocktailsByIngr(sDto);
 
