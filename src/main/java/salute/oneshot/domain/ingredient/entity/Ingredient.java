@@ -31,6 +31,8 @@ public class Ingredient extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private IngredientCategory category;
 
+    private String imageUrl;
+
 
     public void update(String name, String description, IngredientCategory category, Double avb) {
         this.name = name;
@@ -40,15 +42,16 @@ public class Ingredient extends BaseEntity {
     }
 
 
-    private Ingredient(String name, String description, IngredientCategory category, Double avb) {
+    private Ingredient(String name, String description, IngredientCategory category, Double avb, String imageUrl) {
         this.name = name;
         this.description = description;
         this.category = category;
         this.avb = avb;
+        this.imageUrl = imageUrl;
     }
 
     public static Ingredient of(String name, String description,
-        IngredientCategory category, Double avb) {
-        return new Ingredient(name, description, category, avb);
+        IngredientCategory category, Double avb, String imageUrl) {
+        return new Ingredient(name, description, category, avb, imageUrl);
     }
 }
