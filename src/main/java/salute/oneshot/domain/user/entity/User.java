@@ -60,16 +60,6 @@ public class User extends BaseEntity {
         this.userRole = userRole;
     }
 
-    private User(
-            String email,
-            String password,
-            UserRole userRole
-    ) {
-        this.email = email;
-        this.password = password;
-        this.userRole = userRole;
-    }
-
     public static User of(
             String email,
             String password,
@@ -85,14 +75,6 @@ public class User extends BaseEntity {
             UserRole role
     ) {
         return new User(email, password, nickname, role);
-    }
-
-    public static User of(
-            String email,
-            String password,
-            UserRole userRole
-    ) {
-        return new User(email, password, userRole);
     }
 
     public void update(String nickname, String password) {
