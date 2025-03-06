@@ -33,6 +33,7 @@ import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import salute.oneshot.domain.cocktail.dto.request.IngredientRequestDto;
 import salute.oneshot.domain.cocktail.dto.response.CocktailResponseDto;
 import salute.oneshot.domain.cocktail.dto.service.*;
@@ -52,6 +53,7 @@ import salute.oneshot.domain.user.repository.UserRepository;
 import salute.oneshot.global.exception.NotFoundException;
 import salute.oneshot.global.exception.UnauthorizedException;
 import salute.oneshot.global.util.RedisConst;
+import salute.oneshot.global.util.S3Util;
 
 @Service
 @Slf4j
@@ -69,6 +71,7 @@ public class CocktailService {
     private final ElasticsearchClient client;
     private final RedisTemplate<String, String> redisTemplate;
     private final CocktailScheduler popularCocktailUpdater;
+    private final S3Util s3Util;
 
     @Transactional
     public void createCocktail(CreateCocktailSDto sDto) {
@@ -78,8 +81,10 @@ public class CocktailService {
         RecipeType recipeType =
                 sDto.getUserRole().equals(UserRole.USER) ? RecipeType.CUSTOM : RecipeType.OFFICIAL;
 
+        String imageUrl = uploadCocktailImage(sDto.getMultipartFile());
+
         Cocktail cocktail = Cocktail.of(sDto.getName(), sDto.getDescription(), sDto.getRecipe(),
-                recipeType, user, new ArrayList<>());
+                recipeType, user, new ArrayList<>(), imageUrl);
 
         cocktailRepository.save(cocktail);
 
@@ -98,6 +103,16 @@ public class CocktailService {
 
         cocktailIngredientRepository.saveAll(ingredientList);
         operations.save(CocktailDocument.of(cocktail, ingredientMap));
+    }
+
+    private String uploadCocktailImage(MultipartFile imageFile) {
+        String imageUrl = "";
+        if (imageFile != null) {
+            try {
+                imageUrl = s3Util.upload(imageFile);
+            } catch (IOException e) {}
+        }
+        return imageUrl;
     }
 
     @Transactional(readOnly = true)
