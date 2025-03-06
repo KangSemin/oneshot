@@ -45,7 +45,7 @@ public class UserService {
         if (password != null) {
             password = passwordEncoder.encode(password);
         }
-        user.update(userUpdateSDto.getNickName(), password);
+        user.update(userUpdateSDto.getNickname(), password);
 
         return UserResponseDto.from(user);
     }

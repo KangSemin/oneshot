@@ -40,7 +40,7 @@ public class UserController {
     ) {
         UpdateUserSDto serviceDto = UpdateUserSDto.of(
                 userDetails.getId(),
-                requestDto.getNickName(),
+                requestDto.getNickname(),
                 requestDto.getPassword()
         );
         UserResponseDto responseDto =

@@ -11,13 +11,13 @@ public class SignUpResponseDto {
 
     private final Long id;
     private final String email;
-    private final String nickName;
+    private final String nickname;
 
     public static SignUpResponseDto from(User user) {
         return new SignUpResponseDto(
                 user.getId(),
                 user.getEmail(),
-                user.getNickName()
+                user.getNickname()
         );
     }
 }

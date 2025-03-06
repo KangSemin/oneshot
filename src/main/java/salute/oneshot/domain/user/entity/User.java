@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 import salute.oneshot.domain.auth.entity.SocialUser;
 import salute.oneshot.domain.common.dto.entity.BaseEntity;
-import salute.oneshot.domain.user.repository.UserRepository;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -32,8 +31,8 @@ public class User extends BaseEntity {
     @Column(nullable = false)
     private String password;
 
-    @Column(name = "nick_name")
-    private String nickName;
+    @Column(name = "nickname")
+    private String nickname;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "user_role")
@@ -52,12 +51,12 @@ public class User extends BaseEntity {
     private User(
             String email,
             String password,
-            String nickName,
+            String nickname,
             UserRole userRole
     ) {
         this.email = email;
         this.password = password;
-        this.nickName = nickName;
+        this.nickname = nickname;
         this.userRole = userRole;
     }
 
@@ -74,18 +73,18 @@ public class User extends BaseEntity {
     public static User of(
             String email,
             String password,
-            String nickName
+            String nickname
     ) {
-        return new User(email, password, nickName, UserRole.USER);
+        return new User(email, password, nickname, UserRole.USER);
     }
 
     public static User of(
             String email,
             String password,
-            String nickName,
+            String nickname,
             UserRole role
     ) {
-        return new User(email, password, nickName, role);
+        return new User(email, password, nickname, role);
     }
 
     public static User of(
@@ -96,8 +95,8 @@ public class User extends BaseEntity {
         return new User(email, password, userRole);
     }
 
-    public void update(String nickName, String password) {
-        this.nickName = nickName;
+    public void update(String nickname, String password) {
+        this.nickname = nickname;
         if (password != null) {
             this.password = password;
         }

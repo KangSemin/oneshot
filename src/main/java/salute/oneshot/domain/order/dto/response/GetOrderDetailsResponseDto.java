@@ -26,7 +26,7 @@ public class GetOrderDetailsResponseDto {
                 order.getOrderNumber(),
                 order.getName(),
                 order.getUser().getEmail(),
-                order.getUser().getNickName(),
+                order.getUser().getNickname(),
                 // TODO: customerKey 로직 위치
                 "User-"+ order.getUser().getId()
         );
