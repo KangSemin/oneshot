@@ -196,10 +196,10 @@
 
       if (response.ok) {
         const result = await response.json();
-        if (result.data && result.data.nickName) {
+        if (result.data && result.data.nickname) {
           // 닉네임 표시 및 세션 스토리지에 저장
-          document.getElementById('user-nickname').textContent = `${result.data.nickName}`;
-          sessionStorage.setItem('userNickname', result.data.nickName);
+          document.getElementById('user-nickname').textContent = `${result.data.nickname}`;
+          sessionStorage.setItem('userNickname', result.data.nickname);
         }
       } else {
         console.error('사용자 정보를 가져오는데 실패했습니다.');
