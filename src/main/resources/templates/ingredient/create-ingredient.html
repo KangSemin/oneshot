@@ -7,7 +7,7 @@
 <body>
 <h1>Upload Ingredient</h1>
 <form id="ingredientForm">
-    <!-- 텍스트 입력 필드 -->
+    <!-- 1) 기본 텍스트 필드들 -->
     <div>
         <label for="name">Name</label>
         <input id="name" name="name" type="text" required />
@@ -20,46 +20,51 @@
 
     <div>
         <label for="avb">avb</label>
-        <input id="avb" name="avb" type="number" required />
+        <input id="avb" name="avb" type="text"  required/>
     </div>
+
 
     <div>
         <label for="category">Category</label>
-        <input id="category" name="category" type="text" required />
+        <input id="category" name="category"  type="text" required/>
     </div>
 
-    <!-- 이미지 파일 (MultipartFile) -->
+
+
+    <!--
+      필요하다면 자바스크립트를 통해 동적으로
+      ingredientList[n].ingredientId / volume를 추가하는 로직을 구현할 수도 있습니다.
+    -->
+
+    <!-- 3) 이미지 파일 (MultipartFile) -->
     <div>
         <label for="imageFile">Ingredient Image</label>
         <input id="imageFile" name="imageFile" type="file" accept="image/*" />
     </div>
 
-    <!-- Submit 버튼 -->
+    <!-- 4) Submit 버튼 -->
     <button id="submitFormBtn" type="submit">Create</button>
 </form>
 
-<script>
+<script th:nonce="${scriptNonce}">
     document.addEventListener('DOMContentLoaded', function () {
-        async function submitForm(event) {
-            event.preventDefault();  // 🔹 form 기본 제출 방지
-
+        async function submitForm() {
+            // form 태그 자체를 가져옴
             const form = document.getElementById('ingredientForm');
+            // FormData 객체에 form 태그의 모든 요소를 담음
             const formData = new FormData(form);
 
-            // 🔹 이미지 파일 선택 안 했을 경우, formData에서 제거
-            if (!formData.get("imageFile").name) {
-                formData.delete("imageFile");
-            }
-
             try {
+                // Spring Boot 서버 주소 (예: 로컬호스트)
                 const response = await fetch('/api/ingredients', {
                     method: 'POST',
-                    body: formData
+                    body: formData,
+                    // credentials: "include" // 쿠키가 포함되도록 설정
                 });
 
                 if (response.ok) {
                     const result = await response.text();
-                    alert('Ingredient created successfully!\n\nServer response:\n' + result);
+                    alert(' created successfully!\n\nServer response:\n' + result);
                 } else {
                     throw new Error('Server Error: ' + response.status);
                 }
