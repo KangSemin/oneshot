@@ -9,7 +9,6 @@ import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery;
 import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 import co.elastic.clients.elasticsearch._types.query_dsl.QueryBuilders;
 import co.elastic.clients.elasticsearch.core.*;
-import co.elastic.clients.elasticsearch.core.search.Hit;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -17,6 +16,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import salute.oneshot.domain.common.dto.error.ErrorCode;
 import salute.oneshot.domain.ingredient.dto.response.IngrResponseDto;
 import salute.oneshot.domain.ingredient.dto.service.CreateIngrSDto;
@@ -28,6 +28,7 @@ import salute.oneshot.domain.ingredient.entity.IngredientDocument;
 import salute.oneshot.domain.ingredient.repository.IngredientElasticSearchRepository;
 import salute.oneshot.domain.ingredient.repository.IngredientRepository;
 import salute.oneshot.global.exception.NotFoundException;
+import salute.oneshot.global.util.S3Util;
 
 @Service
 @Slf4j
@@ -37,6 +38,7 @@ public class IngredientService {
     private final IngredientRepository ingredientRepository;
     private final IngredientElasticSearchRepository elasticRepository;
     private final ElasticsearchClient client;
+    private final S3Util s3Util;
 
     private final String INGREDIENT_INDEX = "ingredients";
 
@@ -44,13 +46,26 @@ public class IngredientService {
     @Transactional
     public IngrResponseDto createIngredient(CreateIngrSDto request) {
 
+        String imageUrl = uploadIngrImage(request.getImageFile());
+
         Ingredient ingredient = ingredientRepository.save(Ingredient.of(
-                request.getName(), request.getDescription(), request.getCategory(), request.getAvb()));
+                request.getName(), request.getDescription(), request.getCategory(), request.getAvb(), imageUrl));
 
         IngredientDocument ingrDoc = IngredientDocument.from(ingredient);
         elasticRepository.save(ingrDoc);
 
+
         return IngrResponseDto.from(ingredient);
+    }
+
+    private String uploadIngrImage(MultipartFile imageFile) {
+        String imageUrl = "";
+        if (imageFile != null) {
+            try {
+                imageUrl = s3Util.upload(imageFile);
+            } catch (IOException e) {}
+        }
+        return imageUrl;
     }
 
     @Transactional
@@ -79,7 +94,8 @@ public class IngredientService {
 
         Page<Ingredient> ingredients = ingredientRepository.findAll(pageable);
 
-        return ingredients.map(IngrResponseDto::from);
+        return ingredients.map(ingredient ->
+                IngrResponseDto.from(ingredient));
     }
 
     @Transactional
@@ -138,7 +154,7 @@ public class IngredientService {
     }
 
 
-    private void addShouldIfNotNull(BoolQuery.Builder builder, String condition, String fieldName, float boost){
+    private void addShouldIfNotNull(BoolQuery.Builder builder, String condition, String fieldName, float boost) {
         builder.should(Query.of(q -> q.match(m -> m.field(fieldName)
                 .query(condition.toLowerCase()).boost(boost))));
     }

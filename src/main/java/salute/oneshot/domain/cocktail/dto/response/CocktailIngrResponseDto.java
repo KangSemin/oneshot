@@ -1,4 +1,4 @@
-package salute.oneshot.domain.ingredient.dto.response;
+package salute.oneshot.domain.cocktail.dto.response;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -10,22 +10,19 @@ import java.io.Serializable;
 
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class IngrResponseDto implements Serializable {
+public class CocktailIngrResponseDto implements Serializable {
 
     private final Long id;
     private final String name;
     private final String description;
     private final IngredientCategory category;
     private final Double AVB;
-    private final String imageUrl;
 
 
-
-
-    public static IngrResponseDto from(Ingredient ingredient){
-        return new IngrResponseDto(
+    public static CocktailIngrResponseDto from(Ingredient ingredient){
+        return new CocktailIngrResponseDto(
                 ingredient.getId(), ingredient.getName(), ingredient.getDescription(),
-                ingredient.getCategory(), ingredient.getAvb(), ingredient.getImageUrl());
+                ingredient.getCategory(), ingredient.getAvb());
     }
 }
 

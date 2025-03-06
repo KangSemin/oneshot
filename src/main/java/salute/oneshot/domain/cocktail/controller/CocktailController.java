@@ -69,10 +69,10 @@ public class CocktailController {
         // S3Uploader 빈 의존성 주입 필요
         MultipartFile imageFile = request.getImageFile();
 
-        String imageFileName;
+        String imageUrl;
         if (imageFile != null) {
             try {
-                imageFileName = s3Util.upload(imageFile);
+                imageUrl = s3Util.upload(imageFile);
             } catch (IOException e) {
                 // IOException 예외처리
             }
