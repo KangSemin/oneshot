@@ -91,7 +91,7 @@ public class SecurityConst {
         }
 
         public static String buildImgSrcPolicy() {
-            return "img-src *; data:;";
+            return "img-src * data:;";
         }
 
         public static String buildFormActionPolicy() {
