@@ -198,16 +198,11 @@ public class CocktailController {
 
 
     @GetMapping("/popular")//인기 칵테일 조회
-    public ResponseEntity<ApiResponse<Page<CocktailResponseDto>>> getPopularCocktails(
-        @RequestParam(name = "page", defaultValue = "1") int page,
-        @RequestParam(name = "size", defaultValue = "10") int size) {
-        Pageable pageable = PageRequest.of(page - 1 , size);
+    public ResponseEntity<ApiResponse<List<CocktailResponseDto>>> getPopularCocktails() {
 
-
-        List<CocktailResponseDto> dtoResponse = cocktailService.getPopularCocktails();
-        Page<CocktailResponseDto> responsePage = new PageImpl<>(dtoResponse, pageable, dtoResponse.size());
+        List<CocktailResponseDto> dtoResponseList = cocktailService.getPopularCocktails();
 
         return ResponseEntity.ok(
-                ApiResponse.success(ApiResponseConst.GET_CCKTL_LIST_SUCCESS, responsePage));
+                ApiResponse.success(ApiResponseConst.GET_CCKTL_LIST_SUCCESS, dtoResponseList ));
     }
 }
