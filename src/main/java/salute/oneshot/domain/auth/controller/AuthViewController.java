@@ -20,4 +20,11 @@ public class AuthViewController {
 
         return "auth/login";
     }
+
+    @GetMapping("/signup")
+    public String signupPage(Model model) {
+        model.addAttribute("scriptNonce", nonceGenerator.getNonce());
+
+        return "auth/signup";
+    }
 }

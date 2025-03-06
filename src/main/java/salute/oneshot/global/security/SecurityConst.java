@@ -43,9 +43,9 @@ public class SecurityConst {
         public static final String FONT_SRC_SELF = "'self'";
         public static final String FONT_SRC_GOOGLE_FONTS = "https://fonts.gstatic.com";
 
-        // 이미지 소스
-        public static final String IMG_SRC_SELF = "'self'";
-        public static final String IMG_SRC_OAUTH2 = "https://www.gstatic.com https://ssl.gstatic.com https://static.nid.naver.com";
+//        // 이미지 소스
+//        public static final String IMG_SRC_SELF = "'self'";
+//        public static final String IMG_SRC_OAUTH2 = "https://www.gstatic.com https://ssl.gstatic.com https://static.nid.naver.com";
 
         // 폼 액션
         public static final String FORM_ACTION_SELF = "'self'";
@@ -91,9 +91,7 @@ public class SecurityConst {
         }
 
         public static String buildImgSrcPolicy() {
-            return String.format("img-src %s %s;",
-                    IMG_SRC_SELF,
-                    IMG_SRC_OAUTH2);
+            return "img-src *; data:;";
         }
 
         public static String buildFormActionPolicy() {
