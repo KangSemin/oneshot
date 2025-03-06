@@ -58,20 +58,23 @@ public class Cocktail extends BaseEntity {
     @ColumnDefault("0")
     private Integer viewCount = 0;
 
+    private String imageUrl;
+
 
     private Cocktail(String name, String description, String recipe, RecipeType type,
-        User user, List<CocktailIngredient> ingredientList) {
+        User user, List<CocktailIngredient> ingredientList, String imageUrl) {
         this.name = name;
         this.description = description;
         this.recipe = recipe;
         this.type = type;
         this.user = user;
         this.ingredientList = ingredientList;
+        this.imageUrl = imageUrl;
     }
 
     public static Cocktail of(String name, String description, String recipe, RecipeType type,
-        User user, List<CocktailIngredient> ingredientList) {
-        return new Cocktail(name, description, recipe, type, user, ingredientList);
+        User user, List<CocktailIngredient> ingredientList, String imageUrl) {
+        return new Cocktail(name, description, recipe, type, user, ingredientList, imageUrl);
     }
 
     public void update(String name, String description, String recipe,

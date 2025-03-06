@@ -14,7 +14,7 @@ public class CocktailViewController {
 
     private final NonceGenerator nonceGenerator;
 
-    @GetMapping("/test-upload")
+    @GetMapping
     public String testUploadPage(Model model) {
         // 시큐리티 CSP 설정용
         model.addAttribute("scriptNonce", nonceGenerator.getNonce());
