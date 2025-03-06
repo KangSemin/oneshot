@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="utf-8" />
+    <meta charset="utf-8"/>
     <title>Ingredient Upload</title>
 </head>
 <body>
@@ -10,25 +10,24 @@
     <!-- 1) 기본 텍스트 필드들 -->
     <div>
         <label for="name">Name</label>
-        <input id="name" name="name" type="text" required />
+        <input id="name" name="name" type="text" required/>
     </div>
 
     <div>
         <label for="description">Description</label>
-        <input id="description" name="description" type="text" required />
+        <input id="description" name="description" type="text" required/>
     </div>
 
     <div>
         <label for="avb">avb</label>
-        <input id="avb" name="avb" type="text"  required/>
+        <input id="avb" name="avb" type="text" required/>
     </div>
 
 
     <div>
         <label for="category">Category</label>
-        <input id="category" name="category"  type="text" required/>
+        <input id="category" name="category" type="text" required/>
     </div>
-
 
 
     <!--
@@ -39,7 +38,7 @@
     <!-- 3) 이미지 파일 (MultipartFile) -->
     <div>
         <label for="imageFile">Ingredient Image</label>
-        <input id="imageFile" name="imageFile" type="file" accept="image/*" />
+        <input id="imageFile" name="imageFile" type="file" accept="image/*"/>
     </div>
 
     <!-- 4) Submit 버튼 -->
@@ -53,6 +52,7 @@
             const form = document.getElementById('ingredientForm');
             // FormData 객체에 form 태그의 모든 요소를 담음
             const formData = new FormData(form);
+
 
             try {
                 // Spring Boot 서버 주소 (예: 로컬호스트)
