@@ -9,21 +9,18 @@ public class GoogleUser extends OAuth2ProviderUser {
 
     private GoogleUser(
             OAuth2User oAuth2User,
-            OAuthProvider provider,
-            Long userId
+            OAuthProvider provider
     ) {
         super(oAuth2User,
                 provider,
-                oAuth2User.getAttributes(),
-                userId);
+                oAuth2User.getAttributes());
     }
 
     public static GoogleUser of(
             OAuth2User oAuth2User,
-            OAuthProvider provider,
-            Long userId
+            OAuthProvider provider
     ) {
-        return new GoogleUser(oAuth2User, provider, userId);
+        return new GoogleUser(oAuth2User, provider);
     }
 
     @Override

@@ -27,11 +27,4 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Modifying
     @Query("UPDATE User u SET u.userRole = :role WHERE u.id = :userId AND u.userRole != :role")
     int updateUserRole(@Param("userId") Long userId, @Param("role") UserRole role);
-
-    @Query("SELECT u FROM User u JOIN FETCH u.socialUsers su " +
-            "WHERE su.providerId = :providerId " +
-            "AND su.provider = :provider")
-    Optional<User> findBySocialUser(
-            @Param("providerId") String providerId,
-            @Param("provider") OAuthProvider provider);
 }

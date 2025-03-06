@@ -11,18 +11,16 @@ public class NaverUser extends OAuth2ProviderUser {
 
     private NaverUser(
             OAuth2User oAuth2User,
-            OAuthProvider provider,
-            Long userId
+            OAuthProvider provider
     ) {
-        super(oAuth2User, provider, extractAttrs(oAuth2User), userId);
+        super(oAuth2User, provider, extractAttrs(oAuth2User));
     }
 
     public static NaverUser of(
             OAuth2User oAuth2User,
-            OAuthProvider provider,
-            Long userId
+            OAuthProvider provider
     ) {
-        return new NaverUser(oAuth2User, provider, userId);
+        return new NaverUser(oAuth2User, provider);
     }
 
     @Override
