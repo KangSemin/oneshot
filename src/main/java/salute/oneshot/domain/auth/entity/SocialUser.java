@@ -4,13 +4,14 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import salute.oneshot.domain.common.dto.entity.BaseEntity;
 import salute.oneshot.domain.user.entity.User;
 
 @Entity
 @Getter
 @Table(name = "social_users")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class SocialUser {
+public class SocialUser extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -40,8 +41,10 @@ public class SocialUser {
     public static SocialUser of(
             User user,
             OAuthProvider provider,
-            String providerId)
-    {
-        return new SocialUser(user, provider, providerId);
+            String providerId) {
+        return new SocialUser(
+                user,
+                provider,
+                providerId);
     }
 }

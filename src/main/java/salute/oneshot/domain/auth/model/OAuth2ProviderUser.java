@@ -13,12 +13,6 @@ public abstract class OAuth2ProviderUser implements ProviderUser {
     protected final OAuth2User oAuth2User;
     protected final OAuthProvider provider;
     private final Map<String, Object> attributes;
-    private final Long userId;
-
-    @Override
-    public Long getUserId() {
-        return userId;
-    }
 
     @Override
     public Map<String, Object> getAttributes() {
