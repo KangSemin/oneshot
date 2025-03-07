@@ -21,5 +21,11 @@ public class IngredientViewController {
         return "ingredient/create-ingredient";
     }
 
-    
+    @GetMapping("/{ingredientId}")
+    public String getIngredient(Model model, @PathVariable(name = "ingredientId")Long ingredientId){
+        model.addAttribute("scriptNonce", nonceGenerator.getNonce());
+        model.addAttribute("ingredientId", ingredientId);
+
+        return "get-ingredient";
+    }
 }
