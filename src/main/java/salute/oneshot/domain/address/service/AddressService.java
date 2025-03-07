@@ -4,8 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import salute.oneshot.domain.address.dto.response.AddressBriefResponseDto;
 import salute.oneshot.domain.address.dto.response.AddressPageResponseDto;
-import salute.oneshot.domain.address.dto.response.AddressResponseDto;
+import salute.oneshot.domain.address.dto.response.AddressDetailResponseDto;
 import salute.oneshot.domain.address.dto.service.CreateAddressSdto;
 import salute.oneshot.domain.address.dto.service.AddressSDto;
 import salute.oneshot.domain.address.dto.service.GetAddressesSDto;
@@ -16,6 +17,9 @@ import salute.oneshot.domain.common.dto.error.ErrorCode;
 import salute.oneshot.global.exception.InvalidException;
 import salute.oneshot.global.exception.NotFoundException;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class AddressService {
@@ -23,7 +27,7 @@ public class AddressService {
     private final AddressRepository addressRepository;
 
     @Transactional
-    public AddressResponseDto createAddress(CreateAddressSdto serviceDto) {
+    public AddressDetailResponseDto createAddress(CreateAddressSdto serviceDto) {
         Address address = Address.of(
                 serviceDto.getAddressName(),
                 serviceDto.getPostcode(),
@@ -37,32 +41,40 @@ public class AddressService {
         }
         addressRepository.save(address);
 
-        return AddressResponseDto.from(address);
+        return AddressDetailResponseDto.from(address);
     }
 
     @Transactional(readOnly = true)
     public AddressPageResponseDto getAddresses(GetAddressesSDto serviceDto) {
-        Page<Address> addresses = addressRepository.findAllByUserId(
+        boolean isFirstPage = serviceDto.getLastAddressId() == null;
+
+        List<Address> addresses = addressRepository.findAddressByUserId(
                 serviceDto.getUserId(),
-                serviceDto.getPageable());
+                serviceDto.getLastAddressId(),
+                isFirstPage,
+                serviceDto.getSize());
 
-        Page<AddressResponseDto> addressPage =
-                addresses.map(AddressResponseDto::from);
+        List<AddressBriefResponseDto> addressPage = addresses.stream()
+                .map(AddressBriefResponseDto::from)
+                .toList();
 
-        return AddressPageResponseDto.from(addressPage);
+        boolean hasNext = addresses.size() == serviceDto.getSize();
+        Long nextCursor = addresses.isEmpty() ? null : addresses.get(addresses.size() - 1).getId();
+
+        return AddressPageResponseDto.of(addressPage, hasNext, nextCursor);
     }
 
     @Transactional(readOnly = true)
-    public AddressResponseDto getAddress(AddressSDto serviceDto) {
+    public AddressDetailResponseDto getAddress(AddressSDto serviceDto) {
         Address address = getAddressByIdAndUserId(
                 serviceDto.getAddressId(),
                 serviceDto.getUserId());
 
-        return AddressResponseDto.from(address);
+        return AddressDetailResponseDto.from(address);
     }
 
     @Transactional
-    public AddressResponseDto updateAddress(UpdateAddressSDto serviceDto) {
+    public AddressDetailResponseDto updateAddress(UpdateAddressSDto serviceDto) {
         Address address = getAddressByIdAndUserId(
                 serviceDto.getAddressId(),
                 serviceDto.getUserId());
@@ -85,7 +97,7 @@ public class AddressService {
                 serviceDto.getUserId(),
                 serviceDto.isDefault());
 
-        return AddressResponseDto.from(address);
+        return AddressDetailResponseDto.from(address);
     }
 
     @Transactional
@@ -93,6 +105,10 @@ public class AddressService {
         Address address = getAddressByIdAndUserId(
                 serviceDto.getAddressId(),
                 serviceDto.getUserId());
+
+        if (address.isDefault()) {
+            throw new InvalidException(ErrorCode.DEFAULT_ADDRESS);
+        }
 
         addressRepository.delete(address);
 
