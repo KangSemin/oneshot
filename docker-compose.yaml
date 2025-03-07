@@ -71,16 +71,26 @@ services:
       - .env
     restart: always
     environment:
+      #
+      PAYMENT_SECRETKEY: ${PAYMENT_SECRET_KEY}
+      #
+      # ////////////////
+      # //    Prod    //
+      # ////////////////
+      #
+      # SQL
       SPRING_DATASOURCE_URL: jdbc:mysql://database:3306/oneshot
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+      # Redis
       SPRING_DATA_REDIS_HOST: redis
       SPRING_DATA_REDIS_PORT: 6379
+      # ElasticSearch
       SPRING_ELASTICSEARCH_URIS: ${ELASTICSEARCH_HOST}
+      # S3
       CLOUD_AWS_CREDENTIALS_ACCESSKEY: ${AWS_ACCESS_KEY}
       CLOUD_AWS_CREDENTIALS_SECRETKEY: ${AWS_SECRET_KEY}
       CLOUD_AWS_S3_BUCKETNAME: oneshot-bucket2
-      PAYMENT_SECRETKEY: ${PAYMENT_SECRET_KEY}
       #
       # ////////////////
       # //  Security  //
