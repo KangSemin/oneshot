@@ -3,10 +3,7 @@ package salute.oneshot.domain.ingredient.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import salute.oneshot.global.config.NonceGenerator;
 
 @Controller
@@ -23,5 +20,11 @@ public class IngredientViewController {
         return "ingredient/create-ingredient";
     }
 
-    
+    @GetMapping("/{ingredientId}")
+    public String getIngredient(Model model, @PathVariable(name = "ingredientId")Long ingredientId){
+        model.addAttribute("scriptNonce", nonceGenerator.getNonce());
+        model.addAttribute("ingredientId", ingredientId);
+
+        return "get-ingredient";
+    }
 }
