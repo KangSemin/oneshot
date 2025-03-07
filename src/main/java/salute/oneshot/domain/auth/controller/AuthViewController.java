@@ -5,25 +5,22 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import salute.oneshot.global.config.NonceGenerator;
+import salute.oneshot.global.util.NonceGenerator;
 
 @Controller
 @RequestMapping("/auth")
 @RequiredArgsConstructor
 public class AuthViewController {
 
-    private final NonceGenerator nonceGenerator;
 
     @GetMapping("/login")
-    public String loginPage(Model model) {
-        model.addAttribute("scriptNonce", nonceGenerator.getNonce());
+    public String loginPage() {
 
         return "auth/login";
     }
 
     @GetMapping("/signup")
-    public String signupPage(Model model) {
-        model.addAttribute("scriptNonce", nonceGenerator.getNonce());
+    public String signupPage() {
 
         return "auth/signup";
     }
