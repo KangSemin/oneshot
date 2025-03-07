@@ -6,7 +6,12 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Profile;
+import org.springframework.data.redis.connection.RedisConfiguration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
+import org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
@@ -22,8 +27,29 @@ public class RedisConfig {
     private int port;
 
     @Bean
-    public RedisConnectionFactory redisConnectionFactory() {
-        return new LettuceConnectionFactory(host, port);
+    @Primary
+    @Profile("!prod")
+    public RedisConnectionFactory redisConnectionFactory(RedisConfiguration defaultRedisConfig) {
+        LettuceClientConfiguration clientConfig = LettuceClientConfiguration.builder()
+                .build();
+        return new LettuceConnectionFactory(defaultRedisConfig, clientConfig);
+    }
+
+    @Bean
+    @Primary
+    @Profile("prod")
+    public RedisConnectionFactory ProdRedisConnectionFactory(RedisConfiguration defaultRedisConfig) {
+        LettuceClientConfiguration clientConfig = LettuceClientConfiguration.builder()
+                .useSsl().build();
+        return new LettuceConnectionFactory(defaultRedisConfig, clientConfig);
+    }
+
+    @Bean
+    public RedisConfiguration defaultRedisConfig() {
+        RedisStandaloneConfiguration config = new RedisStandaloneConfiguration();
+        config.setHostName(host);
+//        config.setPassword(RedisPassword.of(password));
+        return config;
     }
 
     @Bean
