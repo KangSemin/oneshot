@@ -11,16 +11,17 @@ import salute.oneshot.domain.address.service.AddressService;
 import salute.oneshot.global.security.model.CustomUserDetails;
 
 @Controller
-@RequestMapping("/addresses")
+@RequestMapping("/user/addresses")
 @RequiredArgsConstructor
 public class AddressViewController {
 
     private final AddressService addressService;
 
-    @GetMapping
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/add")
     public String addressPage() {
 
-        return "address/address-create";
+        return "address/address-add";
     }
 
     @PreAuthorize("isAuthenticated()")
@@ -35,5 +36,12 @@ public class AddressViewController {
         model.addAttribute("address", address);
 
         return "address/address-update";
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping
+    public String addressListPage(
+    ) {
+        return "address/address-get-list";
     }
 }
