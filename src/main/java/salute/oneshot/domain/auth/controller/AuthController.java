@@ -19,7 +19,7 @@ import salute.oneshot.domain.auth.dto.service.LogOutSDto;
 import salute.oneshot.domain.auth.service.AuthService;
 import salute.oneshot.domain.common.dto.success.ApiResponse;
 import salute.oneshot.domain.common.dto.success.ApiResponseConst;
-import salute.oneshot.global.security.entity.CustomUserDetails;
+import salute.oneshot.global.security.model.CustomUserDetails;
 
 @RestController
 @RequestMapping("/api/auth")

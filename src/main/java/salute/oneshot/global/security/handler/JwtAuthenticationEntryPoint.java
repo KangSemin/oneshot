@@ -1,4 +1,4 @@
-package salute.oneshot.global.security.jwt;
+package salute.oneshot.global.security.handler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
@@ -6,33 +6,39 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.web.access.AccessDeniedHandler;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 import salute.oneshot.domain.common.dto.error.ErrorCode;
 import salute.oneshot.domain.common.dto.error.ErrorResponse;
-import salute.oneshot.global.security.SecurityConst;
+import salute.oneshot.global.security.model.SecurityConst;
 
 import java.io.IOException;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class JwtAccessDeniedHandler implements AccessDeniedHandler {
+public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
     private final ObjectMapper objectMapper;
 
     @Override
-    public void handle(
+    public void commence(
             HttpServletRequest request,
             HttpServletResponse response,
-            AccessDeniedException accessDeniedException) throws IOException, ServletException {
+            AuthenticationException authException) throws IOException, ServletException {
         log.warn(SecurityConst.AUTH_ERROR_LOG,
-                accessDeniedException.getClass().getSimpleName(),
-                accessDeniedException.getMessage()
+                authException.getClass().getSimpleName(),
+                authException.getMessage()
         );
 
-        ErrorCode errorCode = ErrorCode.FORBIDDEN_ACCESS;
+        ErrorCode errorCode = ErrorCode.UNAUTHORIZED_ACCESS;
+
+        if (authException instanceof BadCredentialsException) {
+            errorCode = ErrorCode.LOGIN_FAILED;
+        }
+
         ErrorResponse errorResponse = ErrorResponse.of(errorCode);
 
         response.setContentType(SecurityConst.CONTENT_TYPE);

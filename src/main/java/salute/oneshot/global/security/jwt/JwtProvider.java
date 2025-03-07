@@ -8,7 +8,7 @@ import org.springframework.util.StringUtils;
 import salute.oneshot.domain.auth.dto.response.TokenInfo;
 import salute.oneshot.domain.auth.repository.RedisBlacklistRepository;
 import salute.oneshot.domain.user.entity.UserRole;
-import salute.oneshot.global.security.SecurityConst;
+import salute.oneshot.global.security.model.SecurityConst;
 
 import javax.crypto.SecretKey;
 import java.util.Date;

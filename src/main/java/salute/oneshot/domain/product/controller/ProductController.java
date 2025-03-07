@@ -19,7 +19,7 @@ import salute.oneshot.domain.product.dto.service.GetAllProductSDto;
 import salute.oneshot.domain.product.dto.service.UpdateProductRequestSDto;
 import salute.oneshot.domain.product.dto.service.DeleteProductSDto;
 import salute.oneshot.domain.product.service.ProductService;
-import salute.oneshot.global.security.entity.CustomUserDetails;
+import salute.oneshot.global.security.model.CustomUserDetails;
 
 @RestController
 @RequestMapping("/api/products")

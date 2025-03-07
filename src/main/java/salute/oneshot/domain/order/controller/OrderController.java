@@ -18,7 +18,7 @@ import salute.oneshot.domain.order.dto.response.CreateOrderResponseDto;
 import salute.oneshot.domain.order.dto.response.GetOrderResponseDto;
 import salute.oneshot.domain.order.dto.response.UpdateOrderResponseDto;
 import salute.oneshot.domain.order.dto.service.*;
-import salute.oneshot.global.security.entity.CustomUserDetails;
+import salute.oneshot.global.security.model.CustomUserDetails;
 
 @RestController
 @RequestMapping("/api/orders")

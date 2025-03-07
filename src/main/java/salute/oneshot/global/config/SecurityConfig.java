@@ -11,16 +11,18 @@ import org.springframework.security.config.annotation.web.configurers.HeadersCon
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.header.HeaderWriterFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import salute.oneshot.domain.auth.handler.OAuth2FailureHandler;
 import salute.oneshot.domain.auth.handler.OAuth2SuccessHandler;
 import salute.oneshot.domain.auth.service.CustomOAuth2UserService;
-import salute.oneshot.global.security.SecurityConst;
-import salute.oneshot.global.security.jwt.JwtAccessDeniedHandler;
-import salute.oneshot.global.security.jwt.JwtAuthenticationEntryPoint;
-import salute.oneshot.global.security.jwt.JwtFilter;
+import salute.oneshot.global.security.filter.CspNonceFilter;
+import salute.oneshot.global.security.model.SecurityConst;
+import salute.oneshot.global.security.handler.JwtAccessDeniedHandler;
+import salute.oneshot.global.security.handler.JwtAuthenticationEntryPoint;
+import salute.oneshot.global.security.filter.JwtFilter;
 
 import java.util.Arrays;
 import java.util.List;
@@ -34,14 +36,13 @@ public class SecurityConfig {
     private final JwtFilter jwtFilter;
     private final JwtAccessDeniedHandler accessDeniedHandler;
     private final JwtAuthenticationEntryPoint authenticationEntryPoint;
-    private final NonceGenerator nonceGenerator;
+    private final CspNonceFilter cspNonceFilter;
     private final CustomOAuth2UserService oAuth2UserService;
     private final OAuth2SuccessHandler oAuth2SuccessHandler;
     private final OAuth2FailureHandler oAuth2FailureHandler;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        String nonce = nonceGenerator.getNonce();
         return http
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
@@ -52,7 +53,7 @@ public class SecurityConfig {
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .headers(headers -> headers
                                 .contentSecurityPolicy(csp -> csp
-                                        .policyDirectives(SecurityConst.CSP.buildFullPolicy(nonce)))
+                                        .policyDirectives(SecurityConst.CSP.buildFullPolicy("temp")))
                                 .frameOptions(HeadersConfigurer.FrameOptionsConfig::deny)
 
                         // TODO: HTTPS 전환 후 HSTS 설정 활성화 필요
@@ -74,6 +75,8 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(auth -> auth
                         .anyRequest().permitAll())
+
+                .addFilterBefore(cspNonceFilter, HeaderWriterFilter.class)
 
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
 

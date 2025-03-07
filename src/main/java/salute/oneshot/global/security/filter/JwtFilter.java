@@ -1,4 +1,4 @@
-package salute.oneshot.global.security.jwt;
+package salute.oneshot.global.security.filter;
 
 import io.jsonwebtoken.*;
 import jakarta.servlet.FilterChain;
@@ -16,7 +16,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import salute.oneshot.domain.common.dto.error.ErrorCode;
 import salute.oneshot.domain.user.entity.UserRole;
-import salute.oneshot.global.security.SecurityConst;
+import salute.oneshot.global.security.model.SecurityConst;
+import salute.oneshot.global.security.jwt.JwtProvider;
 import salute.oneshot.global.security.service.CustomUserDetailsService;
 
 import java.io.IOException;

@@ -17,7 +17,7 @@ import salute.oneshot.domain.favorite.dto.service.DeleteFavoriteSDto;
 import salute.oneshot.domain.favorite.dto.service.FavoriteSDto;
 import salute.oneshot.domain.favorite.dto.service.GetFavoritesSDto;
 import salute.oneshot.domain.favorite.service.FavoriteService;
-import salute.oneshot.global.security.entity.CustomUserDetails;
+import salute.oneshot.global.security.model.CustomUserDetails;
 
 @RestController
 @RequestMapping("/api")

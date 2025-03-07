@@ -20,7 +20,7 @@ import salute.oneshot.domain.ingredientReview.dto.service.GetAllIngrReviewSDto;
 import salute.oneshot.domain.ingredientReview.dto.service.GetMyIngredientReviewSDto;
 import salute.oneshot.domain.ingredientReview.dto.service.UpdateIngrReviewSDto;
 import salute.oneshot.domain.ingredientReview.service.IngredientReviewService;
-import salute.oneshot.global.security.entity.CustomUserDetails;
+import salute.oneshot.global.security.model.CustomUserDetails;
 
 @RestController
 @RequestMapping("/api/ingredients")

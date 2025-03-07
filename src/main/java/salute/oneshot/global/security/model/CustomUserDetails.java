@@ -1,4 +1,4 @@
-package salute.oneshot.global.security.entity;
+package salute.oneshot.global.security.model;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
