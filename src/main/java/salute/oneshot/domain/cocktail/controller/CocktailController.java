@@ -113,7 +113,7 @@ public class CocktailController {
 
         SearchCocktailSDto sDto = SearchCocktailSDto.of(request.getIngredientIds(), isCraftable, recipeType, page, size);
 
-        Page<CocktailResponseDto> response = cocktailService.findCocktailsByIngr(sDto);
+        Page<CocktailResponseDto> response = cocktailService.getCocktailsByIngr(sDto);
 
         return ResponseEntity.ok(ApiResponse.success(ApiResponseConst.GET_CCKTL_SUCCESS, response));
     }
@@ -156,7 +156,7 @@ public class CocktailController {
 
         findCocktailSDto sDto = findCocktailSDto.of(pageable, keyword, recipeType);
 
-        Page<CocktailResponseDto> responsePage = cocktailService.searchByCondition(sDto);
+        Page<CocktailResponseDto> responsePage = cocktailService.getIngrByCondition(sDto);
 
         return ResponseEntity.ok(
                 ApiResponse.success(ApiResponseConst.GET_CCKTL_LIST_SUCCESS, responsePage));

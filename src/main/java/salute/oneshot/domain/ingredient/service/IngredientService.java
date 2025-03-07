@@ -3,11 +3,6 @@ package salute.oneshot.domain.ingredient.service;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
-
-import co.elastic.clients.elasticsearch.ElasticsearchClient;
-import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery;
-import co.elastic.clients.elasticsearch._types.query_dsl.Query;
-import co.elastic.clients.elasticsearch._types.query_dsl.QueryBuilders;
 import co.elastic.clients.elasticsearch.core.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +22,7 @@ import salute.oneshot.domain.ingredient.entity.IngredientDocument;
 
 import salute.oneshot.domain.ingredient.repository.IngredientElasticSearchRepository;
 import salute.oneshot.domain.ingredient.repository.IngredientRepository;
-import salute.oneshot.domain.ingredient.repository.IngredientSearchFinder;
+import salute.oneshot.domain.ingredient.repository.IngrElasticQueryRepository;
 import salute.oneshot.global.exception.NotFoundException;
 import salute.oneshot.global.util.S3Util;
 
@@ -38,7 +33,7 @@ public class IngredientService {
 
     private final IngredientRepository ingredientRepository;
     private final IngredientElasticSearchRepository elasticRepository;
-    private final IngredientSearchFinder searchFinder;
+    private final IngrElasticQueryRepository searchFinder;
     private final S3Util s3Util;
 
 
