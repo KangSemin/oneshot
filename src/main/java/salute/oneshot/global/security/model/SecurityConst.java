@@ -26,7 +26,7 @@ public class SecurityConst {
         public static final String SCRIPT_SRC_TOSS = "https://js.tosspayments.com https://log.tosspayments.com";
         public static final String SCRIPT_SRC_CDNJS = "https://cdnjs.cloudflare.com";
         public static final String SCRIPT_SRC_OAUTH2 = "https://accounts.google.com https://static.nid.naver.com";
-
+        public static final String SCRIPT_SRC_BOOTSTRAP = "https://cdn.jsdelivr.net https://stackpath.bootstrapcdn.com";
         // 프레임 소스
         public static final String FRAME_SRC_SELF = "'self'";
         public static final String FRAME_SRC_DAUM = "http://postcode.map.daum.net";
@@ -38,6 +38,7 @@ public class SecurityConst {
         public static final String STYLE_SRC_UNSAFE_INLINE = "'unsafe-inline'";
         public static final String STYLE_SRC_GOOGLE_FONTS = "https://fonts.googleapis.com";
         public static final String STYLE_SRC_OAUTH2 = "https://accounts.google.com https://nid.naver.com";
+        public static final String STYLE_SRC_BOOTSTRAP = "https://cdn.jsdelivr.net https://stackpath.bootstrapcdn.com";
 
         // 폰트 소스
         public static final String FONT_SRC_SELF = "'self'";
@@ -59,12 +60,13 @@ public class SecurityConst {
 
         // CSP 정책 생성 메서드
         public static String buildScriptSrcPolicy(String nonce) {
-            return String.format("script-src %s %s %s %s %s 'nonce-%s';",
+            return String.format("script-src %s %s %s %s %s %s 'nonce-%s';",
                     SCRIPT_SRC_SELF,
                     SCRIPT_SRC_DAUM,
                     SCRIPT_SRC_TOSS,
                     SCRIPT_SRC_CDNJS,
                     SCRIPT_SRC_OAUTH2,
+                    SCRIPT_SRC_BOOTSTRAP,
                     nonce);
         }
 
@@ -77,11 +79,12 @@ public class SecurityConst {
         }
 
         public static String buildStyleSrcPolicy() {
-            return String.format("style-src %s %s %s %s;",
+            return String.format("style-src %s %s %s %s %s;",
                     STYLE_SRC_SELF,
                     STYLE_SRC_UNSAFE_INLINE,
                     STYLE_SRC_GOOGLE_FONTS,
-                    STYLE_SRC_OAUTH2);
+                    STYLE_SRC_OAUTH2,
+                    STYLE_SRC_BOOTSTRAP);
         }
 
         public static String buildFontSrcPolicy() {

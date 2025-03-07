@@ -1,4 +1,4 @@
-package salute.oneshot.global.config;
+package salute.oneshot.global.util;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -13,13 +13,7 @@ import java.util.Base64;
 @RequiredArgsConstructor
 public class NonceGenerator {
 
-    private final String nonce;
-
-    public NonceGenerator() {
-        this.nonce = generateNonce();
-    }
-
-    private String generateNonce() {
+    public String getNonce() {
         try {
             return Base64.getEncoder().encodeToString(
                     SecureRandom.getInstance("SHA1PRNG").generateSeed(16)
