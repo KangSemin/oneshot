@@ -30,7 +30,7 @@ public class CocktailScheduler {
 
     private final int TOP_N = 10;
 
-    @Scheduled(cron = "0 */1 * * * ?")
+    @Scheduled(cron = "0 0 * * * ?")
     @CachePut(cacheNames = RedisConst.POPULAR_COCKTAIL_KEY, key = "'popualr'")
     public List<CocktailResponseDto> updatePopularCocktails() {
         log.info("인기 칵테일 업데이트");
@@ -50,7 +50,7 @@ public class CocktailScheduler {
     }
 
     @Transactional
-    @Scheduled(cron = "0 0/2 * * * ?")
+    @Scheduled(cron = "0 0/5 * * * ?")
     public void updateCocktailViewAndFavoriteCountToDB() {
         log.info("데이터 정합성 맞춤");
 
