@@ -3,7 +3,9 @@ package salute.oneshot.domain.cocktail.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CachePut;
+import org.springframework.data.redis.core.Cursor;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ScanOptions;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,10 +17,7 @@ import salute.oneshot.domain.common.dto.error.ErrorCode;
 import salute.oneshot.global.exception.NotFoundException;
 import salute.oneshot.global.util.RedisConst;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 @Slf4j
 @Component
@@ -31,7 +30,7 @@ public class CocktailScheduler {
 
     private final int TOP_N = 10;
 
-    @Scheduled(cron = "0 */3 * * * ?")
+    @Scheduled(cron = "0 */1 * * * ?")
     @CachePut(cacheNames = RedisConst.POPULAR_COCKTAIL_KEY, key = "'popualr'")
     public List<CocktailResponseDto> updatePopularCocktails() {
         log.info("인기 칵테일 업데이트");
@@ -51,31 +50,70 @@ public class CocktailScheduler {
     }
 
     @Transactional
-    @Scheduled(cron = "0 0/5 * * * ?")
+    @Scheduled(cron = "0 0/2 * * * ?")
     public void updateCocktailViewAndFavoriteCountToDB() {
         log.info("데이터 정합성 맞춤");
 
-        Set<String> scoreKeys = redisTemplate.keys(RedisConst.COCKTAIL_COUNT_KEY_PREFIX + "*");
-        Iterator<String> it = scoreKeys.iterator();
+        ScanOptions scanOptions = ScanOptions.scanOptions()
+                .match(RedisConst.COCKTAIL_COUNT_KEY_PREFIX + "*") // 특정 패턴의 키만 검색
+                .count(100)
+                .build();// 키를 100대만 가지고 온다
 
-        while (it.hasNext()) {
-            String key = it.next();
+
+
+        Cursor<byte[]> cursor = redisTemplate.executeWithStickyConnection(
+                redisConnection -> redisConnection.scan(scanOptions)
+        );
+
+        Set<String> keysToDelete = new HashSet<>();
+
+        while (cursor.hasNext()) {
+            String key = new String(cursor.next());
 
             Long cocktailId = Long.parseLong(key.split("::")[1]);
 
+
             String viewCntStr = (String) redisTemplate.opsForHash().get(key, "viewCount");
             Integer viewCnt = (viewCntStr != null) ? Integer.parseInt(viewCntStr) : 0;
-
             cocktailQueryRepository.addViewCntFromRedis(cocktailId, viewCnt);
 
             String favCntStr = (String) redisTemplate.opsForHash().get(key, "favoriteCount");
             Integer favoriteCnt = (favCntStr != null) ? Integer.parseInt(favCntStr) : 0;
-
             cocktailQueryRepository.addFavoriteCntFromRedis(cocktailId, favoriteCnt);
 
-            redisTemplate.delete(key);
+            keysToDelete.add(key);
+        }
+
+        if (!keysToDelete.isEmpty()) {
+            redisTemplate.delete(keysToDelete);
         }
     }
+
+
+//    public void updateCocktailViewAndFavoriteCountToDB() {
+//        log.info("데이터 정합성 맞춤");
+//
+//        Set<String> scoreKeys = redisTemplate.keys(RedisConst.COCKTAIL_COUNT_KEY_PREFIX + "*");
+//        Iterator<String> it = scoreKeys.iterator();
+//
+//        while (it.hasNext()) {
+//            String key = it.next();
+//
+//            Long cocktailId = Long.parseLong(key.split("::")[1]);
+//
+//            String viewCntStr = (String) redisTemplate.opsForHash().get(key, "viewCount");
+//            Integer viewCnt = (viewCntStr != null) ? Integer.parseInt(viewCntStr) : 0;
+//
+//            cocktailQueryRepository.addViewCntFromRedis(cocktailId, viewCnt);
+//
+//            String favCntStr = (String) redisTemplate.opsForHash().get(key, "favoriteCount");
+//            Integer favoriteCnt = (favCntStr != null) ? Integer.parseInt(favCntStr) : 0;
+//
+//            cocktailQueryRepository.addFavoriteCntFromRedis(cocktailId, favoriteCnt);
+//
+//            redisTemplate.delete(key);
+//        }
+//    }
 
     private Cocktail findById(Long cocktailId) {
         return cocktailRepository.findById(cocktailId)
