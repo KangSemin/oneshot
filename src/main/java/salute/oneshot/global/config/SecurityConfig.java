@@ -73,14 +73,7 @@ public class SecurityConfig {
                         .failureHandler(oAuth2FailureHandler))
 
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/**").permitAll()
-                        .requestMatchers("/oauth2/**").permitAll()
-                        .requestMatchers("/login/**").permitAll()
-                        .requestMatchers("/auth/**").permitAll()
-                        .requestMatchers("/addresses/**").permitAll()
-                        .requestMatchers("/payments/**").permitAll()
-                        .requestMatchers("/orders/**").permitAll()
-                        .anyRequest().authenticated())
+                        .anyRequest().permitAll())
 
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
 
