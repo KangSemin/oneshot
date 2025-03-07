@@ -68,25 +68,20 @@ public class AuthService {
     }
 
     @Transactional
-    public Long logOut(LogOutSDto serviceDto) {
-        User user = userRepository
-                .findByIdAndIsDeletedIsFalse(serviceDto.getId())
-                .orElseThrow(() ->
-                        new NotFoundException(ErrorCode.USER_NOT_FOUND));
+    public void logOut(LogOutSDto serviceDto) {
+        if (!userRepository.existsUserById(serviceDto.getId())) {
+            throw new NotFoundException(ErrorCode.USER_NOT_FOUND);
+        }
 
-        String token =
-                jwtProvider.extractToken(serviceDto.getToken());
-
-        blacklistRepository.save(
-                token,
-                jwtProvider.getRemainMilliSeconds(token));
-
-        return user.getId();
+        String token = jwtProvider
+                .extractToken(serviceDto.getToken());
+        long remainMilliSeconds = jwtProvider
+                .getRemainMilliSeconds(token);
+        blacklistRepository.save(token, remainMilliSeconds);
     }
 
     @Transactional
     public TokenInfo refreshAccessToken(String refreshToken) {
-
         Long userId = jwtProvider.getUserIdFromToken(refreshToken);
 
         if (refreshTokenRepository.validate(userId, refreshToken)) {

@@ -16,7 +16,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findByEmailAndIsDeletedIsFalse(String email);
 
-    Optional<User> findByIdAndIsDeletedIsFalse(Long id);
+    Optional<User> findByIdAndIsDeletedIsFalse(Long userId);
 
     @Modifying
     @Query("UPDATE User u SET u.isDeleted = true, u.isDeletedAt = CURRENT TIMESTAMP " +
@@ -28,4 +28,10 @@ public interface UserRepository extends JpaRepository<User, Long> {
     int updateUserRole(@Param("userId") Long userId, @Param("role") UserRole role);
 
     Optional<User> findByEmail(String email);
+
+    @Query("SELECT EXISTS (" +
+            "SELECT 1 FROM User u " +
+            "WHERE u.id = :id " +
+            "AND u.isDeleted = false)")
+    boolean existsUserById(@Param("id") Long id);
 }
