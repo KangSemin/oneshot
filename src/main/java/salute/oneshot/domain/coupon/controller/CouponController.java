@@ -15,7 +15,7 @@ import salute.oneshot.domain.coupon.dto.service.GetCpnSDto;
 import salute.oneshot.domain.coupon.dto.service.GetUserCpnSDto;
 import salute.oneshot.domain.coupon.dto.service.UserCpnSDto;
 import salute.oneshot.domain.coupon.service.CouponService;
-import salute.oneshot.global.security.entity.CustomUserDetails;
+import salute.oneshot.global.security.model.CustomUserDetails;
 
 @RestController
 @RequestMapping("/api/coupons")

@@ -12,7 +12,7 @@ import salute.oneshot.domain.user.dto.response.UserResponseDto;
 import salute.oneshot.domain.user.dto.service.DeleteUserSDto;
 import salute.oneshot.domain.user.dto.service.UpdateUserSDto;
 import salute.oneshot.domain.user.service.UserService;
-import salute.oneshot.global.security.entity.CustomUserDetails;
+import salute.oneshot.global.security.model.CustomUserDetails;
 
 @RestController
 @RequestMapping("/api/users")

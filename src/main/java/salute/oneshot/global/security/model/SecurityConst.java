@@ -1,4 +1,4 @@
-package salute.oneshot.global.security;
+package salute.oneshot.global.security.model;
 
 public class SecurityConst {
     // JWT 관련 상수

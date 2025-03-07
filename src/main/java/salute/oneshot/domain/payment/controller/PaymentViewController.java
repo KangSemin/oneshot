@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.*;
 import salute.oneshot.domain.common.facade.OrderPaymentFacade;
 import salute.oneshot.domain.order.dto.response.GetOrderDetailsResponseDto;
 import salute.oneshot.domain.order.dto.service.GetOrderDetailsSDto;
-import salute.oneshot.global.config.NonceGenerator;
-import salute.oneshot.global.security.entity.CustomUserDetails;
+import salute.oneshot.global.security.model.CustomUserDetails;
+import salute.oneshot.global.util.NonceGenerator;
 
 @Slf4j
 @Controller

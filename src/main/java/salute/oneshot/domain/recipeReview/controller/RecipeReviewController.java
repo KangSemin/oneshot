@@ -16,7 +16,7 @@ import salute.oneshot.domain.recipeReview.dto.request.UpdateRecipeRequestDto;
 import salute.oneshot.domain.recipeReview.dto.response.RecipeReviewResponseDto;
 import salute.oneshot.domain.recipeReview.dto.service.*;
 import salute.oneshot.domain.recipeReview.service.RecipeReviewService;
-import salute.oneshot.global.security.entity.CustomUserDetails;
+import salute.oneshot.global.security.model.CustomUserDetails;
 
 
 @RestController
