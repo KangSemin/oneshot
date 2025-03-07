@@ -14,14 +14,14 @@ public class UserResponseDto implements Serializable {
 
     private final Long id;
     private final String email;
-    private final String nickName;
+    private final String nickname;
     private final UserRole userRole;
 
     public static UserResponseDto from(User user) {
         return new UserResponseDto(
             user.getId(),
             user.getEmail(),
-            user.getNickName(),
+            user.getNickname(),
             user.getUserRole()
         );
     }

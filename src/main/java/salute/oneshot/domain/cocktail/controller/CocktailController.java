@@ -13,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import salute.oneshot.domain.cocktail.dto.request.CreateCocktailForUploadRequestDto;
 import salute.oneshot.domain.cocktail.dto.request.CreateCocktailRequestDto;
 import salute.oneshot.domain.cocktail.dto.request.SearchCocktailByIngrsReqDto;
 import salute.oneshot.domain.cocktail.dto.request.UpdateCocktailRequestDto;
@@ -46,51 +45,19 @@ public class CocktailController {
 
     @PostMapping
     public ResponseEntity<ApiResponse<CocktailResponseDto>> createCocktail(
-            @RequestBody CreateCocktailRequestDto request,
+            @ModelAttribute CreateCocktailRequestDto request,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
 
         CreateCocktailSDto sDto = CreateCocktailSDto.of(userDetails.getId(),
                 userDetails.getUserRole(), request.getName(),
-                request.getDescription(), request.getRecipe(), request.getIngredientList());
+                request.getDescription(), request.getRecipe(), request.getIngredientList(), request.getImageFile());
 
         cocktailService.createCocktail(sDto);
 
         return ResponseEntity.ok(ApiResponse.success(ApiResponseConst.ADD_RCP_SUCCESS));
     }
 
-    // 이미지 업로드 API 코드 예시
-    // MultipartFile을 사용하는 방식은 Form 형태로 받기 위해서 @ModelAttribute 사용
-    @PostMapping("/upload")
-    public ResponseEntity<ApiResponse<CocktailResponseDto>> createCocktailForUpload(
-            @ModelAttribute CreateCocktailForUploadRequestDto request,
-            @AuthenticationPrincipal CustomUserDetails userDetails) {
 
-        // 예시코드
-        // S3Uploader 빈 의존성 주입 필요
-        MultipartFile imageFile = request.getImageFile();
-
-        String imageUrl;
-        if (imageFile != null) {
-            try {
-                imageUrl = s3Util.upload(imageFile);
-            } catch (IOException e) {
-                // IOException 예외처리
-            }
-        }
-        // 파일 이름을 엔티티에 함께 저장
-        // Url ex) https://oneshot-bucket2.s3.ap-northeast-2.amazonaws.com/(파일이름).jpg
-        // 사진을 조회할 때 -> s3Uploader.getUrl(fileName)
-
-
-
-        CreateCocktailSDto sDto = CreateCocktailSDto.of(userDetails.getId(),
-                userDetails.getUserRole(), request.getName(),
-                request.getDescription(), request.getRecipe(), request.getIngredientList());
-
-        cocktailService.createCocktail(sDto);
-
-        return ResponseEntity.ok(ApiResponse.success(ApiResponseConst.ADD_RCP_SUCCESS));
-    }
 
     @GetMapping("/{cocktailId}")
     private ResponseEntity<ApiResponse<CocktailResponseDto>> getCocktail(HttpServletRequest request,
@@ -198,16 +165,11 @@ public class CocktailController {
 
 
     @GetMapping("/popular")//인기 칵테일 조회
-    public ResponseEntity<ApiResponse<Page<CocktailResponseDto>>> getPopularCocktails(
-        @RequestParam(name = "page", defaultValue = "1") int page,
-        @RequestParam(name = "size", defaultValue = "10") int size) {
-        Pageable pageable = PageRequest.of(page - 1 , size);
+    public ResponseEntity<ApiResponse<List<CocktailResponseDto>>> getPopularCocktails() {
 
-
-        List<CocktailResponseDto> dtoResponse = cocktailService.getPopularCocktails();
-        Page<CocktailResponseDto> responsePage = new PageImpl<>(dtoResponse, pageable, dtoResponse.size());
+        List<CocktailResponseDto> dtoResponseList = cocktailService.getPopularCocktails();
 
         return ResponseEntity.ok(
-                ApiResponse.success(ApiResponseConst.GET_CCKTL_LIST_SUCCESS, responsePage));
+                ApiResponse.success(ApiResponseConst.GET_CCKTL_LIST_SUCCESS, dtoResponseList ));
     }
 }

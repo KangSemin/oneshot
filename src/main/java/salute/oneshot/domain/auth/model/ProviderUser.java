@@ -6,7 +6,8 @@ import java.util.Map;
 
 public interface ProviderUser {
     String getProviderId();
-    Long getUserId();
+    String getEmail();
+    String getNickname();
     Map<String, Object> getAttributes();
     OAuthProvider getProvider();
     String getNameAttributeKey();

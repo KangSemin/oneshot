@@ -17,6 +17,6 @@ public class UserResponseDto {
 
     public static UserResponseDto from(User user) {
         return new UserResponseDto(user.getId(), user.getEmail(),
-                user.getNickName(), user.getUserRole());
+                user.getNickname(), user.getUserRole());
     }
 }

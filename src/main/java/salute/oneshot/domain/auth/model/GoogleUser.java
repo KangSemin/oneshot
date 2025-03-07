@@ -9,26 +9,33 @@ public class GoogleUser extends OAuth2ProviderUser {
 
     private GoogleUser(
             OAuth2User oAuth2User,
-            OAuthProvider provider,
-            Long userId
+            OAuthProvider provider
     ) {
         super(oAuth2User,
                 provider,
-                oAuth2User.getAttributes(),
-                userId);
+                oAuth2User.getAttributes());
     }
 
     public static GoogleUser of(
             OAuth2User oAuth2User,
-            OAuthProvider provider,
-            Long userId
+            OAuthProvider provider
     ) {
-        return new GoogleUser(oAuth2User, provider, userId);
+        return new GoogleUser(oAuth2User, provider);
     }
 
     @Override
     public String getProviderId() {
         return (String) getAttributes().get(GOOGLE_ID_KEY);
+    }
+
+    @Override
+    public String getEmail() {
+        return (String) getAttributes().get("email");
+    }
+
+    @Override
+    public String getNickname() {
+        return (String) getAttributes().get("name");
     }
 
     @Override
