@@ -90,31 +90,6 @@ public class CocktailScheduler {
     }
 
 
-//    public void updateCocktailViewAndFavoriteCountToDB() {
-//        log.info("데이터 정합성 맞춤");
-//
-//        Set<String> scoreKeys = redisTemplate.keys(RedisConst.COCKTAIL_COUNT_KEY_PREFIX + "*");
-//        Iterator<String> it = scoreKeys.iterator();
-//
-//        while (it.hasNext()) {
-//            String key = it.next();
-//
-//            Long cocktailId = Long.parseLong(key.split("::")[1]);
-//
-//            String viewCntStr = (String) redisTemplate.opsForHash().get(key, "viewCount");
-//            Integer viewCnt = (viewCntStr != null) ? Integer.parseInt(viewCntStr) : 0;
-//
-//            cocktailQueryRepository.addViewCntFromRedis(cocktailId, viewCnt);
-//
-//            String favCntStr = (String) redisTemplate.opsForHash().get(key, "favoriteCount");
-//            Integer favoriteCnt = (favCntStr != null) ? Integer.parseInt(favCntStr) : 0;
-//
-//            cocktailQueryRepository.addFavoriteCntFromRedis(cocktailId, favoriteCnt);
-//
-//            redisTemplate.delete(key);
-//        }
-//    }
-
     private Cocktail findById(Long cocktailId) {
         return cocktailRepository.findById(cocktailId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.COCKTAIL_NOT_FOUND));
