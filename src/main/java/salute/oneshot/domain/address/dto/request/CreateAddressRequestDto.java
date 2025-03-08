@@ -18,4 +18,19 @@ public class CreateAddressRequestDto {
     @NotBlank
     private final String detailAddress;
     private final String extraAddress;
+
+    public static CreateAddressRequestDto of(
+            String addressName,
+            String postcode,
+            String postAddress,
+            String detailAddress,
+            String extraAddress
+    ) {
+        return new CreateAddressRequestDto(
+                addressName,
+                postcode,
+                postAddress,
+                detailAddress,
+                extraAddress);
+    }
 }
