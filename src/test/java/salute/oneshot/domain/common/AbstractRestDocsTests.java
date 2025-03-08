@@ -1,12 +1,11 @@
 package salute.oneshot.domain.common;
 
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.context.annotation.Import;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
@@ -38,7 +37,7 @@ public abstract class AbstractRestDocsTests {
             .alwaysDo(MockMvcResultHandlers.print())
             .alwaysDo(restDocs)
             .addFilters(new CharacterEncodingFilter("UTF-8", true))
+            .apply(springSecurity())
             .build();
     }
-
 }
