@@ -18,9 +18,6 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.filter.CharacterEncodingFilter;
 import salute.oneshot.config.RestDocsConfiguration;
 
-
-@AutoConfigureRestDocs
-@AutoConfigureMockMvc
 @Import(RestDocsConfiguration.class)
 @ExtendWith(RestDocumentationExtension.class)
 public abstract class AbstractRestDocsTests {
