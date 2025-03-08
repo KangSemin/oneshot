@@ -2,5 +2,9 @@
 :doctype: book
 :source-highlighter: highlightjs
 :toc: left
-:toclevels: 2
+:toclevels: 3
 :seclinks:
+
+include::auth.adoc[]
+
+include::address.adoc[]

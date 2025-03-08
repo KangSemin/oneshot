@@ -42,19 +42,23 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
         User user = findOrCreateUser(providerUser);
 
-        Map<String, Object> attributes = new HashMap<>(oAuth2User.getAttributes());
+        Map<String, Object> attributes =
+                new HashMap<>(oAuth2User.getAttributes());
         attributes.put("providerId", providerUser.getProviderId());
         attributes.put("provider", providerUser.getProvider());
         attributes.put("userId", user.getId());
 
-        List<GrantedAuthority> authorities = new ArrayList<>(oAuth2User.getAuthorities());
+        List<GrantedAuthority> authorities =
+                new ArrayList<>(oAuth2User.getAuthorities());
         authorities.add(new SimpleGrantedAuthority(UserRole.USER.name()));
 
         return new DefaultOAuth2User(
                 authorities,
                 attributes,
-                userRequest.getClientRegistration().getProviderDetails()
-                        .getUserInfoEndpoint().getUserNameAttributeName());
+                userRequest.getClientRegistration()
+                           .getProviderDetails()
+                           .getUserInfoEndpoint()
+                           .getUserNameAttributeName());
     }
 
     private User findOrCreateUser(ProviderUser providerUser) {
@@ -78,9 +82,10 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
     private User createSocialUser(ProviderUser providerUser) {
         String tempPassword = UUID.randomUUID().toString();
-        log.info("커스텀유저 서비스에서 메일 {}", providerUser.getEmail());
-        log.info("커스텀유저 서비스에서 닉넴 {}", providerUser.getNickname());
-        return User.of(providerUser.getEmail(), tempPassword, providerUser.getNickname());
+        return User.of(
+                providerUser.getEmail(),
+                tempPassword,
+                providerUser.getNickname());
     }
 
     private static ProviderUser getProviderUser(

@@ -73,12 +73,11 @@ public class AuthController {
     ) {
         LogOutSDto serviceDto =
                 LogOutSDto.of(userDetails.getId(), token);
-        Long userId =
-                authService.logOut(serviceDto);
+        authService.logOut(serviceDto);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ApiResponse.success(
-                        ApiResponseConst.LOGOUT_SUCCESS, userId));
+                        ApiResponseConst.LOGOUT_SUCCESS, userDetails.getId()));
     }
 
     @PostMapping("/refresh")
