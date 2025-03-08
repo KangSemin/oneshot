@@ -3,7 +3,6 @@ package salute.oneshot.domain.address.dto.response;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -11,19 +10,18 @@ import java.util.List;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class AddressPageResponseDto {
 
-    private final List<AddressResponseDto> addresses;
-    private final int currentPage;
-    private final int totalPage;
+    private final List<AddressBriefResponseDto> addresses;
     private final boolean hasNext;
+    private final Long nextCursor;
 
-    public static AddressPageResponseDto from(
-            Page<AddressResponseDto> pageResponseDto
+    public static AddressPageResponseDto of(
+            List<AddressBriefResponseDto> addresses,
+            boolean hasNext,
+            Long nextCursor
     ) {
         return new AddressPageResponseDto(
-                pageResponseDto.getContent(),
-                pageResponseDto.getNumber(),
-                pageResponseDto.getTotalPages(),
-                pageResponseDto.hasNext()
-        );
+                addresses,
+                hasNext,
+                nextCursor);
     }
 }
