@@ -97,7 +97,7 @@ dependencies {
 
 }
 
-ext{
+ext {
 	snippetsDir = file('build/generated-snippets')
 }
 
@@ -106,7 +106,7 @@ tasks.named('test') {
 	outputs.dir snippetsDir
 }
 
-asciidoctor{
+asciidoctor {
 	configurations 'asciidoctorExt'
 	baseDirFollowsSourceFile()
 	inputs.dir snippetsDir
