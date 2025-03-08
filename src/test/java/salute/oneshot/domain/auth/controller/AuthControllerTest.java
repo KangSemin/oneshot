@@ -8,24 +8,20 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.MediaType;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
+import salute.oneshot.config.TestSecurityConfig;
 import salute.oneshot.domain.auth.dto.request.LogInRequestDto;
 import salute.oneshot.domain.auth.dto.request.SignUpRequestDto;
 import salute.oneshot.domain.auth.dto.response.SignUpResponseDto;
 import salute.oneshot.domain.auth.dto.response.TokenInfo;
 import salute.oneshot.domain.auth.dto.service.LogInSDto;
-import salute.oneshot.domain.auth.dto.service.LogOutSDto;
 import salute.oneshot.domain.auth.dto.service.SignUpSDto;
 import salute.oneshot.domain.auth.service.AuthService;
+import salute.oneshot.domain.common.AbstractRestDocsTests;
 import salute.oneshot.domain.common.dto.error.ErrorCode;
 import salute.oneshot.domain.common.dto.success.ApiResponseConst;
 import salute.oneshot.domain.user.entity.User;
@@ -34,8 +30,6 @@ import salute.oneshot.global.exception.InvalidException;
 import salute.oneshot.global.exception.NotFoundException;
 import salute.oneshot.global.security.filter.JwtFilter;
 import salute.oneshot.global.security.jwt.JwtProvider;
-import salute.oneshot.global.security.model.CustomUserDetails;
-import salute.oneshot.global.util.NonceGenerator;
 import salute.oneshot.util.TokenTestFactory;
 import salute.oneshot.util.UserTestFactory;
 
@@ -43,17 +37,15 @@ import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.willDoNothing;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.util.AssertionErrors.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(controllers = AuthController.class)
-class AuthControllerTest {
-
-    @Autowired
-    private MockMvc mockMvc;
+@Import(TestSecurityConfig.class)
+class AuthControllerTest extends AbstractRestDocsTests {
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -65,9 +57,6 @@ class AuthControllerTest {
     private AuthService authService;
 
     @MockitoBean
-    private NonceGenerator nonceGenerator;
-
-    @MockitoBean
     private JwtProvider jwtProvider;
 
     @MockitoBean
@@ -76,13 +65,8 @@ class AuthControllerTest {
     private User user;
 
     @BeforeEach
-    void setUp(WebApplicationContext context) {
-        this.mockMvc = MockMvcBuilders.webAppContextSetup(context)
-                .alwaysDo(print())
-                .build();
-
+    void setUp() {
         user = UserTestFactory.createUser();
-
     }
 
     @DisplayName("회원가입 성공")
@@ -213,24 +197,10 @@ class AuthControllerTest {
         Long userId = UserTestFactory.USER_ID;
         String token = TokenTestFactory.ACCESS_TOKEN;
 
-        CustomUserDetails userDetails = CustomUserDetails.of(
-                userId,
-                UserTestFactory.ROLE_USER
-        );
-
-        Authentication authentication = new UsernamePasswordAuthenticationToken(
-                userDetails,
-                null,
-                userDetails.getAuthorities()
-        );
-
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-
-        willDoNothing().given(authService).logOut(any(LogOutSDto.class));
-
         // when & then
         mockMvc.perform(post("/api/auth/logout")
-                        .header("Authorization", token))
+                        .header("Authorization", token)
+                        .with(user(UserTestFactory.createMockUserDetails())))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value(ApiResponseConst.LOGOUT_SUCCESS))
                 .andExpect(jsonPath("$.data").value(userId))
@@ -251,7 +221,7 @@ class AuthControllerTest {
 
         // when & then
         mockMvc.perform(post("/api/auth/refresh")
-                .cookie(new Cookie("refreshToken", refreshToken)))
+                        .cookie(new Cookie("refreshToken", refreshToken)))
                 .andExpect(status().isOk())
                 .andExpect(header().exists(HttpHeaders.SET_COOKIE))
                 .andExpect(jsonPath("$.message").value(ApiResponseConst.GET_ACS_TOKEN_SUCCESS))
@@ -271,7 +241,7 @@ class AuthControllerTest {
 
         // when & then
         mockMvc.perform(post("/api/auth/refresh")
-                .cookie(new Cookie("refreshToken", refreshToken)))
+                        .cookie(new Cookie("refreshToken", refreshToken)))
                 .andExpect(status().isForbidden())
                 .andExpect(jsonPath("$.errorMessage").value(ErrorCode.INVALID_TOKEN.getMessage()));
     }
