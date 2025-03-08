@@ -1,4 +1,4 @@
-package salute.oneshot.domain.auth.service;
+package salute.oneshot.domain.auth.oauth;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,6 +15,7 @@ import salute.oneshot.domain.auth.dto.service.LogOutSDto;
 import salute.oneshot.domain.auth.dto.service.SignUpSDto;
 import salute.oneshot.domain.auth.repository.RedisBlacklistRepository;
 import salute.oneshot.domain.auth.repository.RedisRefreshTokenRepository;
+import salute.oneshot.domain.auth.service.AuthService;
 import salute.oneshot.domain.common.dto.error.ErrorCode;
 import salute.oneshot.domain.user.entity.User;
 import salute.oneshot.domain.user.entity.UserRole;
