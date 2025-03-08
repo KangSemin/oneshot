@@ -1,6 +1,5 @@
 package salute.oneshot.util;
 
-import org.springframework.security.core.parameters.P;
 import salute.oneshot.domain.auth.dto.request.LogInRequestDto;
 import salute.oneshot.domain.auth.dto.request.SignUpRequestDto;
 import salute.oneshot.domain.auth.dto.response.SignUpResponseDto;
@@ -9,6 +8,7 @@ import salute.oneshot.domain.auth.dto.service.LogOutSDto;
 import salute.oneshot.domain.auth.dto.service.SignUpSDto;
 import salute.oneshot.domain.user.entity.User;
 import salute.oneshot.domain.user.entity.UserRole;
+import salute.oneshot.global.security.model.CustomUserDetails;
 
 public class UserTestFactory {
 
@@ -58,5 +58,9 @@ public class UserTestFactory {
 
     public static SignUpResponseDto createSignUpResponseDto(User user) {
         return SignUpResponseDto.from(user);
+    }
+
+    public static CustomUserDetails createMockUserDetails() {
+        return CustomUserDetails.of(USER_ID, ROLE_USER);
     }
 }
