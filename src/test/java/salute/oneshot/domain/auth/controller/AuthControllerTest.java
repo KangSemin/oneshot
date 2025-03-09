@@ -40,7 +40,6 @@ import static org.mockito.BDDMockito.given;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.util.AssertionErrors.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
@@ -77,7 +76,7 @@ class AuthControllerTest extends AbstractRestDocsTests {
         SignUpRequestDto requestDto =
                 UserTestFactory.createSignUpRequestDto();
         SignUpResponseDto responseDto =
-                UserTestFactory.createSignUpResponseDto(user);
+                SignUpResponseDto.from(user);
 
         given(authService.userSignUp(any(SignUpSDto.class)))
                 .willReturn(responseDto);
@@ -90,7 +89,6 @@ class AuthControllerTest extends AbstractRestDocsTests {
                 .andExpect(jsonPath("$.message").value(ApiResponseConst.SIGNUP_SUCCESS))
                 .andExpect(jsonPath("$.data.email").value(UserTestFactory.EMAIL))
                 .andExpect(jsonPath("$.data.nickname").value(UserTestFactory.NICKNAME))
-                .andDo(print())
                 .andReturn();
     }
 
@@ -100,15 +98,6 @@ class AuthControllerTest extends AbstractRestDocsTests {
         // given
         SignUpRequestDto requestDto =
                 UserTestFactory.createSignUpRequestDto();
-        SignUpSDto serviceDto =
-                UserTestFactory.createSignUpSDto(
-                        requestDto.getEmail(),
-                        requestDto.getPassword(),
-                        requestDto.getPassword());
-
-        // 디버그 로그 추가
-        System.out.println("RequestDto: " + requestDto);
-        System.out.println("ServiceDto: " + serviceDto);
 
         given(authService.userSignUp(any(SignUpSDto.class)))
                 .willThrow(new ConflictException(ErrorCode.DUPLICATE_EMAIL));
@@ -118,7 +107,8 @@ class AuthControllerTest extends AbstractRestDocsTests {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestDto)))
                 .andExpect(status().isConflict())
-                .andExpect(jsonPath("$.errorMessage").value(ErrorCode.DUPLICATE_EMAIL.getMessage()));
+                .andExpect(jsonPath("$.errorMessage").value(ErrorCode.DUPLICATE_EMAIL.getMessage()))
+                .andReturn();
     }
 
     @DisplayName("로그인 성공")
@@ -140,7 +130,6 @@ class AuthControllerTest extends AbstractRestDocsTests {
                 .andExpect(status().isOk())
                 .andExpect(header().exists("Set-Cookie"))
                 .andExpect(jsonPath("$.message").value(ApiResponseConst.LOGIN_SUCCESS))
-                .andDo(print())
                 .andReturn();
 
         // 수동으로 Set-Cookie 헤더 검증
@@ -157,8 +146,6 @@ class AuthControllerTest extends AbstractRestDocsTests {
         // given
         LogInRequestDto requestDto =
                 UserTestFactory.createLogInRequestDto();
-        TokenInfo tokenInfo =
-                TokenTestFactory.createTokenInfo();
 
         given(authService.logIn(any(LogInSDto.class)))
                 .willThrow(new NotFoundException(ErrorCode.USER_NOT_FOUND));
@@ -168,7 +155,8 @@ class AuthControllerTest extends AbstractRestDocsTests {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestDto)))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.errorMessage").value(ErrorCode.USER_NOT_FOUND.getMessage()));
+                .andExpect(jsonPath("$.errorMessage").value(ErrorCode.USER_NOT_FOUND.getMessage()))
+                .andReturn();
     }
 
     @DisplayName("로그인 실패: 비밀번호 불일치")
@@ -177,8 +165,6 @@ class AuthControllerTest extends AbstractRestDocsTests {
         // given
         LogInRequestDto requestDto =
                 UserTestFactory.createLogInRequestDto();
-        TokenInfo tokenInfo =
-                TokenTestFactory.createTokenInfo();
 
         given(authService.logIn(any(LogInSDto.class)))
                 .willThrow(new InvalidException(ErrorCode.LOGIN_FAILED));
@@ -188,7 +174,8 @@ class AuthControllerTest extends AbstractRestDocsTests {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestDto)))
                 .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("$.errorMessage").value(ErrorCode.LOGIN_FAILED.getMessage()));
+                .andExpect(jsonPath("$.errorMessage").value(ErrorCode.LOGIN_FAILED.getMessage()))
+                .andReturn();
     }
 
     @DisplayName("로그아웃 성공")
@@ -205,7 +192,7 @@ class AuthControllerTest extends AbstractRestDocsTests {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value(ApiResponseConst.LOGOUT_SUCCESS))
                 .andExpect(jsonPath("$.data").value(userId))
-                .andDo(print());
+                .andReturn();
     }
 
     @DisplayName("리프레시 토큰으로 엑세스 토큰 재발급 성공")
@@ -227,7 +214,7 @@ class AuthControllerTest extends AbstractRestDocsTests {
                 .andExpect(header().exists(HttpHeaders.SET_COOKIE))
                 .andExpect(jsonPath("$.message").value(ApiResponseConst.GET_ACS_TOKEN_SUCCESS))
                 .andExpect(jsonPath("$.data.accessToken").exists())
-                .andDo(print());
+                .andReturn();
     }
 
     @DisplayName("리프레시 토큰으로 엑세스 토큰 재발급 실패: 유저아이디와 리프레시토큰 불일치")
@@ -244,6 +231,7 @@ class AuthControllerTest extends AbstractRestDocsTests {
         mockMvc.perform(post("/api/auth/refresh")
                         .cookie(new Cookie("refreshToken", refreshToken)))
                 .andExpect(status().isForbidden())
-                .andExpect(jsonPath("$.errorMessage").value(ErrorCode.INVALID_TOKEN.getMessage()));
+                .andExpect(jsonPath("$.errorMessage").value(ErrorCode.INVALID_TOKEN.getMessage()))
+                .andReturn();
     }
 }
