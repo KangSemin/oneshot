@@ -19,5 +19,22 @@ public class UpdateAddressRequestDto {
     private final String detailAddress;
     private final String extraAddress;
     private final boolean isDefault;
+
+    public static UpdateAddressRequestDto of(
+            String addressName,
+            String postcode,
+            String postAddress,
+            String detailAddress,
+            String extraAddress,
+            boolean isDefault
+    ) {
+    return new UpdateAddressRequestDto(
+            addressName,
+            postcode,
+            postAddress,
+            detailAddress,
+            extraAddress,
+            isDefault);
+    }
 }
 
