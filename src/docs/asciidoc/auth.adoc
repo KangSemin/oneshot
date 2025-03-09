@@ -1,8 +1,12 @@
-== AuthController
+= AuthController
+
+== 회원가입
 === 회원가입 성공
 operation::auth-controller-test/success-sign-up[snippets="http-request,http-response"]
 === 회원가입 실패: 중복메일
 operation::auth-controller-test/duplicated-email-sign-up[snippets="http-request,http-response"]
+
+== 로그인
 === 로그인 성공
 operation::auth-controller-test/success-log-in[snippets="http-request,http-response"]
 === 로그인 실패: 존재하지 않는 메일로 로그인 시도
@@ -11,7 +15,10 @@ operation::auth-controller-test/invalid-email-log-in[snippets="http-request,http
 operation::auth-controller-test/invalid-password-log-in[snippets="http-request,http-response"]
 === 로그아웃 성공
 operation::auth-controller-test/success-log-out[snippets="http-request,http-response"]
+
+== 토큰
 === 리프레시 토큰으로 어세스 토큰 재발급 성공
 operation::auth-controller-test/success-refresh-token[snippets="http-request,http-response"]
 === 리프레시 토큰으로 어세스 토큰 재발급 실패: 유저아이디와 토큰 불일치
 operation::auth-controller-test/mismatch-info-fail-refresh-token[snippets="http-request,http-response"]
+
