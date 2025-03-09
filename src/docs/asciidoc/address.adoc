@@ -1,10 +1,5 @@
-== AddressController
+= AddressController
+
+== 주소
 === 주소 생성 성공
-
 operation::address-controller-test/success-create-address[snippets="http-request,http-response"]
-
-
-
-
-
-

@@ -1,12 +1,26 @@
-== AuthController
+= AuthController
+
+== 회원가입
 === 회원가입 성공
 operation::auth-controller-test/success-sign-up[snippets="http-request,http-response"]
 === 회원가입 실패: 중복메일
 operation::auth-controller-test/duplicated-email-sign-up[snippets="http-request,http-response"]
 
-operation::auth-controller-test/invalid-email-log-in[snippets="http-request,http-response"]
-operation::auth-controller-test/invalid-password-log-in[snippets="http-request,http-response"]
-operation::auth-controller-test/mismatch-info-fail-refresh-token[snippets="http-request,http-response"]
+== 로그인
+=== 로그인 성공
 operation::auth-controller-test/success-log-in[snippets="http-request,http-response"]
+=== 로그인 실패: 존재하지 않는 메일로 로그인
+operation::auth-controller-test/invalid-email-log-in[snippets="http-request,http-response"]
+=== 로그인 실패: 비밀번호 불일치
+operation::auth-controller-test/invalid-password-log-in[snippets="http-request,http-response"]
+=== 로그아웃
 operation::auth-controller-test/success-log-out[snippets="http-request,http-response"]
+
+== 토큰
+=== 토큰 발급 성공
 operation::auth-controller-test/success-refresh-token[snippets="http-request,http-response"]
+=== 토큰 인증 실패
+operation::auth-controller-test/mismatch-info-fail-refresh-token[snippets="http-request,http-response"]
+
+
+
