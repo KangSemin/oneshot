@@ -5,6 +5,8 @@
 :toclevels: 2
 :seclinks:
 
+include::cocktail.adoc[]
+
 include::auth.adoc[]
 
 include::address.adoc[]
