@@ -64,7 +64,6 @@ public class Address extends BaseEntity {
             String postAddress,
             String detailAddress,
             String extraAddress,
-            Long userId,
             boolean isDefault
     ) {
         this.addressName = addressName;
@@ -72,7 +71,6 @@ public class Address extends BaseEntity {
         this.postAddress = postAddress;
         this.detailAddress = detailAddress;
         this.extraAddress = extraAddress;
-        this.userId = userId;
         this.isDefault = isDefault;
     }
 

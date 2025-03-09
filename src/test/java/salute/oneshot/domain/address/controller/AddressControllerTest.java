@@ -9,7 +9,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import salute.oneshot.config.TestSecurityConfig;
 import salute.oneshot.domain.address.dto.request.CreateAddressRequestDto;
@@ -229,6 +228,14 @@ class AddressControllerTest extends AbstractRestDocsTests {
         // given
         UpdateAddressRequestDto requestDto =
                 AddressTestFactory.createUpdateRequestDto();
+        address.updateAddress(
+                requestDto.getAddressName(),
+                requestDto.getPostcode(),
+                requestDto.getPostAddress(),
+                requestDto.getDetailAddress(),
+                requestDto.getExtraAddress(),
+                requestDto.isDefault());
+
         AddressDetailResponseDto responseDto =
                 AddressDetailResponseDto.from(address);
 
