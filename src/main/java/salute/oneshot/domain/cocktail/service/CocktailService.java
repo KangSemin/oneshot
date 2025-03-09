@@ -1,14 +1,7 @@
 package salute.oneshot.domain.cocktail.service;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
-import co.elastic.clients.elasticsearch._types.Script;
-import co.elastic.clients.elasticsearch._types.Script.Builder;
-import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery;
-import co.elastic.clients.elasticsearch._types.query_dsl.Query;
-import co.elastic.clients.elasticsearch._types.query_dsl.QueryBuilders;
-import co.elastic.clients.elasticsearch._types.query_dsl.TermsSetQuery;
 import co.elastic.clients.elasticsearch.core.DeleteRequest;
-import co.elastic.clients.elasticsearch.core.SearchRequest;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
 
 import java.io.IOException;
@@ -16,10 +9,8 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -43,9 +34,9 @@ import salute.oneshot.domain.cocktail.entity.CocktailIngredient;
 import salute.oneshot.domain.cocktail.entity.RecipeType;
 import salute.oneshot.domain.cocktail.repository.CocktailIngredientRepository;
 import salute.oneshot.domain.cocktail.repository.CocktailRepository;
+import salute.oneshot.domain.cocktail.repository.CocktailElasticQueryRepository;
 import salute.oneshot.domain.common.dto.error.ErrorCode;
 import salute.oneshot.domain.ingredient.entity.Ingredient;
-import salute.oneshot.domain.ingredient.entity.IngredientCategory;
 import salute.oneshot.domain.ingredient.repository.IngredientRepository;
 import salute.oneshot.domain.user.entity.User;
 import salute.oneshot.domain.user.entity.UserRole;
@@ -70,7 +61,9 @@ public class CocktailService {
     private final ElasticsearchOperations operations;
     private final ElasticsearchClient client;
     private final RedisTemplate<String, String> redisTemplate;
-    private final CocktailScheduler popularCocktailUpdater;
+    private final CocktailScheduler cocktailScheduler;
+    private final CocktailElasticQueryRepository searchFinder;
+
     private final S3Util s3Util;
 
     @Transactional
@@ -116,45 +109,10 @@ public class CocktailService {
     }
 
     @Transactional(readOnly = true)
-    public Page<CocktailResponseDto> findCocktailsByIngr(SearchCocktailSDto sDto)
-            throws IOException {
+    public Page<CocktailResponseDto> getCocktailsByIngr(SearchCocktailSDto sDto) throws IOException {
 
 
-        List<Ingredient> ingredientList = ingredientRepository.findAllById(sDto.getIngredientIds());
-
-        Set<String> termSet = ingredientList.stream()
-                .flatMap(ingr -> ingr.getCategory().equals(IngredientCategory.OTHER)
-                        ? Stream.of(ingr.getName())
-                        : Stream.of(ingr.getName(), ingr.getCategory().toString()))
-                .collect(Collectors.toSet());
-
-
-        BoolQuery.Builder queryBuilder = QueryBuilders.bool();
-
-        if (sDto.getRecipeType() != null) {
-            queryBuilder.must(Query.of(q -> q.term(w -> w.field("isOfficial")
-                    .value(sDto.getRecipeType().equals(RecipeType.OFFICIAL)))));
-        }
-
-
-
-        if (sDto.getIsCraftable())
-        {
-            Script script = new Builder().source("doc['ingredients'].size()").build();
-            TermsSetQuery termsSetQuery = QueryBuilders.termsSet().field(INGR_FIELD)
-            .terms(new ArrayList<>(termSet))
-            .minimumShouldMatchScript(script)
-            .build();
-
-            queryBuilder.filter(termsSetQuery._toQuery());
-        }else {
-            for (String term : termSet) {
-                queryBuilder.should(Query.of(q -> q.match(m -> m.field(INGR_FIELD).query(term))));
-            }
-            queryBuilder.minimumShouldMatch("1");
-        }
-
-        SearchResponse<CocktailDocument> response = searchByQuery(queryBuilder.build(), sDto.getPage(), sDto.getSize());
+        SearchResponse<CocktailDocument> response = searchFinder.findCocktailsByIngr(sDto);
 
         List<Long> cocktailIds = response.hits().hits().stream()
                 .map(hit -> Long.parseLong(hit.source().getId()))
@@ -192,7 +150,7 @@ public class CocktailService {
         return CocktailResponseDto.from(cocktail);
     }
 
-    public void increaseViewCountAndScore(Long cocktailId) {// 이거를 중복조회가 아닐때만 호출해야함
+    public void increaseViewCountAndScore(Long cocktailId) {
         String cocktailCountKey = RedisConst.COCKTAIL_COUNT_KEY_PREFIX + cocktailId;
         String cocktailScoreKey = RedisConst.COCKTAIL_SCORE_KEY_PREFIX + cocktailId;
 
@@ -224,31 +182,9 @@ public class CocktailService {
     }
 
     @Transactional(readOnly = true)
-    public Page<CocktailResponseDto> searchByCondition(findCocktailSDto sDto) throws IOException {
+    public Page<CocktailResponseDto> getIngrByCondition(findCocktailSDto sDto) throws IOException {
 
-        int page = sDto.getPageable().getPageNumber();
-        int size = sDto.getPageable().getPageSize();
-
-        BoolQuery.Builder builder = QueryBuilders.bool();
-
-        if (!sDto.getRecipeType().isBlank()) {
-
-            boolean isOfficial = (sDto.getRecipeType().toUpperCase().equals(RecipeType.OFFICIAL.name()));
-
-            builder.must(Query.of(q -> q.term(m -> m.field("isOfficial")
-                    .value(isOfficial))));
-        }
-
-
-        if (!sDto.getKeyword().isBlank()) {
-            addShouldIfNotNull(builder, sDto.getKeyword(), "name", 4.0f);
-            addShouldIfNotNull(builder, sDto.getKeyword(), "description", 2.0f);
-            addShouldIfNotNull(builder, sDto.getKeyword(), "recipe", 2.0f);
-        }
-
-
-
-        SearchResponse<CocktailDocument> response = searchByQuery(builder.build(), page, size);
+        SearchResponse<CocktailDocument> response = searchFinder.searchByCondition(sDto);
 
         Map<Long, Double> responseCocktail = response.hits().hits().stream()
                 .filter(hit -> hit.source() != null)
@@ -274,7 +210,7 @@ public class CocktailService {
     @Cacheable(cacheNames = "popular_cocktail", key = "'popualr'")
     public List<CocktailResponseDto> getPopularCocktails() {
 
-        return popularCocktailUpdater.updatePopularCocktails();
+        return cocktailScheduler.updatePopularCocktails();
 
     }
 
@@ -284,18 +220,5 @@ public class CocktailService {
                 .orElseThrow(() -> new NotFoundException(ErrorCode.COCKTAIL_NOT_FOUND));
     }
 
-    private void addShouldIfNotNull(BoolQuery.Builder builder, String condition, String fieldName, float boost) {
-        builder.should(Query.of(q -> q.match(m -> m.field(fieldName)
-                .query(condition.toLowerCase()).boost(boost))));
-    }
 
-    private SearchResponse<CocktailDocument> searchByQuery(BoolQuery query, int page, int size) throws IOException {
-        SearchRequest searchRequest = new SearchRequest.Builder()
-                .index(COCKTAIL_INDEX)
-                .from(page * size)
-                .size(size)
-                .query(q -> q.bool(query)).build();
-
-        return client.search(searchRequest, CocktailDocument.class);
-    }
 }
