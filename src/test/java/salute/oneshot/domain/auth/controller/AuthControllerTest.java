@@ -42,7 +42,6 @@ import static org.springframework.test.util.AssertionErrors.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-
 @WebMvcTest(controllers = AuthController.class)
 @Import(TestSecurityConfig.class)
 class AuthControllerTest extends AbstractRestDocsTests {
