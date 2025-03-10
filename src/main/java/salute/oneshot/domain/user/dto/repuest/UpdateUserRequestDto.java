@@ -22,4 +22,8 @@ public class UpdateUserRequestDto {
             message = UserValidationConst.INVALID_EMAIL_MESSAGE
     )
     private final String password;
+
+    public static UpdateUserRequestDto of(String nickname, String rawPassword) {
+        return new UpdateUserRequestDto(nickname, rawPassword);
+    }
 }
