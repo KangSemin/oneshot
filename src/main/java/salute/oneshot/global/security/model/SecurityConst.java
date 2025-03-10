@@ -27,6 +27,9 @@ public class SecurityConst {
         public static final String SCRIPT_SRC_CDNJS = "https://cdnjs.cloudflare.com";
         public static final String SCRIPT_SRC_OAUTH2 = "https://accounts.google.com https://static.nid.naver.com";
         public static final String SCRIPT_SRC_BOOTSTRAP = "https://cdn.jsdelivr.net https://stackpath.bootstrapcdn.com";
+        public static final String SCRIPT_SRC_SWAGGER = "https://cdn.jsdelivr.net 'unsafe-inline' 'unsafe-eval'";
+        public static final String SCRIPT_SRC_RESTDOCS = "'unsafe-inline' 'unsafe-eval'";
+
         // 프레임 소스
         public static final String FRAME_SRC_SELF = "'self'";
         public static final String FRAME_SRC_DAUM = "http://postcode.map.daum.net";
@@ -58,39 +61,45 @@ public class SecurityConst {
         public static final String CONNECT_SRC_OAUTH2 = "https://*.googleapis.com https://openapi.naver.com";
         public static final String CONNECT_SRC_WS = "ws";
 
+        public static String buildWorkerSrcPolicy() {
+            return "worker-src 'self' blob:;";
+        }
+
         // CSP 정책 생성 메서드
         public static String buildScriptSrcPolicy(String nonce) {
-            return String.format("script-src %s %s %s %s %s %s 'nonce-%s';",
-                    SCRIPT_SRC_SELF,
-                    SCRIPT_SRC_DAUM,
-                    SCRIPT_SRC_TOSS,
-                    SCRIPT_SRC_CDNJS,
-                    SCRIPT_SRC_OAUTH2,
-                    SCRIPT_SRC_BOOTSTRAP,
-                    nonce);
+            return String.format("script-src %s %s %s %s %s %s %s %s 'nonce-%s';",
+                SCRIPT_SRC_SELF,
+                SCRIPT_SRC_DAUM,
+                SCRIPT_SRC_TOSS,
+                SCRIPT_SRC_CDNJS,
+                SCRIPT_SRC_OAUTH2,
+                SCRIPT_SRC_BOOTSTRAP,
+                SCRIPT_SRC_SWAGGER,
+                SCRIPT_SRC_RESTDOCS,
+                nonce);
         }
 
         public static String buildFrameSrcPolicy() {
             return String.format("frame-src %s %s %s %s;",
-                    FRAME_SRC_SELF,
-                    FRAME_SRC_DAUM,
-                    FRAME_SRC_TOSS,
-                    FRAME_SRC_OAUTH2);
+                FRAME_SRC_SELF,
+                FRAME_SRC_DAUM,
+                FRAME_SRC_TOSS,
+                FRAME_SRC_OAUTH2);
         }
 
         public static String buildStyleSrcPolicy() {
             return String.format("style-src %s %s %s %s %s;",
-                    STYLE_SRC_SELF,
-                    STYLE_SRC_UNSAFE_INLINE,
-                    STYLE_SRC_GOOGLE_FONTS,
-                    STYLE_SRC_OAUTH2,
-                    STYLE_SRC_BOOTSTRAP);
+                STYLE_SRC_SELF,
+                STYLE_SRC_UNSAFE_INLINE,
+                STYLE_SRC_GOOGLE_FONTS,
+                STYLE_SRC_OAUTH2,
+                STYLE_SRC_BOOTSTRAP);
         }
 
         public static String buildFontSrcPolicy() {
             return String.format("font-src %s %s;",
-                    FONT_SRC_SELF,
-                    FONT_SRC_GOOGLE_FONTS);
+                FONT_SRC_SELF,
+                FONT_SRC_GOOGLE_FONTS);
         }
 
         public static String buildImgSrcPolicy() {
@@ -99,28 +108,29 @@ public class SecurityConst {
 
         public static String buildFormActionPolicy() {
             return String.format("form-action %s %s;",
-                    FORM_ACTION_SELF,
-                    FORM_ACTION_OAUTH2);
+                FORM_ACTION_SELF,
+                FORM_ACTION_OAUTH2);
         }
 
         public static String buildConnectSrcPolicy() {
             return String.format("connect-src %s %s %s %s;",
-                    CONNECT_SRC_SELF,
-                    CONNECT_SRC_TOSS,
-                    CONNECT_SRC_OAUTH2,
-                    CONNECT_SRC_WS);
+                CONNECT_SRC_SELF,
+                CONNECT_SRC_TOSS,
+                CONNECT_SRC_OAUTH2,
+                CONNECT_SRC_WS);
         }
 
         // 전체 CSP 정책 생성
         public static String buildFullPolicy(String nonce) {
             return DEFAULT_SRC + " " +
-                    buildScriptSrcPolicy(nonce) + " " +
-                    buildFrameSrcPolicy() + " " +
-                    buildStyleSrcPolicy() + " " +
-                    buildFontSrcPolicy() + " " +
-                    buildImgSrcPolicy() + " " +
-                    buildFormActionPolicy() + " " +
-                    buildConnectSrcPolicy();
+                buildScriptSrcPolicy(nonce) + " " +
+                buildFrameSrcPolicy() + " " +
+                buildStyleSrcPolicy() + " " +
+                buildFontSrcPolicy() + " " +
+                buildImgSrcPolicy() + " " +
+                buildFormActionPolicy() + " " +
+                buildConnectSrcPolicy() + " " +
+                buildWorkerSrcPolicy();
         }
     }
 }
