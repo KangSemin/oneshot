@@ -1,10 +1,8 @@
 package salute.oneshot.util;
 
-import org.springframework.security.core.parameters.P;
+import org.springframework.test.util.ReflectionTestUtils;
 import salute.oneshot.domain.address.dto.request.CreateAddressRequestDto;
 import salute.oneshot.domain.address.dto.request.UpdateAddressRequestDto;
-import salute.oneshot.domain.address.dto.response.AddressDetailResponseDto;
-import salute.oneshot.domain.address.dto.response.AddressPageResponseDto;
 import salute.oneshot.domain.address.entity.Address;
 
 public class AddressTestFactory {
@@ -21,6 +19,19 @@ public class AddressTestFactory {
     public static final String EXTRA_ADDRESS = "배송전 연락주세요.";
     public static final int DEFAULT_PAGE_SIZE = 10;
     public static final boolean IS_DEFAULT = false;
+
+    public static Address createAddress() {
+        Address address = Address.of(
+                ADDRESS_NAME,
+                POSTCODE,
+                POST_ADDRESS,
+                DETAIL_ADDRESS,
+                EXTRA_ADDRESS,
+                USER_ID);
+        ReflectionTestUtils.setField(address,"id",ADDRESS_ID);
+
+        return address;
+    }
 
     public static CreateAddressRequestDto createCreateRequestDto() {
         return CreateAddressRequestDto.of(
@@ -39,15 +50,5 @@ public class AddressTestFactory {
                 NEW_DETAIL_ADDRESS,
                 EXTRA_ADDRESS,
                 IS_DEFAULT);
-    }
-
-    public static Address createAddress() {
-        return Address.of(
-                ADDRESS_NAME,
-                POSTCODE,
-                POST_ADDRESS,
-                DETAIL_ADDRESS,
-                EXTRA_ADDRESS,
-                USER_ID);
     }
 }

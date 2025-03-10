@@ -557,14 +557,152 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <h3 id="_칵테일_전체_조회">칵테일  전체 조회</h3>
 <div class="sect3">
 <h4 id="_칵테일_전체_조회_http_request">HTTP request</h4>
-<div class="paragraph">
-<p>Snippet http-request not found for operation::cocktail-controller-test/get-cocktails</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /api/cocktails?page=1&amp;size=10 HTTP/1.1
+Accept: application/json
+Host: localhost:8080</code></pre>
+</div>
 </div>
 </div>
 <div class="sect3">
 <h4 id="_칵테일_전체_조회_http_response">HTTP response</h4>
-<div class="paragraph">
-<p>Snippet http-response not found for operation::cocktail-controller-test/get-cocktails</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
+Content-Type: application/json;charset=UTF-8
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY
+Content-Length: 3674
+
+{
+  "message" : "칵테일 목록 조회가 완료되었습니다.",
+  "data" : {
+    "content" : [ {
+      "id" : 1,
+      "name" : "블랙 러시안",
+      "description" : "보드카와 깔루아로 만드는 칵테일",
+      "recipe" : "1.칠링한 온더락 글라스에 재료들을 붓는다.\n2.젓는다.",
+      "type" : "CUSTOM",
+      "user" : {
+        "id" : 1,
+        "email" : "test@mail.com",
+        "nickname" : "nickname",
+        "userRole" : "USER"
+      },
+      "ingredientList" : [ {
+        "id" : 1,
+        "name" : "보드카",
+        "description" : "보드카",
+        "category" : "VODKA",
+        "imageUrl" : "대충 이미지 주소",
+        "avb" : 40.0
+      }, {
+        "id" : 4,
+        "name" : "깔루아 오리지널",
+        "description" : "커피 리큐르",
+        "category" : "OTHER",
+        "imageUrl" : "대충 이미지 주소",
+        "avb" : 16.0
+      } ],
+      "likeCount" : 0,
+      "starRate" : 0.0,
+      "viewCount" : 0,
+      "createdAt" : null,
+      "modifiedAt" : null
+    }, {
+      "id" : 2,
+      "name" : "화이트 러시안",
+      "description" : "블랙 러시안에 우유를 더한 칵테일",
+      "recipe" : "1.칠링한 온더락 글라스에 보드카, 깔루아를 빌드한다.\n2.우유 혹은 생크림을 조심스레 붓는다.\n3.살짝 저어준다.",
+      "type" : "OFFICIAL",
+      "user" : {
+        "id" : 1,
+        "email" : "test@mail.com",
+        "nickname" : "nickname",
+        "userRole" : "USER"
+      },
+      "ingredientList" : [ {
+        "id" : 1,
+        "name" : "보드카",
+        "description" : "보드카",
+        "category" : "VODKA",
+        "imageUrl" : "대충 이미지 주소",
+        "avb" : 40.0
+      }, {
+        "id" : 4,
+        "name" : "깔루아 오리지널",
+        "description" : "커피 리큐르",
+        "category" : "OTHER",
+        "imageUrl" : "대충 이미지 주소",
+        "avb" : 16.0
+      }, {
+        "id" : 5,
+        "name" : "우유",
+        "description" : "어릴 때 좀 많이 마실 걸",
+        "category" : "OTHER",
+        "imageUrl" : "대충 이미지 주소",
+        "avb" : 0.0
+      } ],
+      "likeCount" : 0,
+      "starRate" : 0.0,
+      "viewCount" : 0,
+      "createdAt" : null,
+      "modifiedAt" : null
+    }, {
+      "id" : 3,
+      "name" : "깔루아 밀크",
+      "description" : "달달구리한 커피 칵테일",
+      "recipe" : "1.칠링한 온더락 글라스에 재료들을 붓는다.\n2.젓는다.",
+      "type" : "OFFICIAL",
+      "user" : {
+        "id" : 1,
+        "email" : "test@mail.com",
+        "nickname" : "nickname",
+        "userRole" : "USER"
+      },
+      "ingredientList" : [ {
+        "id" : 4,
+        "name" : "깔루아 오리지널",
+        "description" : "커피 리큐르",
+        "category" : "OTHER",
+        "imageUrl" : "대충 이미지 주소",
+        "avb" : 16.0
+      }, {
+        "id" : 5,
+        "name" : "우유",
+        "description" : "어릴 때 좀 많이 마실 걸",
+        "category" : "OTHER",
+        "imageUrl" : "대충 이미지 주소",
+        "avb" : 0.0
+      } ],
+      "likeCount" : 0,
+      "starRate" : 0.0,
+      "viewCount" : 0,
+      "createdAt" : null,
+      "modifiedAt" : null
+    } ],
+    "pageable" : "INSTANCE",
+    "last" : true,
+    "totalElements" : 3,
+    "totalPages" : 1,
+    "size" : 3,
+    "number" : 0,
+    "sort" : {
+      "empty" : true,
+      "sorted" : false,
+      "unsorted" : true
+    },
+    "numberOfElements" : 3,
+    "first" : true,
+    "empty" : false
+  }
+}</code></pre>
+</div>
 </div>
 </div>
 </div>
@@ -605,12 +743,12 @@ Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 Pragma: no-cache
 Expires: 0
 X-Frame-Options: DENY
-Content-Length: 159
+Content-Length: 156
 
 {
   "message" : "회원가입이 완료되었습니다.",
   "data" : {
-    "id" : null,
+    "id" : 1,
     "email" : "test@mail.com",
     "nickname" : "nickname"
   }
@@ -688,8 +826,8 @@ Host: localhost:8080
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
-Set-Cookie: refreshToken=refreshToken; Path=/; Max-Age=604800; Expires=Mon, 17 Mar 2025 02:27:29 GMT; HttpOnly; SameSite=Lax
-Set-Cookie: accessToken=accessToken; Path=/; Max-Age=3600; Expires=Mon, 10 Mar 2025 03:27:29 GMT; HttpOnly; SameSite=Lax
+Set-Cookie: refreshToken=refreshToken; Path=/; Max-Age=604800; Expires=Mon, 17 Mar 2025 05:53:57 GMT; HttpOnly; SameSite=Lax
+Set-Cookie: accessToken=accessToken; Path=/; Max-Age=3600; Expires=Mon, 10 Mar 2025 06:53:57 GMT; HttpOnly; SameSite=Lax
 Content-Type: application/json;charset=UTF-8
 X-Content-Type-Options: nosniff
 X-XSS-Protection: 0
@@ -848,7 +986,7 @@ Content-Type: application/x-www-form-urlencoded</code></pre>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
-Set-Cookie: refreshToken=refreshToken; Path=/; Max-Age=604800; Expires=Mon, 17 Mar 2025 02:27:29 GMT; HttpOnly; SameSite=Lax
+Set-Cookie: refreshToken=refreshToken; Path=/; Max-Age=604800; Expires=Mon, 17 Mar 2025 05:53:57 GMT; HttpOnly; SameSite=Lax
 Content-Type: application/json;charset=UTF-8
 X-Content-Type-Options: nosniff
 X-XSS-Protection: 0
@@ -948,12 +1086,12 @@ Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 Pragma: no-cache
 Expires: 0
 X-Frame-Options: DENY
-Content-Length: 330
+Content-Length: 327
 
 {
   "message" : "주소 등록이 완료되었습니다.",
   "data" : {
-    "addressId" : null,
+    "addressId" : 1,
     "addressName" : "집",
     "postcode" : "12345",
     "postAddress" : "서울시 강서구",
@@ -995,19 +1133,19 @@ Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 Pragma: no-cache
 Expires: 0
 X-Frame-Options: DENY
-Content-Length: 503
+Content-Length: 497
 
 {
   "message" : "주소지 목록 조회가 완료되었습니다.",
   "data" : {
     "addresses" : [ {
-      "addressId" : null,
+      "addressId" : 1,
       "addressName" : "집",
       "postAddress" : "12345",
       "detailAddress" : "서울시 강서구",
       "default" : false
     }, {
-      "addressId" : null,
+      "addressId" : 1,
       "addressName" : "집",
       "postAddress" : "12345",
       "detailAddress" : "서울시 강서구",
@@ -1083,13 +1221,13 @@ Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 Pragma: no-cache
 Expires: 0
 X-Frame-Options: DENY
-Content-Length: 332
+Content-Length: 329
 
 {
   "message" : "주소지 목록 조회가 완료되었습니다.",
   "data" : {
     "addresses" : [ {
-      "addressId" : null,
+      "addressId" : 1,
       "addressName" : "집",
       "postAddress" : "12345",
       "detailAddress" : "서울시 강서구",
@@ -1127,12 +1265,12 @@ Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 Pragma: no-cache
 Expires: 0
 X-Frame-Options: DENY
-Content-Length: 330
+Content-Length: 327
 
 {
   "message" : "주소 조회가 완료되었습니다.",
   "data" : {
-    "addressId" : null,
+    "addressId" : 1,
     "addressName" : "집",
     "postcode" : "12345",
     "postAddress" : "서울시 강서구",
@@ -1218,12 +1356,12 @@ Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 Pragma: no-cache
 Expires: 0
 X-Frame-Options: DENY
-Content-Length: 333
+Content-Length: 330
 
 {
   "message" : "주소 수정이 완료되었습니다.",
   "data" : {
-    "addressId" : null,
+    "addressId" : 1,
     "addressName" : "새집",
     "postcode" : "23456",
     "postAddress" : "서울시 강남구",
@@ -1487,12 +1625,12 @@ Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 Pragma: no-cache
 Expires: 0
 X-Frame-Options: DENY
-Content-Length: 171
+Content-Length: 168
 
 {
   "message" : "쿠폰 등록이 완료되었습니다.",
   "data" : {
-    "id" : null,
+    "id" : 1,
     "couponName" : "1000원 할인쿠폰",
     "discountValue" : 1000
   }
@@ -1538,7 +1676,7 @@ Content-Length: 171
 <pre class="highlightjs highlight nowrap"><code class="language-json hljs" data-lang="json">{
   "message" : "쿠폰 등록이 완료되었습니다.",
   "data" : {
-    "id" : null,
+    "id" : 1,
     "couponName" : "1000원 할인쿠폰",
     "discountValue" : 1000
   }
@@ -1598,12 +1736,12 @@ Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 Pragma: no-cache
 Expires: 0
 X-Frame-Options: DENY
-Content-Length: 247
+Content-Length: 244
 
 {
   "message" : "쿠폰 수정이 완료되었습니다.",
   "data" : {
-    "id" : null,
+    "id" : 1,
     "couponName" : "1000원 할인쿠폰",
     "discountValue" : 1000,
     "startTime" : "2025-03-01T00:00",
@@ -1651,7 +1789,7 @@ Content-Length: 247
 <pre class="highlightjs highlight nowrap"><code class="language-json hljs" data-lang="json">{
   "message" : "쿠폰 수정이 완료되었습니다.",
   "data" : {
-    "id" : null,
+    "id" : 1,
     "couponName" : "1000원 할인쿠폰",
     "discountValue" : 1000,
     "startTime" : "2025-03-01T00:00",
@@ -1948,15 +2086,15 @@ Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 Pragma: no-cache
 Expires: 0
 X-Frame-Options: DENY
-Content-Length: 278
+Content-Length: 269
 
 {
   "message" : "쿠폰 지급이 완료되었습니다.",
   "data" : {
-    "userCouponId" : null,
-    "userId" : null,
+    "userCouponId" : 1,
+    "userId" : 1,
     "coupon" : {
-      "id" : null,
+      "id" : 1,
       "couponName" : "1000원 할인쿠폰",
       "discountValue" : 1000
     },
@@ -1994,10 +2132,10 @@ Content-Length: 278
 <pre class="highlightjs highlight nowrap"><code class="language-json hljs" data-lang="json">{
   "message" : "쿠폰 지급이 완료되었습니다.",
   "data" : {
-    "userCouponId" : null,
-    "userId" : null,
+    "userCouponId" : 1,
+    "userId" : 1,
     "coupon" : {
-      "id" : null,
+      "id" : 1,
       "couponName" : "1000원 할인쿠폰",
       "discountValue" : 1000
     },
@@ -2120,15 +2258,15 @@ Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 Pragma: no-cache
 Expires: 0
 X-Frame-Options: DENY
-Content-Length: 302
+Content-Length: 293
 
 {
   "message" : "쿠폰 사용이 완료되었습니다.",
   "data" : {
-    "userCouponId" : null,
-    "userId" : null,
+    "userCouponId" : 1,
+    "userId" : 1,
     "coupon" : {
-      "id" : null,
+      "id" : 1,
       "couponName" : "1000원 할인쿠폰",
       "discountValue" : 1000
     },
@@ -2197,13 +2335,13 @@ Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 Pragma: no-cache
 Expires: 0
 X-Frame-Options: DENY
-Content-Length: 285
+Content-Length: 282
 
 {
   "message" : "쿠폰 목록 조회가 완료되었습니다.",
   "data" : {
     "coupons" : [ {
-      "id" : null,
+      "id" : 1,
       "couponName" : "1000원 할인쿠폰",
       "discountValue" : 1000
     } ],
@@ -2277,12 +2415,12 @@ Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 Pragma: no-cache
 Expires: 0
 X-Frame-Options: DENY
-Content-Length: 247
+Content-Length: 244
 
 {
   "message" : "쿠폰 조회가 완료되었습니다.",
   "data" : {
-    "id" : null,
+    "id" : 1,
     "couponName" : "1000원 할인쿠폰",
     "discountValue" : 1000,
     "startTime" : "2025-03-01T00:00",
@@ -2349,16 +2487,16 @@ Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 Pragma: no-cache
 Expires: 0
 X-Frame-Options: DENY
-Content-Length: 406
+Content-Length: 397
 
 {
   "message" : "쿠폰 목록 조회가 완료되었습니다.",
   "data" : {
     "userCoupons" : [ {
-      "userCouponId" : null,
-      "userId" : null,
+      "userCouponId" : 1,
+      "userId" : 1,
       "coupon" : {
-        "id" : null,
+        "id" : 1,
         "couponName" : "1000원 할인쿠폰",
         "discountValue" : 1000
       },
@@ -2474,15 +2612,15 @@ Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 Pragma: no-cache
 Expires: 0
 X-Frame-Options: DENY
-Content-Length: 302
+Content-Length: 293
 
 {
   "message" : "쿠폰 조회가 완료되었습니다.",
   "data" : {
-    "userCouponId" : null,
-    "userId" : null,
+    "userCouponId" : 1,
+    "userId" : 1,
     "coupon" : {
-      "id" : null,
+      "id" : 1,
       "couponName" : "1000원 할인쿠폰",
       "discountValue" : 1000
     },

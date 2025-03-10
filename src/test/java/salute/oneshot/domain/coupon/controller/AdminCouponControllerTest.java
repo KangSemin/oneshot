@@ -9,6 +9,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.util.ReflectionTestUtils;
 import salute.oneshot.config.TestSecurityConfig;
 import salute.oneshot.domain.common.AbstractRestDocsTests;
 import salute.oneshot.domain.common.dto.error.ErrorCode;
@@ -56,6 +57,7 @@ class AdminCouponControllerTest extends AbstractRestDocsTests {
         coupon = CouponTestFactory.createCoupon();
         user = UserTestFactory.createUser();
         userCoupon = UserCoupon.of(user, coupon);
+        ReflectionTestUtils.setField(userCoupon,"id",1L);
     }
 
     @DisplayName("쿠폰 생성 성공")
@@ -77,6 +79,7 @@ class AdminCouponControllerTest extends AbstractRestDocsTests {
                         .with(user(UserTestFactory.createMockUserDetails())))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.message").value(ApiResponseConst.ADD_CPN_SUCCESS))
+                .andExpect(jsonPath("$.data.id").value(CouponTestFactory.COUPON_ID))
                 .andExpect(jsonPath("$.data.couponName").value(CouponTestFactory.COUPON_NAME))
                 .andExpect(jsonPath("$.data.discountValue").value(CouponTestFactory.DISCOUNT_VALUE))
                 .andReturn();
@@ -101,6 +104,7 @@ class AdminCouponControllerTest extends AbstractRestDocsTests {
                         .with(user(UserTestFactory.createMockUserDetails())))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value(ApiResponseConst.UPDATE_CPN_SUCCESS))
+                .andExpect(jsonPath("$.data.id").value(CouponTestFactory.COUPON_ID))
                 .andExpect(jsonPath("$.data.couponName").value(CouponTestFactory.COUPON_NAME))
                 .andExpect(jsonPath("$.data.discountValue").value(CouponTestFactory.DISCOUNT_VALUE))
                 .andExpect(jsonPath("$.data.startTime").value(CouponTestFactory.formatDateTime(CouponTestFactory.START_LOCAL_DATE_TIME)))
@@ -182,6 +186,7 @@ class AdminCouponControllerTest extends AbstractRestDocsTests {
                         .with(user(UserTestFactory.createMockUserDetails())))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.message").value(ApiResponseConst.ADD_USER_CPN_SUCCESS))
+                .andExpect(jsonPath("$.data.userCouponId").value(1L))
                 .andExpect(jsonPath("$.data.status").value(UserCouponStatus.ISSUED.toString()))
                 .andExpect(jsonPath("$.data.coupon.couponName").value(CouponTestFactory.COUPON_NAME))
                 .andReturn();

@@ -1,5 +1,6 @@
 package salute.oneshot.util;
 
+import org.springframework.test.util.ReflectionTestUtils;
 import salute.oneshot.domain.coupon.dto.request.CpnRequestDto;
 import salute.oneshot.domain.coupon.dto.request.UserCpnRequestDto;
 import salute.oneshot.domain.coupon.entity.Coupon;
@@ -22,7 +23,14 @@ public class CouponTestFactory {
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
 
     public static Coupon createCoupon() {
-        return Coupon.of(COUPON_NAME, DISCOUNT_VALUE, START_LOCAL_DATE_TIME, END_LOCAL_DATE_TIME);
+        Coupon coupon = Coupon.of(
+                COUPON_NAME,
+                DISCOUNT_VALUE,
+                START_LOCAL_DATE_TIME,
+                END_LOCAL_DATE_TIME);
+        ReflectionTestUtils.setField(coupon,"id",COUPON_ID);
+
+        return coupon;
     }
 
     public static CpnRequestDto createCpnRequestDto() {
