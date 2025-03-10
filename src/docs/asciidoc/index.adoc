@@ -10,3 +10,9 @@ include::cocktail.adoc[]
 include::auth.adoc[]
 
 include::address.adoc[]
+
+include::admin-coupon.adoc[]
+
+include::coupon.adoc[]
+
+include::favorite.adoc[]
