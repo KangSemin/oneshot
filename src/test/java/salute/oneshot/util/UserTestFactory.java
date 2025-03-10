@@ -1,11 +1,14 @@
 package salute.oneshot.util;
 
+import org.springframework.test.util.ReflectionTestUtils;
 import salute.oneshot.domain.auth.dto.request.LogInRequestDto;
 import salute.oneshot.domain.auth.dto.request.SignUpRequestDto;
-import salute.oneshot.domain.auth.dto.response.SignUpResponseDto;
 import salute.oneshot.domain.auth.dto.service.LogInSDto;
 import salute.oneshot.domain.auth.dto.service.LogOutSDto;
 import salute.oneshot.domain.auth.dto.service.SignUpSDto;
+import salute.oneshot.domain.user.dto.repuest.UpdateRoleRequestDto;
+import salute.oneshot.domain.user.dto.repuest.UpdateUserRequestDto;
+import salute.oneshot.domain.user.dto.response.UserResponseDto;
 import salute.oneshot.domain.user.entity.User;
 import salute.oneshot.domain.user.entity.UserRole;
 import salute.oneshot.global.security.model.CustomUserDetails;
@@ -21,30 +24,21 @@ public class UserTestFactory {
     public static final String NICKNAME = "nickname";
 
     public static User createUser() {
-        return User.of(EMAIL, ENCODED_PASSWORD, NICKNAME);
+        User user = User.of(EMAIL, ENCODED_PASSWORD, NICKNAME);
+        ReflectionTestUtils.setField(user,"id",USER_ID);
+
+        return user;
     }
 
     public static SignUpSDto createSignUpSDto() {
         return SignUpSDto.of(EMAIL, RAW_PASSWORD, NICKNAME);
     }
 
-    public static SignUpSDto createSignUpSDto(String email, String rawPassword, String nickname) {
-        return SignUpSDto.of(email, rawPassword, nickname);
-    }
-
     public static LogInSDto createLogInSDto() {
         return LogInSDto.of(EMAIL, RAW_PASSWORD);
     }
 
-    public static LogInSDto createLogInSDto(String email, String rawPassword) {
-        return LogInSDto.of(email, rawPassword);
-    }
-
     public static LogOutSDto createLogOutSDto() {
-        return LogOutSDto.of(USER_ID, TokenTestFactory.ACCESS_TOKEN);
-    }
-
-    public static LogOutSDto createLogOutSDto(Long userId, String accessToken) {
         return LogOutSDto.of(USER_ID, TokenTestFactory.ACCESS_TOKEN);
     }
 
@@ -56,10 +50,13 @@ public class UserTestFactory {
         return LogInRequestDto.of(EMAIL, RAW_PASSWORD);
     }
 
-    public static SignUpResponseDto createSignUpResponseDto(User user) {
-        return SignUpResponseDto.from(user);
+    public static UpdateRoleRequestDto createUpdateRoleRequestDto() {
+        return UpdateRoleRequestDto.of(ROLE_ADMIN.name());
     }
 
+    public static UpdateUserRequestDto createUpdateUserRequestDto() {
+        return UpdateUserRequestDto.of(NICKNAME, RAW_PASSWORD);
+    }
     public static CustomUserDetails createMockUserDetails() {
         return CustomUserDetails.of(USER_ID, ROLE_USER);
     }
