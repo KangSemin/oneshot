@@ -50,16 +50,7 @@ class AuthControllerTest extends AbstractRestDocsTests {
     private ObjectMapper objectMapper;
 
     @MockitoBean
-    private JpaMetamodelMappingContext jpaMetamodelMappingContext;
-
-    @MockitoBean
     private AuthService authService;
-
-    @MockitoBean
-    private JwtProvider jwtProvider;
-
-    @MockitoBean
-    private JwtFilter jwtFilter;
 
     private User user;
 

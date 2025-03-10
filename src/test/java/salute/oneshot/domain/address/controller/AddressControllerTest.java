@@ -51,16 +51,7 @@ class AddressControllerTest extends AbstractRestDocsTests {
     private ObjectMapper objectMapper;
 
     @MockitoBean
-    private JpaMetamodelMappingContext jpaMetamodelMappingContext;
-
-    @MockitoBean
     private AddressService addressService;
-
-    @MockitoBean
-    private JwtProvider jwtProvider;
-
-    @MockitoBean
-    private JwtFilter jwtFilter;
 
     private Address address;
 
