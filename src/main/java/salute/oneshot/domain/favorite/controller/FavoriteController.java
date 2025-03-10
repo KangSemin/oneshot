@@ -36,7 +36,7 @@ public class FavoriteController {
         FavoriteResponseDto responseDto =
                 favoriteService.createFavorite(serviceDto);
 
-        return ResponseEntity.status(HttpStatus.OK)
+        return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.success(
                         ApiResponseConst.ADD_FVRT_SUCCESS, responseDto));
     }

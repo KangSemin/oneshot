@@ -28,7 +28,6 @@ public class FavoriteService {
 
     private final FavoriteRepository favoriteRepository;
     private final CocktailRepository cocktailRepository;
-    private final UserRepository userRepository;
 
     private final RedisTemplate<String, String> redisTemplate;
 
@@ -45,7 +44,7 @@ public class FavoriteService {
                 .orElseThrow(() ->
                         new NotFoundException(ErrorCode.COCKTAIL_NOT_FOUND));
 
-        Favorite favorite = Favorite.from(userId, cocktail);
+        Favorite favorite = Favorite.of(userId, cocktail);
         favoriteRepository.save(favorite);
 
         increaseFavoriteScore(cocktailId);
@@ -86,10 +85,14 @@ public class FavoriteService {
     }
 
     public void increaseFavoriteScore(Long cocktailId) {
-        String cocktailCountKey = RedisConst.COCKTAIL_COUNT_KEY_PREFIX + cocktailId;
-        String cocktailScoreKey = RedisConst.COCKTAIL_SCORE_KEY_PREFIX + cocktailId;
+        String cocktailCountKey =
+                RedisConst.COCKTAIL_COUNT_KEY_PREFIX + cocktailId;
+        String cocktailScoreKey =
+                RedisConst.COCKTAIL_SCORE_KEY_PREFIX + cocktailId;
 
-        redisTemplate.opsForHash().increment(cocktailCountKey, "favoriteCount",1);
-        redisTemplate.opsForZSet().incrementScore(RedisConst.COCKTAIL_SCORE_KEY,cocktailScoreKey, 2);
+        redisTemplate.opsForHash()
+                .increment(cocktailCountKey, "favoriteCount",1);
+        redisTemplate.opsForZSet()
+                .incrementScore(RedisConst.COCKTAIL_SCORE_KEY,cocktailScoreKey, 2);
     }
 }
