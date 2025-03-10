@@ -117,7 +117,7 @@ class CouponControllerTest extends AbstractRestDocsTests {
                 .andReturn();
     }
 
-    @DisplayName("쿠폰 목록 조회 성공 - 빈 목록 조회")
+    @DisplayName("쿠폰 목록 조회 성공: 빈 목록 조회")
     @Test
     void successGetEmptyCoupons() throws Exception {
         // given
@@ -201,7 +201,7 @@ class CouponControllerTest extends AbstractRestDocsTests {
                 .andReturn();
     }
 
-    @DisplayName("유저쿠폰 목록 조회 성공 - 빈 목록 조회")
+    @DisplayName("유저쿠폰 목록 조회 성공: 빈 목록 조회")
     @Test
     void successGetEmptyUserCoupons() throws Exception {
         // given
