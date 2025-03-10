@@ -47,20 +47,10 @@ class ChatControllerTest extends AbstractRestDocsTests {
     @MockitoBean
     private ChatService chatService;
 
-//    @MockitoBean
-//    private RedisTemplate<String, String> redisTemplate;
-
-//    @BeforeEach
-//    void setUp() {
-//        address = AddressTestFactory.createAddress();
-//    }
-
     @DisplayName("채팅 조회 성공")
     @Test
     void successFindChat() throws Exception {
         // given
-//        CreateAddressRequestDto requestDto =
-//                AddressTestFactory.createCreateRequestDto();
         FindChatResponseDto responseDto = ChatTestFactory.createFindChatResponseDto();
 
         given(chatService.findChat(any(Long.class)))
@@ -69,16 +59,11 @@ class ChatControllerTest extends AbstractRestDocsTests {
         // when & then
         mockMvc.perform(get("/api/chats")
                         .contentType(MediaType.APPLICATION_JSON)
-//                        .content(objectMapper.writeValueAsString(requestDto))
                         .with(user(UserTestFactory.createMockUserDetails())))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.messageList[0].sender").value(responseDto.getMessageList().get(0).getSender()))
-                .andExpect(jsonPath("$.messageList[0].content").value(responseDto.getMessageList().get(0).getContent()))
-                .andExpect(jsonPath("$.messageList[0].timeMillis").value(responseDto.getMessageList().get(0).getTimeMillis()))
-//                .andExpect(jsonPath("$.messageList").value(objectMapper.writeValueAsString(responseDto.getMessageList())))
-//                .andExpect(jsonPath("$.message").value(ApiResponseConst.ADD_ADR_SUCCESS))
-//                .andExpect(jsonPath("$.data.addressName").value(AddressTestFactory.ADDRESS_NAME))
-//                .andExpect(jsonPath("$.data.postAddress").value(AddressTestFactory.POST_ADDRESS))
+                .andExpect(jsonPath("$.messageList[0].sender").value(ChatTestFactory.MESSAGE_SENDER))
+                .andExpect(jsonPath("$.messageList[0].content").value(ChatTestFactory.MESSAGE_CONTENT))
+                .andExpect(jsonPath("$.messageList[0].timeMillis").value(ChatTestFactory.MESSAGE_TIME_MILLIS))
                 .andReturn();
     }
 
@@ -96,13 +81,13 @@ class ChatControllerTest extends AbstractRestDocsTests {
                         .contentType(MediaType.APPLICATION_JSON)
                         .with(user(UserTestFactory.createMockUserDetails())))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.messageList[0].sender").value(responseDto.getMessageList().get(0).getSender()))
-                .andExpect(jsonPath("$.messageList[0].content").value(responseDto.getMessageList().get(0).getContent()))
-                .andExpect(jsonPath("$.messageList[0].timeMillis").value(responseDto.getMessageList().get(0).getTimeMillis()))
+                .andExpect(jsonPath("$.messageList[0].sender").value(ChatTestFactory.MESSAGE_SENDER))
+                .andExpect(jsonPath("$.messageList[0].content").value(ChatTestFactory.MESSAGE_CONTENT))
+                .andExpect(jsonPath("$.messageList[0].timeMillis").value(ChatTestFactory.MESSAGE_TIME_MILLIS))
                 .andReturn();
     }
 
-    @DisplayName("어드민용 채팅방 조회 성공")
+    @DisplayName("어드민용 채팅방 리스트 조회 성공")
     @Test
     void successFindChatListForAdmin() throws Exception {
         // given
@@ -114,12 +99,11 @@ class ChatControllerTest extends AbstractRestDocsTests {
         // when & then
         mockMvc.perform(get("/api/admin/chats")
                         .contentType(MediaType.APPLICATION_JSON)
-//                        .with(user(UserTestFactory.createMockUserDetails())))
                         .with(user(CustomUserDetails.of(1L, UserRole.SUPER_ADMIN))))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.chatList[0].userId").value(responseDto.getChatList().get(0).getUserId()))
-                .andExpect(jsonPath("$.chatList[0].lastMessage").value(responseDto.getChatList().get(0).getLastMessage()))
-                .andExpect(jsonPath("$.nextCursor").value(responseDto.getNextCursor()))
+                .andExpect(jsonPath("$.chatList[0].userId").value(ChatTestFactory.USER_ID))
+                .andExpect(jsonPath("$.chatList[0].lastMessage").value(ChatTestFactory.FORMATTED_MESSAGE))
+                .andExpect(jsonPath("$.nextCursor").value(ChatTestFactory.CURSOR))
                 .andReturn();
     }
 }

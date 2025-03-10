@@ -11,10 +11,16 @@ import java.util.List;
 public class ChatTestFactory {
 
     public static final Long USER_ID = 2L;
-    public static final String RAW_MESSAGE = "u::메시지 입니다.::1741314450785";
+    public static final String MESSAGE_SENDER = "user";
+    public static final String MESSAGE_CONTENT = "메시지 입니다.";
+    public static final String MESSAGE_TIME_MILLIS = "1741314450785";
+    
+    public static final String FORMATTED_MESSAGE = MESSAGE_SENDER + "::" + MESSAGE_CONTENT + "::" + MESSAGE_TIME_MILLIS;
+    public static final String CURSOR = "";
 
+    
     public static FindChatResponseDto createFindChatResponseDto() {
-        MessageResponseDto messageResponseDto = MessageResponseDto.from(RAW_MESSAGE);
+        MessageResponseDto messageResponseDto = MessageResponseDto.from(FORMATTED_MESSAGE);
 
         List<MessageResponseDto> messageList = new ArrayList<>();
         messageList.add(messageResponseDto);
@@ -23,12 +29,11 @@ public class ChatTestFactory {
     }
 
     public static FindChatListResponseDto createFindChatListResponseDto() {
-        ChatPreviewResponseDto chatPreviewResponseDto = ChatPreviewResponseDto.of(Long.toString(USER_ID), RAW_MESSAGE);
+        ChatPreviewResponseDto chatPreviewResponseDto = ChatPreviewResponseDto.of(Long.toString(USER_ID), FORMATTED_MESSAGE);
 
         List<ChatPreviewResponseDto> chatList = new ArrayList<>();
         chatList.add(chatPreviewResponseDto);
 
-        String nextCursor = "";
-        return FindChatListResponseDto.of(chatList, nextCursor);
+        return FindChatListResponseDto.of(chatList, CURSOR);
     }
 }

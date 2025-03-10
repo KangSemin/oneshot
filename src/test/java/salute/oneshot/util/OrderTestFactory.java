@@ -18,6 +18,7 @@ import java.util.List;
 
 public class OrderTestFactory {
     private static final Long ADDRESS_ID = 1L;
+    private static final Long ORDER_ID = 1L;
 
     public static OrderItemListResponseDto createOrderItemListResponseDto() throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
         Constructor<OrderItemListResponseDto> constructor =
@@ -40,7 +41,7 @@ public class OrderTestFactory {
                 CreateOrderResponseDto.class.getDeclaredConstructor(Long.class, String.class, String.class, Long.class, OrderStatus.class, LocalDateTime.class);
         constructor.setAccessible(true);
 
-        return constructor.newInstance(ADDRESS_ID, "23031114553289", "보드카 외 2개", 120000L, OrderStatus.PENDING_PAYMENT, LocalDateTime.parse("2025-03-10T16:08:17.783333"));
+        return constructor.newInstance(ORDER_ID, "23031114553289", "보드카 외 2개", 120000L, OrderStatus.PENDING_PAYMENT, LocalDateTime.parse("2025-03-10T16:08:17.783333"));
     }
 
     public static GetOrderResponseDto createGetOrderResponseDto() throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
@@ -51,7 +52,7 @@ public class OrderTestFactory {
         List<OrderItemListResponseDto> orderItems = new ArrayList<>();
         orderItems.add(createOrderItemListResponseDto());
 
-        return constructor.newInstance(ADDRESS_ID, "23031114553289", 120000L, orderItems);
+        return constructor.newInstance(ORDER_ID, "23031114553289", 120000L, orderItems);
     }
 
     public static Page<CreateOrderResponseDto> createCreateOrderResponseDtoPage() throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
@@ -74,6 +75,6 @@ public class OrderTestFactory {
                 UpdateOrderResponseDto.class.getDeclaredConstructor(Long.class, String.class, Long.class, OrderStatus.class, LocalDateTime.class);
         constructor.setAccessible(true);
 
-        return constructor.newInstance(ADDRESS_ID, "보드카 외 2개", 120000L, OrderStatus.PENDING_PAYMENT, LocalDateTime.parse("2025-03-10T16:08:17.783333"));
+        return constructor.newInstance(ORDER_ID, "보드카 외 2개", 120000L, OrderStatus.PENDING_PAYMENT, LocalDateTime.parse("2025-03-10T16:08:17.783333"));
     }
 }

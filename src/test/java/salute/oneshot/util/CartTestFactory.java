@@ -7,9 +7,6 @@ import salute.oneshot.domain.cart.dto.response.CartResponseDto;
 import salute.oneshot.domain.cart.entity.Cart;
 import salute.oneshot.domain.cart.entity.CartItem;
 import salute.oneshot.domain.product.entity.Product;
-import salute.oneshot.domain.product.entity.ProductCategory;
-import salute.oneshot.domain.product.entity.ProductStatus;
-import salute.oneshot.domain.user.entity.User;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -18,25 +15,23 @@ import java.util.List;
 
 public class CartTestFactory {
 
-    public static final Long USER_ID = 1L;
+    public static final Long CART_ITEM_ID = 1L;
+    public static final int QUANTITY = 3;
+    public static final int UPDATED_QUANTITY = 2;
 
-    public static Cart createCart(User user) {
-        return Cart.from(user);
+    public static Cart createCart() {
+        return Cart.from(UserTestFactory.createUser());
     }
 
-    public static Product createProduct(User user) {
-        return Product.of("보드카", "독한 술입니다.", 120000, 50, ProductCategory.ALCOHOL, ProductStatus.SALE, user);
+    public static CartItem createCartItem() {
+        Cart cart = createCart();
+        Product product = ProductTestFactory.createProduct();
+
+        return CartItem.of(cart, product, QUANTITY);
     }
 
-    public static CartItem createCartItem(User user) {
-        Cart cart = createCart(user);
-        Product product = createProduct(user);
-
-        return CartItem.of(cart, product, 3);
-    }
-
-    public static CartItemResponseDto createCartItemResponseDto(User user) {
-        CartItem cartItem = createCartItem(user);
+    public static CartItemResponseDto createCartItemResponseDto() {
+        CartItem cartItem = createCartItem();
         return CartItemResponseDto.from(cartItem);
     }
 
@@ -45,7 +40,7 @@ public class CartTestFactory {
                 AddCartItemRequestDto.class.getDeclaredConstructor(Long.class, Integer.class);
         constructor.setAccessible(true);
 
-        return constructor.newInstance(1L, 50);
+        return constructor.newInstance(ProductTestFactory.PRODUCT_ID, QUANTITY);
     }
 
     public static UpdateCartItemAmountRequestDto createUpdateCartItemAmountRequestDto() throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
@@ -53,16 +48,16 @@ public class CartTestFactory {
                 UpdateCartItemAmountRequestDto.class.getDeclaredConstructor(Integer.class);
         constructor.setAccessible(true);
 
-        return constructor.newInstance(2);
+        return constructor.newInstance(UPDATED_QUANTITY);
     }
 
-    public static CartResponseDto createCartResponseDto(User user) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+    public static CartResponseDto createCartResponseDto() throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
         Constructor<CartResponseDto> constructor =
                 CartResponseDto.class.getDeclaredConstructor(List.class);
         constructor.setAccessible(true);
 
         List<CartItemResponseDto> itemList = new ArrayList<>();
-        itemList.add(createCartItemResponseDto(user));
+        itemList.add(createCartItemResponseDto());
 
         return constructor.newInstance(itemList);
     }
