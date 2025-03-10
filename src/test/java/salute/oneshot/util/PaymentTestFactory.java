@@ -9,13 +9,14 @@ import java.lang.reflect.InvocationTargetException;
 
 public class PaymentTestFactory {
     public static final String PAYMENT_KEY = "some-payment-key";
+    public static final PaymentStatus STATUS = PaymentStatus.DONE;
 
     public static ConfirmPaymentRequestDto createConfirmPaymentRequestDto() throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
         Constructor<ConfirmPaymentRequestDto> constructor =
                 ConfirmPaymentRequestDto.class.getDeclaredConstructor(String.class, Long.class, String.class);
         constructor.setAccessible(true);
 
-        return constructor.newInstance("23031114553289", 120000L, PAYMENT_KEY);
+        return constructor.newInstance(OrderTestFactory.NAME, OrderTestFactory.AMOUNT, PAYMENT_KEY);
     }
 
     public static PaymentResponseDto createPaymentResponseDto() throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
@@ -23,6 +24,6 @@ public class PaymentTestFactory {
                 PaymentResponseDto.class.getDeclaredConstructor(String.class, PaymentStatus.class, String.class, String.class, Long.class);
         constructor.setAccessible(true);
 
-        return constructor.newInstance(PAYMENT_KEY, PaymentStatus.DONE, "23031114553289", "보드카 외 2개", 120000L);
+        return constructor.newInstance(PAYMENT_KEY, STATUS, OrderTestFactory.ORDER_NUMBER, OrderTestFactory.NAME, OrderTestFactory.AMOUNT);
     }
 }

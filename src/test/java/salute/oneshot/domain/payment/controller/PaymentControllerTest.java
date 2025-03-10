@@ -18,6 +18,7 @@ import salute.oneshot.domain.payment.dto.response.PaymentResponseDto;
 import salute.oneshot.domain.payment.dto.service.ConfirmPaymentSDto;
 import salute.oneshot.global.security.filter.JwtFilter;
 import salute.oneshot.global.security.jwt.JwtProvider;
+import salute.oneshot.util.OrderTestFactory;
 import salute.oneshot.util.PaymentTestFactory;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -62,11 +63,11 @@ class PaymentControllerTest extends AbstractRestDocsTests {
                         .content(objectMapper.writeValueAsString(requestDto)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value(ApiResponseConst.ADD_PMNT_SUCCESS))
-                .andExpect(jsonPath("$.data.paymentKey").value(responseDto.getPaymentKey()))
-                .andExpect(jsonPath("$.data.status").value(responseDto.getStatus().toString()))
-                .andExpect(jsonPath("$.data.orderId").value(responseDto.getOrderId()))
-                .andExpect(jsonPath("$.data.orderName").value(responseDto.getOrderName()))
-                .andExpect(jsonPath("$.data.totalAmount").value(responseDto.getTotalAmount()))
+                .andExpect(jsonPath("$.data.paymentKey").value(PaymentTestFactory.PAYMENT_KEY))
+                .andExpect(jsonPath("$.data.status").value(PaymentTestFactory.STATUS.toString()))
+                .andExpect(jsonPath("$.data.orderId").value(OrderTestFactory.ORDER_NUMBER))
+                .andExpect(jsonPath("$.data.orderName").value(OrderTestFactory.NAME))
+                .andExpect(jsonPath("$.data.totalAmount").value(OrderTestFactory.AMOUNT))
                 .andReturn();
     }
 
@@ -83,11 +84,11 @@ class PaymentControllerTest extends AbstractRestDocsTests {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value(ApiResponseConst.GET_PMNT_SUCCESS))
-                .andExpect(jsonPath("$.data.paymentKey").value(responseDto.getPaymentKey()))
-                .andExpect(jsonPath("$.data.status").value(responseDto.getStatus().toString()))
-                .andExpect(jsonPath("$.data.orderId").value(responseDto.getOrderId()))
-                .andExpect(jsonPath("$.data.orderName").value(responseDto.getOrderName()))
-                .andExpect(jsonPath("$.data.totalAmount").value(responseDto.getTotalAmount()))
+                .andExpect(jsonPath("$.data.paymentKey").value(PaymentTestFactory.PAYMENT_KEY))
+                .andExpect(jsonPath("$.data.status").value(PaymentTestFactory.STATUS.toString()))
+                .andExpect(jsonPath("$.data.orderId").value(OrderTestFactory.ORDER_NUMBER))
+                .andExpect(jsonPath("$.data.orderName").value(OrderTestFactory.NAME))
+                .andExpect(jsonPath("$.data.totalAmount").value(OrderTestFactory.AMOUNT))
                 .andReturn();
     }
 }

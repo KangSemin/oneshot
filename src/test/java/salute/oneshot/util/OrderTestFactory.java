@@ -17,15 +17,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class OrderTestFactory {
-    private static final Long ADDRESS_ID = 1L;
-    private static final Long ORDER_ID = 1L;
+
+    public static final int ORDER_ITEM_QUANTITY = 3;
+
+    public static final Long ORDER_ID = 1L;
+    public static final String ORDER_NUMBER = "23031114553289";
+    public static final String NAME = "보드카 외 2개";
+    public static final Long AMOUNT = 120000L;
+    public static final String UPDATED_STATUS = "PROCESSING";
+    public static final OrderStatus STATUS = OrderStatus.PENDING_PAYMENT;
+    public static final LocalDateTime ORDER_DATE = LocalDateTime.parse("2025-03-10T16:08:17.783333");
 
     public static OrderItemListResponseDto createOrderItemListResponseDto() throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
         Constructor<OrderItemListResponseDto> constructor =
                 OrderItemListResponseDto.class.getDeclaredConstructor(String.class, int.class, int.class);
         constructor.setAccessible(true);
 
-        return constructor.newInstance("보드카", 3, 12000);
+        return constructor.newInstance(ProductTestFactory.NAME, ORDER_ITEM_QUANTITY, ProductTestFactory.PRICE);
     }
 
     public static CreateOrderRequestDto createCreateOrderRequestDto() throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
@@ -33,7 +41,7 @@ public class OrderTestFactory {
                 CreateOrderRequestDto.class.getDeclaredConstructor(Long.class);
         constructor.setAccessible(true);
 
-        return constructor.newInstance(ADDRESS_ID);
+        return constructor.newInstance(AddressTestFactory.ADDRESS_ID);
     }
 
     public static CreateOrderResponseDto createCreateOrderResponseDto() throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
@@ -41,7 +49,7 @@ public class OrderTestFactory {
                 CreateOrderResponseDto.class.getDeclaredConstructor(Long.class, String.class, String.class, Long.class, OrderStatus.class, LocalDateTime.class);
         constructor.setAccessible(true);
 
-        return constructor.newInstance(ORDER_ID, "23031114553289", "보드카 외 2개", 120000L, OrderStatus.PENDING_PAYMENT, LocalDateTime.parse("2025-03-10T16:08:17.783333"));
+        return constructor.newInstance(ORDER_ID, ORDER_NUMBER, NAME, AMOUNT, STATUS, ORDER_DATE);
     }
 
     public static GetOrderResponseDto createGetOrderResponseDto() throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
@@ -52,7 +60,7 @@ public class OrderTestFactory {
         List<OrderItemListResponseDto> orderItems = new ArrayList<>();
         orderItems.add(createOrderItemListResponseDto());
 
-        return constructor.newInstance(ORDER_ID, "23031114553289", 120000L, orderItems);
+        return constructor.newInstance(ORDER_ID, ORDER_NUMBER, AMOUNT, orderItems);
     }
 
     public static Page<CreateOrderResponseDto> createCreateOrderResponseDtoPage() throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
@@ -67,7 +75,7 @@ public class OrderTestFactory {
                 UpdateOrderRequestDto.class.getDeclaredConstructor(String.class);
         constructor.setAccessible(true);
 
-        return constructor.newInstance("PROCESSING");
+        return constructor.newInstance(UPDATED_STATUS);
     }
 
     public static UpdateOrderResponseDto createUpdateOrderResponseDto() throws InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchMethodException {
@@ -75,6 +83,6 @@ public class OrderTestFactory {
                 UpdateOrderResponseDto.class.getDeclaredConstructor(Long.class, String.class, Long.class, OrderStatus.class, LocalDateTime.class);
         constructor.setAccessible(true);
 
-        return constructor.newInstance(ORDER_ID, "보드카 외 2개", 120000L, OrderStatus.PENDING_PAYMENT, LocalDateTime.parse("2025-03-10T16:08:17.783333"));
+        return constructor.newInstance(ORDER_ID, NAME, AMOUNT, STATUS, ORDER_DATE);
     }
 }

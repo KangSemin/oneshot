@@ -1,12 +1,12 @@
 package salute.oneshot.util;
 
+import org.springframework.test.util.ReflectionTestUtils;
 import salute.oneshot.domain.cart.dto.request.AddCartItemRequestDto;
 import salute.oneshot.domain.cart.dto.request.UpdateCartItemAmountRequestDto;
 import salute.oneshot.domain.cart.dto.response.CartItemResponseDto;
 import salute.oneshot.domain.cart.dto.response.CartResponseDto;
 import salute.oneshot.domain.cart.entity.Cart;
 import salute.oneshot.domain.cart.entity.CartItem;
-import salute.oneshot.domain.product.entity.Product;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -19,18 +19,25 @@ public class CartTestFactory {
     public static final int QUANTITY = 3;
     public static final int UPDATED_QUANTITY = 2;
 
+    // Cart 필드값 user 제외하면 없는 상태
     public static Cart createCart() {
         return Cart.from(UserTestFactory.createUser());
     }
 
-    public static CartItem createCartItem() {
-        Cart cart = createCart();
-        Product product = ProductTestFactory.createProduct();
+    public static CartItem createCartItem() throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+        Constructor<CartItem> constructor = CartItem.class.getDeclaredConstructor();
+        constructor.setAccessible(true);
+        CartItem cartItem = constructor.newInstance();
 
-        return CartItem.of(cart, product, QUANTITY);
+        ReflectionTestUtils.setField(cartItem, "id", CART_ITEM_ID);
+        ReflectionTestUtils.setField(cartItem, "cart", createCart());
+        ReflectionTestUtils.setField(cartItem, "product", ProductTestFactory.createProduct());
+        ReflectionTestUtils.setField(cartItem, "quantity", QUANTITY);
+
+        return cartItem;
     }
 
-    public static CartItemResponseDto createCartItemResponseDto() {
+    public static CartItemResponseDto createCartItemResponseDto() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         CartItem cartItem = createCartItem();
         return CartItemResponseDto.from(cartItem);
     }

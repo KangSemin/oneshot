@@ -10,15 +10,16 @@ import java.util.List;
 
 public class ChatTestFactory {
 
-    public static final Long USER_ID = 2L;
+    public static final Long SENDER_USER_ID = 1L;
+    public static final Long RECEIVER_USER_ID = 2L;
     public static final String MESSAGE_SENDER = "user";
     public static final String MESSAGE_CONTENT = "메시지 입니다.";
     public static final String MESSAGE_TIME_MILLIS = "1741314450785";
-    
-    public static final String FORMATTED_MESSAGE = MESSAGE_SENDER + "::" + MESSAGE_CONTENT + "::" + MESSAGE_TIME_MILLIS;
+
+    public static final String FORMATTED_MESSAGE = "u" + "::" + MESSAGE_CONTENT + "::" + MESSAGE_TIME_MILLIS;
     public static final String CURSOR = "";
 
-    
+
     public static FindChatResponseDto createFindChatResponseDto() {
         MessageResponseDto messageResponseDto = MessageResponseDto.from(FORMATTED_MESSAGE);
 
@@ -29,7 +30,7 @@ public class ChatTestFactory {
     }
 
     public static FindChatListResponseDto createFindChatListResponseDto() {
-        ChatPreviewResponseDto chatPreviewResponseDto = ChatPreviewResponseDto.of(Long.toString(USER_ID), FORMATTED_MESSAGE);
+        ChatPreviewResponseDto chatPreviewResponseDto = ChatPreviewResponseDto.of(Long.toString(RECEIVER_USER_ID), FORMATTED_MESSAGE);
 
         List<ChatPreviewResponseDto> chatList = new ArrayList<>();
         chatList.add(chatPreviewResponseDto);

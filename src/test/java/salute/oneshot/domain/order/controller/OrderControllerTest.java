@@ -27,6 +27,7 @@ import salute.oneshot.domain.user.entity.User;
 import salute.oneshot.global.security.filter.JwtFilter;
 import salute.oneshot.global.security.jwt.JwtProvider;
 import salute.oneshot.util.OrderTestFactory;
+import salute.oneshot.util.ProductTestFactory;
 import salute.oneshot.util.UserTestFactory;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -72,12 +73,12 @@ class OrderControllerTest extends AbstractRestDocsTests {
                         .with(user(UserTestFactory.createMockUserDetails())))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.message").value(ApiResponseConst.ADD_ORD_SUCCESS))
-                .andExpect(jsonPath("$.data.orderId").value(responseDto.getOrderId()))
-                .andExpect(jsonPath("$.data.orderNumber").value(responseDto.getOrderNumber()))
-                .andExpect(jsonPath("$.data.name").value(responseDto.getName()))
-                .andExpect(jsonPath("$.data.amount").value(responseDto.getAmount()))
-                .andExpect(jsonPath("$.data.status").value(responseDto.getStatus().toString()))
-                .andExpect(jsonPath("$.data.orderDate").value(responseDto.getOrderDate().toString()))
+                .andExpect(jsonPath("$.data.orderId").value(OrderTestFactory.ORDER_ID))
+                .andExpect(jsonPath("$.data.orderNumber").value(OrderTestFactory.ORDER_NUMBER))
+                .andExpect(jsonPath("$.data.name").value(OrderTestFactory.NAME))
+                .andExpect(jsonPath("$.data.amount").value(OrderTestFactory.AMOUNT))
+                .andExpect(jsonPath("$.data.status").value(OrderTestFactory.STATUS.toString()))
+                .andExpect(jsonPath("$.data.orderDate").value(OrderTestFactory.ORDER_DATE.toString()))
                 .andReturn();
     }
 
@@ -95,12 +96,12 @@ class OrderControllerTest extends AbstractRestDocsTests {
                         .with(user(UserTestFactory.createMockUserDetails())))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value(ApiResponseConst.GET_ORD_SUCCESS))
-                .andExpect(jsonPath("$.data.orderId").value(responseDto.getOrderId()))
-                .andExpect(jsonPath("$.data.orderNumber").value(responseDto.getOrderNumber()))
-                .andExpect(jsonPath("$.data.amount").value(responseDto.getAmount()))
-                .andExpect(jsonPath("$.data.orderItems[0].productName").value(responseDto.getOrderItems().get(0).getProductName()))
-                .andExpect(jsonPath("$.data.orderItems[0].quantity").value(responseDto.getOrderItems().get(0).getQuantity()))
-                .andExpect(jsonPath("$.data.orderItems[0].price").value(responseDto.getOrderItems().get(0).getPrice()))
+                .andExpect(jsonPath("$.data.orderId").value(OrderTestFactory.ORDER_ID))
+                .andExpect(jsonPath("$.data.orderNumber").value(OrderTestFactory.ORDER_NUMBER))
+                .andExpect(jsonPath("$.data.amount").value(OrderTestFactory.AMOUNT))
+                .andExpect(jsonPath("$.data.orderItems[0].productName").value(ProductTestFactory.NAME))
+                .andExpect(jsonPath("$.data.orderItems[0].quantity").value(OrderTestFactory.ORDER_ITEM_QUANTITY))
+                .andExpect(jsonPath("$.data.orderItems[0].price").value(ProductTestFactory.PRICE))
                 .andReturn();
     }
 
@@ -121,12 +122,12 @@ class OrderControllerTest extends AbstractRestDocsTests {
                         .with(user(UserTestFactory.createMockUserDetails())))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value(ApiResponseConst.GET_ORD_SUCCESS))
-                .andExpect(jsonPath("$.data.content[0].orderId").value(responseDtoPage.getContent().get(0).getOrderId()))
-                .andExpect(jsonPath("$.data.content[0].orderNumber").value(responseDtoPage.getContent().get(0).getOrderNumber()))
-                .andExpect(jsonPath("$.data.content[0].name").value(responseDtoPage.getContent().get(0).getName()))
-                .andExpect(jsonPath("$.data.content[0].amount").value(responseDtoPage.getContent().get(0).getAmount()))
-                .andExpect(jsonPath("$.data.content[0].status").value(responseDtoPage.getContent().get(0).getStatus().toString()))
-                .andExpect(jsonPath("$.data.content[0].orderDate").value(responseDtoPage.getContent().get(0).getOrderDate().toString()))
+                .andExpect(jsonPath("$.data.content[0].orderId").value(OrderTestFactory.ORDER_ID))
+                .andExpect(jsonPath("$.data.content[0].orderNumber").value(OrderTestFactory.ORDER_NUMBER))
+                .andExpect(jsonPath("$.data.content[0].name").value(OrderTestFactory.NAME))
+                .andExpect(jsonPath("$.data.content[0].amount").value(OrderTestFactory.AMOUNT))
+                .andExpect(jsonPath("$.data.content[0].status").value(OrderTestFactory.STATUS.toString()))
+                .andExpect(jsonPath("$.data.content[0].orderDate").value(OrderTestFactory.ORDER_DATE.toString()))
                 .andReturn();
     }
 
@@ -146,10 +147,10 @@ class OrderControllerTest extends AbstractRestDocsTests {
                         .with(user(UserTestFactory.createMockUserDetails())))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value(ApiResponseConst.UPDATE_ORD_SUCCESS))
-                .andExpect(jsonPath("$.data.orderId").value(responseDto.getOrderId()))
-                .andExpect(jsonPath("$.data.amount").value(responseDto.getAmount()))
-                .andExpect(jsonPath("$.data.status").value(responseDto.getStatus().toString()))
-                .andExpect(jsonPath("$.data.updateDate").value(responseDto.getUpdateDate().toString()))
+                .andExpect(jsonPath("$.data.orderId").value(OrderTestFactory.ORDER_ID))
+                .andExpect(jsonPath("$.data.amount").value(OrderTestFactory.AMOUNT))
+                .andExpect(jsonPath("$.data.status").value(OrderTestFactory.STATUS.toString()))
+                .andExpect(jsonPath("$.data.updateDate").value(OrderTestFactory.ORDER_DATE.toString()))
                 .andReturn();
     }
 

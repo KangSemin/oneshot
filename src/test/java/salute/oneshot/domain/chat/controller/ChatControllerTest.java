@@ -99,9 +99,9 @@ class ChatControllerTest extends AbstractRestDocsTests {
         // when & then
         mockMvc.perform(get("/api/admin/chats")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .with(user(CustomUserDetails.of(1L, UserRole.SUPER_ADMIN))))
+                        .with(user(CustomUserDetails.of(ChatTestFactory.SENDER_USER_ID, UserRole.SUPER_ADMIN))))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.chatList[0].userId").value(ChatTestFactory.USER_ID))
+                .andExpect(jsonPath("$.chatList[0].userId").value(ChatTestFactory.RECEIVER_USER_ID))
                 .andExpect(jsonPath("$.chatList[0].lastMessage").value(ChatTestFactory.FORMATTED_MESSAGE))
                 .andExpect(jsonPath("$.nextCursor").value(ChatTestFactory.CURSOR))
                 .andReturn();
