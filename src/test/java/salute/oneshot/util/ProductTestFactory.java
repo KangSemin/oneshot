@@ -1,12 +1,19 @@
 package salute.oneshot.util;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.test.util.ReflectionTestUtils;
+import salute.oneshot.domain.product.dto.request.CreateProductRequestDto;
+import salute.oneshot.domain.product.dto.request.UpdateProductRequestDto;
+import salute.oneshot.domain.product.dto.response.ProductResponseDto;
 import salute.oneshot.domain.product.entity.Product;
 import salute.oneshot.domain.product.entity.ProductCategory;
 import salute.oneshot.domain.product.entity.ProductStatus;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ProductTestFactory {
 
@@ -34,5 +41,35 @@ public class ProductTestFactory {
         ReflectionTestUtils.setField(product, "user", UserTestFactory.createUser());
 
         return product;
+    }
+
+    public static CreateProductRequestDto createCreateProductRequestDto() throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+        Constructor<CreateProductRequestDto> constructor =
+                CreateProductRequestDto.class.getDeclaredConstructor(String.class, String.class, ProductCategory.class, int.class, int.class, ProductStatus.class);
+        constructor.setAccessible(true);
+
+        return constructor.newInstance(NAME, DESCRIPTION, CATEGORY, PRICE, STOCK_QUANTITY, STATUS);
+    }
+
+    public static ProductResponseDto createProductResponseDto() throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+        Constructor<ProductResponseDto> constructor =
+                ProductResponseDto.class.getDeclaredConstructor(Long.class, String.class, String.class, int.class, int.class);
+        constructor.setAccessible(true);
+
+        return constructor.newInstance(PRODUCT_ID, NAME, DESCRIPTION, PRICE, STOCK_QUANTITY);
+    }
+
+    public static UpdateProductRequestDto createUpdateProductRequestDto() throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+        Constructor<UpdateProductRequestDto> constructor =
+                UpdateProductRequestDto.class.getDeclaredConstructor(String.class, String.class, ProductCategory.class, int.class, int.class, ProductStatus.class);
+        constructor.setAccessible(true);
+
+        return constructor.newInstance(NAME, DESCRIPTION, CATEGORY, PRICE, STOCK_QUANTITY, STATUS);
+    }
+
+    public static Page<ProductResponseDto> createProductResponseDtoPage() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+        List<ProductResponseDto> productList = new ArrayList<>();
+        productList.add(createProductResponseDto());
+        return new PageImpl<>(productList);
     }
 }
