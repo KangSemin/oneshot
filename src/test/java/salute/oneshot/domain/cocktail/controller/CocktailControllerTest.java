@@ -13,6 +13,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.http.MediaType;
@@ -21,6 +23,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import salute.oneshot.domain.cocktail.dto.response.CocktailResponseDto;
 import salute.oneshot.domain.cocktail.service.CocktailService;
 import salute.oneshot.domain.common.AbstractRestDocsTests;
+import salute.oneshot.global.util.S3Util;
 import salute.oneshot.util.CocktailTestFactory;
 
 
@@ -30,6 +33,8 @@ class CocktailControllerTest extends AbstractRestDocsTests {
     @MockitoBean
     private CocktailService cocktailService;
 
+    @MockitoBean
+    private S3Util s3Util;
 
     @Test
     @DisplayName("칵테일 목록 조회")

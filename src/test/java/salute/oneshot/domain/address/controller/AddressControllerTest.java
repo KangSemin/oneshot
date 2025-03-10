@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import salute.oneshot.config.TestSecurityConfig;
@@ -27,8 +26,6 @@ import salute.oneshot.domain.common.dto.error.ErrorCode;
 import salute.oneshot.domain.common.dto.success.ApiResponseConst;
 import salute.oneshot.global.exception.InvalidException;
 import salute.oneshot.global.exception.NotFoundException;
-import salute.oneshot.global.security.filter.JwtFilter;
-import salute.oneshot.global.security.jwt.JwtProvider;
 import salute.oneshot.util.AddressTestFactory;
 import salute.oneshot.util.UserTestFactory;
 
@@ -51,16 +48,7 @@ class AddressControllerTest extends AbstractRestDocsTests {
     private ObjectMapper objectMapper;
 
     @MockitoBean
-    private JpaMetamodelMappingContext jpaMetamodelMappingContext;
-
-    @MockitoBean
     private AddressService addressService;
-
-    @MockitoBean
-    private JwtProvider jwtProvider;
-
-    @MockitoBean
-    private JwtFilter jwtFilter;
 
     private Address address;
 
@@ -88,6 +76,7 @@ class AddressControllerTest extends AbstractRestDocsTests {
                         .with(user(UserTestFactory.createMockUserDetails())))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.message").value(ApiResponseConst.ADD_ADR_SUCCESS))
+                .andExpect(jsonPath("$.data.addressId").value(AddressTestFactory.ADDRESS_ID))
                 .andExpect(jsonPath("$.data.addressName").value(AddressTestFactory.ADDRESS_NAME))
                 .andExpect(jsonPath("$.data.postcode").value(AddressTestFactory.POSTCODE))
                 .andExpect(jsonPath("$.data.postAddress").value(AddressTestFactory.POST_ADDRESS))
@@ -121,7 +110,8 @@ class AddressControllerTest extends AbstractRestDocsTests {
                         .with(user(UserTestFactory.createMockUserDetails())))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value(ApiResponseConst.GET_ADR_LIST_SUCCESS))
-                .andExpect(jsonPath("$.data.addresses").isArray())
+                .andExpect(jsonPath("$.data.addresses[0].addressId").value(AddressTestFactory.ADDRESS_ID))
+                .andExpect(jsonPath("$.data.addresses[1].addressId").value(AddressTestFactory.ADDRESS_ID))                .andExpect(jsonPath("$.data.addresses").isArray())
                 .andExpect(jsonPath("$.data.addresses.length()").value(2))
                 .andExpect(jsonPath("$.data.hasNext").value(true))
                 .andExpect(jsonPath("$.data.nextCursor").value(2))
@@ -150,6 +140,7 @@ class AddressControllerTest extends AbstractRestDocsTests {
                         .with(user(UserTestFactory.createMockUserDetails())))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value(ApiResponseConst.GET_ADR_LIST_SUCCESS))
+                .andExpect(jsonPath("$.data.addresses[0].addressId").value(AddressTestFactory.ADDRESS_ID))
                 .andExpect(jsonPath("$.data.addresses").isArray())
                 .andExpect(jsonPath("$.data.addresses.length()").value(1))
                 .andExpect(jsonPath("$.data.hasNext").value(false))
@@ -197,6 +188,7 @@ class AddressControllerTest extends AbstractRestDocsTests {
                         .with(user(UserTestFactory.createMockUserDetails())))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value(ApiResponseConst.GET_ADR_SUCCESS))
+                .andExpect(jsonPath("$.data.addressId").value(AddressTestFactory.ADDRESS_ID))
                 .andExpect(jsonPath("$.data.addressName").value(AddressTestFactory.ADDRESS_NAME))
                 .andExpect(jsonPath("$.data.postcode").value(AddressTestFactory.POSTCODE))
                 .andExpect(jsonPath("$.data.postAddress").value(AddressTestFactory.POST_ADDRESS))
@@ -248,6 +240,7 @@ class AddressControllerTest extends AbstractRestDocsTests {
                         .with(user(UserTestFactory.createMockUserDetails())))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value(ApiResponseConst.UPDATE_ADR_SUCCESS))
+                .andExpect(jsonPath("$.data.addressId").value(AddressTestFactory.ADDRESS_ID))
                 .andExpect(jsonPath("$.data.addressName").value(AddressTestFactory.NEW_ADDRESS_NAME))
                 .andExpect(jsonPath("$.data.postcode").value(AddressTestFactory.NEW_POSTCODE))
                 .andExpect(jsonPath("$.data.postAddress").value(AddressTestFactory.NEW_POST_ADDRESS))

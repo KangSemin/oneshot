@@ -26,7 +26,11 @@ public class CouponService {
 
     @Transactional
     public CpnBriefResponseDto createCoupon(CreateCpnSDto serviceDto) {
-        Coupon coupon = Coupon.from(serviceDto);
+        Coupon coupon = Coupon.of(
+                serviceDto.getCouponName(),
+                serviceDto.getDiscountValue(),
+                serviceDto.getStartTime(),
+                serviceDto.getEndTime());
         couponRepository.save(coupon);
 
         return CpnBriefResponseDto.from(coupon);
@@ -52,8 +56,7 @@ public class CouponService {
     public UserCpnBriefResponseDto grantUserCoupon(CreateUserCpnSDto serviceDto) {
         User user = userRepository
                 .getReferenceById(serviceDto.getUserId());
-        Coupon coupon = couponRepository
-                .getReferenceById(serviceDto.getCouponId());
+        Coupon coupon = getCouponById(serviceDto.getCouponId());
         UserCoupon userCoupon = UserCoupon.of(user, coupon);
 
         userCouponRepository.save(userCoupon);

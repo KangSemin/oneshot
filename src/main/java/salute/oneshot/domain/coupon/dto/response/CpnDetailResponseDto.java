@@ -15,11 +15,9 @@ public class CpnDetailResponseDto {
     private Long id;
     private String couponName;
     private int discountValue;
-
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     private LocalDateTime startTime;
-
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     private LocalDateTime endTime;
 
     public static CpnDetailResponseDto from(Coupon coupon) {

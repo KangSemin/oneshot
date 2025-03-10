@@ -75,7 +75,9 @@ public class UserService {
         ) {
             throw new ConflictException(ErrorCode.DUPLICATE_ROLE);
         }
-        return UserRoleResponseDto.from(serviceDto);
+        return UserRoleResponseDto.of(
+                serviceDto.getUserId(),
+                serviceDto.getUserRole());
     }
 
     private User getUserById(Long userId) {

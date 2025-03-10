@@ -14,4 +14,21 @@ public class CpnRequestDto {
     private final String startTime;
     private final String endDate;
     private final String endTime;
+
+    public static CpnRequestDto of(
+            String couponName,
+            int discountValue,
+            String startDate,
+            String startTime,
+            String endDate,
+            String endTime
+    ) {
+        return new CpnRequestDto(
+                couponName,
+                discountValue,
+                startDate,
+                startTime,
+                endDate,
+                endTime);
+    }
 }

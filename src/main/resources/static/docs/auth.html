@@ -438,10 +438,14 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </head>
 <body class="article">
 <div id="header">
+<h1>AuthController</h1>
+<div class="details">
+<span id="revnumber">version 0.0.1-SNAPSHOT</span>
+</div>
 </div>
 <div id="content">
 <div class="sect1">
-<h2 id="_authcontroller">AuthController</h2>
+<h2 id="_회원가입">회원가입</h2>
 <div class="sectionbody">
 <div class="sect2">
 <h3 id="_회원가입_성공">회원가입 성공</h3>
@@ -474,12 +478,12 @@ Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 Pragma: no-cache
 Expires: 0
 X-Frame-Options: DENY
-Content-Length: 159
+Content-Length: 156
 
 {
   "message" : "회원가입이 완료되었습니다.",
   "data" : {
-    "id" : null,
+    "id" : 1,
     "email" : "test@mail.com",
     "nickname" : "nickname"
   }
@@ -529,6 +533,11 @@ Content-Length: 97
 </div>
 </div>
 </div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_로그인">로그인</h2>
+<div class="sectionbody">
 <div class="sect2">
 <h3 id="_로그인_성공">로그인 성공</h3>
 <div class="sect3">
@@ -552,8 +561,8 @@ Host: localhost:8080
 <div class="listingblock">
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 200 OK
-Set-Cookie: refreshToken=refreshToken; Path=/; Max-Age=604800; Expires=Sun, 16 Mar 2025 08:12:23 GMT; HttpOnly; SameSite=Lax
-Set-Cookie: accessToken=accessToken; Path=/; Max-Age=3600; Expires=Sun, 9 Mar 2025 09:12:23 GMT; HttpOnly; SameSite=Lax
+Set-Cookie: refreshToken=refreshToken; Path=/; Max-Age=604800; Expires=Mon, 17 Mar 2025 05:53:57 GMT; HttpOnly; SameSite=Lax
+Set-Cookie: accessToken=accessToken; Path=/; Max-Age=3600; Expires=Mon, 10 Mar 2025 06:53:57 GMT; HttpOnly; SameSite=Lax
 Content-Type: application/json;charset=UTF-8
 X-Content-Type-Options: nosniff
 X-XSS-Protection: 0
@@ -689,6 +698,11 @@ Content-Length: 75
 </div>
 </div>
 </div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_토큰">토큰</h2>
+<div class="sectionbody">
 <div class="sect2">
 <h3 id="_리프레시_토큰으로_어세스_토큰_재발급_성공">리프레시 토큰으로 어세스 토큰 재발급 성공</h3>
 <div class="sect3">
@@ -707,7 +721,7 @@ Content-Type: application/x-www-form-urlencoded</code></pre>
 <div class="listingblock">
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 200 OK
-Set-Cookie: refreshToken=refreshToken; Path=/; Max-Age=604800; Expires=Sun, 16 Mar 2025 08:12:23 GMT; HttpOnly; SameSite=Lax
+Set-Cookie: refreshToken=refreshToken; Path=/; Max-Age=604800; Expires=Mon, 17 Mar 2025 05:53:57 GMT; HttpOnly; SameSite=Lax
 Content-Type: application/json;charset=UTF-8
 X-Content-Type-Options: nosniff
 X-XSS-Protection: 0
@@ -769,7 +783,7 @@ Content-Length: 94
 <div id="footer">
 <div id="footer-text">
 Version 0.0.1-SNAPSHOT<br>
-Last updated 2025-03-09 17:04:09 +0900
+Last updated 2025-03-09 22:33:16 +0900
 </div>
 </div>
 </body>
