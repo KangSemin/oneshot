@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
-import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import salute.oneshot.config.TestSecurityConfig;
@@ -22,9 +21,9 @@ import salute.oneshot.domain.recipeReview.dto.service.GetAllRecipeReviewSDto;
 import salute.oneshot.domain.recipeReview.dto.service.GetMyRecipeReviewSDto;
 import salute.oneshot.domain.recipeReview.dto.service.UpdateRecipeReviewSDto;
 import salute.oneshot.domain.recipeReview.service.RecipeReviewService;
-import salute.oneshot.global.security.filter.JwtFilter;
-import salute.oneshot.global.security.jwt.JwtProvider;
-import salute.oneshot.util.*;
+import salute.oneshot.util.CocktailTestFactory;
+import salute.oneshot.util.RecipeReviewTestFactory;
+import salute.oneshot.util.UserTestFactory;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -39,15 +38,6 @@ class RecipeReviewControllerTest extends AbstractRestDocsTests {
 
     @Autowired
     private ObjectMapper objectMapper;
-
-    @MockitoBean
-    private JpaMetamodelMappingContext jpaMetamodelMappingContext;
-
-    @MockitoBean
-    private JwtProvider jwtProvider;
-
-    @MockitoBean
-    private JwtFilter jwtFilter;
 
     @MockitoBean
     private RecipeReviewService recipeReviewService;

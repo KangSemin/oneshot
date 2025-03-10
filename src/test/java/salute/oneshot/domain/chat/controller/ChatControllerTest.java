@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import salute.oneshot.config.TestSecurityConfig;
@@ -15,8 +14,6 @@ import salute.oneshot.domain.chat.dto.response.FindChatResponseDto;
 import salute.oneshot.domain.chat.service.ChatService;
 import salute.oneshot.domain.common.AbstractRestDocsTests;
 import salute.oneshot.domain.user.entity.UserRole;
-import salute.oneshot.global.security.filter.JwtFilter;
-import salute.oneshot.global.security.jwt.JwtProvider;
 import salute.oneshot.global.security.model.CustomUserDetails;
 import salute.oneshot.util.ChatTestFactory;
 import salute.oneshot.util.UserTestFactory;
@@ -34,15 +31,6 @@ class ChatControllerTest extends AbstractRestDocsTests {
 
     @Autowired
     private ObjectMapper objectMapper;
-
-    @MockitoBean
-    private JpaMetamodelMappingContext jpaMetamodelMappingContext;
-
-    @MockitoBean
-    private JwtProvider jwtProvider;
-
-    @MockitoBean
-    private JwtFilter jwtFilter;
 
     @MockitoBean
     private ChatService chatService;

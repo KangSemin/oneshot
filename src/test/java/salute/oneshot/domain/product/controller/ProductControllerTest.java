@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
-import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import salute.oneshot.config.TestSecurityConfig;
@@ -20,8 +19,6 @@ import salute.oneshot.domain.product.dto.service.CreateProductSDto;
 import salute.oneshot.domain.product.dto.service.GetAllProductSDto;
 import salute.oneshot.domain.product.dto.service.UpdateProductRequestSDto;
 import salute.oneshot.domain.product.service.ProductService;
-import salute.oneshot.global.security.filter.JwtFilter;
-import salute.oneshot.global.security.jwt.JwtProvider;
 import salute.oneshot.util.ProductTestFactory;
 import salute.oneshot.util.UserTestFactory;
 
@@ -38,15 +35,6 @@ class ProductControllerTest extends AbstractRestDocsTests {
 
     @Autowired
     private ObjectMapper objectMapper;
-
-    @MockitoBean
-    private JpaMetamodelMappingContext jpaMetamodelMappingContext;
-
-    @MockitoBean
-    private JwtProvider jwtProvider;
-
-    @MockitoBean
-    private JwtFilter jwtFilter;
 
     @MockitoBean
     private ProductService productService;
@@ -133,7 +121,7 @@ class ProductControllerTest extends AbstractRestDocsTests {
                 .willReturn(responseDtoPage);
 
         // when & then
-        mockMvc.perform(delete("/api/products")
+        mockMvc.perform(get("/api/products")
                         .contentType(MediaType.APPLICATION_JSON)
                         .with(user(UserTestFactory.createMockUserDetails())))
                 .andExpect(status().isOk())

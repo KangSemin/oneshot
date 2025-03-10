@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import salute.oneshot.config.TestSecurityConfig;
@@ -16,8 +15,6 @@ import salute.oneshot.domain.common.facade.OrderPaymentFacade;
 import salute.oneshot.domain.payment.dto.request.ConfirmPaymentRequestDto;
 import salute.oneshot.domain.payment.dto.response.PaymentResponseDto;
 import salute.oneshot.domain.payment.dto.service.ConfirmPaymentSDto;
-import salute.oneshot.global.security.filter.JwtFilter;
-import salute.oneshot.global.security.jwt.JwtProvider;
 import salute.oneshot.util.OrderTestFactory;
 import salute.oneshot.util.PaymentTestFactory;
 
@@ -34,15 +31,6 @@ class PaymentControllerTest extends AbstractRestDocsTests {
 
     @Autowired
     private ObjectMapper objectMapper;
-
-    @MockitoBean
-    private JpaMetamodelMappingContext jpaMetamodelMappingContext;
-
-    @MockitoBean
-    private JwtProvider jwtProvider;
-
-    @MockitoBean
-    private JwtFilter jwtFilter;
 
     @MockitoBean
     private OrderPaymentFacade orderPaymentFacade;

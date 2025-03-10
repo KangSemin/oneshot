@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
-import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import salute.oneshot.config.TestSecurityConfig;
@@ -24,8 +23,6 @@ import salute.oneshot.domain.order.dto.service.GetAllOrderSDto;
 import salute.oneshot.domain.order.dto.service.GetOrderSDto;
 import salute.oneshot.domain.order.dto.service.UpdateOrderSDto;
 import salute.oneshot.domain.user.entity.User;
-import salute.oneshot.global.security.filter.JwtFilter;
-import salute.oneshot.global.security.jwt.JwtProvider;
 import salute.oneshot.util.OrderTestFactory;
 import salute.oneshot.util.ProductTestFactory;
 import salute.oneshot.util.UserTestFactory;
@@ -43,15 +40,6 @@ class OrderControllerTest extends AbstractRestDocsTests {
 
     @Autowired
     private ObjectMapper objectMapper;
-
-    @MockitoBean
-    private JpaMetamodelMappingContext jpaMetamodelMappingContext;
-
-    @MockitoBean
-    private JwtProvider jwtProvider;
-
-    @MockitoBean
-    private JwtFilter jwtFilter;
 
     @MockitoBean
     private OrderPaymentFacade orderPaymentFacade;
