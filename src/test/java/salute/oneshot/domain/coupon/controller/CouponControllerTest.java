@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.util.ReflectionTestUtils;
 import salute.oneshot.config.TestSecurityConfig;
 import salute.oneshot.domain.common.AbstractRestDocsTests;
 import salute.oneshot.domain.common.dto.error.ErrorCode;
@@ -24,6 +25,7 @@ import salute.oneshot.domain.coupon.entity.UserCouponStatus;
 import salute.oneshot.domain.coupon.service.CouponService;
 import salute.oneshot.domain.user.entity.User;
 import salute.oneshot.global.exception.NotFoundException;
+import salute.oneshot.util.AddressTestFactory;
 import salute.oneshot.util.CouponTestFactory;
 import salute.oneshot.util.UserTestFactory;
 
@@ -56,6 +58,7 @@ class CouponControllerTest extends AbstractRestDocsTests {
         coupon = CouponTestFactory.createCoupon();
         user = UserTestFactory.createUser();
         userCoupon = UserCoupon.of(user, coupon);
+        ReflectionTestUtils.setField(userCoupon,"id",1L);
     }
 
     @DisplayName("유저쿠폰 사용 성공")
@@ -74,6 +77,7 @@ class CouponControllerTest extends AbstractRestDocsTests {
                         .with(user(UserTestFactory.createMockUserDetails())))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.message").value(ApiResponseConst.USE_USER_CPN_SUCCESS))
+                .andExpect(jsonPath("$.data.userCouponId").value(1L))
                 .andExpect(jsonPath("$.data.status").value(UserCouponStatus.ISSUED.toString()))
                 .andExpect(jsonPath("$.data.coupon.couponName").value(CouponTestFactory.COUPON_NAME))
                 .andReturn();
@@ -113,6 +117,7 @@ class CouponControllerTest extends AbstractRestDocsTests {
                         .with(user(UserTestFactory.createMockUserDetails())))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value(ApiResponseConst.GET_CPN_LIST_SUCCESS))
+                .andExpect(jsonPath("$.data.coupons[0].id").value(AddressTestFactory.ADDRESS_ID))
                 .andExpect(jsonPath("$.data.coupons[0].couponName").value(CouponTestFactory.COUPON_NAME))
                 .andReturn();
     }
@@ -157,6 +162,7 @@ class CouponControllerTest extends AbstractRestDocsTests {
                         .with(user(UserTestFactory.createMockUserDetails())))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value(ApiResponseConst.GET_CPN_SUCCESS))
+                .andExpect(jsonPath("$.data.id").value(CouponTestFactory.COUPON_ID))
                 .andExpect(jsonPath("$.data.couponName").value(CouponTestFactory.COUPON_NAME))
                 .andExpect(jsonPath("$.data.discountValue").value(CouponTestFactory.DISCOUNT_VALUE))
                 .andExpect(jsonPath("$.data.startTime").value(CouponTestFactory.formatDateTime(CouponTestFactory.START_LOCAL_DATE_TIME)))
@@ -197,7 +203,11 @@ class CouponControllerTest extends AbstractRestDocsTests {
                         .with(user(UserTestFactory.createMockUserDetails())))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value(ApiResponseConst.GET_CPN_LIST_SUCCESS))
+                .andExpect(jsonPath("$.data.userCoupons[0].userCouponId").value(1L))
+                .andExpect(jsonPath("$.data.userCoupons[0].userId").value(UserTestFactory.USER_ID))
                 .andExpect(jsonPath("$.data.userCoupons[0].status").value(UserCouponStatus.ISSUED.toString()))
+                .andExpect(jsonPath("$.data.userCoupons[0].coupon.id").value(CouponTestFactory.COUPON_ID))
+                .andExpect(jsonPath("$.data.userCoupons[0].coupon.couponName").value(CouponTestFactory.COUPON_NAME))
                 .andReturn();
     }
 
@@ -241,6 +251,7 @@ class CouponControllerTest extends AbstractRestDocsTests {
                         .with(user(UserTestFactory.createMockUserDetails())))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value(ApiResponseConst.GET_CPN_SUCCESS))
+                .andExpect(jsonPath("$.data.userCouponId").value(1L))
                 .andExpect(jsonPath("$.data.status").value(UserCouponStatus.ISSUED.toString()))
                 .andExpect(jsonPath("$.data.coupon.couponName").value(CouponTestFactory.COUPON_NAME))
                 .andReturn();
