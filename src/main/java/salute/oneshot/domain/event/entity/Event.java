@@ -21,6 +21,9 @@ public class Event extends BaseEntity {
     @Column(nullable = false)
     private String name;
 
+    @Column(nullable = false)
+    private String description;
+
     @Column(nullable = false, name = "start_time")
     private LocalDateTime startTime;
 
@@ -30,6 +33,9 @@ public class Event extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private EventType eventType;
 
+    @Column(nullable = false, name = "limit_count")
+    private int limitCount;
+
     @Enumerated(EnumType.STRING)
     private EventStatus status;
 
@@ -38,24 +44,40 @@ public class Event extends BaseEntity {
 
     private Event(
             String name,
+            String description,
             LocalDateTime startTime,
             LocalDateTime endTime,
-            EventType eventType
+            EventType eventType,
+            int limitCount
     ) {
         this.name = name;
+        this.description = description;
         this.startTime = startTime;
         this.endTime = endTime;
         this.eventType = eventType;
         this.status = EventStatus.UPCOMING;
+        this.limitCount = limitCount;
     }
 
     public static Event of(
             String name,
+            String description,
             LocalDateTime startTime,
             LocalDateTime endTime,
-            EventType eventType
+            EventType eventType,
+            int limitCount
     ) {
-        return new Event(name, startTime, endTime, eventType);
+        return new Event(
+                name,
+                description,
+                startTime,
+                endTime,
+                eventType,
+                limitCount);
+    }
+
+    public void changeEventStatus(EventStatus status) {
+        this.status = status;
     }
 
     public void addEventDetail(EventDetail eventDetail) {

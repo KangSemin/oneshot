@@ -94,7 +94,6 @@ public class AddressService {
                 serviceDto.getPostAddress(),
                 serviceDto.getDetailAddress(),
                 serviceDto.getExtraAddress(),
-                serviceDto.getUserId(),
                 serviceDto.isDefault());
 
         return AddressDetailResponseDto.from(address);

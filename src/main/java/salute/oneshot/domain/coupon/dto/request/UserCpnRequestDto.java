@@ -9,4 +9,8 @@ import lombok.Getter;
 public class UserCpnRequestDto {
 
     private Long userId;
+
+    public static UserCpnRequestDto of(Long userId) {
+        return new UserCpnRequestDto(userId);
+    }
 }

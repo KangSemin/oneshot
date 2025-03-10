@@ -1,0 +1,5 @@
+= CocktailController
+
+== 칵테일 검색
+=== 칵테일  전체 조회
+operation::cocktail-controller-test/get-cocktails[snippets="http-request,http-response"]
