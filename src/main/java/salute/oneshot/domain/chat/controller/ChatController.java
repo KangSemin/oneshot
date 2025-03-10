@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import salute.oneshot.domain.chat.dto.response.FindChatResponseDto;
 import salute.oneshot.domain.chat.dto.response.FindChatListResponseDto;
 import salute.oneshot.domain.chat.service.ChatService;
-import salute.oneshot.global.security.entity.CustomUserDetails;
+import salute.oneshot.global.security.model.CustomUserDetails;
 
 @RestController
 @RequiredArgsConstructor

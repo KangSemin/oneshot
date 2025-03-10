@@ -1,6 +1,5 @@
 package salute.oneshot.domain.pantry.dto.response;
 
-import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

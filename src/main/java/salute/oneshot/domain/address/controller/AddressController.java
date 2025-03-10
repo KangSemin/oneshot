@@ -2,9 +2,6 @@ package salute.oneshot.domain.address.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -12,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import salute.oneshot.domain.address.dto.request.CreateAddressRequestDto;
 import salute.oneshot.domain.address.dto.request.UpdateAddressRequestDto;
 import salute.oneshot.domain.address.dto.response.AddressPageResponseDto;
-import salute.oneshot.domain.address.dto.response.AddressResponseDto;
+import salute.oneshot.domain.address.dto.response.AddressDetailResponseDto;
 import salute.oneshot.domain.address.dto.service.CreateAddressSdto;
 import salute.oneshot.domain.address.dto.service.AddressSDto;
 import salute.oneshot.domain.address.dto.service.GetAddressesSDto;
@@ -20,7 +17,7 @@ import salute.oneshot.domain.address.dto.service.UpdateAddressSDto;
 import salute.oneshot.domain.address.service.AddressService;
 import salute.oneshot.domain.common.dto.success.ApiResponse;
 import salute.oneshot.domain.common.dto.success.ApiResponseConst;
-import salute.oneshot.global.security.entity.CustomUserDetails;
+import salute.oneshot.global.security.model.CustomUserDetails;
 
 @RestController
 @RequestMapping("/api/addresses")
@@ -30,7 +27,7 @@ public class AddressController {
     private final AddressService addressService;
 
     @PostMapping
-    public ResponseEntity<ApiResponse<AddressResponseDto>> createAddress(
+    public ResponseEntity<ApiResponse<AddressDetailResponseDto>> createAddress(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @Valid @RequestBody CreateAddressRequestDto requestDto
     ) {
@@ -42,7 +39,7 @@ public class AddressController {
                 requestDto.getExtraAddress(),
                 userDetails.getId()
         );
-        AddressResponseDto responseDto =
+        AddressDetailResponseDto responseDto =
                 addressService.createAddress(serviceDto);
 
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -54,14 +51,13 @@ public class AddressController {
     @GetMapping
     public ResponseEntity<ApiResponse<AddressPageResponseDto>> getAddresses(
             @AuthenticationPrincipal CustomUserDetails userDetails,
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "5") int size
+            @RequestParam(required = false) Long lastAddressId,
+            @RequestParam(defaultValue = "10") int size
     ) {
-        Pageable pageable = PageRequest.of(
-                page - 1, size, Sort.by("modifiedAt").descending()
-        );
-        GetAddressesSDto serviceDto =
-                GetAddressesSDto.of(userDetails.getId(), pageable);
+        GetAddressesSDto serviceDto = GetAddressesSDto.of(
+                userDetails.getId(),
+                lastAddressId,
+                size);
 
         AddressPageResponseDto responseDto =
                 addressService.getAddresses(serviceDto);
@@ -73,13 +69,13 @@ public class AddressController {
     }
 
     @GetMapping("/{addressId}")
-    public ResponseEntity<ApiResponse<AddressResponseDto>> getAddress(
+    public ResponseEntity<ApiResponse<AddressDetailResponseDto>> getAddress(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @PathVariable Long addressId
     ) {
         AddressSDto serviceDto =
                 AddressSDto.of(userDetails.getId(), addressId);
-        AddressResponseDto responseDto =
+        AddressDetailResponseDto responseDto =
                 addressService.getAddress(serviceDto);
 
         return ResponseEntity.status(HttpStatus.OK)
@@ -89,7 +85,7 @@ public class AddressController {
     }
 
     @PatchMapping("/{addressId}")
-    public ResponseEntity<ApiResponse<AddressResponseDto>> updateAddress(
+    public ResponseEntity<ApiResponse<AddressDetailResponseDto>> updateAddress(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @Valid @RequestBody UpdateAddressRequestDto requestDto,
             @PathVariable Long addressId
@@ -104,7 +100,7 @@ public class AddressController {
                 userDetails.getId(),
                 addressId
         );
-        AddressResponseDto responseDto =
+        AddressDetailResponseDto responseDto =
                 addressService.updateAddress(serviceDto);
 
         return ResponseEntity.status(HttpStatus.OK)

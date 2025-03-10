@@ -14,6 +14,7 @@ public class EventDetailResponseDto {
 
     private final Long id;
     private final String name;
+    private final String description;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private final LocalDateTime startTime;
@@ -30,6 +31,7 @@ public class EventDetailResponseDto {
         return new EventDetailResponseDto(
                 event.getId(),
                 event.getName(),
+                event.getDescription(),
                 event.getStartTime(),
                 event.getEndTime(),
                 eventDetail);

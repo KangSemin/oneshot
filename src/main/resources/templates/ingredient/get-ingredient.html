@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Ingredient Details</title>
+
+</head>
+<body>
+
+<div class="container">
+    <button class="back-button" onclick="history.back()">&lt; 뒤로가기</button>
+
+    <div class="ingredient-card">
+        <h1 id="ingredient-name"></h1>
+        <p><strong>description:</strong> <span id="ingredient-description"></span></p>
+        <p><strong>category:</strong> <span id="ingredient-category"></span></p>
+        <p><strong>avb:</strong> <span id="ingredient-alcohol"></span>%</p>
+
+
+        <button class="pantry-button">나의 pantry에 담기</button>
+
+    </div>
+</div>
+
+<div id="data" th:ingredient-id="${ingredientId}"></div>
+
+
+
+<script th:nonce="${scriptNonce}">
+
+    const dataElement = document.getElementById('data');
+    const targetUser = dataElement.getAttribute("ingredientId");
+
+    console.log("targetUser:" + targetUser)
+
+        fetch(`/api/ingredient/${targetUser}`,{
+            method: 'GET',
+        })
+            .then(response => {
+
+                console.log("response : "+ response)
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                const ingredient = data.data || data;
+
+                console.log("data : "+ data)
+
+                document.getElementById("ingredient-name").textContent = ingredient.name || "Unknown";
+                document.getElementById("ingredient-category").textContent = ingredient.category || "Unknown";
+                document.getElementById("ingredient-avb").textContent = ingredient.avb || "N/A";
+                document.getElementById("ingredient-description").textContent = ingredient.description;
+            })
+            .catch(error => {
+                console.error("Error fetching ingredient data:", error);
+                document.getElementById("ingredient-name").textContent = "Error loading data";
+            });
+
+
+</script>
+
+</body>
+</html>
+
+<!--<!DOCTYPE html>-->
+<!--<html xmlns:th="http://www.thymeleaf.org">-->
+<!--<head>-->
+<!--    <meta charset="UTF-8">-->
+<!--    <meta name="viewport" content="width=device-width, initial-scale=1.0">-->
+<!--    <title>재료 상세 조회</title>-->
+<!--    <style>-->
+<!--        * {-->
+<!--            margin: 0;-->
+<!--            padding: 0;-->
+<!--            box-sizing: border-box;-->
+<!--            font-family: Arial, sans-serif;-->
+<!--        }-->
+
+<!--        body {-->
+<!--            background-color: #c5a3ff;-->
+<!--            display: flex;-->
+<!--            justify-content: center;-->
+<!--            align-items: center;-->
+<!--            height: 100vh;-->
+<!--        }-->
+
+<!--        .container {-->
+<!--            width: 90%;-->
+<!--            max-width: 400px;-->
+<!--            background: white;-->
+<!--            border-radius: 10px;-->
+<!--            padding: 20px;-->
+<!--        }-->
+
+<!--        .back-button {-->
+<!--            font-size: 16px;-->
+<!--            font-weight: bold;-->
+<!--            cursor: pointer;-->
+<!--        }-->
+
+<!--        .ingredient-image {-->
+<!--            width: 100%;-->
+<!--            height: 150px;-->
+<!--            background-color: #dcc5ff;-->
+<!--            display: flex;-->
+<!--            align-items: center;-->
+<!--            justify-content: center;-->
+<!--            border-radius: 10px;-->
+<!--            margin: 10px 0;-->
+<!--        }-->
+
+<!--        .rating {-->
+<!--            display: flex;-->
+<!--            align-items: center;-->
+<!--            margin-top: 10px;-->
+<!--        }-->
+
+<!--        .stars {-->
+<!--            color: gold;-->
+<!--            font-size: 18px;-->
+<!--            margin-right: 5px;-->
+<!--        }-->
+
+<!--        .info {-->
+<!--            margin-top: 15px;-->
+<!--        }-->
+
+<!--        .info h1 {-->
+<!--            font-size: 22px;-->
+<!--        }-->
+
+<!--        .info p {-->
+<!--            font-size: 14px;-->
+<!--            margin: 5px 0;-->
+<!--        }-->
+
+<!--        .pantry-button {-->
+<!--            width: 100%;-->
+<!--            background: #e3a3ff;-->
+<!--            border: none;-->
+<!--            padding: 10px;-->
+<!--            border-radius: 5px;-->
+<!--            cursor: pointer;-->
+<!--            margin: 10px 0;-->
+<!--            font-weight: bold;-->
+<!--        }-->
+
+<!--        .recipe-section {-->
+<!--            margin-top: 20px;-->
+<!--        }-->
+
+<!--        .recipe-table {-->
+<!--            width: 100%;-->
+<!--            border-collapse: collapse;-->
+<!--            margin-top: 10px;-->
+<!--        }-->
+
+<!--        .recipe-table th, .recipe-table td {-->
+<!--            border: 1px solid #ccc;-->
+<!--            padding: 8px;-->
+<!--            font-size: 12px;-->
+<!--        }-->
+
+<!--        .recipe-table th {-->
+<!--            background-color: #ddd;-->
+<!--        }-->
+
+<!--        .review-stars {-->
+<!--            color: gold;-->
+<!--        }-->
+
+<!--        .favorite {-->
+<!--            float: right;-->
+<!--            font-size: 20px;-->
+<!--            cursor: pointer;-->
+<!--        }-->
+<!--    </style>-->
+<!--</head>-->
+<!--<body>-->
+
+<!--<div class="container">-->
+<!--    <button class="back-button" onclick="history.back()">&lt; 뒤로가기</button>-->
+
+<!--    <div class="ingredient-image">이미지</div>-->
+
+<!--    <span class="favorite">❤️</span>-->
+
+<!--    <div class="rating">-->
+<!--        <span class="stars">⭐⭐⭐⭐⭐</span>-->
+<!--        <span id="rating-score">0 / 5</span>-->
+<!--        <small>(리뷰 <span id="review-count">0</span>개 / 좋아요 <span id="like-count">0</span>)</small>-->
+<!--    </div>-->
+
+<!--    <div class="info">-->
+<!--        <h1 id="ingredient-name">재료 이름</h1>-->
+<!--        <p><strong>카테고리:</strong> <span id="ingredient-category"></span></p>-->
+<!--        <p><strong>도수:</strong> <span id="ingredient-alcohol"></span>%</p>-->
+<!--        <h2>대충 술 설명</h2>-->
+<!--        <p id="ingredient-description"></p>-->
+<!--    </div>-->
+
+<!--    <button class="pantry-button">나의 pantry에 담기</button>-->
+
+<!--    <div class="recipe-section">-->
+<!--        <h3>기주로 사용되는 레시피</h3>-->
+<!--        <table class="recipe-table">-->
+<!--            <thead>-->
+<!--            <tr>-->
+<!--                <th>리뷰</th>-->
+<!--                <th>사용자</th>-->
+<!--                <th>평가</th>-->
+<!--            </tr>-->
+<!--            </thead>-->
+<!--            <tbody id="recipe-list">-->
+<!--            <tr>-->
+<!--                <td>샤인머스켓 칵테일</td>-->
+<!--                <td>ㅇㅇ...제 입엔 안맞아요ㅠㅠ</td>-->
+<!--                <td class="review-stars">⭐⭐⭐</td>-->
+<!--            </tr>-->
+<!--            <tr>-->
+<!--                <td>세미안진</td>-->
+<!--                <td>의사가 맛있다고 했어요</td>-->
+<!--                <td class="review-stars">⭐⭐⭐⭐</td>-->
+<!--            </tr>-->
+<!--            <tr>-->
+<!--                <td>낙뢰럼</td>-->
+<!--                <td>리뷰 작성 중</td>-->
+<!--                <td class="review-stars">⭐</td>-->
+<!--            </tr>-->
+<!--            </tbody>-->
+<!--        </table>-->
+<!--    </div>-->
+<!--</div>-->
+
+<!--<script>-->
+<!--    document.addEventListener("DOMContentLoaded", function() {-->
+<!--        const ingredientId = document.get-->
+
+<!--        fetch(`/api/ingredient/${ingredientId}`)-->
+<!--            .then(response => response.json())-->
+<!--            .then(data => {-->
+<!--                document.getElementById("ingredient-name").textContent = data.name || "Unknown";-->
+<!--                document.getElementById("ingredient-category").textContent = data.category || "Unknown";-->
+<!--                document.getElementById("ingredient-alcohol").textContent = data.alcoholContent || "N/A";-->
+<!--                document.getElementById("ingredient-description").textContent = data.description || "No description available.";-->
+<!--                document.getElementById("rating-score").textContent = data.rating || "0 / 5";-->
+<!--                document.getElementById("review-count").textContent = data.reviews || "0";-->
+<!--                document.getElementById("like-count").textContent = data.likes || "0";-->
+<!--            })-->
+<!--            .catch(error => {-->
+<!--                console.error("Error fetching ingredient data:", error);-->
+<!--                document.getElementById("ingredient-name").textContent = "Error loading data";-->
+<!--            });-->
+<!--    });-->
+<!--</script>-->
+
+<!--</body>-->
+<!--</html>-->
+

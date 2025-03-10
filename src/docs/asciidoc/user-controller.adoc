@@ -1,0 +1,19 @@
+== UserController
+
+=== 유저 정보 조회 성공
+operation::user-controller-test/success-get-user-info[nippets="http-request,http-response"]
+
+=== 유저 정보 조회 실패: 존재하지 않거나 소프르딜리트 된 유저아이디
+operation::user-controller-test/invalid-user-id-get-user-info[nippets="http-request,http-response"]
+
+=== 유저 정보 수정 성공
+operation::user-controller-test/success-update-user-info[nippets="http-request,http-response"]
+
+=== 유저 정보 수정 실패: 존재하지 않거나 소프르딜리트 된 유저아이디
+operation::user-controller-test/invalid-user-id-update-user-info[nippets="http-request,http-response"]
+
+=== 유저 소프트 딜리트 성공
+operation::user-controller-test/success-delete-user[nippets="http-request,http-response"]
+
+=== 유저 소프트 딜리트 실패: 존재하지 않거나 소프르딜리트 된 유저아이디
+operation::user-controller-test/invalid-user-id-delete-user[nippets="http-request,http-response"]

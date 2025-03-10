@@ -68,6 +68,7 @@ public enum ErrorCode {
     DUPLICATE_ADR_DEFAULT(HttpStatus.CREATED, "이미 기본값으로 설정된 주소입니다."),
     INVALID_ADDRESS_ACCESS(HttpStatus.FORBIDDEN, "해당 주소에 대한 접근 권한이 없습니다."),
     DEFAULT_ADDRESS_REQUIRED(HttpStatus.BAD_REQUEST, "기본 주소는 필수입니다"),
+    DEFAULT_ADDRESS(HttpStatus.BAD_REQUEST, "기본 주소는 삭제할 수 없습니다."),
 
     // 배송 관련 익셉션
     INVALID_SHIPPING_CODE(HttpStatus.BAD_REQUEST, "유효하지 않은 Code 입니다."),
@@ -117,7 +118,7 @@ public enum ErrorCode {
     EXPIRED_TOKEN(HttpStatus.UNAUTHORIZED, "만료된 JWT 토큰입니다."),
     INVALID_TOKEN(HttpStatus.FORBIDDEN, "유효하지 않은 토큰입니다."),
 
-    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류가 발생했습니다."),;
+    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류가 발생했습니다.");
 
     private final HttpStatus httpStatus;
     private final String message;

@@ -18,7 +18,7 @@ import salute.oneshot.domain.pantry.dto.response.PantryResponseDto;
 import salute.oneshot.domain.pantry.dto.service.AddIngrToPantrySDto;
 import salute.oneshot.domain.pantry.dto.service.RemoveIngrFromPantrySDto;
 import salute.oneshot.domain.pantry.service.PantryService;
-import salute.oneshot.global.security.entity.CustomUserDetails;
+import salute.oneshot.global.security.model.CustomUserDetails;
 
 @RestController
 @RequestMapping("/api/pantries")

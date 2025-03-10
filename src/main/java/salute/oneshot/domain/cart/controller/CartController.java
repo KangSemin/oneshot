@@ -14,7 +14,7 @@ import salute.oneshot.domain.cart.dto.service.UpdateItemQuantitySDto;
 import salute.oneshot.domain.cart.service.CartService;
 import salute.oneshot.domain.common.dto.success.ApiResponse;
 import salute.oneshot.domain.common.dto.success.ApiResponseConst;
-import salute.oneshot.global.security.entity.CustomUserDetails;
+import salute.oneshot.global.security.model.CustomUserDetails;
 
 @RestController
 @RequestMapping("/api/carts")

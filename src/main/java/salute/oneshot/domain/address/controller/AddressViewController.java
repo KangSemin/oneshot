@@ -8,22 +8,20 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import salute.oneshot.domain.address.entity.Address;
 import salute.oneshot.domain.address.service.AddressService;
-import salute.oneshot.global.config.NonceGenerator;
-import salute.oneshot.global.security.entity.CustomUserDetails;
+import salute.oneshot.global.security.model.CustomUserDetails;
 
 @Controller
-@RequestMapping("/addresses")
+@RequestMapping("/user/addresses")
 @RequiredArgsConstructor
 public class AddressViewController {
 
     private final AddressService addressService;
-    private final NonceGenerator nonceGenerator;
 
-    @GetMapping
-    public String addressPage(Model model) {
-        model.addAttribute("scriptNonce", nonceGenerator.getNonce());
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/add")
+    public String addressPage() {
 
-        return "address/address-create";
+        return "address/address-add";
     }
 
     @PreAuthorize("isAuthenticated()")
@@ -36,8 +34,14 @@ public class AddressViewController {
         Address address = addressService.getAddressByIdAndUserId(
                 addressId, userDetails.getId());
         model.addAttribute("address", address);
-        model.addAttribute("scriptNonce",nonceGenerator.getNonce());
 
         return "address/address-update";
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping
+    public String addressListPage(
+    ) {
+        return "address/address-get-list";
     }
 }

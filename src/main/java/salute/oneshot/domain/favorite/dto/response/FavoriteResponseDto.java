@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class FavoriteResponseDto {
 
-    private Long recipeId;
+    private Long cocktailId;
     private String name;
     private String description;
     private RecipeType type;

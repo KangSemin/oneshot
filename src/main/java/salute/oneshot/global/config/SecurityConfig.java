@@ -17,10 +17,10 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import salute.oneshot.domain.auth.handler.OAuth2FailureHandler;
 import salute.oneshot.domain.auth.handler.OAuth2SuccessHandler;
 import salute.oneshot.domain.auth.service.CustomOAuth2UserService;
-import salute.oneshot.global.security.SecurityConst;
-import salute.oneshot.global.security.jwt.JwtAccessDeniedHandler;
-import salute.oneshot.global.security.jwt.JwtAuthenticationEntryPoint;
-import salute.oneshot.global.security.jwt.JwtFilter;
+import salute.oneshot.global.security.model.SecurityConst;
+import salute.oneshot.global.security.handler.JwtAccessDeniedHandler;
+import salute.oneshot.global.security.handler.JwtAuthenticationEntryPoint;
+import salute.oneshot.global.security.filter.JwtFilter;
 
 import java.util.Arrays;
 import java.util.List;
@@ -34,15 +34,13 @@ public class SecurityConfig {
     private final JwtFilter jwtFilter;
     private final JwtAccessDeniedHandler accessDeniedHandler;
     private final JwtAuthenticationEntryPoint authenticationEntryPoint;
-    private final NonceGenerator nonceGenerator;
     private final CustomOAuth2UserService oAuth2UserService;
     private final OAuth2SuccessHandler oAuth2SuccessHandler;
     private final OAuth2FailureHandler oAuth2FailureHandler;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        String nonce = nonceGenerator.getNonce();
-        return http
+        http
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .csrf(AbstractHttpConfigurer::disable)
@@ -52,7 +50,7 @@ public class SecurityConfig {
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .headers(headers -> headers
                                 .contentSecurityPolicy(csp -> csp
-                                        .policyDirectives(SecurityConst.CSP.buildFullPolicy(nonce)))
+                                        .policyDirectives(SecurityConst.CSP.buildFullPolicy("temp")))
                                 .frameOptions(HeadersConfigurer.FrameOptionsConfig::deny)
 
                         // TODO: HTTPS 전환 후 HSTS 설정 활성화 필요
@@ -73,21 +71,21 @@ public class SecurityConfig {
                         .failureHandler(oAuth2FailureHandler))
 
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/**").permitAll()
-                        .requestMatchers("/oauth2/**").permitAll()
-                        .requestMatchers("/login/**").permitAll()
-                        .requestMatchers("/auth/**").permitAll()
-                        .requestMatchers("/addresses/**").permitAll()
-                        .requestMatchers("/payments/**").permitAll()
-                        .requestMatchers("/orders/**").permitAll()
-                        .anyRequest().authenticated())
+                        .anyRequest().permitAll())
 
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
 
                 .exceptionHandling(handler ->
                         handler.authenticationEntryPoint(authenticationEntryPoint)
-                                .accessDeniedHandler(accessDeniedHandler))
-                .build();
+                                .accessDeniedHandler(accessDeniedHandler));
+
+        http.securityMatcher("/docs/**", "/swagger-ui/**", "/v3/api-docs/**")
+                .headers(headers -> headers
+                        .contentSecurityPolicy(csp -> csp
+                                .policyDirectives("default-src * 'unsafe-inline' 'unsafe-eval' data: blob:"))
+                        .frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin));
+
+        return http.build();
     }
 
     @Bean

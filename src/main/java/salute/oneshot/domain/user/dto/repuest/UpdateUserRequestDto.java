@@ -15,11 +15,15 @@ public class UpdateUserRequestDto {
             max = UserValidationConst.NICKNAME_MAX,
             message = UserValidationConst.NICKNAME_RANGE_MESSAGE
     )
-    private final String nickName;
+    private final String nickname;
 
     @Pattern(
             regexp = UserValidationConst.EMAIL_REG,
             message = UserValidationConst.INVALID_EMAIL_MESSAGE
     )
     private final String password;
+
+    public static UpdateUserRequestDto of(String nickname, String rawPassword) {
+        return new UpdateUserRequestDto(nickname, rawPassword);
+    }
 }

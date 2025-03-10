@@ -17,7 +17,7 @@ import java.util.UUID;
 @Component
 @RequiredArgsConstructor
 public class S3Util {
-    @Value("${cloud.aws.s3.bucketName}")
+    @Value("${cloud.aws.s3.bucket-name}")
     private String bucketName;
 
     private final AmazonS3 amazonS3;
@@ -55,15 +55,11 @@ public class S3Util {
         }
 
 
-        return s3FileName;
+        return amazonS3.getUrl(bucketName, s3FileName).toString();
     }
 
 
     public String getUrl(String fileName) {
         return amazonS3.getUrl(bucketName, fileName).toString();
     }
-
-
-
-
 }

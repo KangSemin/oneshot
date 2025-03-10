@@ -19,7 +19,7 @@ import salute.oneshot.domain.auth.dto.service.LogOutSDto;
 import salute.oneshot.domain.auth.service.AuthService;
 import salute.oneshot.domain.common.dto.success.ApiResponse;
 import salute.oneshot.domain.common.dto.success.ApiResponseConst;
-import salute.oneshot.global.security.entity.CustomUserDetails;
+import salute.oneshot.global.security.model.CustomUserDetails;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -73,12 +73,11 @@ public class AuthController {
     ) {
         LogOutSDto serviceDto =
                 LogOutSDto.of(userDetails.getId(), token);
-        Long userId =
-                authService.logOut(serviceDto);
+        authService.logOut(serviceDto);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ApiResponse.success(
-                        ApiResponseConst.LOGOUT_SUCCESS, userId));
+                        ApiResponseConst.LOGOUT_SUCCESS, userDetails.getId()));
     }
 
     @PostMapping("/refresh")

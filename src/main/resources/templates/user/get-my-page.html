@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>내 정보 | Wine Service</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Gothic+A1&family=Gowun+Dodum&family=IBM+Plex+Sans+KR&family=Noto+Sans+KR:wght@100..900&family=Noto+Serif+KR:wght@200..900&family=Orbit&display=swap');
+
+    body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      background-color: #1a1a1a;
+      font-family: "Orbit", serif;
+      font-weight: 400;
+      font-style: normal;
+      display: flex;
+      flex-direction: column;
+      color: #fff;
+    }
+
+    button {
+      font-family: "Orbit", serif;
+      font-weight: 400;
+      font-style: normal;
+      cursor: pointer;
+    }
+
+    .header {
+      background-color: #333;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .my-info-title {
+      font-size: 24px;
+      font-weight: bold;
+      margin: 0;
+      padding: 10px 0;
+    }
+
+    .content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+      max-width: 800px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .menu {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      max-width: 600px;
+      margin-top: 20px;
+      background-color: #8a4fff;
+      border-radius: 10px;
+      padding: 20px;
+      position: relative;
+    }
+
+
+
+    .menu-item {
+      background-color: white;
+      color: #333;
+      padding: 15px;
+      margin: 10px 0;
+      border-radius: 8px;
+      font-size: 18px;
+      text-align: center;
+      transition: all 0.3s ease;
+      border: none;
+      cursor: pointer;
+    }
+
+    .menu-item:hover {
+      background-color: #f0f0f0;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .menu-section {
+      display: flex;
+      margin-bottom: 10px;
+    }
+
+    .menu-section-item {
+      flex: 1;
+      text-align: center;
+      padding: 10px;
+      background-color: #444;
+      color: white;
+      margin: 0 5px;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .menu-section-item:hover, .menu-section-item.active {
+      background-color: #666;
+    }
+
+    .logout-btn {
+      background-color: #ff4757;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      margin-top: 30px;
+      transition: all 0.3s ease;
+    }
+
+    .logout-btn:hover {
+      background-color: #ff6b81;
+    }
+
+    .delete-account-btn {
+      background-color: #333;
+      color: #ff6b81;
+      border: 1px solid #ff6b81;
+      padding: 10px 20px;
+      border-radius: 5px;
+      margin-top: 10px;
+      transition: all 0.3s ease;
+    }
+
+    .delete-account-btn:hover {
+      background-color: #ff6b81;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+<div class="header">
+  <h1 class="my-info-title">나의 정보</h1>
+</div>
+
+<div class="content">
+  <div class="menu">
+    <div class="menu-item" id="user-nickname">닉네임을 불러오는 중...</div>
+
+    <div class="menu-section">
+      <button class="menu-section-item" id="address-btn">주소관리</button>
+      <button class="menu-section-item" id="review-btn">(C)리뷰관리</button>
+      <button class="menu-section-item" id="coupon-btn">(D)쿠폰함</button>
+    </div>
+
+    <button class="menu-item" id="pantry-btn">(E)나만의 펜트리</button>
+    <button class="menu-item" id="recipe-btn">(F)나의 레시피 조회</button>
+    <button class="menu-item" id="order-btn">(G)나의 주문 조회</button>
+    <button class="menu-item" id="favorite-btn">(H)나의 즐겨찾기 목록</button>
+  </div>
+
+  <button class="logout-btn" id="logout-btn">로그아웃</button>
+  <button class="delete-account-btn" id="delete-account-btn">회원 탈퇴</button>
+</div>
+
+<script th:nonce="${scriptNonce}">
+  // 페이지 로드 시 실행
+  document.addEventListener('DOMContentLoaded', function() {
+    // 세션 스토리지에서 닉네임 가져오기
+    const userNickname = sessionStorage.getItem('userNickname');
+    if (userNickname) {
+      document.getElementById('user-nickname').textContent = `${userNickname}`;
+    } else {
+      // 세션 스토리지에 닉네임이 없으면 API로 가져오기
+      fetchUserInfo();
+    }
+
+    // 이벤트 리스너 등록
+    document.getElementById('user-nickname').addEventListener('click', navigateToEditProfile);
+    document.getElementById('address-btn').addEventListener('click', () => navigateTo('address'));
+    document.getElementById('review-btn').addEventListener('click', () => navigateTo('review'));
+    document.getElementById('coupon-btn').addEventListener('click', () => navigateTo('coupon'));
+    document.getElementById('pantry-btn').addEventListener('click', () => navigateTo('pantry'));
+    document.getElementById('recipe-btn').addEventListener('click', () => navigateTo('recipe'));
+    document.getElementById('order-btn').addEventListener('click', () => navigateTo('order'));
+    document.getElementById('favorite-btn').addEventListener('click', () => navigateTo('favorite'));
+    document.getElementById('logout-btn').addEventListener('click', logout);
+    document.getElementById('delete-account-btn').addEventListener('click', showDeleteConfirm);
+  });
+
+  // 사용자 정보 가져오기
+  async function fetchUserInfo() {
+    try {
+      const response = await fetch('/api/users', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        credentials: 'include'
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        if (result.data && result.data.nickname) {
+          // 닉네임 표시 및 세션 스토리지에 저장
+          document.getElementById('user-nickname').textContent = `${result.data.nickname}`;
+          sessionStorage.setItem('userNickname', result.data.nickname);
+        }
+      } else {
+        console.error('사용자 정보를 가져오는데 실패했습니다.');
+        document.getElementById('user-nickname').textContent = "정보를 불러오지 못했습니다";
+      }
+    } catch (error) {
+      console.error('API 호출 중 오류 발생:', error);
+      document.getElementById('user-nickname').textContent = "정보를 불러오지 못했습니다";
+    }
+  }
+
+  // 정보 수정 페이지로 이동
+  function navigateToEditProfile() {
+    window.location.href = '/user/information';
+  }
+
+  // 다른 섹션으로 이동
+  function navigateTo(section) {
+    const sectionMap = {
+      'address': '/user/addresses',
+      'review': '/user/review',
+      'coupon': '/user/coupon',
+      'pantry': '/user/pantry',
+      'recipe': '/user/recipe',
+      'order': '/user/order',
+      'favorite': '/user/favorite'
+    };
+
+    const url = sectionMap[section];
+    if (url) {
+      window.location.href = url;
+    } else {
+      alert(`${section} 섹션은 아직 구현되지 않았습니다.`);
+    }
+  }
+
+  // 로그아웃
+  async function logout() {
+    try {
+      const response = await fetch('/api/auth/logout', {
+        method: 'POST',
+        credentials: 'include'
+      });
+
+      // 세션 스토리지 초기화
+      sessionStorage.removeItem('userNickname');
+
+      // 로그인 페이지로 이동
+      window.location.href = '/auth/login';
+    } catch (error) {
+      console.error('로그아웃 중 오류 발생:', error);
+    }
+  }
+
+  // 회원 탈퇴 확인
+  function showDeleteConfirm() {
+    if (confirm('정말로 회원 탈퇴하시겠습니까? 이 작업은 되돌릴 수 없습니다.')) {
+      deleteAccount();
+    }
+  }
+
+  // 회원 탈퇴
+  async function deleteAccount() {
+    try {
+      const response = await fetch('/api/users', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        credentials: 'include'
+      });
+
+      if (response.ok) {
+        // 세션 스토리지 초기화
+        sessionStorage.clear();
+        alert('회원 탈퇴가 완료되었습니다.');
+
+        // 로그인 페이지로 이동
+        window.location.href = '/auth/login';
+      } else {
+        const errorData = await response.json();
+        alert(errorData.errorMessage || '회원 탈퇴에 실패했습니다.');
+      }
+    } catch (error) {
+      alert('서버 연결 중 오류가 발생했습니다.');
+      console.error('API 호출 중 오류 발생:', error);
+    }
+  }
+</script>
+</body>
+</html>

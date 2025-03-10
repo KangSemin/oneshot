@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import salute.oneshot.domain.common.dto.error.ErrorCode;
 import salute.oneshot.domain.event.dto.VoteEventData;
+import salute.oneshot.domain.event.dto.response.ParticipateEventDto;
 import salute.oneshot.domain.event.entity.Event;
 import salute.oneshot.domain.event.entity.EventDetail;
 import salute.oneshot.domain.event.entity.EventType;
@@ -20,13 +21,18 @@ public class VoteEventProcessor implements EventProcessor {
     private final ObjectMapper objectMapper;
 
     @Override
-    public void processEvent(Event event, EventDetail detail) {
-
+    public EventDetail processEvent(Event event, Object eventDetailData) {
+        return null;
     }
 
     @Override
-    public void validateEventDetail(Object detailJson) {
-        VoteEventData data = parseEventDetail(detailJson);
+    public ParticipateEventDto participateEvent(Long eventId, Long userId, String eventDetailJson, int limitCount) {
+        return null;
+    }
+
+    @Override
+    public void validateEventDetail(Object eventDetailData) {
+        VoteEventData data = parseEventDetail(eventDetailData);
 
         if (data.getCoupons().size() != 2) {
             throw new InvalidException(ErrorCode.INVALID_COUPON_COUNT);
@@ -49,19 +55,16 @@ public class VoteEventProcessor implements EventProcessor {
                         candidate.getVoteCount() < 0)) {
             throw new InvalidException(ErrorCode.INVALID_CANDIDATE);
         }
-
-        if (data.getLimitCount() <= 0)
-            throw new InvalidException(ErrorCode.INVALID_LIMIT_COUNT);
     }
 
     @Override
-    public VoteEventData parseEventDetail(Object detailJson) {
-        if (detailJson == null) {
+    public VoteEventData parseEventDetail(Object eventDetailData) {
+        if (eventDetailData == null) {
             throw new InvalidException(ErrorCode.INVALID_JSON_DATA);
         }
 
         try {
-            return objectMapper.convertValue(detailJson, VoteEventData.class);
+            return objectMapper.convertValue(eventDetailData, VoteEventData.class);
         } catch (Exception e) {
             log.error("Vote event JSON 파싱 실패: {}", e.getMessage(), e);
             throw new InvalidException(ErrorCode.INVALID_JSON_DATA);
@@ -69,9 +72,9 @@ public class VoteEventProcessor implements EventProcessor {
     }
 
     @Override
-    public String convertEventDetailToJson(Object data) {
+    public String convertEventDetailToJson(Object eventDetailData) {
         try {
-            return objectMapper.writeValueAsString(data);
+            return objectMapper.writeValueAsString(eventDetailData);
         } catch (JsonProcessingException e) {
             log.error("Free event DTO 파싱 실패: {}", e.getMessage(), e);
             throw new InvalidException(ErrorCode.INVALID_JSON_DATA);

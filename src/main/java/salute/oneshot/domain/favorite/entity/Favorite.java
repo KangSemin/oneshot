@@ -33,7 +33,7 @@ public class Favorite extends BaseEntity {
         this.cocktail = cocktail;
     }
 
-    public static Favorite from(Long userId, Cocktail cocktail) {
+    public static Favorite of(Long userId, Cocktail cocktail) {
         return new Favorite(userId, cocktail);
     }
 }

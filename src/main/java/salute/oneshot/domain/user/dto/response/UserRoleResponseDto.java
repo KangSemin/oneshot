@@ -13,9 +13,10 @@ public class UserRoleResponseDto {
     private final Long userId;
     private final UserRole userRole;
 
-    public static UserRoleResponseDto from(UpdateRoleSDto serviceDto) {
-        return new UserRoleResponseDto(
-                serviceDto.getUserId(),
-                serviceDto.getUserRole());
+    public static UserRoleResponseDto of(
+            Long userId,
+            UserRole userRole
+    ) {
+        return new UserRoleResponseDto(userId, userRole);
     }
 }

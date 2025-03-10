@@ -13,7 +13,7 @@ import salute.oneshot.domain.common.dto.success.ApiResponseConst;
 import salute.oneshot.domain.delivery.dto.response.UserDeliveryResponseDto;
 import salute.oneshot.domain.delivery.dto.service.UserDeliverySDto;
 import salute.oneshot.domain.delivery.service.DeliveryService;
-import salute.oneshot.global.security.entity.CustomUserDetails;
+import salute.oneshot.global.security.model.CustomUserDetails;
 
 @RestController
 @RequestMapping("/api/deliveries")

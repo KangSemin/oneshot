@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import salute.oneshot.domain.banner.entity.Banner;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 public interface BannerRepository extends JpaRepository<Banner, Long> {
 
@@ -27,4 +28,17 @@ public interface BannerRepository extends JpaRepository<Banner, Long> {
     // 추후 배너뷰에서 사용할 예정
     @Query("SELECT b FROM Banner b JOIN FETCH b.event WHERE b.id = :bannerId")
     Banner findEventByBannerId(@Param("bannerId") Long bannerId);
+
+    @Query("SELECT b FROM Banner b JOIN FETCH b.event " +
+            "WHERE b.event.id = :eventId")
+    Optional<Banner> findByEventId(Long eventId);
+
+    @Modifying
+    @Query("UPDATE Banner b SET b.isActive = true WHERE b.startTime BETWEEN :now AND :endOfDay")
+    void activateBanner(@Param("now") LocalDateTime now,
+                        @Param("endOfDay") LocalDateTime endOfDay);
+
+    @Modifying
+    @Query("UPDATE Banner b SET b.isActive = false WHERE b.endTime <= :now")
+    void deactivateBanner(LocalDateTime now);
 }

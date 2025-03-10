@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Signup | Wine Service</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Gothic+A1&family=Gowun+Dodum&family=IBM+Plex+Sans+KR&family=Noto+Sans+KR:wght@100..900&family=Noto+Serif+KR:wght@200..900&family=Orbit&display=swap');
+
+        button {
+            font-family: "Orbit", serif;
+            font-weight: 400;
+            font-style: normal;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            background-color: #1a1a1a;
+            font-family: "Orbit", serif;
+            font-weight: 400;
+            font-style: normal;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+        }
+
+        .signup-container {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            padding: 40px;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 32px;
+            font-weight: 1000;
+            color: #ff0ccb;
+            text-shadow: 0 0 10px #ff0ccb, 0 0 20px #ff0ccb, 0 0 40px #da00ff, 0 0 80px #da00ff;
+            letter-spacing: 2px;
+            animation: neonFlicker 1.5s infinite alternate ease-in-out;
+        }
+
+        /* 네온 빛 떨림 애니메이션 */
+        @keyframes neonFlicker {
+            0% {
+                text-shadow: 0 0 10px #ff0ccb, 0 0 20px #ff0ccb, 0 0 40px #da00ff, 0 0 80px #da00ff;
+            }
+            50% {
+                text-shadow: 0 0 15px #ff0ccb, 0 0 30px #ff0ccb, 0 0 50px #da00ff, 0 0 100px #da00ff;
+            }
+            100% {
+                text-shadow: 0 0 5px #ff0ccb, 0 0 10px #ff0ccb, 0 0 20px #da00ff, 0 0 40px #da00ff;
+            }
+        }
+
+        body {
+            background-color: #1c1c1c;
+            padding-top: 100px;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-group label {
+            display: block;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            color: white;
+            font-size: 15px;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: rgb(154, 154, 154);
+            box-shadow: 0 0 15px rgb(82, 82, 82);
+        }
+
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 12px;
+            background: rgb(210, 0, 213);
+            border: 1px solid rgb(251, 0, 255);
+            box-shadow: 0 0 15px rgb(186, 0, 189);
+            border-radius: 12px;
+            color: #ffffff;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 12px;
+        }
+
+        .submit-btn:hover {
+            background: rgb(252, 0, 255);
+            border: 1px solid rgb(252, 0, 255);
+            box-shadow: 0 0 20px rgb(252, 0, 255);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            color: #ffffff;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 12px;
+        }
+
+        .login-btn:hover {
+            background: rgb(117, 103, 117);
+            border-color: rgb(117, 103, 117);
+            box-shadow: 0 0 15px rgb(117, 103, 117);
+        }
+
+
+
+        .error-message {
+            color: #ff00ac;
+            font-size: 14px;
+            display: none;
+            margin-top: 15px;
+            text-align: center;
+        }
+
+        .validation-error {
+            color: #ff00ac;
+            font-size: 12px;
+            margin-top: 5px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+<div class="signup-container">
+    <div class="logo">OneShot</div>
+    <form id="signupForm">
+        <div class="form-group">
+            <label for="email">이메일</label>
+            <input type="email" id="email" name="email" required>
+            <div id="email-error" class="validation-error"></div>
+        </div>
+
+        <div class="form-group">
+            <label for="password">비밀번호</label>
+            <input type="password" id="password" name="password" required>
+            <div id="password-error" class="validation-error"></div>
+        </div>
+
+        <div class="form-group">
+            <label for="nickName">닉네임</label>
+            <input type="text" id="nickName" name="nickName" required>
+            <div id="nickName-error" class="validation-error"></div>
+        </div>
+
+        <div class="button-group">
+            <button type="submit" class="submit-btn">회원가입</button>
+            <button type="button" class="login-btn">로그인 화면으로</button>
+        </div>
+    </form>
+    <div class="error-message" id="error-message"></div>
+</div>
+
+<script th:nonce="${scriptNonce}">
+
+
+    document.querySelector('.login-btn').addEventListener('click', function() {
+        window.location.href = '/auth/login';
+    });
+
+    // 기본적인 클라이언트 측 유효성 검사
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
+    function validateEmail(email) {
+        if (!email) {
+            return "이메일을 입력해주세요.";
+        }
+        if (!emailRegex.test(email)) {
+            return "올바른 이메일 형식이 아닙니다.";
+        }
+        return "";
+    }
+
+    function validatePassword(password) {
+        if (!password) {
+            return "비밀번호를 입력해주세요.";
+        }
+        if (password.length < 8) {
+            return "비밀번호는 최소 8자 이상이어야 합니다.";
+        }
+        if (!passwordRegex.test(password)) {
+            return "비밀번호는 영문, 숫자, 특수문자를 포함해야 합니다.";
+        }
+        return "";
+    }
+
+    function validateNickName(nickName) {
+        if (!nickName) {
+            return "닉네임을 입력해주세요.";
+        }
+        if (nickName.length < 2 || nickName.length > 10) {
+            return "닉네임은 2자 이상 10자 이하여야 합니다.";
+        }
+        return "";
+    }
+
+    const form = document.getElementById('signupForm');
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
+    const nickNameInput = document.getElementById('nickName');
+    const emailError = document.getElementById('email-error');
+    const passwordError = document.getElementById('password-error');
+    const nickNameError = document.getElementById('nickName-error');
+
+    // 실시간 유효성 검사
+    emailInput.addEventListener('input', function() {
+        const error = validateEmail(this.value);
+        emailError.textContent = error;
+        emailError.style.display = error ? 'block' : 'none';
+    });
+
+    passwordInput.addEventListener('input', function() {
+        const error = validatePassword(this.value);
+        passwordError.textContent = error;
+        passwordError.style.display = error ? 'block' : 'none';
+    });
+
+    nickNameInput.addEventListener('input', function() {
+        const error = validateNickName(this.value);
+        nickNameError.textContent = error;
+        nickNameError.style.display = error ? 'block' : 'none';
+    });
+
+    // 폼 제출 이벤트
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const email = emailInput.value;
+        const password = passwordInput.value;
+        const nickName = nickNameInput.value;
+
+        // 유효성 검사
+        const emailErr = validateEmail(email);
+        const passwordErr = validatePassword(password);
+        const nickNameErr = validateNickName(nickName);
+
+        if (emailErr || passwordErr || nickNameErr) {
+            emailError.textContent = emailErr;
+            emailError.style.display = emailErr ? 'block' : 'none';
+
+            passwordError.textContent = passwordErr;
+            passwordError.style.display = passwordErr ? 'block' : 'none';
+
+            nickNameError.textContent = nickNameErr;
+            nickNameError.style.display = nickNameErr ? 'block' : 'none';
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/auth/signup', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'include',
+                body: JSON.stringify({
+                    email: email,
+                    password: password,
+                    nickName: nickName
+                })
+            });
+
+            if (response.ok) {
+                // 회원가입 성공 - 자동 로그인 처리
+                try {
+                    const loginResponse = await fetch('/api/auth/login', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        credentials: 'include',
+                        body: JSON.stringify({
+                            email: email,
+                            password: password
+                        })
+                    });
+
+                    if (loginResponse.ok) {
+                        // 로그인 성공
+                        alert('회원가입 및 로그인이 완료되었습니다. 메인 페이지로 이동합니다.');
+                        window.location.href = '/main';
+                    } else {
+                        // 로그인 실패 (드문 경우)
+                        alert('회원가입이 성공적으로 완료되었습니다. 로그인 페이지로 이동합니다.');
+                        window.location.href = '/auth/login?signup=success';
+                    }
+                } catch (loginError) {
+                    // 로그인 요청 중 오류 발생
+                    alert('회원가입이 성공적으로 완료되었습니다. 로그인 페이지로 이동합니다.');
+                    window.location.href = '/auth/login?signup=success';
+                }
+            } else {
+                // 서버에서 오는 메시지 그대로 사용
+                const errorData = await response.json();
+                const errorMessage = document.getElementById('error-message');
+                errorMessage.style.display = 'block';
+                errorMessage.textContent = errorData.errorMessage;
+            }
+        } catch (error) {
+            const errorMessage = document.getElementById('error-message');
+            errorMessage.style.display = 'block';
+            errorMessage.textContent = '서버 연결 중 오류가 발생했습니다.';
+        }
+    });
+</script>
+</body>
+</html>
