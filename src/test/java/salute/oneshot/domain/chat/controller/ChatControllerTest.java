@@ -39,13 +39,13 @@ class ChatControllerTest extends AbstractRestDocsTests {
     private JpaMetamodelMappingContext jpaMetamodelMappingContext;
 
     @MockitoBean
-    private ChatService chatService;
-
-    @MockitoBean
     private JwtProvider jwtProvider;
 
     @MockitoBean
     private JwtFilter jwtFilter;
+
+    @MockitoBean
+    private ChatService chatService;
 
 //    @MockitoBean
 //    private RedisTemplate<String, String> redisTemplate;
@@ -55,7 +55,7 @@ class ChatControllerTest extends AbstractRestDocsTests {
 //        address = AddressTestFactory.createAddress();
 //    }
 
-    @DisplayName("채팅조회 성공")
+    @DisplayName("채팅 조회 성공")
     @Test
     void successFindChat() throws Exception {
         // given
@@ -82,7 +82,7 @@ class ChatControllerTest extends AbstractRestDocsTests {
                 .andReturn();
     }
 
-    @DisplayName("어드민용 채팅조회 성공")
+    @DisplayName("어드민용 채팅 조회 성공")
     @Test
     void successFindChatForAdmin() throws Exception {
         // given

@@ -9,9 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ChatTestFactory {
+
     public static final Long USER_ID = 1L;
-
-
 
     public static FindChatResponseDto createFindChatResponseDto() {
         MessageResponseDto message = MessageResponseDto.from("u::메시지 입니다.::1741314450785");
