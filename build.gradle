@@ -1,8 +1,17 @@
+
+import com.sun.security.ntlm.Server
+import org.hidetake.gradle.swagger.generator.GenerateSwaggerUI
+import org.springframework.boot.gradle.tasks.bundling.BootJar
+
+
 plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.4.2'
 	id 'io.spring.dependency-management' version '1.1.7'
-	id "org.asciidoctor.jvm.convert" version "3.3.2"
+
+	id 'com.epages.restdocs-api-spec' version '0.17.1'
+	id 'org.hidetake.swagger.generator' version '2.18.2'
+
 }
 
 group = 'salute'
@@ -14,16 +23,17 @@ java {
 	}
 }
 
-configurations {
-	asciidoctorExt
-	compileOnly {
-		extendsFrom annotationProcessor
-	}
-}
-
 repositories {
 	mavenCentral()
 }
+
+swaggerSources {
+	sample {
+		setInputFile(file("${project.buildDir}/api-spec/openapi3.yaml"))
+	}
+}
+
+
 
 ext {
 	set('springCloudVersion', "2024.0.0")
@@ -93,38 +103,58 @@ dependencies {
 
 	//Spring REST Docks
 	testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
-	asciidoctorExt 'org.springframework.restdocs:spring-restdocs-asciidoctor'
+
+	// openAPI3
+	testImplementation 'com.epages:restdocs-api-spec-mockmvc:0.17.1'
+	// SwaggerUI
+	swaggerUI 'org.webjars:swagger-ui:4.11.1'
 
 }
 
-ext {
-	snippetsDir = file('build/generated-snippets')
+openapi3 {
+	servers = [
+			{ url = "http://localhost:8080" },
+			{ url = "http://대충 배포중인 주소" }
+	]
+	title = "API 문서"
+	description = "RestDocsWithSwagger Docs"
+	version = "0.0.1"
+	format = "yaml"
 }
 
 tasks.named('test') {
 	useJUnitPlatform()
-	outputs.dir snippetsDir
 }
 
-asciidoctor {
-	configurations 'asciidoctorExt'
-	baseDirFollowsSourceFile()
-	inputs.dir snippetsDir
-	dependsOn test
+
+tasks.withType(GenerateSwaggerUI) {
+	dependsOn 'openapi3'
+	doFirst {
+		def swaggerUIFile = file("${openapi3.outputDirectory}/openapi3.yaml")
+
+		def securitySchemesContent =  "  securitySchemes:\n" +  \
+                                      "    APIKey:\n" +  \
+                                      "      type: apiKey\n" +  \
+                                      "      name: Authorization\n" +  \
+                                      "      in: header\n" + \
+                                      "security:\n" +
+				"  - APIKey: []  # Apply the security scheme here"
+
+		swaggerUIFile.append securitySchemesContent
+	}
 }
 
-asciidoctor.doFirst {
-	delete file('src/main/resources/static/docs')
+tasks.register('copySwaggerUI', Copy) {
+	dependsOn 'generateSwaggerUISample'
+
+	def generateSwaggerUISampleTask = tasks.named('generateSwaggerUISample', GenerateSwaggerUI).get()
+	from("${generateSwaggerUISampleTask.outputDir}")
+
+	into("${project.projectDir}/src/main/resources/static/docs")
 }
 
-task copyDocument(type: Copy) {
-	dependsOn asciidoctor
-	from file("build/docs/asciidoc")
-	into file("src/main/resources/static/docs")
-}
-
-build {
-	dependsOn copyDocument
+bootJar {
+	dependsOn 'copySwaggerUI'
 }
 
 // queryDSL 시작
@@ -142,7 +172,7 @@ sourceSets {
 	}
 }
 
-clean {
-	delete generated
-}
+//clean {
+//	delete generated
+//}
 // queryDSL 종료
