@@ -154,6 +154,7 @@ public class OrderService {
         order.updateOrderStatus(OrderStatus.PROCESSING);
     }
 
+    // TODO: 테스트 필요, 접근제어자 설정
     @Recover
     public void recover(Exception e, String orderNumber) {
         log.error("Fail to change order status from PENDING_PAYMENT to PROCESSING: {}", orderNumber);
