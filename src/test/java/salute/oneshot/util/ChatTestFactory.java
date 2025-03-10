@@ -10,22 +10,20 @@ import java.util.List;
 
 public class ChatTestFactory {
 
-    public static final Long USER_ID = 1L;
+    public static final Long USER_ID = 2L;
     public static final String RAW_MESSAGE = "u::메시지 입니다.::1741314450785";
 
     public static FindChatResponseDto createFindChatResponseDto() {
-        MessageResponseDto message = MessageResponseDto.from(RAW_MESSAGE);
+        MessageResponseDto messageResponseDto = MessageResponseDto.from(RAW_MESSAGE);
 
         List<MessageResponseDto> messageList = new ArrayList<>();
-        messageList.add(message);
+        messageList.add(messageResponseDto);
 
         return FindChatResponseDto.from(messageList);
     }
 
     public static FindChatListResponseDto createFindChatListResponseDto() {
-        long userId = 2L;
-
-        ChatPreviewResponseDto chatPreviewResponseDto = ChatPreviewResponseDto.of(Long.toString(userId), RAW_MESSAGE);
+        ChatPreviewResponseDto chatPreviewResponseDto = ChatPreviewResponseDto.of(Long.toString(USER_ID), RAW_MESSAGE);
 
         List<ChatPreviewResponseDto> chatList = new ArrayList<>();
         chatList.add(chatPreviewResponseDto);
