@@ -55,7 +55,7 @@ jobs:
           key: ${{ secrets.PRIVATE_KEY }}
           script: |
             docker ps
-            docker-compose down
+            docker-compose -f docker-compose-prod.yaml down
             docker pull ${{ secrets.DOCKER_USERNAME }}/oneshot:latest
             docker-compose -f docker-compose-prod.yaml up -d
             docker image prune -f
