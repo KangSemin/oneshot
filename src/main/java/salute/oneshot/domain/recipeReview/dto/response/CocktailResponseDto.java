@@ -16,7 +16,7 @@ public class CocktailResponseDto {
     private final String recipe;
     private final RecipeType type;
     private final Integer likeCounts;
-    private final Long userid;
+    private final Long userId;
 
     public static CocktailResponseDto from(Cocktail cocktail) {
         return new CocktailResponseDto(cocktail.getId(), cocktail.getName(), cocktail.getDescription(), cocktail.getRecipe(), cocktail.getType(),
