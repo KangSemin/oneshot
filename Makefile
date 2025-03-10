@@ -11,7 +11,7 @@ endif
 APP_NAME=oneshot:latest
 
 build:
-	$(GRADLE_CMD) clean build -x test
+	$(GRADLE_CMD) clean build
 
 docker-build:
 	docker build -t $(APP_NAME) .

@@ -34,14 +34,13 @@ public class IngredientController {
     private final IngredientService ingredientService;
 
 
-    @PreAuthorize("hasRole('ADMIN')")
+//    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<ApiResponse<IngrResponseDto>> createIngredient ( @Valid @ModelAttribute CreateIngrRequestDto request) throws IOException {
 
-
-        String type = request.getImageFile().getContentType();
-
-        log.info(type);
+        if(!S3Util.isTypeImage(request.getImageFile())){
+            throw new IOException("이미지 파일만 업로드 가능합니다");
+        }
 
         CreateIngrSDto sdto = CreateIngrSDto.of(request.getName(), request.getDescription(),
             IngredientCategory.valueOf(request.getCategory()), request.getAvb(), request.getImageFile());
