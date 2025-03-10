@@ -40,7 +40,7 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        return http
+        http
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .csrf(AbstractHttpConfigurer::disable)
@@ -77,8 +77,15 @@ public class SecurityConfig {
 
                 .exceptionHandling(handler ->
                         handler.authenticationEntryPoint(authenticationEntryPoint)
-                                .accessDeniedHandler(accessDeniedHandler))
-                .build();
+                                .accessDeniedHandler(accessDeniedHandler));
+
+        http.securityMatcher("/docs/**", "/swagger-ui/**", "/v3/api-docs/**")
+                .headers(headers -> headers
+                        .contentSecurityPolicy(csp -> csp
+                                .policyDirectives("default-src * 'unsafe-inline' 'unsafe-eval' data: blob:"))
+                        .frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin));
+
+        return http.build();
     }
 
     @Bean
