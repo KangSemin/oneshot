@@ -23,4 +23,12 @@ public interface CouponRepository extends JpaRepository<Coupon, Long> {
             @Param("startTime") LocalDateTime startTime,
             @Param("endTime") LocalDateTime endTime,
             Pageable pageable);
+
+    @Query("SELECT c FROM Coupon c " +
+            "WHERE c.startTime <= :startTime " +
+            "AND c.endTime >= :endTime")
+    Page<Coupon> findCouponsForEvent(
+            @Param("startTime") LocalDateTime eventStarTime,
+            @Param("endTime") LocalDateTime eventEndTime,
+            Pageable pageable);
 }

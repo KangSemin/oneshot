@@ -20,11 +20,11 @@ import salute.oneshot.domain.coupon.service.CouponService;
 @RestController
 @RequestMapping("/api/admin/coupons")
 @RequiredArgsConstructor
+@PreAuthorize("hasRole('ADMIN')")
 public class AdminCouponController {
 
     private final CouponService couponService;
 
-    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<ApiResponse<CpnBriefResponseDto>> createCoupon(
             @RequestBody CpnRequestDto requestDto
@@ -46,7 +46,6 @@ public class AdminCouponController {
                         responseDto));
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/{couponId}")
     public ResponseEntity<ApiResponse<CpnDetailResponseDto>> updateCoupon(
             @PathVariable Long couponId,
@@ -63,7 +62,6 @@ public class AdminCouponController {
                         responseDto));
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{couponId}")
     public ResponseEntity<ApiResponse<Long>> deleteCoupon(
             @PathVariable Long couponId
@@ -77,14 +75,13 @@ public class AdminCouponController {
                         deletedId));
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/{couponId}/users")
     public ResponseEntity<ApiResponse<UserCpnBriefResponseDto>> grantUserCoupon(
             @PathVariable Long couponId,
             @RequestBody UserCpnRequestDto requestDto
     ) {
         CreateUserCpnSDto serviceDto =
-                CreateUserCpnSDto.of(couponId, requestDto);
+                CreateUserCpnSDto.of(couponId, requestDto.getUserId());
         UserCpnBriefResponseDto responseDto =
                 couponService.grantUserCoupon(serviceDto);
 

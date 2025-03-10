@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import salute.oneshot.domain.common.dto.error.ErrorCode;
 import salute.oneshot.domain.common.dto.success.ApiResponse;
 import salute.oneshot.domain.common.dto.success.ApiResponseConst;
@@ -21,23 +22,25 @@ import java.time.LocalDateTime;
 @RestController
 @RequestMapping("/api/admin/events")
 @RequiredArgsConstructor
+@PreAuthorize("hasRole('ADMIN')")
 public class AdminEventController {
 
     private final EventService eventService;
 
-    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<ApiResponse<EventBriefResponseDto>> createEvent(
             @RequestBody EventRequestDto requestDto
     ) {
         CreateEventSDto serviceDto = CreateEventSDto.of(
                 requestDto.getName(),
+                requestDto.getDescription(),
                 requestDto.getStartDate(),
                 requestDto.getStartTime(),
                 requestDto.getEndDate(),
                 requestDto.getEndTime(),
                 requestDto.getEventType(),
-                requestDto.getEventDetail());
+                requestDto.getLimitCount(),
+                requestDto.getEventDetailData());
         validateEventDate(
                 serviceDto.getStartTime(),
                 serviceDto.getEndTime());
@@ -50,7 +53,6 @@ public class AdminEventController {
                         responseDto));
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/{eventId}")
     public ResponseEntity<ApiResponse<EventDetailResponseDto>> updateEvent(
             @PathVariable Long eventId,
@@ -59,12 +61,13 @@ public class AdminEventController {
         UpdateEventSDto serviceDto = UpdateEventSDto.of(
                 eventId,
                 requestDto.getName(),
+                requestDto.getDescription(),
                 requestDto.getStartDate(),
                 requestDto.getStartTime(),
                 requestDto.getEndDate(),
                 requestDto.getEndTime(),
                 requestDto.getEventType(),
-                requestDto.getEventDetail());
+                requestDto.getEventDetailData());
         validateEventDate(
                 serviceDto.getStartTime(),
                 serviceDto.getEndTime());
@@ -77,7 +80,6 @@ public class AdminEventController {
                         responseDto));
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{eventId}")
     public ResponseEntity<ApiResponse<Long>> deleteEvent(
             @PathVariable Long eventId
@@ -89,8 +91,19 @@ public class AdminEventController {
                         ApiResponseConst.DELETE_EVENT_SUCCESS,
                         deletedId));
     }
+    // 배너 클릭 -> 이벤트 GET 화면에서 SSE 구독
+    @GetMapping("/event-stream/{eventId}")
+    public SseEmitter streamEventUpdates(
+            @PathVariable Long eventId
+    ) {
+        return eventService.subscribeEvent(eventId);
+    }
 
-    private void validateEventDate(LocalDateTime startTime, LocalDateTime endTime) {
+    // 이벤트의 날짜 유효성 체크
+    private void validateEventDate(
+            LocalDateTime startTime,
+            LocalDateTime endTime
+    ) {
         if (endTime.isBefore(LocalDateTime.now())) {
             throw new InvalidException(ErrorCode.EXPIRED_EVENT);
         }

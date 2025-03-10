@@ -10,8 +10,8 @@ public class BannerRequestDto {
 
     private final Long eventId;
     private final String imageUrl;
-    private String startDate;
-    private String startTime;
-    private String endDate;
-    private String endTime;
+    private final String startDate;
+    private final String startTime;
+    private final String endDate;
+    private final String endTime;
 }
