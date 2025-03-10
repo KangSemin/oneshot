@@ -10,10 +10,9 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import salute.oneshot.config.TestMultipartConfig;
 import salute.oneshot.config.TestSecurityConfig;
 import salute.oneshot.domain.common.AbstractRestDocsTests;
-import salute.oneshot.domain.common.dto.success.ApiResponse;
+import salute.oneshot.domain.common.dto.error.ErrorCode;
 import salute.oneshot.domain.common.dto.success.ApiResponseConst;
 import salute.oneshot.domain.ingredient.dto.request.UpdateIngrRequestDto;
 import salute.oneshot.domain.ingredient.dto.response.IngrResponseDto;
@@ -23,6 +22,7 @@ import salute.oneshot.domain.ingredient.dto.service.UpdateIngrSDto;
 import salute.oneshot.domain.ingredient.entity.Ingredient;
 import salute.oneshot.domain.ingredient.entity.IngredientCategory;
 import salute.oneshot.domain.ingredient.service.IngredientService;
+import salute.oneshot.global.exception.NotFoundException;
 import salute.oneshot.util.IngredientTestFactory;
 import java.util.List;
 import static org.mockito.BDDMockito.given;
@@ -33,7 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 @WebMvcTest(IngredientController.class)
-@Import({TestSecurityConfig.class, TestMultipartConfig.class})
+@Import({TestSecurityConfig.class})
 class IngredientControllerTest extends AbstractRestDocsTests {
 
 
@@ -46,7 +46,7 @@ class IngredientControllerTest extends AbstractRestDocsTests {
 
     Ingredient ingredient = IngredientTestFactory.createVodka();
 
-    MockMultipartFile multipartFile = new MockMultipartFile("image", (byte[]) null);
+    MockMultipartFile multipartFile = new MockMultipartFile("image", "test.jpg", "image/jpeg", new byte[0]);
 
 
     @Test
@@ -64,14 +64,32 @@ class IngredientControllerTest extends AbstractRestDocsTests {
                         .param("description", "보드카")
                         .param("category", "VODKA")
                         .param("avb", "40.0d")
-                        .contentType(MediaType.)
+                        .contentType(MediaType.MULTIPART_FORM_DATA)
                         .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
-                .andExpect(jsonPath("$.message").value(ApiResponse.success(ApiResponseConst.ADD_INGR_SUCCESS)))
+                .andExpect(jsonPath("$.message").value(ApiResponseConst.ADD_INGR_SUCCESS))
                 .andExpect(jsonPath("$.data.id").value(responseDto.getId()))
                 .andExpect(jsonPath("$.data.name").value(responseDto.getName()))
-                .andExpect(jsonPath("$.data.category").value(responseDto.getCategory()))
+                .andExpect(jsonPath("$.data.category").value(responseDto.getCategory().name()))
                 .andExpect(jsonPath("$.data.avb").value(responseDto.getAVB()));
+    }
+
+    @Test
+    public void 재료생성_실패_CASE_재료_미존재() throws Exception{
+
+        given(ingredientService.createIngredient(any(CreateIngrSDto.class)))
+                .willThrow(new NotFoundException(ErrorCode.INGREDIENT_NOT_FOUND));
+
+        mockMvc.perform(multipart("/api/ingredients")
+                        .file(multipartFile)
+                        .param("name", "보드카")
+                        .param("description", "보드카")
+                        .param("category", "VODKA")
+                        .param("avb", "40.0d")
+                        .contentType(MediaType.MULTIPART_FORM_DATA)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(jsonPath("$.errorMessage").value(ErrorCode.INGREDIENT_NOT_FOUND.getMessage()));
     }
 
 
@@ -113,7 +131,7 @@ class IngredientControllerTest extends AbstractRestDocsTests {
                         .param("category", "VODKA")
                         .param("avb", "40.0d")
                         .accept(MediaType.APPLICATION_JSON)
-                        .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
+                        .contentType(MediaType.MULTIPART_FORM_DATA)
                         .with(request -> {
                             request.setMethod("PATCH"); // PATCH 요청으로 변경
                             return request;
@@ -122,13 +140,13 @@ class IngredientControllerTest extends AbstractRestDocsTests {
                 .andExpect(jsonPath("$.message").value(ApiResponseConst.UPDATE_INGR_SUCCESS))
                 .andExpect(jsonPath("$.data.name").value(responseDto.getName()))
                 .andExpect(jsonPath("$.data.description").value(responseDto.getDescription()))
-                .andExpect(jsonPath("$.data.category").value(responseDto.getCategory()))
+                .andExpect(jsonPath("$.data.category").value(responseDto.getCategory().name()))
                 .andExpect(jsonPath("$.data.avb").value(responseDto.getAVB()))
                 .andExpect(jsonPath("$.data.imageUrl").value(responseDto.getImageUrl()));
     }
 
     @Test
-    void 재료수정_실패_(){
+    void 재료수정_실패_CASE_(){
 
     }
 
@@ -154,7 +172,7 @@ class IngredientControllerTest extends AbstractRestDocsTests {
     }
 
     @Test
-    void deleteIngredient() throws Exception{
+    void 재료삭제_성공() throws Exception{
 
         doNothing().when(ingredientService).deleteIngredient(any(Long.class));
 

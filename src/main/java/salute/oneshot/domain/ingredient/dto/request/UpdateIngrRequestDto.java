@@ -18,7 +18,7 @@ public class UpdateIngrRequestDto {
     private String description;
     @NotBlank
     private String category;
-    @NotBlank @JsonIgnore
+
     private MultipartFile imageFile;
 
     @NotNull

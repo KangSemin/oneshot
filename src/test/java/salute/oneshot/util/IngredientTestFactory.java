@@ -104,7 +104,7 @@ public class IngredientTestFactory {
     }
 
     public static UpdateIngrRequestDto updateIngrRequestDto(){
-        MockMultipartFile multipartFile = new MockMultipartFile("image", (byte[]) null);
+        MockMultipartFile multipartFile = new MockMultipartFile("image", "test.jpg", "image/jpeg", new byte[0]);
         return new UpdateIngrRequestDto("깔루아", "맛있는 깔루아", "OTHER", multipartFile, 2.0);
     }
 }

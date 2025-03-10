@@ -58,6 +58,13 @@ public class S3Util {
         return amazonS3.getUrl(bucketName, s3FileName).toString();
     }
 
+//    public boolean isTypeImage(MultipartFile multipartFile){
+//
+//        multipartFile.getContentType()
+//    }
+
+
+
 
     public String getUrl(String fileName) {
         return amazonS3.getUrl(bucketName, fileName).toString();

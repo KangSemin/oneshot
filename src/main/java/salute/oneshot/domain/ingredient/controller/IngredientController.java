@@ -2,10 +2,12 @@ package salute.oneshot.domain.ingredient.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -23,6 +25,7 @@ import salute.oneshot.global.util.S3Util;
 
 import java.io.IOException;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/ingredients")
 @RequiredArgsConstructor
@@ -33,8 +36,12 @@ public class IngredientController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
-    public ResponseEntity<ApiResponse<IngrResponseDto>> createIngredient ( @Valid @RequestBody CreateIngrRequestDto request) throws IOException {
+    public ResponseEntity<ApiResponse<IngrResponseDto>> createIngredient ( @Valid @ModelAttribute CreateIngrRequestDto request) throws IOException {
 
+
+        String type = request.getImageFile().getContentType();
+
+        log.info(type);
 
         CreateIngrSDto sdto = CreateIngrSDto.of(request.getName(), request.getDescription(),
             IngredientCategory.valueOf(request.getCategory()), request.getAvb(), request.getImageFile());
@@ -87,7 +94,7 @@ public class IngredientController {
     @PatchMapping("/{ingredientId}")
     public ResponseEntity<ApiResponse<IngrResponseDto>> updateIngredient (
         @PathVariable Long ingredientId,
-        @Valid @RequestBody UpdateIngrRequestDto request) throws IOException{
+        @Valid @ModelAttribute UpdateIngrRequestDto request) throws IOException{
 
         UpdateIngrSDto sdto = UpdateIngrSDto.of(ingredientId, request.getName(),
             request.getDescription(),
