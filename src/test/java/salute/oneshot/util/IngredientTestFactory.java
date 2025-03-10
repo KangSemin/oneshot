@@ -11,10 +11,10 @@ import java.lang.reflect.InvocationTargetException;
 public class IngredientTestFactory {
 
     public static final Long INGREDIENT_ID = 1L;
-    public static final String NAME = "라임";
-    public static final Double AVB = 0.0;
-    public static final String DESCRIPTION = "과일의 한 종류입니다.";
-    public static final IngredientCategory CATEGORY = IngredientCategory.OTHER;
+    public static final String NAME = "봄베이 사파이어";
+    public static final Double AVB = 47.0d;
+    public static final String DESCRIPTION = "주류계의 민트초코";
+    public static final IngredientCategory CATEGORY = IngredientCategory.JIN;
 
     public static Ingredient createVodka() {
         Ingredient ingredient = Ingredient.of(

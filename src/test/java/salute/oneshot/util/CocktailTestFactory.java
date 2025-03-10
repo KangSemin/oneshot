@@ -1,20 +1,20 @@
 package salute.oneshot.util;
 
-import java.util.ArrayList;
-import java.util.List;
 import org.springframework.test.util.ReflectionTestUtils;
 import salute.oneshot.domain.cocktail.entity.Cocktail;
 import salute.oneshot.domain.cocktail.entity.CocktailIngredient;
 import salute.oneshot.domain.cocktail.entity.RecipeType;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CocktailTestFactory {
 
     public static final Long COCKTAIL_ID = 1L;
-    public static final String NAME = "연태하이볼";
-    public static final String DESCRIPTION = "저만의 레시피입니다.";
-    public static final String RECIPE = "탄산수를 넣어줍니다.";
+    public static final String NAME = "블랙 러시안";
+    public static final String DESCRIPTION = "보드카와 깔루아로 만드는 칵테일";
+    public static final String RECIPE = "1.칠링한 온더락 글라스에 재료들을 붓는다.\n2.젓는다.";
     public static final RecipeType TYPE = RecipeType.CUSTOM;
     public static final Integer LIKE_COUNT = 100;
     public static final Double STAR_RATE = 3.0;
