@@ -7,6 +7,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import salute.oneshot.domain.common.dto.success.ApiResponse;
 import salute.oneshot.domain.common.dto.success.ApiResponseConst;
@@ -28,10 +29,11 @@ import java.io.IOException;
 public class IngredientController {
 
     private final IngredientService ingredientService;
-    private final S3Util s3Util;
 
+
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
-    public ResponseEntity<ApiResponse<IngrResponseDto>> createIngredient ( @Valid @ModelAttribute CreateIngrRequestDto request) throws IOException {
+    public ResponseEntity<ApiResponse<IngrResponseDto>> createIngredient ( @Valid @RequestBody CreateIngrRequestDto request) throws IOException {
 
 
         CreateIngrSDto sdto = CreateIngrSDto.of(request.getName(), request.getDescription(),
@@ -89,7 +91,7 @@ public class IngredientController {
 
         UpdateIngrSDto sdto = UpdateIngrSDto.of(ingredientId, request.getName(),
             request.getDescription(),
-            IngredientCategory.valueOf(request.getCategory()), request.getAvb());
+            IngredientCategory.valueOf(request.getCategory()), request.getAvb(), request.getImageFile());
 
         IngrResponseDto responseDto = ingredientService.updateIngredient(sdto);
 

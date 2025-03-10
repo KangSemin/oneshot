@@ -37,7 +37,7 @@ class CocktailControllerTest extends AbstractRestDocsTests {
     void getCocktails() throws Exception {
         // given
 
-        given(cocktailService.searchByCondition(any()))
+        given(cocktailService.getIngrByCondition(any()))
             .willReturn(new PageImpl<>(
                     List.of(
                         CocktailResponseDto.from(CocktailTestFactory.createBlackRussian()),

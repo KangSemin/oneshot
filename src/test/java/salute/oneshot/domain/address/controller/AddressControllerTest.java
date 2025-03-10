@@ -165,8 +165,7 @@ class AddressControllerTest extends AbstractRestDocsTests {
         AddressPageResponseDto responseDto =
                 AddressPageResponseDto.of(addressPage, false, null);
 
-        given(addressService.getAddresses(any(GetAddressesSDto.class)))
-                .willReturn(responseDto);
+        given(addressService.getAddresses(any(GetAddressesSDto.class))).willReturn(responseDto);
 
         // when & then
         mockMvc.perform(get("/api/addresses")

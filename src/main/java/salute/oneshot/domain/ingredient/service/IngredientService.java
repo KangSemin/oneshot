@@ -67,8 +67,10 @@ public class IngredientService {
 
         Ingredient ingredient = findById(request.getId());
 
+        String updateImageUrl = uploadIngrImage(request.getImageFile());
+
         ingredient.update(request.getName(), request.getDescription(), request.getCategory(),
-                request.getAvb());
+                request.getAvb(), updateImageUrl);
 
         IngredientDocument ingrDoc = IngredientDocument.from(ingredient);
 
