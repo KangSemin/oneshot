@@ -506,6 +506,43 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_주소_삭제_실패_존재하지_않는_주소로_조회_시도">주소 삭제 실패: 존재하지 않는 주소로 조회 시도</a></li>
 </ul>
 </li>
+<li><a href="#_admincouponcontroller">AdminCouponController</a>
+<ul class="sectlevel2">
+<li><a href="#_쿠폰_생성_성공">쿠폰 생성 성공</a></li>
+<li><a href="#_쿠폰_수정_성공">쿠폰 수정 성공</a></li>
+<li><a href="#_쿠폰_수정_실패_존재하지_않는_쿠폰아이디로_수정_시도">쿠폰 수정 실패: 존재하지 않는 쿠폰아이디로 수정 시도</a></li>
+<li><a href="#_쿠폰_삭제_성공">쿠폰 삭제 성공</a></li>
+<li><a href="#_쿠폰_삭제_실패_존재하지_않는_쿠폰아이디로_삭제_시도">쿠폰 삭제 실패: 존재하지 않는 쿠폰아이디로 삭제 시도</a></li>
+<li><a href="#_유저쿠폰_발급_성공">유저쿠폰 발급 성공</a></li>
+<li><a href="#_유저쿠폰_발급_실패_존재하지_않는_쿠폰아이디로_유저쿠폰_발급_시도">유저쿠폰 발급 실패: 존재하지 않는 쿠폰아이디로 유저쿠폰 발급 시도</a></li>
+</ul>
+</li>
+<li><a href="#_couponcontroller">CouponController</a>
+<ul class="sectlevel2">
+<li><a href="#_유저쿠폰_사용_성공">유저쿠폰 사용 성공</a></li>
+<li><a href="#_유저쿠폰_사용_실패_존재하지_않는_유저_쿠폰_아이디로_사용_시도">유저쿠폰 사용 실패: 존재하지 않는 유저 쿠폰 아이디로 사용 시도</a></li>
+<li><a href="#_쿠몬_목록_조회_성공">쿠몬 목록 조회 성공</a></li>
+<li><a href="#_쿠폰_목록_조회_성공_빈_목록_조회">쿠폰 목록 조회 성공: 빈 목록 조회</a></li>
+<li><a href="#_쿠폰_단건_조회_성공">쿠폰 단건 조회 성공</a></li>
+<li><a href="#_쿠폰_단건_조회_실패_존재하지_않는_쿠폰_아이디로_조회_시도">쿠폰 단건 조회 실패: 존재하지 않는 쿠폰 아이디로 조회 시도</a></li>
+<li><a href="#_유저쿠폰_목록_조회_성공">유저쿠폰 목록 조회 성공</a></li>
+<li><a href="#_유저쿠폰_목록_조회_성공_빈_목록_조회">유저쿠폰 목록 조회 성공: 빈 목록 조회</a></li>
+<li><a href="#_유저쿠폰_단건_조회_성공">유저쿠폰 단건 조회 성공</a></li>
+<li><a href="#_유저쿠폰_단건_조회_실패_존재하지_않는_유저쿠폰_아이디로_조회_시도">유저쿠폰 단건 조회 실패: 존재하지 않는 유저쿠폰 아이디로 조회 시도</a></li>
+</ul>
+</li>
+<li><a href="#_favoritecontroller">FavoriteController</a>
+<ul class="sectlevel2">
+<li><a href="#_즐겨찾기_등록_성공">즐겨찾기 등록 성공</a></li>
+<li><a href="#_즐겨찾기_등록_실패_이미_등록된_즐겨찾기">즐겨찾기 등록 실패: 이미 등록된 즐겨찾기</a></li>
+<li><a href="#_즐겨찾기_등록_실패_존재하지_않는_칵테일_아이디로_등록_시도">즐겨찾기 등록 실패: 존재하지 않는 칵테일 아이디로 등록 시도</a></li>
+<li><a href="#_즐겨찾기_여부_조회_성공">즐겨찾기 여부 조회 성공</a></li>
+<li><a href="#_즐겨찾기_목록_조회_성공">즐겨찾기 목록 조회 성공</a></li>
+<li><a href="#_즐겨찾기_목록_조회_성공_빈_목록_조회">즐겨찾기 목록 조회 성공: 빈 목록 조회</a></li>
+<li><a href="#_즐겨찾기_삭제_성공">즐겨찾기 삭제 성공</a></li>
+<li><a href="#_즐겨찾기_삭제_실패_존재하지_않는_즐겨찾기아이디로_삭제_시도">즐겨찾기 삭제 실패: 존재하지 않는 즐겨찾기아이디로 삭제 시도</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -651,8 +688,8 @@ Host: localhost:8080
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
-Set-Cookie: refreshToken=refreshToken; Path=/; Max-Age=604800; Expires=Mon, 17 Mar 2025 00:57:59 GMT; HttpOnly; SameSite=Lax
-Set-Cookie: accessToken=accessToken; Path=/; Max-Age=3600; Expires=Mon, 10 Mar 2025 01:57:59 GMT; HttpOnly; SameSite=Lax
+Set-Cookie: refreshToken=refreshToken; Path=/; Max-Age=604800; Expires=Mon, 17 Mar 2025 02:27:29 GMT; HttpOnly; SameSite=Lax
+Set-Cookie: accessToken=accessToken; Path=/; Max-Age=3600; Expires=Mon, 10 Mar 2025 03:27:29 GMT; HttpOnly; SameSite=Lax
 Content-Type: application/json;charset=UTF-8
 X-Content-Type-Options: nosniff
 X-XSS-Protection: 0
@@ -811,7 +848,7 @@ Content-Type: application/x-www-form-urlencoded</code></pre>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
-Set-Cookie: refreshToken=refreshToken; Path=/; Max-Age=604800; Expires=Mon, 17 Mar 2025 00:57:59 GMT; HttpOnly; SameSite=Lax
+Set-Cookie: refreshToken=refreshToken; Path=/; Max-Age=604800; Expires=Mon, 17 Mar 2025 02:27:29 GMT; HttpOnly; SameSite=Lax
 Content-Type: application/json;charset=UTF-8
 X-Content-Type-Options: nosniff
 X-XSS-Protection: 0
@@ -1396,11 +1433,1410 @@ Content-Length: 101
 </div>
 </div>
 </div>
+<div class="sect1">
+<h2 id="_admincouponcontroller">AdminCouponController</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_쿠폰_생성_성공">쿠폰 생성 성공</h3>
+<div class="sect3">
+<h4 id="_쿠폰_생성_성공_curl_request">Curl request</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/api/admin/coupons' -i -X POST \
+    -H 'Content-Type: application/json;charset=UTF-8' \
+    -d '{
+  "couponName" : "1000원 할인쿠폰",
+  "discountValue" : 1000,
+  "startDate" : "2025-03-01",
+  "startTime" : "00:00",
+  "endDate" : "2025-04-01",
+  "endTime" : "00:00"
+}'</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_쿠폰_생성_성공_http_request">HTTP request</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /api/admin/coupons HTTP/1.1
+Content-Type: application/json;charset=UTF-8
+Content-Length: 182
+Host: localhost:8080
+
+{
+  "couponName" : "1000원 할인쿠폰",
+  "discountValue" : 1000,
+  "startDate" : "2025-03-01",
+  "startTime" : "00:00",
+  "endDate" : "2025-04-01",
+  "endTime" : "00:00"
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_쿠폰_생성_성공_http_response">HTTP response</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 201 Created
+Content-Type: application/json;charset=UTF-8
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY
+Content-Length: 171
+
+{
+  "message" : "쿠폰 등록이 완료되었습니다.",
+  "data" : {
+    "id" : null,
+    "couponName" : "1000원 할인쿠폰",
+    "discountValue" : 1000
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_쿠폰_생성_성공_httpie_request">HTTPie request</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ echo '{
+  "couponName" : "1000원 할인쿠폰",
+  "discountValue" : 1000,
+  "startDate" : "2025-03-01",
+  "startTime" : "00:00",
+  "endDate" : "2025-04-01",
+  "endTime" : "00:00"
+}' | http POST 'http://localhost:8080/api/admin/coupons' \
+    'Content-Type:application/json;charset=UTF-8'</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_쿠폰_생성_성공_request_body">Request body</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-json hljs" data-lang="json">{
+  "couponName" : "1000원 할인쿠폰",
+  "discountValue" : 1000,
+  "startDate" : "2025-03-01",
+  "startTime" : "00:00",
+  "endDate" : "2025-04-01",
+  "endTime" : "00:00"
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_쿠폰_생성_성공_response_body">Response body</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-json hljs" data-lang="json">{
+  "message" : "쿠폰 등록이 완료되었습니다.",
+  "data" : {
+    "id" : null,
+    "couponName" : "1000원 할인쿠폰",
+    "discountValue" : 1000
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_쿠폰_수정_성공">쿠폰 수정 성공</h3>
+<div class="sect3">
+<h4 id="_쿠폰_수정_성공_curl_request">Curl request</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/api/admin/coupons/1' -i -X PATCH \
+    -H 'Content-Type: application/json;charset=UTF-8' \
+    -d '{
+  "couponName" : "1000원 할인쿠폰",
+  "discountValue" : 1000,
+  "startDate" : "2025-03-01",
+  "startTime" : "00:00",
+  "endDate" : "2025-04-01",
+  "endTime" : "00:00"
+}'</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_쿠폰_수정_성공_http_request">HTTP request</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">PATCH /api/admin/coupons/1 HTTP/1.1
+Content-Type: application/json;charset=UTF-8
+Content-Length: 182
+Host: localhost:8080
+
+{
+  "couponName" : "1000원 할인쿠폰",
+  "discountValue" : 1000,
+  "startDate" : "2025-03-01",
+  "startTime" : "00:00",
+  "endDate" : "2025-04-01",
+  "endTime" : "00:00"
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_쿠폰_수정_성공_http_response">HTTP response</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
+Content-Type: application/json;charset=UTF-8
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY
+Content-Length: 247
+
+{
+  "message" : "쿠폰 수정이 완료되었습니다.",
+  "data" : {
+    "id" : null,
+    "couponName" : "1000원 할인쿠폰",
+    "discountValue" : 1000,
+    "startTime" : "2025-03-01T00:00",
+    "endTime" : "2025-04-01T00:00"
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_쿠폰_수정_성공_httpie_request">HTTPie request</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ echo '{
+  "couponName" : "1000원 할인쿠폰",
+  "discountValue" : 1000,
+  "startDate" : "2025-03-01",
+  "startTime" : "00:00",
+  "endDate" : "2025-04-01",
+  "endTime" : "00:00"
+}' | http PATCH 'http://localhost:8080/api/admin/coupons/1' \
+    'Content-Type:application/json;charset=UTF-8'</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_쿠폰_수정_성공_request_body">Request body</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-json hljs" data-lang="json">{
+  "couponName" : "1000원 할인쿠폰",
+  "discountValue" : 1000,
+  "startDate" : "2025-03-01",
+  "startTime" : "00:00",
+  "endDate" : "2025-04-01",
+  "endTime" : "00:00"
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_쿠폰_수정_성공_response_body">Response body</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-json hljs" data-lang="json">{
+  "message" : "쿠폰 수정이 완료되었습니다.",
+  "data" : {
+    "id" : null,
+    "couponName" : "1000원 할인쿠폰",
+    "discountValue" : 1000,
+    "startTime" : "2025-03-01T00:00",
+    "endTime" : "2025-04-01T00:00"
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_쿠폰_수정_실패_존재하지_않는_쿠폰아이디로_수정_시도">쿠폰 수정 실패: 존재하지 않는 쿠폰아이디로 수정 시도</h3>
+<div class="sect3">
+<h4 id="_쿠폰_수정_실패_존재하지_않는_쿠폰아이디로_수정_시도_curl_request">Curl request</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/api/admin/coupons/1' -i -X PATCH \
+    -H 'Content-Type: application/json;charset=UTF-8' \
+    -d '{
+  "couponName" : "1000원 할인쿠폰",
+  "discountValue" : 1000,
+  "startDate" : "2025-03-01",
+  "startTime" : "00:00",
+  "endDate" : "2025-04-01",
+  "endTime" : "00:00"
+}'</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_쿠폰_수정_실패_존재하지_않는_쿠폰아이디로_수정_시도_http_request">HTTP request</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">PATCH /api/admin/coupons/1 HTTP/1.1
+Content-Type: application/json;charset=UTF-8
+Content-Length: 182
+Host: localhost:8080
+
+{
+  "couponName" : "1000원 할인쿠폰",
+  "discountValue" : 1000,
+  "startDate" : "2025-03-01",
+  "startTime" : "00:00",
+  "endDate" : "2025-04-01",
+  "endTime" : "00:00"
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_쿠폰_수정_실패_존재하지_않는_쿠폰아이디로_수정_시도_http_response">HTTP response</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 404 Not Found
+Content-Type: application/json;charset=UTF-8
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY
+Content-Length: 93
+
+{
+  "httpStatus" : "NOT_FOUND",
+  "errorMessage" : "쿠폰이 존재하지 않습니다"
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_쿠폰_수정_실패_존재하지_않는_쿠폰아이디로_수정_시도_httpie_request">HTTPie request</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ echo '{
+  "couponName" : "1000원 할인쿠폰",
+  "discountValue" : 1000,
+  "startDate" : "2025-03-01",
+  "startTime" : "00:00",
+  "endDate" : "2025-04-01",
+  "endTime" : "00:00"
+}' | http PATCH 'http://localhost:8080/api/admin/coupons/1' \
+    'Content-Type:application/json;charset=UTF-8'</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_쿠폰_수정_실패_존재하지_않는_쿠폰아이디로_수정_시도_request_body">Request body</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-json hljs" data-lang="json">{
+  "couponName" : "1000원 할인쿠폰",
+  "discountValue" : 1000,
+  "startDate" : "2025-03-01",
+  "startTime" : "00:00",
+  "endDate" : "2025-04-01",
+  "endTime" : "00:00"
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_쿠폰_수정_실패_존재하지_않는_쿠폰아이디로_수정_시도_response_body">Response body</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-json hljs" data-lang="json">{
+  "httpStatus" : "NOT_FOUND",
+  "errorMessage" : "쿠폰이 존재하지 않습니다"
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_쿠폰_삭제_성공">쿠폰 삭제 성공</h3>
+<div class="sect3">
+<h4 id="_쿠폰_삭제_성공_curl_request">Curl request</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/api/admin/coupons/1' -i -X DELETE \
+    -H 'Content-Type: application/json;charset=UTF-8'</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_쿠폰_삭제_성공_http_request">HTTP request</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">DELETE /api/admin/coupons/1 HTTP/1.1
+Content-Type: application/json;charset=UTF-8
+Host: localhost:8080</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_쿠폰_삭제_성공_http_response">HTTP response</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
+Content-Type: application/json;charset=UTF-8
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY
+Content-Length: 76
+
+{
+  "message" : "쿠폰 삭제가 완료되었습니다.",
+  "data" : 1
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_쿠폰_삭제_성공_httpie_request">HTTPie request</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ http DELETE 'http://localhost:8080/api/admin/coupons/1' \
+    'Content-Type:application/json;charset=UTF-8'</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_쿠폰_삭제_성공_request_body">Request body</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-json hljs" data-lang="json"></code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_쿠폰_삭제_성공_response_body">Response body</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-json hljs" data-lang="json">{
+  "message" : "쿠폰 삭제가 완료되었습니다.",
+  "data" : 1
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_쿠폰_삭제_실패_존재하지_않는_쿠폰아이디로_삭제_시도">쿠폰 삭제 실패: 존재하지 않는 쿠폰아이디로 삭제 시도</h3>
+<div class="sect3">
+<h4 id="_쿠폰_삭제_실패_존재하지_않는_쿠폰아이디로_삭제_시도_curl_request">Curl request</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/api/admin/coupons/1' -i -X DELETE \
+    -H 'Content-Type: application/json;charset=UTF-8'</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_쿠폰_삭제_실패_존재하지_않는_쿠폰아이디로_삭제_시도_http_request">HTTP request</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">DELETE /api/admin/coupons/1 HTTP/1.1
+Content-Type: application/json;charset=UTF-8
+Host: localhost:8080</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_쿠폰_삭제_실패_존재하지_않는_쿠폰아이디로_삭제_시도_http_response">HTTP response</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 404 Not Found
+Content-Type: application/json;charset=UTF-8
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY
+Content-Length: 93
+
+{
+  "httpStatus" : "NOT_FOUND",
+  "errorMessage" : "쿠폰이 존재하지 않습니다"
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_쿠폰_삭제_실패_존재하지_않는_쿠폰아이디로_삭제_시도_httpie_request">HTTPie request</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ http DELETE 'http://localhost:8080/api/admin/coupons/1' \
+    'Content-Type:application/json;charset=UTF-8'</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_쿠폰_삭제_실패_존재하지_않는_쿠폰아이디로_삭제_시도_request_body">Request body</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-json hljs" data-lang="json"></code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_쿠폰_삭제_실패_존재하지_않는_쿠폰아이디로_삭제_시도_response_body">Response body</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-json hljs" data-lang="json">{
+  "httpStatus" : "NOT_FOUND",
+  "errorMessage" : "쿠폰이 존재하지 않습니다"
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_유저쿠폰_발급_성공">유저쿠폰 발급 성공</h3>
+<div class="sect3">
+<h4 id="_유저쿠폰_발급_성공_curl_request">Curl request</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/api/admin/coupons/1/users' -i -X POST \
+    -H 'Content-Type: application/json;charset=UTF-8' \
+    -d '{
+  "userId" : 1
+}'</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_유저쿠폰_발급_성공_http_request">HTTP request</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /api/admin/coupons/1/users HTTP/1.1
+Content-Type: application/json;charset=UTF-8
+Content-Length: 20
+Host: localhost:8080
+
+{
+  "userId" : 1
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_유저쿠폰_발급_성공_http_response">HTTP response</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 201 Created
+Content-Type: application/json;charset=UTF-8
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY
+Content-Length: 278
+
+{
+  "message" : "쿠폰 지급이 완료되었습니다.",
+  "data" : {
+    "userCouponId" : null,
+    "userId" : null,
+    "coupon" : {
+      "id" : null,
+      "couponName" : "1000원 할인쿠폰",
+      "discountValue" : 1000
+    },
+    "status" : "ISSUED"
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_유저쿠폰_발급_성공_httpie_request">HTTPie request</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ echo '{
+  "userId" : 1
+}' | http POST 'http://localhost:8080/api/admin/coupons/1/users' \
+    'Content-Type:application/json;charset=UTF-8'</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_유저쿠폰_발급_성공_request_body">Request body</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-json hljs" data-lang="json">{
+  "userId" : 1
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_유저쿠폰_발급_성공_response_body">Response body</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-json hljs" data-lang="json">{
+  "message" : "쿠폰 지급이 완료되었습니다.",
+  "data" : {
+    "userCouponId" : null,
+    "userId" : null,
+    "coupon" : {
+      "id" : null,
+      "couponName" : "1000원 할인쿠폰",
+      "discountValue" : 1000
+    },
+    "status" : "ISSUED"
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_유저쿠폰_발급_실패_존재하지_않는_쿠폰아이디로_유저쿠폰_발급_시도">유저쿠폰 발급 실패: 존재하지 않는 쿠폰아이디로 유저쿠폰 발급 시도</h3>
+<div class="sect3">
+<h4 id="_유저쿠폰_발급_실패_존재하지_않는_쿠폰아이디로_유저쿠폰_발급_시도_curl_request">Curl request</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/api/admin/coupons/1/users' -i -X POST \
+    -H 'Content-Type: application/json;charset=UTF-8' \
+    -d '{
+  "userId" : 1
+}'</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_유저쿠폰_발급_실패_존재하지_않는_쿠폰아이디로_유저쿠폰_발급_시도_http_request">HTTP request</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /api/admin/coupons/1/users HTTP/1.1
+Content-Type: application/json;charset=UTF-8
+Content-Length: 20
+Host: localhost:8080
+
+{
+  "userId" : 1
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_유저쿠폰_발급_실패_존재하지_않는_쿠폰아이디로_유저쿠폰_발급_시도_http_response">HTTP response</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 404 Not Found
+Content-Type: application/json;charset=UTF-8
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY
+Content-Length: 93
+
+{
+  "httpStatus" : "NOT_FOUND",
+  "errorMessage" : "쿠폰이 존재하지 않습니다"
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_유저쿠폰_발급_실패_존재하지_않는_쿠폰아이디로_유저쿠폰_발급_시도_httpie_request">HTTPie request</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ echo '{
+  "userId" : 1
+}' | http POST 'http://localhost:8080/api/admin/coupons/1/users' \
+    'Content-Type:application/json;charset=UTF-8'</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_유저쿠폰_발급_실패_존재하지_않는_쿠폰아이디로_유저쿠폰_발급_시도_request_body">Request body</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-json hljs" data-lang="json">{
+  "userId" : 1
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_유저쿠폰_발급_실패_존재하지_않는_쿠폰아이디로_유저쿠폰_발급_시도_response_body">Response body</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-json hljs" data-lang="json">{
+  "httpStatus" : "NOT_FOUND",
+  "errorMessage" : "쿠폰이 존재하지 않습니다"
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_couponcontroller">CouponController</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_유저쿠폰_사용_성공">유저쿠폰 사용 성공</h3>
+<div class="sect3">
+<h4 id="_유저쿠폰_사용_성공_http_request">HTTP request</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /api/coupons/users/1 HTTP/1.1
+Content-Type: application/json;charset=UTF-8
+Host: localhost:8080</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_유저쿠폰_사용_성공_http_response">HTTP response</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 201 Created
+Content-Type: application/json;charset=UTF-8
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY
+Content-Length: 302
+
+{
+  "message" : "쿠폰 사용이 완료되었습니다.",
+  "data" : {
+    "userCouponId" : null,
+    "userId" : null,
+    "coupon" : {
+      "id" : null,
+      "couponName" : "1000원 할인쿠폰",
+      "discountValue" : 1000
+    },
+    "status" : "ISSUED",
+    "usedTime" : null
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_유저쿠폰_사용_실패_존재하지_않는_유저_쿠폰_아이디로_사용_시도">유저쿠폰 사용 실패: 존재하지 않는 유저 쿠폰 아이디로 사용 시도</h3>
+<div class="sect3">
+<h4 id="_유저쿠폰_사용_실패_존재하지_않는_유저_쿠폰_아이디로_사용_시도_http_request">HTTP request</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /api/coupons/users/1 HTTP/1.1
+Content-Type: application/json;charset=UTF-8
+Host: localhost:8080</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_유저쿠폰_사용_실패_존재하지_않는_유저_쿠폰_아이디로_사용_시도_http_response">HTTP response</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 404 Not Found
+Content-Type: application/json;charset=UTF-8
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY
+Content-Length: 93
+
+{
+  "httpStatus" : "NOT_FOUND",
+  "errorMessage" : "쿠폰이 존재하지 않습니다"
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_쿠몬_목록_조회_성공">쿠몬 목록 조회 성공</h3>
+<div class="sect3">
+<h4 id="_쿠몬_목록_조회_성공_http_request">HTTP request</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /api/coupons?page=1&amp;size=10 HTTP/1.1
+Host: localhost:8080</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_쿠몬_목록_조회_성공_http_response">HTTP response</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
+Content-Type: application/json;charset=UTF-8
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY
+Content-Length: 285
+
+{
+  "message" : "쿠폰 목록 조회가 완료되었습니다.",
+  "data" : {
+    "coupons" : [ {
+      "id" : null,
+      "couponName" : "1000원 할인쿠폰",
+      "discountValue" : 1000
+    } ],
+    "currentPage" : 0,
+    "totalPages" : 1,
+    "hasNext" : false
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_쿠폰_목록_조회_성공_빈_목록_조회">쿠폰 목록 조회 성공: 빈 목록 조회</h3>
+<div class="sect3">
+<h4 id="_쿠폰_목록_조회_성공_빈_목록_조회_http_request">HTTP request</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /api/coupons?page=1&amp;size=10 HTTP/1.1
+Host: localhost:8080</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_쿠폰_목록_조회_성공_빈_목록_조회_http_response">HTTP response</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
+Content-Type: application/json;charset=UTF-8
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY
+Content-Length: 180
+
+{
+  "message" : "쿠폰 목록 조회가 완료되었습니다.",
+  "data" : {
+    "coupons" : [ ],
+    "currentPage" : 0,
+    "totalPages" : 1,
+    "hasNext" : false
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_쿠폰_단건_조회_성공">쿠폰 단건 조회 성공</h3>
+<div class="sect3">
+<h4 id="_쿠폰_단건_조회_성공_http_request">HTTP request</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /api/coupons/1 HTTP/1.1
+Host: localhost:8080</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_쿠폰_단건_조회_성공_http_response">HTTP response</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
+Content-Type: application/json;charset=UTF-8
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY
+Content-Length: 247
+
+{
+  "message" : "쿠폰 조회가 완료되었습니다.",
+  "data" : {
+    "id" : null,
+    "couponName" : "1000원 할인쿠폰",
+    "discountValue" : 1000,
+    "startTime" : "2025-03-01T00:00",
+    "endTime" : "2025-04-01T00:00"
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_쿠폰_단건_조회_실패_존재하지_않는_쿠폰_아이디로_조회_시도">쿠폰 단건 조회 실패: 존재하지 않는 쿠폰 아이디로 조회 시도</h3>
+<div class="sect3">
+<h4 id="_쿠폰_단건_조회_실패_존재하지_않는_쿠폰_아이디로_조회_시도_http_request">HTTP request</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /api/coupons/1 HTTP/1.1
+Host: localhost:8080</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_쿠폰_단건_조회_실패_존재하지_않는_쿠폰_아이디로_조회_시도_http_response">HTTP response</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 404 Not Found
+Content-Type: application/json;charset=UTF-8
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY
+Content-Length: 93
+
+{
+  "httpStatus" : "NOT_FOUND",
+  "errorMessage" : "쿠폰이 존재하지 않습니다"
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_유저쿠폰_목록_조회_성공">유저쿠폰 목록 조회 성공</h3>
+<div class="sect3">
+<h4 id="_유저쿠폰_목록_조회_성공_http_request">HTTP request</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /api/coupons/users?page=1&amp;size=10 HTTP/1.1
+Host: localhost:8080</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_유저쿠폰_목록_조회_성공_http_response">HTTP response</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
+Content-Type: application/json;charset=UTF-8
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY
+Content-Length: 406
+
+{
+  "message" : "쿠폰 목록 조회가 완료되었습니다.",
+  "data" : {
+    "userCoupons" : [ {
+      "userCouponId" : null,
+      "userId" : null,
+      "coupon" : {
+        "id" : null,
+        "couponName" : "1000원 할인쿠폰",
+        "discountValue" : 1000
+      },
+      "status" : "ISSUED"
+    } ],
+    "currentPage" : 0,
+    "totalPages" : 1,
+    "hasNext" : false
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_유저쿠폰_목록_조회_성공_빈_목록_조회">유저쿠폰 목록 조회 성공: 빈 목록 조회</h3>
+<div class="sect3">
+<h4 id="_유저쿠폰_목록_조회_성공_빈_목록_조회_curl_request">Curl request</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/api/coupons/users?page=1&amp;size=10' -i -X GET</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_유저쿠폰_목록_조회_성공_빈_목록_조회_http_request">HTTP request</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /api/coupons/users?page=1&amp;size=10 HTTP/1.1
+Host: localhost:8080</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_유저쿠폰_목록_조회_성공_빈_목록_조회_http_response">HTTP response</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
+Content-Type: application/json;charset=UTF-8
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY
+Content-Length: 184
+
+{
+  "message" : "쿠폰 목록 조회가 완료되었습니다.",
+  "data" : {
+    "userCoupons" : [ ],
+    "currentPage" : 0,
+    "totalPages" : 1,
+    "hasNext" : false
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_유저쿠폰_목록_조회_성공_빈_목록_조회_httpie_request">HTTPie request</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ http GET 'http://localhost:8080/api/coupons/users?page=1&amp;size=10'</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_유저쿠폰_목록_조회_성공_빈_목록_조회_request_body">Request body</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-none hljs"></code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_유저쿠폰_목록_조회_성공_빈_목록_조회_response_body">Response body</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-json hljs" data-lang="json">{
+  "message" : "쿠폰 목록 조회가 완료되었습니다.",
+  "data" : {
+    "userCoupons" : [ ],
+    "currentPage" : 0,
+    "totalPages" : 1,
+    "hasNext" : false
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_유저쿠폰_단건_조회_성공">유저쿠폰 단건 조회 성공</h3>
+<div class="sect3">
+<h4 id="_유저쿠폰_단건_조회_성공_http_request">HTTP request</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /api/coupons/users/1 HTTP/1.1
+Host: localhost:8080</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_유저쿠폰_단건_조회_성공_http_response">HTTP response</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
+Content-Type: application/json;charset=UTF-8
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY
+Content-Length: 302
+
+{
+  "message" : "쿠폰 조회가 완료되었습니다.",
+  "data" : {
+    "userCouponId" : null,
+    "userId" : null,
+    "coupon" : {
+      "id" : null,
+      "couponName" : "1000원 할인쿠폰",
+      "discountValue" : 1000
+    },
+    "status" : "ISSUED",
+    "usedTime" : null
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_유저쿠폰_단건_조회_실패_존재하지_않는_유저쿠폰_아이디로_조회_시도">유저쿠폰 단건 조회 실패: 존재하지 않는 유저쿠폰 아이디로 조회 시도</h3>
+<div class="sect3">
+<h4 id="_유저쿠폰_단건_조회_실패_존재하지_않는_유저쿠폰_아이디로_조회_시도_http_request">HTTP request</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /api/coupons/users/1 HTTP/1.1
+Host: localhost:8080</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_유저쿠폰_단건_조회_실패_존재하지_않는_유저쿠폰_아이디로_조회_시도_http_response">HTTP response</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 404 Not Found
+Content-Type: application/json;charset=UTF-8
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY
+Content-Length: 93
+
+{
+  "httpStatus" : "NOT_FOUND",
+  "errorMessage" : "쿠폰이 존재하지 않습니다"
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_favoritecontroller">FavoriteController</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_즐겨찾기_등록_성공">즐겨찾기 등록 성공</h3>
+<div class="sect3">
+<h4 id="_즐겨찾기_등록_성공_http_request">HTTP request</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /api/cocktails/1/favorites HTTP/1.1
+Content-Type: application/json;charset=UTF-8
+Host: localhost:8080</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_즐겨찾기_등록_성공_http_response">HTTP response</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 201 Created
+Content-Type: application/json;charset=UTF-8
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY
+Content-Length: 281
+
+{
+  "message" : "즐겨찾기 등록이 완료되었습니다.",
+  "data" : {
+    "cocktailId" : 1,
+    "name" : "블랙 러시안",
+    "description" : "보드카와 깔루아로 만드는 칵테일",
+    "type" : "CUSTOM",
+    "favoritedAt" : "2025-03-10T01:01:00"
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_즐겨찾기_등록_실패_이미_등록된_즐겨찾기">즐겨찾기 등록 실패: 이미 등록된 즐겨찾기</h3>
+<div class="sect3">
+<h4 id="_즐겨찾기_등록_실패_이미_등록된_즐겨찾기_http_request">HTTP request</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /api/cocktails/1/favorites HTTP/1.1
+Content-Type: application/json;charset=UTF-8
+Host: localhost:8080</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_즐겨찾기_등록_실패_이미_등록된_즐겨찾기_http_response">HTTP response</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 409 Conflict
+Content-Type: application/json;charset=UTF-8
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY
+Content-Length: 99
+
+{
+  "httpStatus" : "CONFLICT",
+  "errorMessage" : "이미 즐겨찾기한 레시피입니다."
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_즐겨찾기_등록_실패_존재하지_않는_칵테일_아이디로_등록_시도">즐겨찾기 등록 실패: 존재하지 않는 칵테일 아이디로 등록 시도</h3>
+<div class="sect3">
+<h4 id="_즐겨찾기_등록_실패_존재하지_않는_칵테일_아이디로_등록_시도_http_request">HTTP request</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /api/cocktails/1/favorites HTTP/1.1
+Content-Type: application/json;charset=UTF-8
+Host: localhost:8080</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_즐겨찾기_등록_실패_존재하지_않는_칵테일_아이디로_등록_시도_http_response">HTTP response</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 404 Not Found
+Content-Type: application/json;charset=UTF-8
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY
+Content-Length: 97
+
+{
+  "httpStatus" : "NOT_FOUND",
+  "errorMessage" : "칵테일이 존재하지 않습니다."
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_즐겨찾기_여부_조회_성공">즐겨찾기 여부 조회 성공</h3>
+<div class="sect3">
+<h4 id="_즐겨찾기_여부_조회_성공_http_request">HTTP request</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /api/cocktails/1/favorites HTTP/1.1
+Content-Type: application/json;charset=UTF-8
+Host: localhost:8080</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_즐겨찾기_여부_조회_성공_http_response">HTTP response</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
+Content-Type: application/json;charset=UTF-8
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY
+Content-Length: 118
+
+{
+  "message" : "즐겨찾기 상태 조회가 완료되었습니다.",
+  "data" : {
+    "favorited" : true
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_즐겨찾기_목록_조회_성공">즐겨찾기 목록 조회 성공</h3>
+<div class="sect3">
+<h4 id="_즐겨찾기_목록_조회_성공_http_request">HTTP request</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /api/favorites?page=1&amp;size=10 HTTP/1.1
+Host: localhost:8080</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_즐겨찾기_목록_조회_성공_http_response">HTTP response</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
+Content-Type: application/json;charset=UTF-8
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY
+Content-Length: 401
+
+{
+  "message" : "즐겨찾기 목록 조회가 완료되었습니다.",
+  "data" : {
+    "favorites" : [ {
+      "cocktailId" : 1,
+      "name" : "블랙 러시안",
+      "description" : "보드카와 깔루아로 만드는 칵테일",
+      "type" : "CUSTOM",
+      "favoritedAt" : "2025-03-10T01:01:00"
+    } ],
+    "currentPage" : 0,
+    "totalPages" : 1,
+    "hasNext" : false
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_즐겨찾기_목록_조회_성공_빈_목록_조회">즐겨찾기 목록 조회 성공: 빈 목록 조회</h3>
+<div class="sect3">
+<h4 id="_즐겨찾기_목록_조회_성공_빈_목록_조회_http_request">HTTP request</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /api/favorites?page=1&amp;size=10 HTTP/1.1
+Host: localhost:8080</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_즐겨찾기_목록_조회_성공_빈_목록_조회_http_response">HTTP response</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
+Content-Type: application/json;charset=UTF-8
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY
+Content-Length: 188
+
+{
+  "message" : "즐겨찾기 목록 조회가 완료되었습니다.",
+  "data" : {
+    "favorites" : [ ],
+    "currentPage" : 0,
+    "totalPages" : 1,
+    "hasNext" : false
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_즐겨찾기_삭제_성공">즐겨찾기 삭제 성공</h3>
+<div class="sect3">
+<h4 id="_즐겨찾기_삭제_성공_http_request">HTTP request</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">DELETE /api/favorites/1 HTTP/1.1
+Host: localhost:8080</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_즐겨찾기_삭제_성공_http_response">HTTP response</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
+Content-Type: application/json;charset=UTF-8
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY
+Content-Length: 281
+
+{
+  "message" : "즐겨찾기 해제가 완료되었습니다.",
+  "data" : {
+    "cocktailId" : 1,
+    "name" : "블랙 러시안",
+    "description" : "보드카와 깔루아로 만드는 칵테일",
+    "type" : "CUSTOM",
+    "favoritedAt" : "2025-03-10T01:01:00"
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_즐겨찾기_삭제_실패_존재하지_않는_즐겨찾기아이디로_삭제_시도">즐겨찾기 삭제 실패: 존재하지 않는 즐겨찾기아이디로 삭제 시도</h3>
+<div class="sect3">
+<h4 id="_즐겨찾기_삭제_실패_존재하지_않는_즐겨찾기아이디로_삭제_시도_http_request">HTTP request</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">DELETE /api/favorites/1 HTTP/1.1
+Host: localhost:8080</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_즐겨찾기_삭제_실패_존재하지_않는_즐겨찾기아이디로_삭제_시도_http_response">HTTP response</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 403 Forbidden
+Content-Type: application/json;charset=UTF-8
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY
+Content-Length: 88
+
+{
+  "httpStatus" : "FORBIDDEN",
+  "errorMessage" : "접근 권한이 없습니다."
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
 Version 0.0.1-SNAPSHOT<br>
-Last updated 2025-03-09 22:33:16 +0900
+Last updated 2025-03-10 11:23:50 +0900
 </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/highlight.min.js"></script>
