@@ -46,12 +46,17 @@ public class Coupon extends BaseEntity {
         this.endTime = endTime;
     }
 
-    public static Coupon from(CreateCpnSDto serviceDtd) {
+    public static Coupon of(
+            String couponName,
+            int discountValue,
+            LocalDateTime startTime,
+            LocalDateTime endTime
+    ) {
         return new Coupon(
-                serviceDtd.getCouponName(),
-                serviceDtd.getDiscountValue(),
-                serviceDtd.getStartTime(),
-                serviceDtd.getEndTime());
+                couponName,
+                discountValue,
+                startTime,
+                endTime);
     }
 
     public void updateCoupon(UpdateCpnSDto serviceDto) {
