@@ -2,20 +2,14 @@ package salute.oneshot.domain.ingredient.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockedStatic;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.web.multipart.MultipartFile;
-import salute.oneshot.config.TestSecurityConfig;
 import salute.oneshot.domain.common.AbstractRestDocsTests;
-import salute.oneshot.domain.common.dto.error.ErrorCode;
 import salute.oneshot.domain.common.dto.success.ApiResponseConst;
 import salute.oneshot.domain.ingredient.dto.request.CreateIngrRequestDto;
 import salute.oneshot.domain.ingredient.dto.request.UpdateIngrRequestDto;
@@ -26,10 +20,9 @@ import salute.oneshot.domain.ingredient.dto.service.UpdateIngrSDto;
 import salute.oneshot.domain.ingredient.entity.Ingredient;
 import salute.oneshot.domain.ingredient.entity.IngredientCategory;
 import salute.oneshot.domain.ingredient.service.IngredientService;
-import salute.oneshot.global.exception.NotFoundException;
-import salute.oneshot.global.util.S3Util;
 import salute.oneshot.util.IngredientTestFactory;
 import java.util.List;
+
 import static org.mockito.BDDMockito.given;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -39,7 +32,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(IngredientController.class)
-@Import({TestSecurityConfig.class})
 class IngredientControllerTest extends AbstractRestDocsTests {
 
 
@@ -61,6 +53,7 @@ class IngredientControllerTest extends AbstractRestDocsTests {
         CreateIngrRequestDto requestDto = mock(CreateIngrRequestDto.class);
 
         IngrResponseDto responseDto = IngrResponseDto.from(ingredient);
+
 
         given(ingredientService.createIngredient(any(CreateIngrSDto.class))).willReturn(responseDto);
 

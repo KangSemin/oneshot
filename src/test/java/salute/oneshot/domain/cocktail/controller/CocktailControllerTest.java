@@ -3,10 +3,12 @@ package salute.oneshot.domain.cocktail.controller;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import static org.springframework.test.util.ReflectionTestUtils.setField;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
@@ -14,12 +16,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.MultiValueMap;
+import salute.oneshot.domain.cocktail.dto.request.CreateCocktailRequestDto;
+import salute.oneshot.domain.cocktail.dto.request.IngredientRequestDto;
 import salute.oneshot.domain.cocktail.dto.request.SearchCocktailByIngrsReqDto;
 import salute.oneshot.domain.cocktail.dto.response.CocktailResponseDto;
 import salute.oneshot.domain.cocktail.dto.service.SearchCocktailSDto;
@@ -27,6 +30,7 @@ import salute.oneshot.domain.cocktail.service.CocktailService;
 import salute.oneshot.domain.common.AbstractRestDocsTests;
 import salute.oneshot.global.util.S3Util;
 import salute.oneshot.util.CocktailTestFactory;
+import salute.oneshot.util.UserTestFactory;
 
 
 @WebMvcTest(CocktailController.class)
@@ -39,6 +43,47 @@ class CocktailControllerTest extends AbstractRestDocsTests {
     private S3Util s3Util;
     @Autowired
     private ObjectMapper objectMapper;
+
+    MockMultipartFile multipartFile = new MockMultipartFile("imageFile", "test.jpg", "image/jpeg", new byte[0]);
+
+
+    @Test
+    @DisplayName("칵테일 생성")
+    @WithMockUser
+    void createCocktail() throws Exception{
+
+        //given
+
+        IngredientRequestDto ingrRequest1 = mock(IngredientRequestDto.class);
+        setField(ingrRequest1,"ingredientId",1L);
+        setField(ingrRequest1,"volume","60ml");
+
+        IngredientRequestDto ingrRequest2 = mock(IngredientRequestDto.class);
+        setField(ingrRequest2,"ingredientId",4L);
+        setField(ingrRequest2,"volume","20ml");
+
+
+        CreateCocktailRequestDto request = mock(CreateCocktailRequestDto.class);
+        setField(request,"name","블랙 러시안");
+        setField(request,"description","보드카와 깔루아로 만드는 칵테일");
+        setField(request,"recipe","1.칠링한 온더락 글라스에 재료들을 붓는다.\n2.젓는다.");
+        setField(request,"ingredientList",List.of(ingrRequest1,ingrRequest2));
+
+
+//        given(cocktailService.createCocktail(any(CreateCocktailSDto.class)))
+
+
+        // when & then
+        mockMvc.perform(multipart("/api/cocktails")
+                .file(multipartFile)
+                .with(user(UserTestFactory.createMockUserDetails()))
+                .content(objectMapper.writeValueAsString(request))
+                .contentType(MediaType.MULTIPART_FORM_DATA)
+                .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk());
+
+    }
+
 
     @Test
     @DisplayName("키워드를 통한 칵테일 검색")
@@ -72,7 +117,7 @@ class CocktailControllerTest extends AbstractRestDocsTests {
 
         //given
         SearchCocktailByIngrsReqDto request = mock(SearchCocktailByIngrsReqDto.class);
-        ReflectionTestUtils.setField(request,"ingredientIds",List.of(3,4));
+        setField(request,"ingredientIds",List.of(3,4));
 
         given(cocktailService.getCocktailsByIngr(any(SearchCocktailSDto.class)))
             .willReturn(new PageImpl<>(
@@ -108,7 +153,7 @@ class CocktailControllerTest extends AbstractRestDocsTests {
 
         //given
         SearchCocktailByIngrsReqDto request = mock(SearchCocktailByIngrsReqDto.class);
-        ReflectionTestUtils.setField(request,"ingredientIds",List.of(3,4));
+        setField(request,"ingredientIds",List.of(3,4));
 
         given(cocktailService.getCocktailsByIngr(any(SearchCocktailSDto.class)))
             .willReturn(new PageImpl<>(
