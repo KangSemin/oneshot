@@ -2,9 +2,11 @@ package salute.oneshot.domain.cocktail.controller;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.util.ReflectionTestUtils.setField;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
@@ -259,5 +261,13 @@ class CocktailControllerTest extends AbstractRestDocsTests {
             .andExpect(status().isOk());
     }
 
+    @Test
+    void deleteCocktail() throws Exception{
+
+        mockMvc.perform(delete("/api/cocktails/{cocktailId}", 1L)
+            .contentType(MediaType.APPLICATION_JSON)
+            .with(user(UserTestFactory.createMockUserDetails())))
+            .andExpect(jsonPath("$.message").value(ApiResponseConst.DELETE_CCKTL_SUCCESS));
+    }
 
 }
