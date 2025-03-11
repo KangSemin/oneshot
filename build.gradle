@@ -1,8 +1,4 @@
-
-import com.sun.security.ntlm.Server
 import org.hidetake.gradle.swagger.generator.GenerateSwaggerUI
-import org.springframework.boot.gradle.tasks.bundling.BootJar
-
 
 plugins {
 	id 'java'
@@ -177,4 +173,6 @@ sourceSets {
 //	delete generated
 //}
 
-
+tasks.named("processResources") {
+	dependsOn tasks.named("copySwaggerUI")
+}
