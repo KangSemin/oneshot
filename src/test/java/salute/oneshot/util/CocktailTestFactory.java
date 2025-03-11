@@ -27,7 +27,7 @@ public class CocktailTestFactory {
             "블랙 러시안",
             "보드카와 깔루아로 만드는 칵테일",
             "1.칠링한 온더락 글라스에 재료들을 붓는다.\n2.젓는다.",
-            RecipeType.CUSTOM,
+            RecipeType.OFFICIAL,
             UserTestFactory.createUser(),
             new ArrayList<>(),
             "대충 이미지 주소"

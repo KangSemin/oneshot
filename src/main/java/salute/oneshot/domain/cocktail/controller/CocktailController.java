@@ -44,7 +44,11 @@ public class CocktailController {
     @PostMapping
     public ResponseEntity<ApiResponse<CocktailResponseDto>> createCocktail(
             @ModelAttribute CreateCocktailRequestDto request,
-            @AuthenticationPrincipal CustomUserDetails userDetails) {
+            @AuthenticationPrincipal CustomUserDetails userDetails) throws IOException{
+
+        if(!S3Util.isTypeImage(request.getImageFile())){
+            throw new IOException("이미지 파일만 업로드 가능합니다");
+        }
 
         CreateCocktailSDto sDto = CreateCocktailSDto.of(userDetails.getId(),
                 userDetails.getUserRole(), request.getName(),

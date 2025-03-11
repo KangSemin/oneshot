@@ -1,7 +1,0 @@
-== AdminUserController
-
-=== 유저 권한 변경 성공
-operation::super-admin-user-controller-test/success-update-user-role[nippets="http-request,http-response"]
-
-=== 유저 권한 변경 실패: 같은 권한으로 변경 시도
-operation::super-admin-user-controller-test/duplicated-user-role-update-user-role[nippets="http-request,http-response"]
