@@ -69,7 +69,7 @@ public class BannerTestFactory {
                 IMAGE_URL,
                 START_DATE,
                 START_TIME,
-                END_TIME,
+                END_DATE,
                 END_DATE);
     }
 }

@@ -19,6 +19,7 @@ import salute.oneshot.domain.banner.service.BannerService;
 import salute.oneshot.domain.common.AbstractRestDocsTests;
 import salute.oneshot.domain.common.dto.error.ErrorCode;
 import salute.oneshot.domain.common.dto.success.ApiResponseConst;
+import salute.oneshot.domain.common.entity.ValidationConst;
 import salute.oneshot.global.exception.InvalidException;
 import salute.oneshot.global.exception.NotFoundException;
 import salute.oneshot.util.BannerTestFactory;
@@ -91,7 +92,8 @@ class AdminBannerControllerTest extends AbstractRestDocsTests {
                         .content(objectMapper.writeValueAsString(requestDto))
                         .with(user(UserTestFactory.createMockUserDetails())))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.errorMessage").value(ErrorCode.INVALID_DATETIME.getMessage()))
+                .andExpect(jsonPath("$.errorMessage").value(ValidationConst.TIME_TYPE_MESSAGE))
+
                 .andReturn();
     }
 
@@ -102,7 +104,7 @@ class AdminBannerControllerTest extends AbstractRestDocsTests {
                 BannerTestFactory.createBannerRequestDto();
 
         given(bannerService.createBanner(any(BannerSDto.class)))
-                .willThrow(new NotFoundException(ErrorCode.BANNER_NOT_FOUND));
+                .willThrow(new NotFoundException(ErrorCode.EVENT_NOT_FOUND));
 
         // when & then
         mockMvc.perform(post("/api/admin/banners")
@@ -110,7 +112,7 @@ class AdminBannerControllerTest extends AbstractRestDocsTests {
                         .content(objectMapper.writeValueAsString(requestDto))
                         .with(user(UserTestFactory.createMockUserDetails())))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.errorMessage").value(ErrorCode.BANNER_NOT_FOUND.getMessage()))
+                .andExpect(jsonPath("$.errorMessage").value(ErrorCode.EVENT_NOT_FOUND.getMessage()))
                 .andReturn();
     }
 
@@ -196,7 +198,7 @@ class AdminBannerControllerTest extends AbstractRestDocsTests {
                         .content(objectMapper.writeValueAsString(requestDto))
                         .with(user(UserTestFactory.createMockUserDetails())))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.errorMessage").value(ErrorCode.INVALID_DATETIME.getMessage()))
+                .andExpect(jsonPath("$.errorMessage").value(ValidationConst.TIME_TYPE_MESSAGE))
                 .andReturn();
     }
 
