@@ -124,7 +124,7 @@ tasks.named('test') {
 
 
 tasks.withType(GenerateSwaggerUI) {
-	dependsOn 'openapi3'
+	mustRunAfter 'openapi3'
 	doFirst {
 		def swaggerUIFile = file("${openapi3.outputDirectory}/openapi3.yaml")
 
@@ -173,4 +173,6 @@ sourceSets {
 //	delete generated
 //}
 
-
+tasks.named("processResources") {
+	dependsOn tasks.named("copySwaggerUI")
+}
