@@ -97,6 +97,7 @@ class PantryControllerTest extends AbstractRestDocsTests {
     }
 
 
+    @Test
     void getMyPantry() throws Exception {
         List<PantryResponseDto> pantryResponseDtoList = List.of(responseDto);
         when(pantryService.getPantry(any(Long.class))).thenReturn(pantryResponseDtoList);
