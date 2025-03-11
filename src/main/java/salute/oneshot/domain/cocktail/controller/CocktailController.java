@@ -21,6 +21,7 @@ import salute.oneshot.domain.cocktail.service.CocktailService;
 import salute.oneshot.domain.common.dto.success.ApiResponse;
 import salute.oneshot.domain.common.dto.success.ApiResponseConst;
 import salute.oneshot.global.security.model.CustomUserDetails;
+import salute.oneshot.global.util.CookieUtil;
 import salute.oneshot.global.util.S3Util;
 
 import java.io.IOException;
@@ -63,40 +64,17 @@ public class CocktailController {
                                                                                   @PathVariable(name = "cocktailId") Long cocktailId
     ){
 
-        Cookie[] cookies = request.getCookies();
-
-        Cookie cookie = null;
-
-        boolean isCookieExist = false;
-
-        Optional<Cookie> optionalCookie = Arrays.stream(cookies)
-                .filter(c -> c.getName().equals("viewCount")).findAny();
-
-        if(optionalCookie.isEmpty()){
-
-            cookie = new Cookie("viewCount", "");
-
-        }else {
-
-            cookie = optionalCookie.get();
-            isCookieExist = cookie.getValue().contains("[" + cocktailId + "]");
-
-        }
-
-        if (!isCookieExist) {
-            cookie.setValue(cookie.getValue() + "[" + cocktailId + "]");
-            cocktailService.increaseViewCountAndScore(cocktailId);
-        }
+        Cookie viewCookie = CookieUtil.getOrCreateCookie(request, "viewCount");
+        CookieUtil.ifNotExistSetValue(viewCookie, cocktailId);
 
         long todayEndTime = LocalDate.now().atTime(LocalTime.MAX).toEpochSecond(ZoneOffset.UTC);
         long currentTime = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
-        cookie.setPath("/");
-        cookie.setMaxAge((int) (todayEndTime - currentTime));
+        viewCookie.setPath("/");
+        viewCookie.setMaxAge((int) (todayEndTime - currentTime));
 
-        httpResponse.addCookie(cookie);
+        httpResponse.addCookie(viewCookie);
 
         CocktailResponseDto responseDto = cocktailService.getCocktail(cocktailId);
-
         return ResponseEntity.ok(ApiResponse.success(ApiResponseConst.GET_CCKTL_SUCCESS, responseDto));
     }
 
