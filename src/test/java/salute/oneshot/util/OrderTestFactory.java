@@ -2,13 +2,17 @@ package salute.oneshot.util;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.test.util.ReflectionTestUtils;
 import salute.oneshot.domain.order.dto.request.CreateOrderRequestDto;
 import salute.oneshot.domain.order.dto.request.UpdateOrderRequestDto;
 import salute.oneshot.domain.order.dto.response.CreateOrderResponseDto;
 import salute.oneshot.domain.order.dto.response.GetOrderResponseDto;
 import salute.oneshot.domain.order.dto.response.OrderItemListResponseDto;
 import salute.oneshot.domain.order.dto.response.UpdateOrderResponseDto;
+import salute.oneshot.domain.order.entity.Order;
+import salute.oneshot.domain.order.entity.OrderItem;
 import salute.oneshot.domain.order.entity.OrderStatus;
+import salute.oneshot.domain.product.entity.Product;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -84,5 +88,27 @@ public class OrderTestFactory {
         constructor.setAccessible(true);
 
         return constructor.newInstance(ORDER_ID, NAME, AMOUNT, STATUS, ORDER_DATE);
+    }
+
+    public static Order createOrder() throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+        Product product = ProductTestFactory.createProduct();
+        OrderItem orderItem = OrderItem.of(
+                null, product,
+                3,
+                product.getPrice() * CartTestFactory.QUANTITY);
+        List<OrderItem> orderItemList = List.of(orderItem);
+
+        Order order = Order.of(
+                ORDER_NUMBER,
+                NAME,
+                AMOUNT,
+                UserTestFactory.createUser(),
+                CartTestFactory.createCart(),
+                AddressTestFactory.createAddress(),
+                orderItemList);
+
+        ReflectionTestUtils.setField(order, "id", 1L);
+
+        return order;
     }
 }
