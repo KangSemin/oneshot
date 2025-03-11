@@ -2,12 +2,16 @@ package salute.oneshot.domain.ingredient.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import salute.oneshot.domain.common.dto.success.ApiResponse;
 import salute.oneshot.domain.common.dto.success.ApiResponseConst;
 import salute.oneshot.domain.ingredient.dto.request.CreateIngrRequestDto;
@@ -22,17 +26,22 @@ import salute.oneshot.global.util.S3Util;
 
 import java.io.IOException;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/ingredients")
 @RequiredArgsConstructor
 public class IngredientController {
 
     private final IngredientService ingredientService;
-    private final S3Util s3Util;
 
+
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
-    public ResponseEntity<ApiResponse<IngrResponseDto>> createIngredient ( @Valid @ModelAttribute CreateIngrRequestDto request) throws IOException {
+    public ResponseEntity<ApiResponse<IngrResponseDto>> createIngredient (@Valid @ModelAttribute CreateIngrRequestDto request) throws IOException {
 
+        if(!S3Util.isTypeImage(request.getImageFile())){
+            throw new IOException("이미지 파일만 업로드 가능합니다");
+        }
 
         CreateIngrSDto sdto = CreateIngrSDto.of(request.getName(), request.getDescription(),
             IngredientCategory.valueOf(request.getCategory()), request.getAvb(), request.getImageFile());
@@ -85,11 +94,11 @@ public class IngredientController {
     @PatchMapping("/{ingredientId}")
     public ResponseEntity<ApiResponse<IngrResponseDto>> updateIngredient (
         @PathVariable Long ingredientId,
-        @Valid @RequestBody UpdateIngrRequestDto request) throws IOException{
+        @Valid @ModelAttribute UpdateIngrRequestDto request) throws IOException{
 
         UpdateIngrSDto sdto = UpdateIngrSDto.of(ingredientId, request.getName(),
             request.getDescription(),
-            IngredientCategory.valueOf(request.getCategory()), request.getAvb());
+            IngredientCategory.valueOf(request.getCategory()), request.getAvb(), request.getImageFile());
 
         IngrResponseDto responseDto = ingredientService.updateIngredient(sdto);
 

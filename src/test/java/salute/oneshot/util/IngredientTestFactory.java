@@ -1,6 +1,9 @@
 package salute.oneshot.util;
 
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.web.multipart.MultipartFile;
+import salute.oneshot.domain.ingredient.dto.request.UpdateIngrRequestDto;
 import salute.oneshot.domain.ingredient.entity.Ingredient;
 import salute.oneshot.domain.ingredient.entity.IngredientCategory;
 import salute.oneshot.domain.ingredientReview.dto.response.IngredientResponseDto;
@@ -81,11 +84,45 @@ public class IngredientTestFactory {
         return ingredient;
     }
 
+
+    public static Ingredient createGoldenKeyword(){
+        Ingredient ingredient = Ingredient.of(
+                "golden",
+                "맛있는거",
+                IngredientCategory.OTHER,
+                0.0d,
+                "대충 이미지 주소"
+        );
+
+        ReflectionTestUtils.setField(ingredient,"id",6L);
+        return ingredient;
+
+    }
+
+    public static Ingredient createGoldenKeyword2(){
+        Ingredient ingredient = Ingredient.of(
+                "깔루아",
+                "golden --",
+                IngredientCategory.OTHER,
+                0.0d,
+                "대충 이미지 주소"
+        );
+
+        ReflectionTestUtils.setField(ingredient,"id",7L);
+        return ingredient;
+
+    }
+
+    public static UpdateIngrRequestDto updateIngrRequestDto(){
+        MockMultipartFile multipartFile = new MockMultipartFile("image", "test.jpg", "image/jpeg", new byte[0]);
+        return new UpdateIngrRequestDto("깔루아", "맛있는 깔루아", "OTHER", multipartFile, 2.0);
+
     public static IngredientResponseDto createIngredientResponseDto() throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
         Constructor<IngredientResponseDto> constructor =
                 IngredientResponseDto.class.getDeclaredConstructor(Long.class, String.class, Double.class, String.class, IngredientCategory.class);
         constructor.setAccessible(true);
 
         return constructor.newInstance(INGREDIENT_ID, NAME, AVB, DESCRIPTION, CATEGORY);
+
     }
 }
