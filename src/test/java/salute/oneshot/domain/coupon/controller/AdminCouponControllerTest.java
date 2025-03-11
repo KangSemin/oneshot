@@ -107,8 +107,8 @@ class AdminCouponControllerTest extends AbstractRestDocsTests {
                 .andExpect(jsonPath("$.data.id").value(CouponTestFactory.COUPON_ID))
                 .andExpect(jsonPath("$.data.couponName").value(CouponTestFactory.COUPON_NAME))
                 .andExpect(jsonPath("$.data.discountValue").value(CouponTestFactory.DISCOUNT_VALUE))
-                .andExpect(jsonPath("$.data.startTime").value(CouponTestFactory.formatDateTime(CouponTestFactory.START_LOCAL_DATE_TIME)))
-                .andExpect(jsonPath("$.data.endTime").value(CouponTestFactory.formatDateTime(CouponTestFactory.END_LOCAL_DATE_TIME)))
+                .andExpect(jsonPath("$.data.startTime").value(CouponTestFactory.START_LOCAL_DATE_TIME.toString()))
+                .andExpect(jsonPath("$.data.endTime").value(CouponTestFactory.END_LOCAL_DATE_TIME.toString()))
                 .andReturn();
     }
 

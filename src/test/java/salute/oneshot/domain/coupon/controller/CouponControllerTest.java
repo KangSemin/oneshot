@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -52,6 +54,8 @@ class CouponControllerTest extends AbstractRestDocsTests {
     private Coupon coupon;
     private User user;
     private UserCoupon userCoupon;
+    private UserCoupon userCoupon2;
+
 
     @BeforeEach
     void setUp() {
@@ -59,6 +63,8 @@ class CouponControllerTest extends AbstractRestDocsTests {
         user = UserTestFactory.createUser();
         userCoupon = UserCoupon.of(user, coupon);
         ReflectionTestUtils.setField(userCoupon,"id",1L);
+        userCoupon2 = UserCoupon.of(user, coupon);
+        ReflectionTestUtils.setField(userCoupon2,"status", UserCouponStatus.USED);
     }
 
     @DisplayName("유저쿠폰 사용 성공")
@@ -83,7 +89,7 @@ class CouponControllerTest extends AbstractRestDocsTests {
                 .andReturn();
     }
 
-    @DisplayName("유저쿠폰 사용 실패: 존재하지 않는 유저 쿠폰 아이디로 사용 시도")
+    @DisplayName("유저쿠폰 사용 실패: 존재하지 않는 유저 쿠폰 아이디 또는 사용 혹은 만료된 쿠폰으로 시도")
     @Test
     void invalidUserCouponIdUseUserCoupon() throws Exception {
         // given
@@ -103,7 +109,14 @@ class CouponControllerTest extends AbstractRestDocsTests {
     @Test
     void successGetCoupons() throws Exception {
         // given
-        List<CpnBriefResponseDto> coupons = List.of(CpnBriefResponseDto.from(coupon));
+        Coupon coupon2 = CouponTestFactory.createCoupon2();
+        Coupon coupon3 = CouponTestFactory.createCoupon3();
+
+        List<CpnBriefResponseDto> coupons = List.of(
+                CpnBriefResponseDto.from(coupon),
+                CpnBriefResponseDto.from(coupon2),
+                CpnBriefResponseDto.from(coupon3));
+
         PageImpl<CpnBriefResponseDto> page = new PageImpl<>(coupons);
         CpnPageResponseDto responseDto = CpnPageResponseDto.from(page);
 
@@ -117,8 +130,106 @@ class CouponControllerTest extends AbstractRestDocsTests {
                         .with(user(UserTestFactory.createMockUserDetails())))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value(ApiResponseConst.GET_CPN_LIST_SUCCESS))
-                .andExpect(jsonPath("$.data.coupons[0].id").value(AddressTestFactory.ADDRESS_ID))
+                .andExpect(jsonPath("$.data.coupons[0].id").value(CouponTestFactory.COUPON_ID))
                 .andExpect(jsonPath("$.data.coupons[0].couponName").value(CouponTestFactory.COUPON_NAME))
+                .andExpect(jsonPath("$.data.coupons[1].id").value(2L))
+                .andExpect(jsonPath("$.data.coupons[1].couponName").value("2000원 할인쿠폰"))
+                .andExpect(jsonPath("$.data.coupons[2].id").value(3L))
+                .andExpect(jsonPath("$.data.coupons[2].couponName").value("3000원 할인쿠폰"))
+                .andReturn();
+    }
+
+    @DisplayName("쿠폰 목록 조회 성공: 시작일 입력")
+    @Test
+    void successGetCouponsWithStartDate() throws Exception {
+        // given
+        Coupon coupon2 = CouponTestFactory.createCoupon2();
+        Coupon coupon3 = CouponTestFactory.createCoupon3();
+
+        List<CpnBriefResponseDto> coupons = List.of(
+                CpnBriefResponseDto.from(coupon2),
+                CpnBriefResponseDto.from(coupon3));
+
+        PageImpl<CpnBriefResponseDto> page = new PageImpl<>(coupons);
+        CpnPageResponseDto responseDto = CpnPageResponseDto.from(page);
+
+        given(couponService.getCoupons(any(GetCpnSDto.class)))
+                .willReturn(responseDto);
+
+        // when & then
+        mockMvc.perform(get("/api/coupons")
+                        .param("page", "1")
+                        .param("size", "10")
+                        .param("startDate", "2023-03-02")
+                        .with(user(UserTestFactory.createMockUserDetails())))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value(ApiResponseConst.GET_CPN_LIST_SUCCESS))
+                .andExpect(jsonPath("$.data.coupons[0].id").value(2L))
+                .andExpect(jsonPath("$.data.coupons[1].id").value(3L))
+                .andExpect(jsonPath("$.data.coupons[0].couponName").value("2000원 할인쿠폰"))
+                .andExpect(jsonPath("$.data.coupons[1].couponName").value("3000원 할인쿠폰"))
+                .andReturn();
+    }
+
+    @DisplayName("쿠폰 목록 조회 성공: 종료일 입력")
+    @Test
+    void successGetCouponsWithEndDate() throws Exception {
+        // given
+        Coupon coupon2 = CouponTestFactory.createCoupon2();
+        Coupon coupon3 = CouponTestFactory.createCoupon3();
+
+        List<CpnBriefResponseDto> coupons = List.of(
+                CpnBriefResponseDto.from(coupon),
+                CpnBriefResponseDto.from(coupon3));
+
+        PageImpl<CpnBriefResponseDto> page = new PageImpl<>(coupons);
+        CpnPageResponseDto responseDto = CpnPageResponseDto.from(page);
+
+        given(couponService.getCoupons(any(GetCpnSDto.class)))
+                .willReturn(responseDto);
+
+        // when & then
+        mockMvc.perform(get("/api/coupons")
+                        .param("page", "1")
+                        .param("size", "10")
+                        .param("endDate", "2023-03-10")
+                        .with(user(UserTestFactory.createMockUserDetails())))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value(ApiResponseConst.GET_CPN_LIST_SUCCESS))
+                .andExpect(jsonPath("$.data.coupons[0].id").value(AddressTestFactory.ADDRESS_ID))
+                .andExpect(jsonPath("$.data.coupons[1].id").value(3L))
+                .andExpect(jsonPath("$.data.coupons[0].couponName").value(CouponTestFactory.COUPON_NAME))
+                .andExpect(jsonPath("$.data.coupons[1].couponName").value("3000원 할인쿠폰"))
+                .andReturn();
+    }
+
+    @DisplayName("쿠폰 목록 조회 성공: 시작일 & 종료일 입력")
+    @Test
+    void successGetCouponsWithStartAndEndDate() throws Exception {
+        // given
+        Coupon coupon2 = CouponTestFactory.createCoupon2();
+        Coupon coupon3 = CouponTestFactory.createCoupon3();
+
+        List<CpnBriefResponseDto> coupons = List.of(
+                CpnBriefResponseDto.from(coupon2));
+
+        PageImpl<CpnBriefResponseDto> page = new PageImpl<>(coupons);
+        CpnPageResponseDto responseDto = CpnPageResponseDto.from(page);
+
+        given(couponService.getCoupons(any(GetCpnSDto.class)))
+                .willReturn(responseDto);
+
+        // when & then
+        mockMvc.perform(get("/api/coupons")
+                        .param("page", "1")
+                        .param("size", "10")
+                        .param("startDate", "2023-03-05")
+                        .param("endDate", "2023-03-11")
+                        .with(user(UserTestFactory.createMockUserDetails())))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value(ApiResponseConst.GET_CPN_LIST_SUCCESS))
+                .andExpect(jsonPath("$.data.coupons[0].id").value(2L))
+                .andExpect(jsonPath("$.data.coupons[0].couponName").value("2000원 할인쿠폰"))
                 .andReturn();
     }
 
@@ -165,8 +276,8 @@ class CouponControllerTest extends AbstractRestDocsTests {
                 .andExpect(jsonPath("$.data.id").value(CouponTestFactory.COUPON_ID))
                 .andExpect(jsonPath("$.data.couponName").value(CouponTestFactory.COUPON_NAME))
                 .andExpect(jsonPath("$.data.discountValue").value(CouponTestFactory.DISCOUNT_VALUE))
-                .andExpect(jsonPath("$.data.startTime").value(CouponTestFactory.formatDateTime(CouponTestFactory.START_LOCAL_DATE_TIME)))
-                .andExpect(jsonPath("$.data.endTime").value(CouponTestFactory.formatDateTime(CouponTestFactory.END_LOCAL_DATE_TIME)))
+                .andExpect(jsonPath("$.data.startTime").value(CouponTestFactory.START_LOCAL_DATE_TIME.toString()))
+                .andExpect(jsonPath("$.data.endTime").value(CouponTestFactory.END_LOCAL_DATE_TIME.toString()))
                 .andReturn();
     }
 
@@ -236,6 +347,32 @@ class CouponControllerTest extends AbstractRestDocsTests {
                 .andReturn();
     }
 
+    @DisplayName("유저쿠폰 목록 조회 성공: ISSUED 상태 조회")
+    @Test
+    void successGetEmptyUserCouponsWithISSUED() throws Exception {
+        // given
+        List<UserCpnBriefResponseDto> userCoupons = List.of(UserCpnBriefResponseDto.from(userCoupon));
+        PageImpl<UserCpnBriefResponseDto> page = new PageImpl<>(userCoupons);
+        UserCpnPageResponseDto responseDto = UserCpnPageResponseDto.from(page);
+        given(couponService.getUserCoupons(any(GetUserCpnSDto.class)))
+                .willReturn(responseDto);
+
+        // when & then
+        mockMvc.perform(get("/api/coupons/users")
+                        .param("page", "1")
+                        .param("size", "10")
+                        .param("status", "ISSUED")
+                        .with(user(UserTestFactory.createMockUserDetails())))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value(ApiResponseConst.GET_CPN_LIST_SUCCESS))
+                .andExpect(jsonPath("$.data.userCoupons[0].userCouponId").value(1L))
+                .andExpect(jsonPath("$.data.userCoupons[0].userId").value(UserTestFactory.USER_ID))
+                .andExpect(jsonPath("$.data.userCoupons[0].status").value(UserCouponStatus.ISSUED.toString()))
+                .andExpect(jsonPath("$.data.userCoupons[0].coupon.id").value(CouponTestFactory.COUPON_ID))
+                .andExpect(jsonPath("$.data.userCoupons[0].coupon.couponName").value(CouponTestFactory.COUPON_NAME))
+                .andReturn();
+    }
+
     @DisplayName("유저쿠폰 단건 조회 성공")
     @Test
     void successGetUserCoupon() throws Exception {
@@ -269,6 +406,126 @@ class CouponControllerTest extends AbstractRestDocsTests {
                         .with(user(UserTestFactory.createMockUserDetails())))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.errorMessage").value(ErrorCode.COUPON_NOT_FOUND.getMessage()))
+                .andReturn();
+    }
+
+    @DisplayName("이벤트용 쿠폰 목록 조회 성공")
+    @Test
+    void successGetCouponsForEvent() throws Exception {
+        // given
+        Coupon coupon2 = CouponTestFactory.createCoupon2();
+        Coupon coupon3 = CouponTestFactory.createCoupon3();
+
+        List<CpnBriefResponseDto> coupons = List.of(
+                CpnBriefResponseDto.from(coupon),
+                CpnBriefResponseDto.from(coupon2),
+                CpnBriefResponseDto.from(coupon3));
+
+        PageImpl<CpnBriefResponseDto> page = new PageImpl<>(coupons);
+        CpnPageResponseDto responseDto = CpnPageResponseDto.from(page);
+
+        given(couponService.getCoupons(any(GetCpnSDto.class)))
+                .willReturn(responseDto);
+
+        // when & then
+        mockMvc.perform(get("/api/coupons")
+                        .param("page", "1")
+                        .param("size", "10")
+                        .with(user(UserTestFactory.createMockUserDetails())))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value(ApiResponseConst.GET_CPN_LIST_SUCCESS))
+                .andExpect(jsonPath("$.data.coupons[0].id").value(AddressTestFactory.ADDRESS_ID))
+                .andExpect(jsonPath("$.data.coupons[1].id").value(2L))
+                .andExpect(jsonPath("$.data.coupons[2].id").value(3L))
+                .andExpect(jsonPath("$.data.coupons[0].couponName").value(CouponTestFactory.COUPON_NAME))
+                .andExpect(jsonPath("$.data.coupons[1].couponName").value("2000원 할인쿠폰"))
+                .andExpect(jsonPath("$.data.coupons[2].couponName").value("3000원 할인쿠폰"))
+                .andReturn();
+    }
+
+    @DisplayName("이벤트용 쿠폰 목록 조회 성공: 시작일 입력(쿠폰 시작일 > 이벤트 시작일)")
+    @Test
+    void successGetCouponsForEventWithEventStartDate() throws Exception {
+        // given
+        Coupon coupon3 = CouponTestFactory.createCoupon3();
+
+        List<CpnBriefResponseDto> coupons = List.of(
+                CpnBriefResponseDto.from(coupon),
+                CpnBriefResponseDto.from(coupon3));
+
+        PageImpl<CpnBriefResponseDto> page = new PageImpl<>(coupons);
+        CpnPageResponseDto responseDto = CpnPageResponseDto.from(page);
+
+        given(couponService.getCoupons(any(GetCpnSDto.class)))
+                .willReturn(responseDto);
+
+        // when & then
+        mockMvc.perform(get("/api/coupons")
+                        .param("page", "1")
+                        .param("size", "10")
+                        .param("eventStartDate", "2025-03-02")
+                        .with(user(UserTestFactory.createMockUserDetails())))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value(ApiResponseConst.GET_CPN_LIST_SUCCESS))
+                .andExpect(jsonPath("$.data.coupons[0].id").value(AddressTestFactory.ADDRESS_ID))
+                .andExpect(jsonPath("$.data.coupons[1].id").value(3L))
+                .andExpect(jsonPath("$.data.coupons[0].couponName").value(CouponTestFactory.COUPON_NAME))
+                .andExpect(jsonPath("$.data.coupons[1].couponName").value("3000원 할인쿠폰"))
+                .andReturn();
+    }
+
+    @DisplayName("이벤트용 쿠폰 목록 조회 성공: 종료일 입력(쿠폰 종료일 < 이벤트 시작일)")
+    @Test
+    void successGetCouponsForEventWithEventEndDate() throws Exception {
+        // given
+        Coupon coupon3 = CouponTestFactory.createCoupon3();
+
+        List<CpnBriefResponseDto> coupons = List.of(
+                CpnBriefResponseDto.from(coupon3));
+
+        PageImpl<CpnBriefResponseDto> page = new PageImpl<>(coupons);
+        CpnPageResponseDto responseDto = CpnPageResponseDto.from(page);
+
+        given(couponService.getCoupons(any(GetCpnSDto.class)))
+                .willReturn(responseDto);
+
+        // when & then
+        mockMvc.perform(get("/api/coupons")
+                        .param("page", "1")
+                        .param("size", "10")
+                        .param("eventStartDate", "2025-03-09")
+                        .with(user(UserTestFactory.createMockUserDetails())))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value(ApiResponseConst.GET_CPN_LIST_SUCCESS))
+                .andExpect(jsonPath("$.data.coupons[0].id").value(3L))
+                .andExpect(jsonPath("$.data.coupons[0].couponName").value("3000원 할인쿠폰"))
+                .andReturn();
+    }
+
+    @DisplayName("이벤트용 쿠폰 목록 조회 성공: 이벤트 시작일 & 종료일 입력")
+    @Test
+    void successGetCouponsForEventWithEventStartAndEndDate() throws Exception {
+        // given
+        List<CpnBriefResponseDto> coupons = List.of(
+                CpnBriefResponseDto.from(coupon));
+
+        PageImpl<CpnBriefResponseDto> page = new PageImpl<>(coupons);
+        CpnPageResponseDto responseDto = CpnPageResponseDto.from(page);
+
+        given(couponService.getCoupons(any(GetCpnSDto.class)))
+                .willReturn(responseDto);
+
+        // when & then
+        mockMvc.perform(get("/api/coupons")
+                        .param("page", "1")
+                        .param("size", "10")
+                        .param("eventStartDate", "2025-03-02")
+                        .param("eventEndDate", "2025-03-10")
+                        .with(user(UserTestFactory.createMockUserDetails())))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value(ApiResponseConst.GET_CPN_LIST_SUCCESS))
+                .andExpect(jsonPath("$.data.coupons[0].id").value(CouponTestFactory.COUPON_ID))
+                .andExpect(jsonPath("$.data.coupons[0].couponName").value(CouponTestFactory.COUPON_NAME))
                 .andReturn();
     }
 }

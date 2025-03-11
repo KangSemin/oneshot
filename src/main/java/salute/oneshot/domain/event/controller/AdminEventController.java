@@ -84,13 +84,14 @@ public class AdminEventController {
     public ResponseEntity<ApiResponse<Long>> deleteEvent(
             @PathVariable Long eventId
     ) {
-        Long deletedId = eventService.deleteEvent(eventId);
+        eventService.deleteEvent(eventId);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ApiResponse.success(
                         ApiResponseConst.DELETE_EVENT_SUCCESS,
-                        deletedId));
+                        eventId));
     }
+
     // 배너 클릭 -> 이벤트 GET 화면에서 SSE 구독
     @GetMapping("/event-stream/{eventId}")
     public SseEmitter streamEventUpdates(

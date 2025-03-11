@@ -11,7 +11,7 @@ import java.util.Base64;
 public class PaymentAuthInterceptor implements RequestInterceptor {
     private static final String AUTH_HEADER_PREFIX = "Basic ";
 
-    @Value("${PAYMENT_SECRET_KEY}")
+    @Value("${payment.secretKey}")
     private String secretKey;
 
     @Override

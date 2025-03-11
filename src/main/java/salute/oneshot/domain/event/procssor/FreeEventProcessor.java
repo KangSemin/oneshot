@@ -80,11 +80,13 @@ public class FreeEventProcessor implements EventProcessor {
             throw new InvalidException(ErrorCode.MISSING_COUPON);
         }
 
-//        if (!redisEventCouponRepository
-//                .isValidCouponId(String.valueOf(data.getCouponId()))
-//        ) {
-//            throw new InvalidException(ErrorCode.COUPON_NOT_FOUND);
-//        }
+        // 프론트 구현시 쿠폰정보 받아오기
+       /* if (!redisEventCouponRepository
+                .isValidCouponId(String.valueOf(data.getCouponId()))
+             ) {
+            throw new InvalidException(ErrorCode.COUPON_NOT_FOUND);
+        }
+        */
     }
 
     @Override
