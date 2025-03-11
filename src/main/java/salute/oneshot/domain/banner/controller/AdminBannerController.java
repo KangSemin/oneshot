@@ -1,5 +1,6 @@
 package salute.oneshot.domain.banner.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +24,7 @@ public class AdminBannerController {
 
     @PostMapping
     public ResponseEntity<ApiResponse<BannerResponseDto>> createBanner(
-            @RequestBody BannerRequestDto requestDto
+            @Valid @RequestBody BannerRequestDto requestDto
     ) {
         BannerSDto serviceDto = BannerSDto.of(
                 requestDto.getEventId(),
@@ -43,7 +44,7 @@ public class AdminBannerController {
     @PatchMapping("/{bannerId}")
     public ResponseEntity<ApiResponse<BannerResponseDto>> updateBanner(
             @PathVariable Long bannerId,
-            @RequestBody BannerRequestDto requestDto
+            @Valid @RequestBody BannerRequestDto requestDto
     ) {
         UpdateBannerSDto serviceDto = UpdateBannerSDto.of(
                 bannerId, requestDto.getEventId(),

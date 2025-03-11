@@ -1,5 +1,6 @@
 package salute.oneshot.domain.user.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +25,7 @@ public class SuperAdminUserController {
     @PatchMapping("/{userId}/role")
     public ResponseEntity<ApiResponse<UserRoleResponseDto>> updateUserRole(
             @PathVariable Long userId,
-            @RequestBody UpdateRoleRequestDto requestDto
+            @Valid @RequestBody UpdateRoleRequestDto requestDto
     ) {
         UpdateRoleSDto serviceDto =
                 UpdateRoleSDto.of(userId, requestDto);
