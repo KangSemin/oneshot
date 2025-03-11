@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import salute.oneshot.domain.common.dto.entity.BaseEntity;
+import salute.oneshot.domain.common.entity.BaseEntity;
 import salute.oneshot.domain.event.entity.Event;
 
 import java.time.LocalDateTime;
