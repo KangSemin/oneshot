@@ -16,11 +16,11 @@ import salute.oneshot.domain.common.dto.success.ApiResponseConst;
 @RestController
 @RequestMapping("/api/admin/banners")
 @RequiredArgsConstructor
+@PreAuthorize("hasRole('ADMIN')")
 public class AdminBannerController {
 
     private final BannerService bannerService;
 
-    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<ApiResponse<BannerResponseDto>> createBanner(
             @RequestBody BannerRequestDto requestDto
@@ -40,7 +40,6 @@ public class AdminBannerController {
                         responseDto));
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/{bannerId}")
     public ResponseEntity<ApiResponse<BannerResponseDto>> updateBanner(
             @PathVariable Long bannerId,
@@ -62,16 +61,14 @@ public class AdminBannerController {
                         responseDto));
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{bannerId}")
     public ResponseEntity<ApiResponse<Long>> deleteBanner(
             @PathVariable Long bannerId
     ) {
-        Long deletedId =
-                bannerService.deleteBanner(bannerId);
+        bannerService.deleteBanner(bannerId);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ApiResponse.success(
                         ApiResponseConst.DELETE_BANNER_SUCCESS,
-                        deletedId));
+                        bannerId));
     }
 }
