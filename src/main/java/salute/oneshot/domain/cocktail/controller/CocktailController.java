@@ -65,7 +65,11 @@ public class CocktailController {
     ){
 
         Cookie viewCookie = CookieUtil.getOrCreateCookie(request, "viewCount");
-        CookieUtil.ifNotExistSetValue(viewCookie, cocktailId);
+
+        if(!CookieUtil.isExistValue(viewCookie, cocktailId)){
+            CookieUtil.SetValue(viewCookie, cocktailId);
+            cocktailService.increaseViewCountAndScore(cocktailId);
+        }
 
         long todayEndTime = LocalDate.now().atTime(LocalTime.MAX).toEpochSecond(ZoneOffset.UTC);
         long currentTime = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);

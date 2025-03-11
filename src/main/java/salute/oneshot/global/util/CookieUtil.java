@@ -22,48 +22,54 @@ public class CookieUtil {
     public static Cookie getOrCreateCookie(HttpServletRequest request, String cookieName) {
 
         Cookie[] cookies = request.getCookies();
-        Cookie cookie = null;
 
         Optional<Cookie> optionalCookie = Arrays.stream(cookies)
-                .filter(c -> c.getName().equals("viewCount")).findAny();
+                .filter(c -> c.getName().equals(cookieName)).findAny();
 
-        if (optionalCookie.isPresent()) {
-            cookie = optionalCookie.get();
+        if (optionalCookie.isEmpty()) {
+            return new Cookie(cookieName, "[]");
         }
-        cookie = new Cookie("viewCookie", "[]");
 
-        return cookie;
+        return optionalCookie.get();
+    }
+
+    public static boolean isExistValue(Cookie cookie, Long cocktailId) {
+
+        return getValues(cookie).contains(cocktailId);
+
     }
 
 
-    public static void ifNotExistSetValue(Cookie cookie, Long value){
+    public static void SetValue(Cookie cookie, Long value) {
 
         List<Long> valueList = getValues(cookie);
-        boolean isExist = valueList.contains(value);
 
-        if (!isExist) {
-            valueList.add(value);
-        }
+        valueList.add(value);
 
         String stringValue = "";
 
         try {
             stringValue = objectMapper.writeValueAsString(valueList);
-        } catch (JsonProcessingException e) {}
+        } catch (JsonProcessingException e) {
+        }
 
         cookie.setValue(stringValue);
 
     }
 
-    private static List<Long> getValues(Cookie cookie) {
+    public static List<Long> getValues(Cookie cookie) {
 
-        List<Long> valueList = new ArrayList<>();
+
         String values = cookie.getValue();
 
         try {
-            valueList = objectMapper.readValue(values, new TypeReference<List<Long>>() {});
-        } catch (JsonProcessingException e) {}
+           return objectMapper.readValue(values, new TypeReference<List<Long>>() {
+            });
 
-        return valueList;
+        } catch (JsonProcessingException e) {
+            return new ArrayList<>();
+        }
+
+
     }
 }
