@@ -1,5 +1,6 @@
 package salute.oneshot.domain.coupon.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,7 +28,7 @@ public class AdminCouponController {
 
     @PostMapping
     public ResponseEntity<ApiResponse<CpnBriefResponseDto>> createCoupon(
-            @RequestBody CpnRequestDto requestDto
+            @Valid @RequestBody CpnRequestDto requestDto
     ) {
         CreateCpnSDto serviceDto =
                 CreateCpnSDto.of(
@@ -49,7 +50,7 @@ public class AdminCouponController {
     @PatchMapping("/{couponId}")
     public ResponseEntity<ApiResponse<CpnDetailResponseDto>> updateCoupon(
             @PathVariable Long couponId,
-            @RequestBody CpnRequestDto requestDto
+            @Valid @RequestBody CpnRequestDto requestDto
     ) {
         UpdateCpnSDto serviceDto =
                 UpdateCpnSDto.of(couponId, requestDto);
@@ -78,7 +79,7 @@ public class AdminCouponController {
     @PostMapping("/{couponId}/users")
     public ResponseEntity<ApiResponse<UserCpnBriefResponseDto>> grantUserCoupon(
             @PathVariable Long couponId,
-            @RequestBody UserCpnRequestDto requestDto
+            @Valid @RequestBody UserCpnRequestDto requestDto
     ) {
         CreateUserCpnSDto serviceDto =
                 CreateUserCpnSDto.of(couponId, requestDto.getUserId());

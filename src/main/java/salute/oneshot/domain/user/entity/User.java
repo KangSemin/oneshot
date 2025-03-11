@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 import salute.oneshot.domain.auth.entity.SocialUser;
-import salute.oneshot.domain.common.dto.entity.BaseEntity;
+import salute.oneshot.domain.common.entity.BaseEntity;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;

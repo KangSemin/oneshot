@@ -3,7 +3,7 @@ package salute.oneshot.domain.ingredientReview.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import salute.oneshot.domain.common.dto.entity.BaseEntity;
+import salute.oneshot.domain.common.entity.BaseEntity;
 import salute.oneshot.domain.ingredient.entity.Ingredient;
 import salute.oneshot.domain.user.entity.User;
 

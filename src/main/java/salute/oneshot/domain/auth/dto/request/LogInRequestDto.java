@@ -14,8 +14,7 @@ public class LogInRequestDto {
     @NotBlank(message = UserValidationConst.EMAIL_BLANK_MESSAGE)
     @Pattern(
             regexp = UserValidationConst.EMAIL_REG,
-            message = UserValidationConst.INVALID_EMAIL_MESSAGE
-    )
+            message = UserValidationConst.INVALID_EMAIL_MESSAGE)
     private final String email;
 
     @NotBlank(message = UserValidationConst.PASSWORD_BLANK_MESSAGE)
