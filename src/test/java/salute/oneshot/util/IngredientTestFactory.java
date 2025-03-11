@@ -2,7 +2,6 @@ package salute.oneshot.util;
 
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.web.multipart.MultipartFile;
 import salute.oneshot.domain.ingredient.dto.request.UpdateIngrRequestDto;
 import salute.oneshot.domain.ingredient.entity.Ingredient;
 import salute.oneshot.domain.ingredient.entity.IngredientCategory;
@@ -113,9 +112,10 @@ public class IngredientTestFactory {
 
     }
 
-    public static UpdateIngrRequestDto updateIngrRequestDto(){
+    public static UpdateIngrRequestDto updateIngrRequestDto() {
         MockMultipartFile multipartFile = new MockMultipartFile("image", "test.jpg", "image/jpeg", new byte[0]);
         return new UpdateIngrRequestDto("깔루아", "맛있는 깔루아", "OTHER", multipartFile, 2.0);
+    }
 
     public static IngredientResponseDto createIngredientResponseDto() throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
         Constructor<IngredientResponseDto> constructor =
