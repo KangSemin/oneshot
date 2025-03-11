@@ -62,9 +62,4 @@ public class Banner extends BaseEntity {
         this.event = event;
         this.imageUrl = imageUrl;
     }
-
-    public void syncWithEventTime() {
-        this.startTime = event.getStartTime().minusDays(7);
-        this.endTime = event.getEndTime();
-    }
 }

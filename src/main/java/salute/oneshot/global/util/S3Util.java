@@ -12,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Objects;
 import java.util.UUID;
 
 @Component
@@ -57,6 +58,12 @@ public class S3Util {
 
         return amazonS3.getUrl(bucketName, s3FileName).toString();
     }
+
+    public static boolean isTypeImage(MultipartFile multipartFile){
+      return multipartFile == null || multipartFile.getContentType().startsWith("image/");
+    }
+
+
 
 
     public String getUrl(String fileName) {

@@ -34,11 +34,12 @@ public class Ingredient extends BaseEntity {
     private String imageUrl;
 
 
-    public void update(String name, String description, IngredientCategory category, Double avb) {
+    public void update(String name, String description, IngredientCategory category, Double avb, String imageUrl) {
         this.name = name;
         this.description = description;
         this.category = category;
         this.avb = avb;
+        this.imageUrl = imageUrl;
     }
 
 

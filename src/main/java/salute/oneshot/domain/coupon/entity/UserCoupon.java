@@ -58,10 +58,6 @@ public class UserCoupon extends BaseEntity {
             throw new InvalidException(ErrorCode.EXPIRED_COUPON);
         }
 
-        if (!this.status.equals(UserCouponStatus.ISSUED)) {
-            throw new InvalidException(ErrorCode.INVALID_USER_COUPON_STATUS);
-        }
-
         this.usedTime = LocalDateTime.now();
         this.status = UserCouponStatus.USED;
     }

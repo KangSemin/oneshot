@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import salute.oneshot.domain.common.dto.error.ErrorCode;
 import salute.oneshot.domain.common.dto.error.ErrorResponse;
 
+import java.io.IOException;
+
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -60,5 +62,11 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(errorCode.getHttpStatus())
                 .body(ErrorResponse.of(errorCode));
+    }
+
+    @ExceptionHandler(IOException.class)
+    public ResponseEntity<ErrorResponse> handleIOException(IOException e){
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST, e.getMessage());
+        return createResponseEntity(errorResponse);
     }
 }

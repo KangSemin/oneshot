@@ -53,7 +53,7 @@ class RecipeReviewControllerTest extends AbstractRestDocsTests {
                 .willReturn(responseDto);
 
         // when & then
-        mockMvc.perform(post("/api/recipes/" + RecipeReviewTestFactory.RECIPE_REVIEW_ID + "/reviews")
+        mockMvc.perform(post("/api/recipes/" + CocktailTestFactory.COCKTAIL_ID + "/reviews")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestDto))
                         .with(user(UserTestFactory.createMockUserDetails())))

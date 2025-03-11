@@ -35,7 +35,7 @@ public class EventController {
             @RequestParam(required = false) String endDate
     ) {
         Pageable pageable = PageRequest.of(
-                page - 1, size, Sort.by("modifiedAt").descending()
+                page - 1, size, Sort.by("endTime").ascending()
         );
         GetEventsSDto serviceDto = GetEventsSDto.of(
                 status, type, startDate, endDate, pageable);

@@ -80,18 +80,16 @@ public class EventService {
                 serviceDto.getStartTime(),
                 serviceDto.getEndTime(),
                 eventDetailJson);
-        banner.syncWithEventTime();
 
         Object eventDetail = parseJsonToNode(eventDetailJson);
         return EventDetailResponseDto.of(event, eventDetail);
     }
 
     @Transactional
-    public Long deleteEvent(Long eventId) {
-        if (eventRepository.deleteEventById(eventId) == 1) {
-            return eventId;
+    public void deleteEvent(Long eventId) {
+        if (eventRepository.deleteEventById(eventId) != 1) {
+            throw new NotFoundException(ErrorCode.EVENT_NOT_FOUND);
         }
-        throw new NotFoundException(ErrorCode.COUPON_NOT_FOUND);
     }
 
     @Transactional(readOnly = true)
@@ -166,7 +164,7 @@ public class EventService {
             return objectMapper.readTree(json);
         } catch (JsonProcessingException e) {
             log.error("JSON 파싱 오류: {}", e.getMessage(), e);
-            throw new RuntimeException("JSON 파싱 오류", e);
+            throw new InvalidException(ErrorCode.INVALID_JSON_DATA);
         }
     }
 }

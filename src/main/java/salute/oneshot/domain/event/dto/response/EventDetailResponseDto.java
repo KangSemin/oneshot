@@ -16,10 +16,10 @@ public class EventDetailResponseDto {
     private final String name;
     private final String description;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     private final LocalDateTime startTime;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     private final LocalDateTime endTime;
 
     private Object eventDetail;

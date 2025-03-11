@@ -28,7 +28,7 @@ public class UpdateEventSDto {
             String startTime,
             String endDate,
             String endTime,
-            EventType eventType,
+            String eventType,
             Object eventDetailData
     ) {
         return new UpdateEventSDto(
@@ -41,7 +41,7 @@ public class UpdateEventSDto {
                 DateTimeUtil.parseEndDateTime(
                         endDate,
                         endTime),
-                eventType,
+                EventType.of(eventType),
                 eventDetailData);
     }
 }
