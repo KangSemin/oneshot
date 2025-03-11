@@ -6,9 +6,18 @@ import org.springframework.web.multipart.MultipartFile;
 import salute.oneshot.domain.ingredient.dto.request.UpdateIngrRequestDto;
 import salute.oneshot.domain.ingredient.entity.Ingredient;
 import salute.oneshot.domain.ingredient.entity.IngredientCategory;
+import salute.oneshot.domain.ingredientReview.dto.response.IngredientResponseDto;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 
 public class IngredientTestFactory {
 
+    public static final Long INGREDIENT_ID = 1L;
+    public static final String NAME = "봄베이 사파이어";
+    public static final Double AVB = 47.0d;
+    public static final String DESCRIPTION = "주류계의 민트초코";
+    public static final IngredientCategory CATEGORY = IngredientCategory.JIN;
 
     public static Ingredient createVodka() {
         Ingredient ingredient = Ingredient.of(
@@ -75,6 +84,7 @@ public class IngredientTestFactory {
         return ingredient;
     }
 
+
     public static Ingredient createGoldenKeyword(){
         Ingredient ingredient = Ingredient.of(
                 "golden",
@@ -106,5 +116,13 @@ public class IngredientTestFactory {
     public static UpdateIngrRequestDto updateIngrRequestDto(){
         MockMultipartFile multipartFile = new MockMultipartFile("image", "test.jpg", "image/jpeg", new byte[0]);
         return new UpdateIngrRequestDto("깔루아", "맛있는 깔루아", "OTHER", multipartFile, 2.0);
+
+    public static IngredientResponseDto createIngredientResponseDto() throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+        Constructor<IngredientResponseDto> constructor =
+                IngredientResponseDto.class.getDeclaredConstructor(Long.class, String.class, Double.class, String.class, IngredientCategory.class);
+        constructor.setAccessible(true);
+
+        return constructor.newInstance(INGREDIENT_ID, NAME, AVB, DESCRIPTION, CATEGORY);
+
     }
 }

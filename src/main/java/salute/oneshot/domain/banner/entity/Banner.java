@@ -31,6 +31,9 @@ public class Banner extends BaseEntity {
     @Column(nullable = false)
     private LocalDateTime endTime;
 
+    @Column(name = "is_active", nullable = false)
+    private boolean isActive = false;
+
     private Banner(
             Event event,
             String imageUrl,
@@ -49,22 +52,14 @@ public class Banner extends BaseEntity {
             LocalDateTime startTime,
             LocalDateTime endTime
     ) {
-        return new Banner(
-                event,
-                imageUrl,
-                startTime,
-                endTime);
+        return new Banner(event, imageUrl, startTime, endTime);
     }
 
     public void updateBanner(
             Event event,
-            String imageUrl,
-            LocalDateTime startTime,
-            LocalDateTime endTime
+            String imageUrl
     ) {
         this.event = event;
         this.imageUrl = imageUrl;
-        this.startTime = startTime;
-        this. endTime = endTime;
     }
 }

@@ -37,4 +37,13 @@ public interface UserCouponRepository extends JpaRepository<UserCoupon, Long> {
             "WHERE uc.coupon.endTime < :now " +
             "AND uc.status = 'ISSUED'")
     int updateExpiredUserCoupons(@Param("now") LocalDateTime now);
+
+    @Query("SELECT u FROM UserCoupon u " +
+            "WHERE u.id = :userCouponId " +
+            "AND u.user.id = :userId " +
+            "AND u.status = :status")
+    Optional<UserCoupon> findByIdAndUserIdAndStatus(
+            @Param("userCouponId") Long userCouponId,
+            @Param("userId") Long userId,
+            @Param("status") UserCouponStatus status);
 }

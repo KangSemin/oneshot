@@ -14,31 +14,34 @@ public class UpdateEventSDto {
 
     private final Long eventId;
     private final String name;
+    private final String description;
     private final LocalDateTime startTime;
     private final LocalDateTime endTime;
     private final EventType eventType;
-    private final Object eventDetail;
+    private final Object eventDetailData;
 
     public static UpdateEventSDto of(
             Long eventId,
             String name,
+            String description,
             String startDate,
             String startTime,
             String endDate,
             String endTime,
-            EventType eventType,
-            Object eventDetail
+            String eventType,
+            Object eventDetailData
     ) {
         return new UpdateEventSDto(
                 eventId,
                 name,
+                description,
                 DateTimeUtil.parseStartDateTime(
                         startDate,
                         startTime),
                 DateTimeUtil.parseEndDateTime(
                         endDate,
                         endTime),
-                eventType,
-                eventDetail);
+                EventType.of(eventType),
+                eventDetailData);
     }
 }

@@ -9,12 +9,17 @@ import salute.oneshot.domain.coupon.dto.response.*;
 import salute.oneshot.domain.coupon.dto.service.*;
 import salute.oneshot.domain.coupon.entity.Coupon;
 import salute.oneshot.domain.coupon.entity.UserCoupon;
+import salute.oneshot.domain.coupon.entity.UserCouponStatus;
 import salute.oneshot.domain.coupon.repository.CouponRepository;
+import salute.oneshot.domain.coupon.repository.RedisEventCouponRepository;
 import salute.oneshot.domain.coupon.repository.UserCouponRepository;
 import salute.oneshot.domain.user.entity.User;
 import salute.oneshot.domain.user.repository.UserRepository;
 import salute.oneshot.global.exception.InvalidException;
 import salute.oneshot.global.exception.NotFoundException;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -23,6 +28,7 @@ public class CouponService {
     private final CouponRepository couponRepository;
     private final UserCouponRepository userCouponRepository;
     private final UserRepository userRepository;
+    private final RedisEventCouponRepository redisEventCouponRepository;
 
     @Transactional
     public CpnBriefResponseDto createCoupon(CreateCpnSDto serviceDto) {
@@ -56,7 +62,8 @@ public class CouponService {
     public UserCpnBriefResponseDto grantUserCoupon(CreateUserCpnSDto serviceDto) {
         User user = userRepository
                 .getReferenceById(serviceDto.getUserId());
-        Coupon coupon = getCouponById(serviceDto.getCouponId());
+        Coupon coupon = couponRepository
+                .getReferenceById(serviceDto.getCouponId());
         UserCoupon userCoupon = UserCoupon.of(user, coupon);
 
         userCouponRepository.save(userCoupon);
@@ -65,9 +72,10 @@ public class CouponService {
 
     @Transactional(noRollbackFor = InvalidException.class)
     public UserCpnDetailResponseDto useUserCoupon(UserCpnSDto serviceDto) {
-        UserCoupon userCoupon = userCouponRepository.findByIdAndUserId(
+        UserCoupon userCoupon = userCouponRepository.findByIdAndUserIdAndStatus(
                         serviceDto.getUserCouponId(),
-                        serviceDto.getUserId())
+                        serviceDto.getUserId(),
+                        UserCouponStatus.ISSUED)
                 .orElseThrow(() ->
                         new NotFoundException(ErrorCode.COUPON_NOT_FOUND));
 
@@ -116,6 +124,26 @@ public class CouponService {
                 .orElseThrow(() -> new NotFoundException(ErrorCode.COUPON_NOT_FOUND));
 
         return UserCpnDetailResponseDto.of(userCoupon);
+    }
+
+    @Transactional(readOnly = true)
+    public CpnPageResponseDto getCouponsForEvent(GetCpnSDto serviceDto) {
+        Page<Coupon> coupons = couponRepository.findCouponsForEvent(
+                serviceDto.getStarTime(),
+                serviceDto.getEndTime(),
+                serviceDto.getPageable());
+
+        Page<CpnBriefResponseDto> couponPage =
+                coupons.map(CpnBriefResponseDto::from);
+
+        List<String> couponIds = couponPage.getContent().stream()
+                .map(dto -> String.valueOf(dto.getId()))
+                .collect(Collectors.toList());
+
+        redisEventCouponRepository.saveCouponIds(couponIds);
+
+        return CpnPageResponseDto.from(couponPage);
+
     }
 
     private Coupon getCouponById(Long couponId) {

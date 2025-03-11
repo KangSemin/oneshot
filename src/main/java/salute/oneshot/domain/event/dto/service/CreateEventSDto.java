@@ -13,29 +13,35 @@ import java.time.LocalDateTime;
 public class CreateEventSDto {
 
     private final String name;
+    private final String description;
     private final LocalDateTime startTime;
     private final LocalDateTime endTime;
     private final EventType eventType;
-    private final Object eventDetail;
+    private final int limitCount;
+    private final Object eventDetailData;
 
     public static CreateEventSDto of(
             String name,
+            String description,
             String startDate,
             String startTime,
             String endDate,
             String endTime,
-            EventType eventType,
-            Object eventDetail
+            String eventType,
+            int limitCount,
+            Object eventDetailData
     ) {
         return new CreateEventSDto(
                 name,
+                description,
                 DateTimeUtil.parseStartDateTime(
                         startDate,
                         startTime),
                 DateTimeUtil.parseEndDateTime(
                         endDate,
                         endTime),
-                eventType,
-                eventDetail);
+                EventType.of(eventType),
+                limitCount,
+                eventDetailData);
     }
 }
