@@ -66,8 +66,7 @@ public class Delivery extends BaseEntity {
                 receiverPhone,
                 deliveryMessage,
                 trackingNumber,
-                courierCompany
-        );
+                courierCompany);
     }
 
     public void updateStatus(ShippingStatus status) {

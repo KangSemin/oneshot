@@ -1,11 +1,10 @@
 package salute.oneshot.domain.delivery.enums;
 
 import lombok.Getter;
+import salute.oneshot.domain.common.dto.error.ErrorCode;
+import salute.oneshot.global.exception.InvalidException;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @Getter
 public enum ShippingStatus {
@@ -17,6 +16,13 @@ public enum ShippingStatus {
     private final String description;
     private static final Map<ShippingStatus, Set<ShippingStatus>>
             ALLOWED_TRANS = new HashMap<>();
+
+    public static ShippingStatus of(String description) {
+        return Arrays.stream(ShippingStatus.values())
+                .filter(r -> r.name().equalsIgnoreCase(description))
+                .findFirst()
+                .orElseThrow(() -> new InvalidException(ErrorCode.INVALID_COUPON_STATUS));
+    }
 
     static {
         ALLOWED_TRANS.put(REGISTERED, Set.of(IN_TRANSIT));

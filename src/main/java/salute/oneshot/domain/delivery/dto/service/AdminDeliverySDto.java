@@ -14,8 +14,10 @@ public class AdminDeliverySDto {
 
     public static AdminDeliverySDto of(
             Long deliveryId,
-            ShippingStatus status
+            String status
     ) {
-        return new AdminDeliverySDto(deliveryId, status);
+        return new AdminDeliverySDto(
+                deliveryId,
+                ShippingStatus.of(status));
     }
 }
