@@ -29,8 +29,6 @@ services:
     environment:
       #
       SPRING_PROFILES_ACTIVE: prod
-      # 확인!!
-      #      SPRING_JPA_HIBERNATE_DDL-AUTO: create
       #
       PAYMENT_SECRETKEY: ${PAYMENT_SECRET_KEY}
       #
