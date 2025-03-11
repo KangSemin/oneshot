@@ -92,9 +92,9 @@ class CocktailControllerTest extends AbstractRestDocsTests {
         mockMvc.perform(multipart("/api/cocktails")
                 .file(imageFile)
                 .file(requestPart)
-//                .content(objectMapper.writeValueAsString(request))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request))
                 .with(user(UserTestFactory.createMockUserDetails()))
-                .contentType(MediaType.MULTIPART_FORM_DATA)
                 .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
 
