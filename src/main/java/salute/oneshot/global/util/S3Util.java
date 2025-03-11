@@ -60,10 +60,7 @@ public class S3Util {
     }
 
     public static boolean isTypeImage(MultipartFile multipartFile){
-
-      String contentType =  Objects.requireNonNull(multipartFile.getContentType()).split("/")[0];
-
-      return "image".equalsIgnoreCase(contentType);
+      return multipartFile == null || multipartFile.getContentType().startsWith("image/");
     }
 
 

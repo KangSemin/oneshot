@@ -57,11 +57,7 @@ public class IngredientService {
         if (imageFile != null) {
             try {
                 imageUrl = s3Util.upload(imageFile);
-            } catch (IOException e) {
-               String contentType = imageFile.getContentType();
-
-
-            }
+            } catch (IOException e) {}
         }
         return imageUrl;
     }

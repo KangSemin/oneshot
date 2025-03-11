@@ -11,6 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import salute.oneshot.domain.common.dto.success.ApiResponse;
 import salute.oneshot.domain.common.dto.success.ApiResponseConst;
 import salute.oneshot.domain.ingredient.dto.request.CreateIngrRequestDto;
@@ -34,9 +35,9 @@ public class IngredientController {
     private final IngredientService ingredientService;
 
 
-//    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
-    public ResponseEntity<ApiResponse<IngrResponseDto>> createIngredient ( @Valid @ModelAttribute CreateIngrRequestDto request) throws IOException {
+    public ResponseEntity<ApiResponse<IngrResponseDto>> createIngredient (@Valid @ModelAttribute CreateIngrRequestDto request) throws IOException {
 
         if(!S3Util.isTypeImage(request.getImageFile())){
             throw new IOException("이미지 파일만 업로드 가능합니다");
