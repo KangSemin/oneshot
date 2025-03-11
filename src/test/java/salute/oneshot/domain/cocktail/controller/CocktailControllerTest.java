@@ -7,6 +7,8 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.util.ReflectionTestUtils.setField;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.epages.restdocs.apispec.ResourceSnippet;
@@ -30,10 +32,13 @@ import org.springframework.web.multipart.MultipartFile;
 import salute.oneshot.domain.cocktail.dto.request.CreateCocktailRequestDto;
 import salute.oneshot.domain.cocktail.dto.request.IngredientRequestDto;
 import salute.oneshot.domain.cocktail.dto.request.SearchCocktailByIngrsReqDto;
+import salute.oneshot.domain.cocktail.dto.request.UpdateCocktailRequestDto;
 import salute.oneshot.domain.cocktail.dto.response.CocktailResponseDto;
 import salute.oneshot.domain.cocktail.dto.service.SearchCocktailSDto;
+import salute.oneshot.domain.cocktail.dto.service.UpdateCocktailSDto;
 import salute.oneshot.domain.cocktail.service.CocktailService;
 import salute.oneshot.domain.common.AbstractRestDocsTests;
+import salute.oneshot.domain.common.dto.success.ApiResponseConst;
 import salute.oneshot.global.util.S3Util;
 import salute.oneshot.util.CocktailTestFactory;
 import salute.oneshot.util.UserTestFactory;
@@ -106,15 +111,21 @@ class CocktailControllerTest extends AbstractRestDocsTests {
     void getCocktailById() throws Exception {
 
         // given
+
+        CocktailResponseDto response = CocktailResponseDto.from(CocktailTestFactory.createBlackRussian());
+
         given(cocktailService.getCocktail(1L))
-            .willReturn(CocktailResponseDto.from(CocktailTestFactory.createBlackRussian()));
+            .willReturn(response);
 
         // when & then
-        mockMvc.perform(get("/api/cocktails/{cocktailId}", 1)
+        mockMvc.perform(get("/api/cocktails/{cocktailId}", 1L)
+                .contentType(MediaType.APPLICATION_JSON)
                 .with(user(UserTestFactory.createMockUserDetails()))
                 .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
     }
+
+
 
 
     @Test
@@ -209,5 +220,44 @@ class CocktailControllerTest extends AbstractRestDocsTests {
             .andExpect(status().isOk());
 
     }
+
+    @Test
+    @DisplayName("칵테일 수정")
+    @WithMockUser
+    void updateCocktail() throws Exception {
+
+        //given
+        Constructor<IngredientRequestDto> ingrConst = IngredientRequestDto.class
+            .getDeclaredConstructor(Long.class, String.class);
+        ingrConst.setAccessible(true);
+
+        Constructor<UpdateCocktailRequestDto> cocktailConst = UpdateCocktailRequestDto.class
+            .getDeclaredConstructor(String.class, String.class, String.class, List.class);
+        cocktailConst.setAccessible(true);
+
+        IngredientRequestDto ingrRequest1 = ingrConst.newInstance(1L, "60ml");
+        IngredientRequestDto ingrRequest2 = ingrConst.newInstance(4L, "20ml");
+
+        UpdateCocktailRequestDto request = cocktailConst.newInstance(
+            "블랙 러시안","보드카와 깔루아로 만드는 칵테일",
+            "1.칠링한 온더락 글라스에 재료들을 붓는다.\n2.젓는다.",
+            List.of(ingrRequest1, ingrRequest2));
+
+
+        CocktailResponseDto response = CocktailResponseDto.from(CocktailTestFactory.createBlackRussian());
+
+        given(cocktailService.updateCocktail(any(UpdateCocktailSDto.class))).willReturn(response);
+
+
+        // when & then
+        mockMvc.perform(patch("/api/cocktails/{cocktailId}",1L)
+                .contentType(MediaType.APPLICATION_JSON)
+                .with(user(UserTestFactory.createMockUserDetails()))
+                .content(objectMapper.writeValueAsString(request))
+                .accept(MediaType.APPLICATION_JSON))
+            .andExpect(jsonPath("$.message").value(ApiResponseConst.UPDATE_CCKTL_SUCCESS))
+            .andExpect(status().isOk());
+    }
+
 
 }
