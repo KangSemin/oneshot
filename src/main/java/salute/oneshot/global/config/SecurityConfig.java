@@ -71,7 +71,10 @@ public class SecurityConfig {
                         .failureHandler(oAuth2FailureHandler))
 
                 .authorizeHttpRequests(auth -> auth
-                        .anyRequest().permitAll())
+                        .requestMatchers("/oauth2/**", "/login/**").permitAll()
+                        .requestMatchers("/docs/**", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                        .anyRequest().permitAll()
+                )
 
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
 
@@ -79,11 +82,10 @@ public class SecurityConfig {
                         handler.authenticationEntryPoint(authenticationEntryPoint)
                                 .accessDeniedHandler(accessDeniedHandler));
 
-        http.securityMatcher("/docs/**", "/swagger-ui/**", "/v3/api-docs/**")
-                .headers(headers -> headers
-                        .contentSecurityPolicy(csp -> csp
-                                .policyDirectives("default-src * 'unsafe-inline' 'unsafe-eval' data: blob:"))
-                        .frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin));
+        http.headers(headers -> headers
+                .contentSecurityPolicy(csp -> csp
+                        .policyDirectives("default-src * 'unsafe-inline' 'unsafe-eval' data: blob:"))
+                .frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin));
 
         return http.build();
     }
