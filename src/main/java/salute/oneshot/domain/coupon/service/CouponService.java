@@ -9,6 +9,7 @@ import salute.oneshot.domain.coupon.dto.response.*;
 import salute.oneshot.domain.coupon.dto.service.*;
 import salute.oneshot.domain.coupon.entity.Coupon;
 import salute.oneshot.domain.coupon.entity.UserCoupon;
+import salute.oneshot.domain.coupon.entity.UserCouponStatus;
 import salute.oneshot.domain.coupon.repository.CouponRepository;
 import salute.oneshot.domain.coupon.repository.RedisEventCouponRepository;
 import salute.oneshot.domain.coupon.repository.UserCouponRepository;
@@ -71,9 +72,10 @@ public class CouponService {
 
     @Transactional(noRollbackFor = InvalidException.class)
     public UserCpnDetailResponseDto useUserCoupon(UserCpnSDto serviceDto) {
-        UserCoupon userCoupon = userCouponRepository.findByIdAndUserId(
+        UserCoupon userCoupon = userCouponRepository.findByIdAndUserIdAndStatus(
                         serviceDto.getUserCouponId(),
-                        serviceDto.getUserId())
+                        serviceDto.getUserId(),
+                        UserCouponStatus.ISSUED)
                 .orElseThrow(() ->
                         new NotFoundException(ErrorCode.COUPON_NOT_FOUND));
 
