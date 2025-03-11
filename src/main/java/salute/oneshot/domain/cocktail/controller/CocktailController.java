@@ -11,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import salute.oneshot.domain.cocktail.dto.request.CreateCocktailRequestDto;
 import salute.oneshot.domain.cocktail.dto.request.SearchCocktailByIngrsReqDto;
 import salute.oneshot.domain.cocktail.dto.request.UpdateCocktailRequestDto;
@@ -43,16 +44,18 @@ public class CocktailController {
 
     @PostMapping
     public ResponseEntity<ApiResponse<CocktailResponseDto>> createCocktail(
-            @ModelAttribute CreateCocktailRequestDto request,
-            @AuthenticationPrincipal CustomUserDetails userDetails) throws IOException{
+        @RequestPart MultipartFile imageFile,
+        @RequestPart CreateCocktailRequestDto request,
+        @AuthenticationPrincipal CustomUserDetails userDetails) throws IOException {
 
-        if(!S3Util.isTypeImage(request.getImageFile())){
+        if (!S3Util.isTypeImage(imageFile)) {
             throw new IOException("이미지 파일만 업로드 가능합니다");
         }
 
         CreateCocktailSDto sDto = CreateCocktailSDto.of(userDetails.getId(),
-                userDetails.getUserRole(), request.getName(),
-                request.getDescription(), request.getRecipe(), request.getIngredientList(), request.getImageFile());
+            userDetails.getUserRole(), request.getName(),
+            request.getDescription(), request.getRecipe(), request.getIngredientList(),
+            imageFile);
 
         cocktailService.createCocktail(sDto);
 
@@ -60,12 +63,11 @@ public class CocktailController {
     }
 
 
-
     @GetMapping("/{cocktailId}")
     private ResponseEntity<ApiResponse<CocktailResponseDto>> getCocktail(HttpServletRequest request,
-                                                                                  HttpServletResponse httpResponse,
-                                                                                  @PathVariable(name = "cocktailId") Long cocktailId
-    ){
+        HttpServletResponse httpResponse,
+        @PathVariable(name = "cocktailId") Long cocktailId
+    ) {
 
         Cookie[] cookies = request.getCookies();
 
@@ -74,13 +76,13 @@ public class CocktailController {
         boolean isCookieExist = false;
 
         Optional<Cookie> optionalCookie = Arrays.stream(cookies)
-                .filter(c -> c.getName().equals("viewCount")).findAny();
+            .filter(c -> c.getName().equals("viewCount")).findAny();
 
-        if(optionalCookie.isEmpty()){
+        if (optionalCookie.isEmpty()) {
 
             cookie = new Cookie("viewCount", "");
 
-        }else {
+        } else {
 
             cookie = optionalCookie.get();
             isCookieExist = cookie.getValue().contains("[" + cocktailId + "]");
@@ -101,19 +103,21 @@ public class CocktailController {
 
         CocktailResponseDto responseDto = cocktailService.getCocktail(cocktailId);
 
-        return ResponseEntity.ok(ApiResponse.success(ApiResponseConst.GET_CCKTL_SUCCESS, responseDto));
+        return ResponseEntity.ok(
+            ApiResponse.success(ApiResponseConst.GET_CCKTL_SUCCESS, responseDto));
     }
 
 
     @GetMapping("/search")
     public ResponseEntity<ApiResponse<Page<CocktailResponseDto>>> searchWithIngredients(
-            @RequestBody SearchCocktailByIngrsReqDto request,
-            @RequestParam(required = false) RecipeType recipeType,
-            @RequestParam(defaultValue = "false") Boolean isCraftable,
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int size) throws IOException {
+        @RequestBody SearchCocktailByIngrsReqDto request,
+        @RequestParam(required = false) RecipeType recipeType,
+        @RequestParam(defaultValue = "false") Boolean isCraftable,
+        @RequestParam(defaultValue = "1") int page,
+        @RequestParam(defaultValue = "10") int size) throws IOException {
 
-        SearchCocktailSDto sDto = SearchCocktailSDto.of(request.getIngredientIds(), isCraftable, recipeType, page, size);
+        SearchCocktailSDto sDto = SearchCocktailSDto.of(request.getIngredientIds(), isCraftable,
+            recipeType, page, size);
 
         Page<CocktailResponseDto> response = cocktailService.getCocktailsByIngr(sDto);
 
@@ -122,26 +126,26 @@ public class CocktailController {
 
     @PatchMapping("/{cocktailId}")
     public ResponseEntity<ApiResponse<CocktailResponseDto>> updateCocktail(
-            @PathVariable Long cocktailId,
-            @RequestBody UpdateCocktailRequestDto request,
-            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        @PathVariable Long cocktailId,
+        @RequestBody UpdateCocktailRequestDto request,
+        @AuthenticationPrincipal CustomUserDetails userDetails) {
 
         UpdateCocktailSDto sDto = UpdateCocktailSDto.of(cocktailId, userDetails.getId(),
-                request.getName(), request.getRecipe(),
-                request.getDescription(), request.getIngredientList());
+            request.getName(), request.getRecipe(),
+            request.getDescription(), request.getIngredientList());
 
         CocktailResponseDto response = cocktailService.updateCocktail(sDto);
 
         return ResponseEntity.ok(
-                ApiResponse.success(ApiResponseConst.UPDATE_CCKTL_SUCCESS, response));
+            ApiResponse.success(ApiResponseConst.UPDATE_CCKTL_SUCCESS, response));
     }
 
     @DeleteMapping("/{cocktailId}")
     public ResponseEntity<ApiResponse<Void>> deleteCocktail(@PathVariable Long cocktailId,
-                                                            @AuthenticationPrincipal CustomUserDetails userDetails) throws IOException {
+        @AuthenticationPrincipal CustomUserDetails userDetails) throws IOException {
 
         DeleteCocktailSDto sDto = DeleteCocktailSDto.of(userDetails.getId(),
-                userDetails.getUserRole(), cocktailId);
+            userDetails.getUserRole(), cocktailId);
         cocktailService.deleteCocktail(sDto);
 
         return ResponseEntity.ok(ApiResponse.success(ApiResponseConst.DELETE_CCKTL_SUCCESS));
@@ -152,8 +156,8 @@ public class CocktailController {
         @RequestParam(name = "page", defaultValue = "1") int page,
         @RequestParam(name = "size", defaultValue = "10") int size,
         @RequestParam(name = "keyword", required = false) String keyword,
-        @RequestParam(name = "recipeType", required = false) String  recipeType
-    )throws IOException {
+        @RequestParam(name = "recipeType", required = false) String recipeType
+    ) throws IOException {
         Pageable pageable = PageRequest.of(page - 1, size);
 
         findCocktailSDto sDto = findCocktailSDto.of(pageable, keyword, recipeType);
@@ -161,7 +165,7 @@ public class CocktailController {
         Page<CocktailResponseDto> responsePage = cocktailService.getIngrByCondition(sDto);
 
         return ResponseEntity.ok(
-                ApiResponse.success(ApiResponseConst.GET_CCKTL_LIST_SUCCESS, responsePage));
+            ApiResponse.success(ApiResponseConst.GET_CCKTL_LIST_SUCCESS, responsePage));
 
     }
 
@@ -172,6 +176,6 @@ public class CocktailController {
         List<CocktailResponseDto> dtoResponseList = cocktailService.getPopularCocktails();
 
         return ResponseEntity.ok(
-                ApiResponse.success(ApiResponseConst.GET_CCKTL_LIST_SUCCESS, dtoResponseList ));
+            ApiResponse.success(ApiResponseConst.GET_CCKTL_LIST_SUCCESS, dtoResponseList));
     }
 }
