@@ -23,6 +23,4 @@ public class CreateIngrRequestDto {
     @NotNull
     @Range(min = 0, max = 100)
     private Double avb;
-
-    private final MultipartFile imageFile;
 }

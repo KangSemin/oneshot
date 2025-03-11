@@ -34,6 +34,7 @@ import salute.oneshot.util.IngredientTestFactory;
 import salute.oneshot.util.UserTestFactory;
 
 import java.lang.reflect.Constructor;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.ArgumentMatchers.any;
@@ -58,7 +59,8 @@ class IngredientControllerTest extends AbstractRestDocsTests {
 
     Ingredient ingredient = IngredientTestFactory.createVodka();
 
-    MockMultipartFile multipartFile = new MockMultipartFile("imageFile", "test.jpg", "image/jpeg", new byte[0]);
+    MockMultipartFile multipartFile = new MockMultipartFile("imageFile", "test.jpg",
+            MediaType.IMAGE_JPEG_VALUE, new byte[0]);
 
 
     @Test
@@ -73,7 +75,10 @@ class IngredientControllerTest extends AbstractRestDocsTests {
 
         CreateIngrRequestDto requestDto = createConst.newInstance("보드카", "보드카", "VODKA", 40.0d);
 
+        byte[] jsonRequest = objectMapper.writeValueAsBytes(requestDto);
 
+        MockMultipartFile requestFile =
+                new MockMultipartFile("request", "test.json", MediaType.APPLICATION_JSON_VALUE, jsonRequest);
 
 
         IngrResponseDto responseDto = IngrResponseDto.from(ingredient);
@@ -83,8 +88,8 @@ class IngredientControllerTest extends AbstractRestDocsTests {
 
         mockMvc.perform(multipart("/api/ingredients")
                         .file(multipartFile)
+                        .file(requestFile)
                         .with(user(UserTestFactory.createMockAdminDetails()))
-                        .content(objectMapper.writeValueAsString(requestDto))
                         .contentType(MediaType.MULTIPART_FORM_DATA)
                         .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -133,7 +138,19 @@ class IngredientControllerTest extends AbstractRestDocsTests {
 
     @Test
     public void 재료생성_실패_CASE_이미지업로드_실패() throws Exception{
-        CreateIngrRequestDto requestDto = IngredientTestFactory.createIngrRequestDto();
+        Constructor<CreateIngrRequestDto> createConst =
+                CreateIngrRequestDto.class.getDeclaredConstructor(
+                        String.class, String.class, String.class, Double.class);
+
+        createConst.setAccessible(true);
+
+        CreateIngrRequestDto requestDto = createConst.newInstance("보드카", "보드카", "VODKA", 40.0d);
+
+        byte[] jsonRequest = objectMapper.writeValueAsBytes(requestDto);
+
+        MockMultipartFile requestFile =
+                new MockMultipartFile("request", "test.json", MediaType.APPLICATION_JSON_VALUE, jsonRequest);
+
 
 
         MockMultipartFile multipartFile =
@@ -143,11 +160,8 @@ class IngredientControllerTest extends AbstractRestDocsTests {
 
         mockMvc.perform(multipart("/api/ingredients")
                         .file(multipartFile)
+                        .file(requestFile)
                         .content(objectMapper.writeValueAsString(requestDto))
-                        .param("name", "보드카")
-                        .param("description", "보드카")
-                        .param("category", "VODKA")
-                        .param("avb", "40.0d")
                         .contentType(MediaType.MULTIPART_FORM_DATA)
                         .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -197,12 +211,21 @@ class IngredientControllerTest extends AbstractRestDocsTests {
 
     @Test
     void 재료수정_성공() throws Exception {
-        UpdateIngrRequestDto requestDto = IngredientTestFactory.updateIngrRequestDto();//mockMulti
+        Constructor<UpdateIngrRequestDto> updateConst =
+                UpdateIngrRequestDto.class.getDeclaredConstructor(String.class, String.class, String.class, Double.class);
+
+        updateConst.setAccessible(true);
+
+        UpdateIngrRequestDto requestDto = updateConst.newInstance("보드카", "보드카", "VODKA", 40.0d);
+
+        byte[] jsonRequest = objectMapper.writeValueAsBytes(requestDto);
+
+        MockMultipartFile requestFile = new MockMultipartFile("request", "test.json", MediaType.APPLICATION_JSON_VALUE, jsonRequest);
 
         IngredientCategory category = IngredientCategory.valueOf(requestDto.getCategory());
 
         UpdateIngrSDto sDto = UpdateIngrSDto.of(1L, requestDto.getName(), requestDto.getDescription(),
-                category, requestDto.getAvb(), requestDto.getImageFile());//mockMulti
+                category, requestDto.getAvb(), multipartFile);//mockMulti
 
         Ingredient updateIngr = Ingredient.of(sDto.getName(), sDto.getDescription(), sDto.getCategory(), sDto.getAvb(), "url");
 
@@ -212,11 +235,8 @@ class IngredientControllerTest extends AbstractRestDocsTests {
 
         mockMvc.perform(multipart("/api/ingredients/{ingredientId}", 1L)
                         .file(multipartFile)
+                        .file(requestFile)
                         .content(objectMapper.writeValueAsString(requestDto))
-                        .param("name", "보드카")
-                        .param("description", "보드카")
-                        .param("category", "VODKA")
-                        .param("avb", "40.0d")
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.MULTIPART_FORM_DATA)
                         .with(request -> {

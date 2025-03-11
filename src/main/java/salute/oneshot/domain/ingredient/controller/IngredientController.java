@@ -36,15 +36,16 @@ public class IngredientController {
 
 
     @PreAuthorize("hasRole('ADMIN')")
-    @PostMapping
-    public ResponseEntity<ApiResponse<IngrResponseDto>> createIngredient (@Valid @ModelAttribute CreateIngrRequestDto request) throws IOException {
+    @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity<ApiResponse<IngrResponseDto>> createIngredient (@Valid @RequestPart(value = "request") CreateIngrRequestDto request
+                                                                          , @RequestPart(value = "imageFile")MultipartFile imageFile) throws IOException {
 
-        if(!S3Util.isTypeImage(request.getImageFile())){
+        if(!S3Util.isTypeImage(imageFile)){
             throw new IOException("이미지 파일만 업로드 가능합니다");
         }
 
         CreateIngrSDto sdto = CreateIngrSDto.of(request.getName(), request.getDescription(),
-            IngredientCategory.valueOf(request.getCategory()), request.getAvb(), request.getImageFile());
+            IngredientCategory.valueOf(request.getCategory()), request.getAvb(), imageFile);
 
         IngrResponseDto responseDto = ingredientService.createIngredient(sdto);
 
@@ -81,14 +82,14 @@ public class IngredientController {
     }
 
 
-    @PatchMapping("/{ingredientId}")
-    public ResponseEntity<ApiResponse<IngrResponseDto>> updateIngredient (
-        @PathVariable Long ingredientId,
-        @Valid @ModelAttribute UpdateIngrRequestDto request) throws IOException{
+    @PatchMapping(value = "/{ingredientId}", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity<ApiResponse<IngrResponseDto>> updateIngredient (@PathVariable Long ingredientId,
+                                                                          @Valid @RequestPart("request") UpdateIngrRequestDto request,
+                                                                          @RequestPart("imageFile")MultipartFile imageFile) throws IOException{
 
         UpdateIngrSDto sdto = UpdateIngrSDto.of(ingredientId, request.getName(),
             request.getDescription(),
-            IngredientCategory.valueOf(request.getCategory()), request.getAvb(), request.getImageFile());
+            IngredientCategory.valueOf(request.getCategory()), request.getAvb(), imageFile);
 
         IngrResponseDto responseDto = ingredientService.updateIngredient(sdto);
 

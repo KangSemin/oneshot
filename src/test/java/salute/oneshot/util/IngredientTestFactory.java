@@ -127,11 +127,6 @@ public class IngredientTestFactory {
 
     }
 
-    public static UpdateIngrRequestDto updateIngrRequestDto() {
-        //MockMultipartFile multipartFile = new MockMultipartFile("image", "test.jpg", "image/jpeg", new byte[0]);
-        return new UpdateIngrRequestDto("깔루아", "맛있는 깔루아", "OTHER", null, 2.0);
-    }
-
     public static IngredientResponseDto createIngredientResponseDto() throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
         Constructor<IngredientResponseDto> constructor =
                 IngredientResponseDto.class.getDeclaredConstructor(Long.class, String.class, Double.class, String.class, IngredientCategory.class);
