@@ -41,7 +41,7 @@ public class AdminDeliveryController {
     }
 
     @GetMapping("/{deliveryId}")
-    public ResponseEntity<ApiResponse<AdminDeliveryResponseDto>> getShipping(
+    public ResponseEntity<ApiResponse<AdminDeliveryResponseDto>> getDelivery(
             @PathVariable Long deliveryId
     ) {
         AdminDeliveryResponseDto responseDto =
@@ -54,7 +54,7 @@ public class AdminDeliveryController {
     }
 
     @PatchMapping("/{deliveryId}")
-    public ResponseEntity<ApiResponse<AdminDeliveryResponseDto>> updateShipping(
+    public ResponseEntity<ApiResponse<AdminDeliveryResponseDto>> updateDelivery(
             @PathVariable Long deliveryId,
             @RequestBody UpdateDeliveryRequestDto requestDto
     ) {

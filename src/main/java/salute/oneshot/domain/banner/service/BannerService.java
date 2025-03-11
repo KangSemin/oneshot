@@ -1,5 +1,6 @@
 package salute.oneshot.domain.banner.service;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -44,19 +45,22 @@ public class BannerService {
 
     @Transactional
     public BannerResponseDto updateBanner(UpdateBannerSDto serviceDto) {
-        Event event = eventRepository.getReferenceById(serviceDto.getEventId());
-        Banner banner = getBannerById(serviceDto.getBannerId());
+        try {
+            Event event = eventRepository.getReferenceById(serviceDto.getEventId());
+            Banner banner = getBannerById(serviceDto.getBannerId());
 
-        banner.updateBanner(event, serviceDto.getImageUrl());
-        return BannerResponseDto.from(banner);
+            banner.updateBanner(event, serviceDto.getImageUrl());
+            return BannerResponseDto.from(banner);
+        } catch (EntityNotFoundException e) {
+            throw new NotFoundException(ErrorCode.EVENT_NOT_FOUND);
+        }
     }
 
     @Transactional
-    public Long deleteBanner(Long bannerId) {
-        if (bannerRepository.deleteBannerById(bannerId) == 1) {
-            return bannerId;
+    public void deleteBanner(Long bannerId) {
+        if (bannerRepository.deleteBannerById(bannerId) != 1) {
+            throw new NotFoundException(ErrorCode.BANNER_NOT_FOUND);
         }
-        throw new NotFoundException(ErrorCode.BANNER_NOT_FOUND);
     }
 
     @Transactional(readOnly = true)
