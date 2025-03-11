@@ -2,6 +2,8 @@ package salute.oneshot.util;
 
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.util.ReflectionTestUtils;
+import salute.oneshot.domain.cocktail.dto.request.CreateCocktailRequestDto;
+import salute.oneshot.domain.ingredient.dto.request.CreateIngrRequestDto;
 import salute.oneshot.domain.ingredient.dto.request.UpdateIngrRequestDto;
 import salute.oneshot.domain.ingredient.entity.Ingredient;
 import salute.oneshot.domain.ingredient.entity.IngredientCategory;
@@ -9,6 +11,8 @@ import salute.oneshot.domain.ingredientReview.dto.response.IngredientResponseDto
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+
+import static org.mockito.Mockito.mock;
 
 public class IngredientTestFactory {
 
@@ -112,9 +116,20 @@ public class IngredientTestFactory {
 
     }
 
+    public static CreateIngrRequestDto createIngrRequestDto(){
+        CreateIngrRequestDto requestDto = mock(CreateIngrRequestDto.class);
+        ReflectionTestUtils.setField(requestDto, "name", "보드카");
+        ReflectionTestUtils.setField(requestDto, "description", "보드카");
+        ReflectionTestUtils.setField(requestDto, "category", "VODKA");
+        ReflectionTestUtils.setField(requestDto, "avb", 40.0d);
+
+        return requestDto;
+
+    }
+
     public static UpdateIngrRequestDto updateIngrRequestDto() {
-        MockMultipartFile multipartFile = new MockMultipartFile("image", "test.jpg", "image/jpeg", new byte[0]);
-        return new UpdateIngrRequestDto("깔루아", "맛있는 깔루아", "OTHER", multipartFile, 2.0);
+        //MockMultipartFile multipartFile = new MockMultipartFile("image", "test.jpg", "image/jpeg", new byte[0]);
+        return new UpdateIngrRequestDto("깔루아", "맛있는 깔루아", "OTHER", null, 2.0);
     }
 
     public static IngredientResponseDto createIngredientResponseDto() throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {

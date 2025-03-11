@@ -56,17 +56,7 @@ public class IngredientController {
 
 
 
-    @GetMapping
-    public ResponseEntity<ApiResponse<Page<IngrResponseDto>>> getAllIngredients(
-        @RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "10") int size
-    ) {
 
-        Pageable pageable = PageRequest.of(page-1, size);
-        Page<IngrResponseDto> responseDto = ingredientService.getAllIngredients(pageable);
-
-        return ResponseEntity.ok(
-            ApiResponse.success(ApiResponseConst.GET_INGR_SUCCESS, responseDto));
-    }
 
     @GetMapping("/{ingredientId}")
     public ResponseEntity<ApiResponse<IngrResponseDto>> getIngredient(

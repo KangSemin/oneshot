@@ -11,7 +11,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.multipart.MultipartFile;
 import salute.oneshot.config.TestSecurityConfig;
 import salute.oneshot.domain.common.AbstractRestDocsTests;
@@ -29,10 +31,14 @@ import salute.oneshot.domain.ingredient.service.IngredientService;
 import salute.oneshot.global.exception.NotFoundException;
 import salute.oneshot.global.util.S3Util;
 import salute.oneshot.util.IngredientTestFactory;
+import salute.oneshot.util.UserTestFactory;
+
+import java.lang.reflect.Constructor;
 import java.util.List;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -56,9 +62,19 @@ class IngredientControllerTest extends AbstractRestDocsTests {
 
 
     @Test
+    @WithMockUser
     void 재료생성_성공() throws Exception {
 
-        CreateIngrRequestDto requestDto = mock(CreateIngrRequestDto.class);
+        Constructor<CreateIngrRequestDto> createConst =
+                CreateIngrRequestDto.class.getDeclaredConstructor(
+                        String.class, String.class, String.class, Double.class);
+
+        createConst.setAccessible(true);
+
+        CreateIngrRequestDto requestDto = createConst.newInstance("보드카", "보드카", "VODKA", 40.0d);
+
+
+
 
         IngrResponseDto responseDto = IngrResponseDto.from(ingredient);
 
@@ -67,10 +83,8 @@ class IngredientControllerTest extends AbstractRestDocsTests {
 
         mockMvc.perform(multipart("/api/ingredients")
                         .file(multipartFile)
-                        .param("name", "보드카")
-                        .param("description", "보드카")
-                        .param("category", "VODKA")
-                        .param("avb", "40.0d")
+                        .with(user(UserTestFactory.createMockAdminDetails()))
+                        .content(objectMapper.writeValueAsString(requestDto))
                         .contentType(MediaType.MULTIPART_FORM_DATA)
                         .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -81,8 +95,46 @@ class IngredientControllerTest extends AbstractRestDocsTests {
                 .andExpect(jsonPath("$.data.avb").value(responseDto.getAVB()));
     }
 
+//    @Test
+//    @WithMockUser
+//    void 재료생성_실패_일반유저_시도() throws Exception {
+//
+//        Constructor<CreateIngrRequestDto> createConst =
+//                CreateIngrRequestDto.class.getDeclaredConstructor(
+//                        String.class, String.class, String.class, Double.class);
+//
+//        createConst.setAccessible(true);
+//
+//        CreateIngrRequestDto requestDto = createConst.newInstance("보드카", "보드카", "VODKA", 40.0d);
+//
+//
+//
+//        IngrResponseDto responseDto = IngrResponseDto.from(ingredient);
+//
+//        given(ingredientService.createIngredient(any(CreateIngrSDto.class))).willReturn(responseDto);
+//
+//
+//        mockMvc.perform(multipart("/api/ingredients")
+//                        .file(multipartFile)
+//                        .with(user(UserTestFactory.createMockAdminDetails()))
+//                        .content(objectMapper.writeValueAsString(requestDto))
+//                        .contentType(MediaType.MULTIPART_FORM_DATA)
+//                        .accept(MediaType.APPLICATION_JSON))
+//                .andDo(print())
+//                .andExpect(jsonPath("$.message").value(ApiResponseConst.ADD_INGR_SUCCESS))
+//                .andExpect(jsonPath("$.data.id").value(responseDto.getId()))
+//                .andExpect(jsonPath("$.data.name").value(responseDto.getName()))
+//                .andExpect(jsonPath("$.data.category").value(responseDto.getCategory().name()))
+//                .andExpect(jsonPath("$.data.avb").value(responseDto.getAVB()));
+//    }
+
+
+
+
     @Test
     public void 재료생성_실패_CASE_이미지업로드_실패() throws Exception{
+        CreateIngrRequestDto requestDto = IngredientTestFactory.createIngrRequestDto();
+
 
         MockMultipartFile multipartFile =
                 new MockMultipartFile("imageFile", "test.txt", MediaType.TEXT_HTML_VALUE, new byte[1]);
@@ -91,6 +143,7 @@ class IngredientControllerTest extends AbstractRestDocsTests {
 
         mockMvc.perform(multipart("/api/ingredients")
                         .file(multipartFile)
+                        .content(objectMapper.writeValueAsString(requestDto))
                         .param("name", "보드카")
                         .param("description", "보드카")
                         .param("category", "VODKA")
@@ -119,41 +172,6 @@ class IngredientControllerTest extends AbstractRestDocsTests {
 
 
 
-    @Test
-    void 재료수정_성공() throws Exception {
-        UpdateIngrRequestDto requestDto = IngredientTestFactory.updateIngrRequestDto();//mockMulti
-
-        IngredientCategory category = IngredientCategory.valueOf(requestDto.getCategory());
-
-        UpdateIngrSDto sDto = UpdateIngrSDto.of(1L, requestDto.getName(), requestDto.getDescription(),
-                category, requestDto.getAvb(), requestDto.getImageFile());//mockMulti
-
-        Ingredient updateIngr = Ingredient.of(sDto.getName(), sDto.getDescription(), sDto.getCategory(), sDto.getAvb(), "url");
-
-        IngrResponseDto responseDto = IngrResponseDto.from(updateIngr);
-
-        given(ingredientService.updateIngredient(any(UpdateIngrSDto.class))).willReturn(responseDto);
-
-        mockMvc.perform(multipart("/api/ingredients/{ingredientId}", 1L)
-                        .file((MockMultipartFile) sDto.getImageFile())
-                        .param("name", "보드카")
-                        .param("description", "보드카")
-                        .param("category", "VODKA")
-                        .param("avb", "40.0d")
-                        .accept(MediaType.APPLICATION_JSON)
-                        .contentType(MediaType.MULTIPART_FORM_DATA)
-                        .with(request -> {
-                            request.setMethod("PATCH"); // PATCH 요청으로 변경
-                            return request;
-                        })
-                )
-                .andExpect(jsonPath("$.message").value(ApiResponseConst.UPDATE_INGR_SUCCESS))
-                .andExpect(jsonPath("$.data.name").value(responseDto.getName()))
-                .andExpect(jsonPath("$.data.description").value(responseDto.getDescription()))
-                .andExpect(jsonPath("$.data.category").value(responseDto.getCategory().name()))
-                .andExpect(jsonPath("$.data.avb").value(responseDto.getAVB()))
-                .andExpect(jsonPath("$.data.imageUrl").value(responseDto.getImageUrl()));
-    }
 
 
     @Test
@@ -176,6 +194,44 @@ class IngredientControllerTest extends AbstractRestDocsTests {
 
                        );
     }
+
+    @Test
+    void 재료수정_성공() throws Exception {
+        UpdateIngrRequestDto requestDto = IngredientTestFactory.updateIngrRequestDto();//mockMulti
+
+        IngredientCategory category = IngredientCategory.valueOf(requestDto.getCategory());
+
+        UpdateIngrSDto sDto = UpdateIngrSDto.of(1L, requestDto.getName(), requestDto.getDescription(),
+                category, requestDto.getAvb(), requestDto.getImageFile());//mockMulti
+
+        Ingredient updateIngr = Ingredient.of(sDto.getName(), sDto.getDescription(), sDto.getCategory(), sDto.getAvb(), "url");
+
+        IngrResponseDto responseDto = IngrResponseDto.from(updateIngr);
+
+        given(ingredientService.updateIngredient(any(UpdateIngrSDto.class))).willReturn(responseDto);
+
+        mockMvc.perform(multipart("/api/ingredients/{ingredientId}", 1L)
+                        .file(multipartFile)
+                        .content(objectMapper.writeValueAsString(requestDto))
+                        .param("name", "보드카")
+                        .param("description", "보드카")
+                        .param("category", "VODKA")
+                        .param("avb", "40.0d")
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.MULTIPART_FORM_DATA)
+                        .with(request -> {
+                            request.setMethod("PATCH"); // PATCH 요청으로 변경
+                            return request;
+                        })
+                )
+                .andExpect(jsonPath("$.message").value(ApiResponseConst.UPDATE_INGR_SUCCESS))
+                .andExpect(jsonPath("$.data.name").value(responseDto.getName()))
+                .andExpect(jsonPath("$.data.description").value(responseDto.getDescription()))
+                .andExpect(jsonPath("$.data.category").value(responseDto.getCategory().name()))
+                .andExpect(jsonPath("$.data.avb").value(responseDto.getAVB()))
+                .andExpect(jsonPath("$.data.imageUrl").value(responseDto.getImageUrl()));
+    }
+
 
     @Test
     void 재료삭제_성공() throws Exception{
