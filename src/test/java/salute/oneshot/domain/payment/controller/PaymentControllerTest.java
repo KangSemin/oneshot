@@ -1,5 +1,6 @@
 package salute.oneshot.domain.payment.controller;
 
+import com.epages.restdocs.apispec.ResourceSnippetParameters;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,8 +19,12 @@ import salute.oneshot.domain.payment.dto.service.ConfirmPaymentSDto;
 import salute.oneshot.util.OrderTestFactory;
 import salute.oneshot.util.PaymentTestFactory;
 
+import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.document;
+import static com.epages.restdocs.apispec.ResourceDocumentation.resource;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -28,6 +33,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(controllers = PaymentController.class)
 @Import(TestSecurityConfig.class)
 class PaymentControllerTest extends AbstractRestDocsTests {
+
+    private static final String API_TAG = "Payment API";
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -51,11 +58,20 @@ class PaymentControllerTest extends AbstractRestDocsTests {
                         .content(objectMapper.writeValueAsString(requestDto)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value(ApiResponseConst.ADD_PMNT_SUCCESS))
+
                 .andExpect(jsonPath("$.data.paymentKey").value(PaymentTestFactory.PAYMENT_KEY))
                 .andExpect(jsonPath("$.data.status").value(PaymentTestFactory.STATUS.toString()))
                 .andExpect(jsonPath("$.data.orderId").value(OrderTestFactory.ORDER_NUMBER))
                 .andExpect(jsonPath("$.data.orderName").value(OrderTestFactory.NAME))
                 .andExpect(jsonPath("$.data.totalAmount").value(OrderTestFactory.AMOUNT))
+
+                .andDo(document("payment/confirmPayment",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        resource(ResourceSnippetParameters.builder()
+                                .tag(API_TAG)
+                                .summary("결제 승인 성공")
+                                .build())))
                 .andReturn();
     }
 
@@ -72,11 +88,20 @@ class PaymentControllerTest extends AbstractRestDocsTests {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value(ApiResponseConst.GET_PMNT_SUCCESS))
+
                 .andExpect(jsonPath("$.data.paymentKey").value(PaymentTestFactory.PAYMENT_KEY))
                 .andExpect(jsonPath("$.data.status").value(PaymentTestFactory.STATUS.toString()))
                 .andExpect(jsonPath("$.data.orderId").value(OrderTestFactory.ORDER_NUMBER))
                 .andExpect(jsonPath("$.data.orderName").value(OrderTestFactory.NAME))
                 .andExpect(jsonPath("$.data.totalAmount").value(OrderTestFactory.AMOUNT))
+
+                .andDo(document("payment/findPayment",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        resource(ResourceSnippetParameters.builder()
+                                .tag(API_TAG)
+                                .summary("결제 조회 성공")
+                                .build())))
                 .andReturn();
     }
 }
