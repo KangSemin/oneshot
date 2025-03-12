@@ -1,5 +1,7 @@
 package salute.oneshot.domain.address.controller;
 
+import com.epages.restdocs.apispec.ParameterDescriptorWithType;
+import com.epages.restdocs.apispec.SimpleType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -8,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.restdocs.request.RequestDocumentation;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import salute.oneshot.config.TestSecurityConfig;
 import salute.oneshot.domain.address.dto.request.CreateAddressRequestDto;
@@ -22,7 +25,17 @@ import salute.oneshot.domain.address.dto.service.UpdateAddressSDto;
 import salute.oneshot.domain.address.entity.Address;
 import salute.oneshot.domain.address.service.AddressService;
 import salute.oneshot.domain.common.AbstractRestDocsTests;
-import salute.oneshot.domain.common.ApiDocHelper;
+import salute.oneshot.domain.common.dto.error.ErrorCode;
+import salute.oneshot.domain.common.dto.success.ApiResponseConst;
+import salute.oneshot.global.exception.InvalidException;
+import salute.oneshot.util.AddressTestFactory;
+import salute.oneshot.util.UserTestFactory;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.epages.restdocs.apispec.ResourceDocumentation.resource;
+import com.epages.restdocs.apispec.ResourceSnippetParameters;
 import salute.oneshot.domain.common.dto.error.ErrorCode;
 import salute.oneshot.domain.common.dto.success.ApiResponseConst;
 import salute.oneshot.global.exception.InvalidException;
@@ -36,6 +49,8 @@ import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -83,7 +98,6 @@ class AddressControllerTest extends AbstractRestDocsTests {
                 .andExpect(jsonPath("$.data.postAddress").value(AddressTestFactory.POST_ADDRESS))
                 .andExpect(jsonPath("$.data.detailAddress").value(AddressTestFactory.DETAIL_ADDRESS))
                 .andExpect(jsonPath("$.data.extraAddress").value(AddressTestFactory.EXTRA_ADDRESS))
-                .andDo(ApiDocHelper.getDocument("address-api", ApiDocHelper.TAG_ADDRESS, "주소 등록 API", "주소를 등록합니다."))
                 .andReturn();
     }
 
@@ -106,10 +120,19 @@ class AddressControllerTest extends AbstractRestDocsTests {
 
         // when & then
         mockMvc.perform(get("/api/addresses")
-                        .param("lastAddressId", "0")
+                        .param("lastAddressId", String.valueOf(AddressTestFactory.ADDRESS_ID))
                         .param("size", String.valueOf(AddressTestFactory.DEFAULT_PAGE_SIZE))
                         .contentType(MediaType.APPLICATION_JSON)
                         .with(user(UserTestFactory.createMockUserDetails())))
+                .andDo(document("address-list",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("주소 API")
+                                .queryParameters(
+                                        new ParameterDescriptorWithType("lastAddressId").description("마지막으로 조회한 주소 ID").type(SimpleType.STRING).optional(),
+                                        new ParameterDescriptorWithType("size").description("페이지 크기").type(SimpleType.STRING).defaultValue("10")
+                                )
+                                .build())
+                ))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value(ApiResponseConst.GET_ADR_LIST_SUCCESS))
                 .andExpect(jsonPath("$.data.addresses[0].addressId").value(AddressTestFactory.ADDRESS_ID))
