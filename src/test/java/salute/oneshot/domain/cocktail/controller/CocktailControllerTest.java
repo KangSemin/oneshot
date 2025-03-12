@@ -1,10 +1,14 @@
 package salute.oneshot.domain.cocktail.controller;
 
+import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.document;
+import static com.epages.restdocs.apispec.ResourceDocumentation.resource;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.util.ReflectionTestUtils.setField;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -14,9 +18,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.epages.restdocs.apispec.ResourceSnippet;
 import com.epages.restdocs.apispec.ResourceSnippetParameters;
-import com.epages.restdocs.apispec.ResourceSnippetParametersBuilder;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.lang.reflect.Constructor;
 import java.util.List;
@@ -31,7 +33,6 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.multipart.MultipartFile;
 import salute.oneshot.domain.cocktail.dto.request.CreateCocktailRequestDto;
 import salute.oneshot.domain.cocktail.dto.request.IngredientRequestDto;
 import salute.oneshot.domain.cocktail.dto.request.SearchCocktailByIngrsReqDto;
@@ -42,7 +43,6 @@ import salute.oneshot.domain.cocktail.dto.service.UpdateCocktailSDto;
 import salute.oneshot.domain.cocktail.service.CocktailService;
 import salute.oneshot.domain.common.AbstractRestDocsTests;
 import salute.oneshot.domain.common.dto.success.ApiResponseConst;
-import salute.oneshot.global.util.CookieUtil;
 import salute.oneshot.global.util.S3Util;
 import salute.oneshot.util.CocktailTestFactory;
 import salute.oneshot.util.UserTestFactory;
@@ -50,6 +50,9 @@ import salute.oneshot.util.UserTestFactory;
 
 @WebMvcTest(CocktailController.class)
 class CocktailControllerTest extends AbstractRestDocsTests {
+
+    private static final String API_TAG = "Cocktail API";
+
 
     @MockitoBean
     private CocktailService cocktailService;
@@ -97,7 +100,15 @@ class CocktailControllerTest extends AbstractRestDocsTests {
                 .content(objectMapper.writeValueAsString(request))
                 .with(user(UserTestFactory.createMockUserDetails()))
                 .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk());
+            .andExpect(status().isOk())
+            .andDo(document("cocktail/findCocktailsByKeyword",
+                preprocessRequest(prettyPrint()),
+                preprocessResponse(prettyPrint()),
+                resource(ResourceSnippetParameters.builder()
+                    .tag(API_TAG)
+                    .summary("칵테일 생성")
+                    .build()
+                )));
 
     }
 
@@ -117,7 +128,14 @@ class CocktailControllerTest extends AbstractRestDocsTests {
                 .contentType(MediaType.APPLICATION_JSON)
                 .with(user(UserTestFactory.createMockUserDetails()))
                 .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk());
+            .andExpect(status().isOk())
+            .andDo(document("cocktail/getCocktailById",
+                preprocessRequest(prettyPrint()),
+                preprocessResponse(prettyPrint()),
+                resource(ResourceSnippetParameters.builder()
+                    .tag(API_TAG)
+                    .build()
+                )));
     }
 
 
@@ -140,12 +158,29 @@ class CocktailControllerTest extends AbstractRestDocsTests {
 
         // when & then
         mockMvc.perform(get("/api/cocktails")
-                .param("page", "1")
-                .param("size", "10")
-                .param("keyword", "러시안")
-                .param("recipeType", "OFFICIAL")
+                .queryParams(
+                    MultiValueMap.fromSingleValue(
+                        Map.of(
+                            "page", "1",
+                            "size", "10",
+                            "recipeType", "OFFICIAL",
+                            "keyword", "러시안"
+                        )))
                 .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk());
+            .andExpect(status().isOk())
+            .andDo(document("cocktail/findCocktailsByKeyword",
+                preprocessRequest(prettyPrint()),
+                preprocessResponse(prettyPrint()),
+                resource(ResourceSnippetParameters.builder()
+                    .tag(API_TAG)
+                    .summary("키워드를 통한 칵테일 검색")
+                    .queryParameters(
+                        parameterWithName("page").description("페이지 넘버").optional(),
+                        parameterWithName("size").description("페이지당 항목 수").optional(),
+                        parameterWithName("recipeType").description("OFFICIAL/CUSTOM").optional(),
+                        parameterWithName("keyword").description("검색 키워드").optional())
+                    .build()
+                )));
     }
 
     @Test
@@ -179,7 +214,20 @@ class CocktailControllerTest extends AbstractRestDocsTests {
                             "recipeType", "OFFICIAL"
                         )))
                 .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk());
+            .andExpect(status().isOk())
+            .andDo(document("cocktail/getCraftableCocktail",
+                preprocessRequest(prettyPrint()),
+                preprocessResponse(prettyPrint()),
+                resource(ResourceSnippetParameters.builder()
+                    .tag(API_TAG)
+                    .summary("키워드를 통한 칵테일 검색")
+                    .queryParameters(
+                        parameterWithName("page").description("페이지 넘버").optional(),
+                        parameterWithName("size").description("페이지당 항목 수").optional(),
+                        parameterWithName("isCraftable").description("조주 가능한 칵테일만 검색").optional(),
+                        parameterWithName("recipeType").description("OFFICIAL/CUSTOM").optional())
+                    .build()
+                )));
 
     }
 
@@ -213,7 +261,20 @@ class CocktailControllerTest extends AbstractRestDocsTests {
                 .param("isCraftable", "false")
                 .param("recipeType", "OFFICIAL")
                 .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk());
+            .andExpect(status().isOk())
+            .andDo(document("cocktail/getCocktailByIngr",
+                preprocessRequest(prettyPrint()),
+                preprocessResponse(prettyPrint()),
+                resource(ResourceSnippetParameters.builder()
+                    .tag(API_TAG)
+                    .summary("재료를 통한 칵테일 검색")
+                    .queryParameters(
+                        parameterWithName("page").description("페이지 넘버").optional(),
+                        parameterWithName("size").description("페이지당 항목 수").optional(),
+                        parameterWithName("isCraftable").description("조주 가능한 칵테일만 검색").optional(),
+                        parameterWithName("recipeType").description("OFFICIAL/CUSTOM").optional())
+                    .build()
+                )));
 
     }
 
@@ -252,7 +313,15 @@ class CocktailControllerTest extends AbstractRestDocsTests {
                 .content(objectMapper.writeValueAsString(request))
                 .accept(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.message").value(ApiResponseConst.UPDATE_CCKTL_SUCCESS))
-            .andExpect(status().isOk());
+            .andExpect(status().isOk())
+            .andDo(document("cocktail/updateCocktail",
+                preprocessRequest(prettyPrint()),
+                preprocessResponse(prettyPrint()),
+                resource(ResourceSnippetParameters.builder()
+                    .tag(API_TAG)
+                    .summary("칵테일 정보 수정")
+                    .build()
+                )));
     }
 
     @Test
@@ -261,7 +330,15 @@ class CocktailControllerTest extends AbstractRestDocsTests {
         mockMvc.perform(delete("/api/cocktails/{cocktailId}", 1L)
             .contentType(MediaType.APPLICATION_JSON)
             .with(user(UserTestFactory.createMockUserDetails())))
-            .andExpect(jsonPath("$.message").value(ApiResponseConst.DELETE_CCKTL_SUCCESS));
+            .andExpect(jsonPath("$.message").value(ApiResponseConst.DELETE_CCKTL_SUCCESS))
+            .andDo(document("cocktail/deleteCocktail",
+                preprocessRequest(prettyPrint()),
+                preprocessResponse(prettyPrint()),
+                resource(ResourceSnippetParameters.builder()
+                    .tag(API_TAG)
+                    .summary("칵테일 삭제")
+                    .build()
+                )));
     }
 
 }
