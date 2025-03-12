@@ -19,8 +19,6 @@ public class UpdateIngrRequestDto {
     @NotBlank
     private String category;
 
-    private MultipartFile imageFile;
-
     @NotNull
     @Range(min = 0, max = 100)
     private Double avb;
