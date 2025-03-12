@@ -33,7 +33,7 @@ public class IngredientService {
 
     private final IngredientRepository ingredientRepository;
     private final IngredientElasticSearchRepository elasticRepository;
-    private final IngrElasticQueryRepository searchFinder;
+    private final IngrElasticQueryRepository elasticQueryRepository;
     private final S3Util s3Util;
 
 
@@ -105,7 +105,7 @@ public class IngredientService {
     @Transactional(readOnly = true)
     public Page<IngrResponseDto> searchByCondition(SearchIngrSDto sDto) throws IOException {
 
-        SearchResponse<IngredientDocument> searchResponse = searchFinder.ingrSearchByCondition(sDto);
+        SearchResponse<IngredientDocument> searchResponse = elasticQueryRepository.ingrSearchByCondition(sDto);
 
         Map<Long, Integer> responseInr = searchResponse.hits().hits().stream()
                 .filter(hit -> hit.source() != null)

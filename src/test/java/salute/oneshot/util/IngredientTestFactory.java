@@ -116,16 +116,17 @@ public class IngredientTestFactory {
 
     }
 
-    public static CreateIngrRequestDto createIngrRequestDto(){
-        CreateIngrRequestDto requestDto = mock(CreateIngrRequestDto.class);
-        ReflectionTestUtils.setField(requestDto, "name", "보드카");
-        ReflectionTestUtils.setField(requestDto, "description", "보드카");
-        ReflectionTestUtils.setField(requestDto, "category", "VODKA");
-        ReflectionTestUtils.setField(requestDto, "avb", 40.0d);
+    public static UpdateIngrRequestDto updateIngrRequestDto() throws Exception {
+        Constructor<UpdateIngrRequestDto> updateConst =
+                UpdateIngrRequestDto.class.getDeclaredConstructor(String.class, String.class, String.class, Double.class);
 
-        return requestDto;
+        updateConst.setAccessible(true);
 
+        UpdateIngrRequestDto requestDto = updateConst.newInstance("보드카", "보드카", "VODKA", 40.0d);
+
+        return  requestDto;
     }
+
 
     public static IngredientResponseDto createIngredientResponseDto() throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
         Constructor<IngredientResponseDto> constructor =
