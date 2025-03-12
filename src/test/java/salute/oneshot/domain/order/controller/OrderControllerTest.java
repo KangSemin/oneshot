@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.util.MultiValueMap;
 import salute.oneshot.config.TestSecurityConfig;
 import salute.oneshot.domain.common.AbstractRestDocsTests;
 import salute.oneshot.domain.common.dto.success.ApiResponseConst;
@@ -28,7 +29,10 @@ import salute.oneshot.util.OrderTestFactory;
 import salute.oneshot.util.ProductTestFactory;
 import salute.oneshot.util.UserTestFactory;
 
+import java.util.Map;
+
 import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.document;
+import static com.epages.restdocs.apispec.ResourceDocumentation.parameterWithName;
 import static com.epages.restdocs.apispec.ResourceDocumentation.resource;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -132,6 +136,12 @@ class OrderControllerTest extends AbstractRestDocsTests {
 
         // when & then
         mockMvc.perform(get("/api/orders")
+                        .queryParams(
+                                MultiValueMap.fromSingleValue(
+                                        Map.of(
+                                                "page", "1",
+                                                "size", "10"
+                                        )))
                         .contentType(MediaType.APPLICATION_JSON)
                         .with(user(UserTestFactory.createMockUserDetails())))
                 .andExpect(status().isOk())
@@ -150,6 +160,9 @@ class OrderControllerTest extends AbstractRestDocsTests {
                         resource(ResourceSnippetParameters.builder()
                                 .tag(API_TAG)
                                 .summary("주문 전체 조회 성공")
+                                .queryParameters(
+                                        parameterWithName("page").description("페이지 넘버").optional(),
+                                        parameterWithName("size").description("페이지당 항목 수").optional())
                                 .build())))
                 .andReturn();
     }

@@ -9,6 +9,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.util.MultiValueMap;
 import salute.oneshot.config.TestSecurityConfig;
 import salute.oneshot.domain.chat.dto.response.FindChatListResponseDto;
 import salute.oneshot.domain.chat.dto.response.FindChatResponseDto;
@@ -17,7 +18,10 @@ import salute.oneshot.domain.common.AbstractRestDocsTests;
 import salute.oneshot.util.ChatTestFactory;
 import salute.oneshot.util.UserTestFactory;
 
+import java.util.Map;
+
 import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.document;
+import static com.epages.restdocs.apispec.ResourceDocumentation.parameterWithName;
 import static com.epages.restdocs.apispec.ResourceDocumentation.resource;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
@@ -111,6 +115,12 @@ class ChatControllerTest extends AbstractRestDocsTests {
 
         // when & then
         mockMvc.perform(get("/api/admin/chats")
+                        .queryParams(
+                                MultiValueMap.fromSingleValue(
+                                        Map.of(
+                                                "cursor", "",
+                                                "limit", "10"
+                                        )))
                         .contentType(MediaType.APPLICATION_JSON)
                         .with(user(UserTestFactory.createMockAdminDetails())))
                 .andExpect(status().isOk())
@@ -126,6 +136,9 @@ class ChatControllerTest extends AbstractRestDocsTests {
                         resource(ResourceSnippetParameters.builder()
                                 .tag(API_TAG)
                                 .summary("어드민용 채팅방 리스트 조회 성공")
+                                .queryParameters(
+                                        parameterWithName("cursor").description("불러온 마지막 항목").optional(),
+                                        parameterWithName("limit").description("로딩되는 항목 갯수").optional())
                                 .build())))
                 .andReturn();
     }
