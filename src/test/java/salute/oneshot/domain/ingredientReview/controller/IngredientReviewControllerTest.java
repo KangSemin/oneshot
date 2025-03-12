@@ -52,7 +52,7 @@ class IngredientReviewControllerTest extends AbstractRestDocsTests {
                 .willReturn(responseDto);
 
         // when & then
-        mockMvc.perform(post("/api/ingredients/" + IngredientTestFactory.INGREDIENT_ID + "/reviews")
+        mockMvc.perform(post("/api/ingredients/{ingredientId}/reviews", IngredientTestFactory.INGREDIENT_ID)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestDto))
                         .with(user(UserTestFactory.createMockUserDetails())))
@@ -118,7 +118,7 @@ class IngredientReviewControllerTest extends AbstractRestDocsTests {
                 .willReturn(responseDto);
 
         // when & then
-        mockMvc.perform(get("/api/ingredients/reviews/" + IngredientReviewTestFactory.INGREDIENT_REVIEW_ID)
+        mockMvc.perform(get("/api/ingredients/reviews/{reviewsId}", IngredientReviewTestFactory.INGREDIENT_REVIEW_ID)
                         .contentType(MediaType.APPLICATION_JSON)
                 )
                 .andExpect(status().isOk())
@@ -150,7 +150,7 @@ class IngredientReviewControllerTest extends AbstractRestDocsTests {
                 .willReturn(responseDtoPage);
 
         // when & then
-        mockMvc.perform(get("/api/ingredients/" + IngredientTestFactory.INGREDIENT_ID + "/reviews")
+        mockMvc.perform(get("/api/ingredients/{ingredientId}/reviews", IngredientTestFactory.INGREDIENT_ID)
                         .contentType(MediaType.APPLICATION_JSON)
                         .with(user(UserTestFactory.createMockUserDetails()))
                 )
@@ -184,7 +184,7 @@ class IngredientReviewControllerTest extends AbstractRestDocsTests {
                 .willReturn(responseDto);
 
         // when & then
-        mockMvc.perform(patch("/api/ingredients/reviews/" + IngredientReviewTestFactory.INGREDIENT_REVIEW_ID)
+        mockMvc.perform(patch("/api/ingredients/reviews/{reviewId}", IngredientReviewTestFactory.INGREDIENT_REVIEW_ID)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestDto))
                         .with(user(UserTestFactory.createMockUserDetails()))
@@ -215,7 +215,7 @@ class IngredientReviewControllerTest extends AbstractRestDocsTests {
         // given
 
         // when & then
-        mockMvc.perform(delete("/api/ingredients/reviews/" + IngredientReviewTestFactory.INGREDIENT_REVIEW_ID)
+        mockMvc.perform(delete("/api/ingredients/reviews/{reviewId}", IngredientReviewTestFactory.INGREDIENT_REVIEW_ID)
                         .contentType(MediaType.APPLICATION_JSON)
                         .with(user(UserTestFactory.createMockUserDetails()))
                 )

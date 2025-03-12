@@ -102,7 +102,7 @@ class CartControllerTest extends AbstractRestDocsTests {
 
 
         // when & then
-        mockMvc.perform(patch("/api/carts/items/" + CartTestFactory.CART_ITEM_ID)
+        mockMvc.perform(patch("/api/carts/items/{itemId}", CartTestFactory.CART_ITEM_ID)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestDto))
                         .with(user(UserTestFactory.createMockUserDetails())))
@@ -124,7 +124,7 @@ class CartControllerTest extends AbstractRestDocsTests {
         // given
 
         // when & then
-        mockMvc.perform(delete("/api/carts/items/" + CartTestFactory.CART_ITEM_ID)
+        mockMvc.perform(delete("/api/carts/items/{itemId}", CartTestFactory.CART_ITEM_ID)
                         .contentType(MediaType.APPLICATION_JSON)
                         .with(user(UserTestFactory.createMockUserDetails())))
                 .andExpect(status().isNoContent())

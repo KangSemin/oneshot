@@ -63,7 +63,8 @@ class ChatControllerTest extends AbstractRestDocsTests {
                 .willReturn(responseDto);
 
         // when & then
-        mockMvc.perform(get("/api/admin/chats/" + 2L)
+        // userId를 sender와 receiver로 나누는 것도 가능
+        mockMvc.perform(get("/api/admin/chats/{userId}", UserTestFactory.USER_ID)
                         .contentType(MediaType.APPLICATION_JSON)
                         .with(user(UserTestFactory.createMockAdminDetails())))
                 .andExpect(status().isOk())
@@ -87,7 +88,7 @@ class ChatControllerTest extends AbstractRestDocsTests {
                         .contentType(MediaType.APPLICATION_JSON)
                         .with(user(UserTestFactory.createMockAdminDetails())))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.chatList[0].userId").value(ChatTestFactory.RECEIVER_USER_ID))
+                .andExpect(jsonPath("$.chatList[0].userId").value(UserTestFactory.USER_ID))
                 .andExpect(jsonPath("$.chatList[0].lastMessage").value(ChatTestFactory.FORMATTED_MESSAGE))
                 .andExpect(jsonPath("$.nextCursor").value(ChatTestFactory.CURSOR))
                 .andReturn();
