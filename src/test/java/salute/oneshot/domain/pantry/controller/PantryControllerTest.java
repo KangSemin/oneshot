@@ -1,6 +1,7 @@
 package salute.oneshot.domain.pantry.controller;
 
 import com.epages.restdocs.apispec.ResourceSnippetParameters;
+import com.epages.restdocs.apispec.SimpleType;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -27,7 +28,7 @@ import static com.epages.restdocs.apispec.ResourceDocumentation.resource;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
-import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static com.epages.restdocs.apispec.ResourceDocumentation.parameterWithName;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -41,14 +42,16 @@ class PantryControllerTest extends AbstractRestDocsTests {
     @MockitoBean
     PantryService pantryService;
 
-    Long userId = 1L;
-    Long ingredientId = 1L;
+    private Long userId = 1L;
+    private Long ingredientId = 1L;
+    private final String API_TAG = "Pantry_API";
+
     Pantry pantry = PantryTestFactory.createPantry();
     PantryResponseDto responseDto = PantryResponseDto.from(pantry);
 
 
     @Test
-    void 펜트리_재료추가_성공() throws Exception {
+    public void 펜트리_재료추가_성공() throws Exception {
         AddIngrToPantrySDto sDto = AddIngrToPantrySDto.of(userId, ingredientId);
 
 
@@ -66,11 +69,11 @@ class PantryControllerTest extends AbstractRestDocsTests {
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint()),
                         resource(ResourceSnippetParameters.builder()
-                                .tag("pantry")
-                                .summary("펜트리에 재료 추가 API")
-                                .description("사용자의 펜트리에 특정 재료를 추가하는 API")
+                                .tag(API_TAG)
+                                .summary("펜트리 재료 추가 성공")
+                                .description("사용자의 펜트리에 특정 재료를 추가를 성공합니다")
                                 .pathParameters(
-                                        parameterWithName("ingredientId").description("추가할 재료의 ID")
+                                        parameterWithName("ingredientId").type(SimpleType.INTEGER).description("추가할 재료의 ID")
                                 )
                                 .build()
                         )
@@ -79,8 +82,7 @@ class PantryControllerTest extends AbstractRestDocsTests {
     }
 
     @Test
-    @DisplayName("재료추가 실패_재료 미존재")
-    void addIngrToPantry_failedCase1() throws Exception {
+   public void 재료추가_실패_재료_미존재() throws Exception {
 
         AddIngrToPantrySDto sDto = AddIngrToPantrySDto.of(userId, ingredientId);
 
@@ -97,11 +99,11 @@ class PantryControllerTest extends AbstractRestDocsTests {
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint()),
                         resource(ResourceSnippetParameters.builder()
-                                .tag("pantry")
-                                .summary("펜트리 재료 추가 실패")
+                                .tag(API_TAG)
+                                .summary("펜트리 재료 추가 실패 case1")
                                 .description("펜트리 재료 추가 실패 - 해당 재료가 존재하지 않는 경우")
                                 .pathParameters(
-                                        parameterWithName("ingredientId").description("추가하려는 재료의 ID (존재하지 않는 경우 예외 발생)")
+                                        parameterWithName("ingredientId").type(SimpleType.INTEGER).description("추가하려는 재료의 ID")
                                 )
                                 .build()
                         )
@@ -110,8 +112,7 @@ class PantryControllerTest extends AbstractRestDocsTests {
     }
 
     @Test
-    @DisplayName("재료추가 실패_재료 중복 추가 시도")
-    void addIngrToPantry_failedCase2() throws Exception {
+   public void 재료추가_실패_재료_중복_추가_시도() throws Exception {
 
         AddIngrToPantrySDto sDto = AddIngrToPantrySDto.of(userId, ingredientId);
 
@@ -128,11 +129,11 @@ class PantryControllerTest extends AbstractRestDocsTests {
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint()),
                         resource(ResourceSnippetParameters.builder()
-                                .tag("pantry")
+                                .tag(API_TAG)
                                 .summary("펜트리 재료 추가 실패")
                                 .description("펜트리 재료 추가 실패 - 이미 추가된 재료")
                                 .pathParameters(
-                                        parameterWithName("ingredientId").description("추가할 재료의 ID (이미 추가된 경우 예외 발생)")
+                                        parameterWithName("ingredientId").type(SimpleType.INTEGER).description("추가할 재료의 ID")
                                 )
                                 .build()
                         )
@@ -142,7 +143,7 @@ class PantryControllerTest extends AbstractRestDocsTests {
 
 
     @Test
-    void getMyPantry() throws Exception {
+    void 펜트리_조회_성공() throws Exception {
         List<PantryResponseDto> pantryResponseDtoList = List.of(responseDto);
         when(pantryService.getPantry(any(Long.class))).thenReturn(pantryResponseDtoList);
 
@@ -157,9 +158,9 @@ class PantryControllerTest extends AbstractRestDocsTests {
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint()),
                         resource(ResourceSnippetParameters.builder()
-                                .tag("pantry")
-                                .summary("나의 펜트리 조회 API")
-                                .description("로그인한 사용자의 펜트리 목록을 조회하는 API")
+                                .tag(API_TAG)
+                                .summary("나의 펜트리 조회 ")
+                                .description("로그인한 사용자의 펜트리 목록을 조회합니다")
                                 .build()
                         )
                 ));
@@ -167,7 +168,7 @@ class PantryControllerTest extends AbstractRestDocsTests {
     }
 
     @Test
-    void clearPantryIngredients() throws Exception {
+    void 펜트리비우기_성공() throws Exception {
 
         doNothing().when(pantryService).clearPantryIngredients(any(Long.class));
 
@@ -180,9 +181,9 @@ class PantryControllerTest extends AbstractRestDocsTests {
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint()),
                         resource(ResourceSnippetParameters.builder()
-                                .tag("pantry")
-                                .summary("펜트리 비우기 API")
-                                .description("사용자의 펜트리에 있는 모든 재료를 삭제하는 API")
+                                .tag(API_TAG)
+                                .summary("펜트리 비움")
+                                .description("사용자의 펜트리에 있는 모든 재료를 삭제합니다")
                                 .build()
                         )
                 ));
@@ -190,7 +191,7 @@ class PantryControllerTest extends AbstractRestDocsTests {
     }
 
     @Test
-    void removeIngredient() throws Exception {
+    void 선택_재료_펜트리에서제외_성공() throws Exception {
         RemoveIngrFromPantrySDto sDto = RemoveIngrFromPantrySDto.of(userId, List.of(ingredientId));
 
         doNothing().when(pantryService).removeIngredientsFromPantry(any(RemoveIngrFromPantrySDto.class));
@@ -206,10 +207,10 @@ class PantryControllerTest extends AbstractRestDocsTests {
                         preprocessResponse(prettyPrint()),
                         resource(ResourceSnippetParameters.builder()
                                 .summary("펜트리 내의 재료 삭제 API")
-                                .description("사용자의 펜트리에서 재료를 삭제하는 API")
-                                .tag("pantry")
+                                .description("사용자의 펜트리에서 재료를 삭제합니다")
+                                .tag(API_TAG)
                                 .queryParameters(
-                                        parameterWithName("ingredientIds").description("삭제할 재료의 ID 리스트 "))
+                                        parameterWithName("ingredientIds").type(SimpleType.INTEGER).description("삭제할 재료의 ID 리스트 "))
                                 .build()
                         )
                 ));
