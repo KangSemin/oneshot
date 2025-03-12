@@ -53,9 +53,6 @@ public class IngredientController {
     }
 
 
-
-
-
     @GetMapping
     public ResponseEntity<ApiResponse<Page<IngrResponseDto>>> getAllIngredients(
         @RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "10") int size
