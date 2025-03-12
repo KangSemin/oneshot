@@ -1,5 +1,6 @@
 package salute.oneshot.domain.cart.controller;
 
+import com.epages.restdocs.apispec.ResourceSnippetParameters;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -22,8 +23,12 @@ import salute.oneshot.util.CartTestFactory;
 import salute.oneshot.util.ProductTestFactory;
 import salute.oneshot.util.UserTestFactory;
 
+import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.document;
+import static com.epages.restdocs.apispec.ResourceDocumentation.resource;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -32,6 +37,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(controllers = CartController.class)
 @Import(TestSecurityConfig.class)
 class CartControllerTest extends AbstractRestDocsTests {
+
+    private static final String API_TAG = "Cart API";
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -63,6 +70,14 @@ class CartControllerTest extends AbstractRestDocsTests {
                 .andExpect(jsonPath("$.data.product.description").value(ProductTestFactory.DESCRIPTION))
                 .andExpect(jsonPath("$.data.product.price").value(ProductTestFactory.PRICE))
                 .andExpect(jsonPath("$.data.product.stockQuantity").value(ProductTestFactory.STOCK_QUANTITY))
+
+                .andDo(document("cart/addItem",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        resource(ResourceSnippetParameters.builder()
+                                .tag(API_TAG)
+                                .summary("장바구니 항목 추가 성공")
+                                .build())))
                 .andReturn();
     }
 
@@ -80,6 +95,7 @@ class CartControllerTest extends AbstractRestDocsTests {
                         .with(user(UserTestFactory.createMockUserDetails())))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value(ApiResponseConst.GET_CART_SUCCESS))
+
                 .andExpect(jsonPath("$.data.itemList[0].cartItemId").value(CartTestFactory.CART_ITEM_ID))
                 .andExpect(jsonPath("$.data.itemList[0].quantity").value(CartTestFactory.QUANTITY))
                 .andExpect(jsonPath("$.data.itemList[0].product.productId").value(ProductTestFactory.PRODUCT_ID))
@@ -87,6 +103,14 @@ class CartControllerTest extends AbstractRestDocsTests {
                 .andExpect(jsonPath("$.data.itemList[0].product.description").value(ProductTestFactory.DESCRIPTION))
                 .andExpect(jsonPath("$.data.itemList[0].product.price").value(ProductTestFactory.PRICE))
                 .andExpect(jsonPath("$.data.itemList[0].product.stockQuantity").value(ProductTestFactory.STOCK_QUANTITY))
+
+                .andDo(document("cart/findCart",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        resource(ResourceSnippetParameters.builder()
+                                .tag(API_TAG)
+                                .summary("장바구니 조회 성공")
+                                .build())))
                 .andReturn();
     }
 
@@ -108,13 +132,23 @@ class CartControllerTest extends AbstractRestDocsTests {
                         .with(user(UserTestFactory.createMockUserDetails())))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value(ApiResponseConst.UPDATE_CART_ITEM_QUANTITY_SUCCESS))
+
                 .andExpect(jsonPath("$.data.cartItemId").value(CartTestFactory.CART_ITEM_ID))
                 .andExpect(jsonPath("$.data.quantity").value(CartTestFactory.QUANTITY))
+
                 .andExpect(jsonPath("$.data.product.productId").value(ProductTestFactory.PRODUCT_ID))
                 .andExpect(jsonPath("$.data.product.name").value(ProductTestFactory.NAME))
                 .andExpect(jsonPath("$.data.product.description").value(ProductTestFactory.DESCRIPTION))
                 .andExpect(jsonPath("$.data.product.price").value(ProductTestFactory.PRICE))
                 .andExpect(jsonPath("$.data.product.stockQuantity").value(ProductTestFactory.STOCK_QUANTITY))
+
+                .andDo(document("cart/updateItemQuantity",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        resource(ResourceSnippetParameters.builder()
+                                .tag(API_TAG)
+                                .summary("장바구니 항목 수량 변경 성공")
+                                .build())))
                 .andReturn();
     }
 
@@ -128,6 +162,15 @@ class CartControllerTest extends AbstractRestDocsTests {
                         .contentType(MediaType.APPLICATION_JSON)
                         .with(user(UserTestFactory.createMockUserDetails())))
                 .andExpect(status().isNoContent())
+                .andExpect(jsonPath("$.message").value(ApiResponseConst.REMOVE_CART_ITEM_SUCCESS))
+
+                .andDo(document("cart/removeItem",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        resource(ResourceSnippetParameters.builder()
+                                .tag(API_TAG)
+                                .summary("장바구니 항목 제거 성공")
+                                .build())))
                 .andReturn();
     }
 
@@ -141,6 +184,15 @@ class CartControllerTest extends AbstractRestDocsTests {
                         .contentType(MediaType.APPLICATION_JSON)
                         .with(user(UserTestFactory.createMockUserDetails())))
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value(ApiResponseConst.EMPTY_CART_SUCCESS))
+
+                .andDo(document("cart/emptyCart",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        resource(ResourceSnippetParameters.builder()
+                                .tag(API_TAG)
+                                .summary("장바구니 비우기 성공")
+                                .build())))
                 .andReturn();
     }
 }

@@ -1,5 +1,8 @@
 package salute.oneshot.domain.address.controller;
 
+import com.epages.restdocs.apispec.ParameterDescriptorWithType;
+import com.epages.restdocs.apispec.ResourceSnippetParameters;
+import com.epages.restdocs.apispec.SimpleType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -28,10 +31,13 @@ import salute.oneshot.global.exception.InvalidException;
 import salute.oneshot.global.exception.NotFoundException;
 import salute.oneshot.util.AddressTestFactory;
 import salute.oneshot.util.UserTestFactory;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.document;
+import static com.epages.restdocs.apispec.ResourceDocumentation.resource;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
