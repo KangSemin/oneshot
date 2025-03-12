@@ -49,7 +49,7 @@ public abstract class AbstractRestDocsTests {
         this.mockMvc = MockMvcBuilders.webAppContextSetup(context)
             .apply(documentationConfiguration(restDocumentation))
             .alwaysDo(MockMvcResultHandlers.print())
-            .alwaysDo(restDocs.document())
+            .alwaysDo(restDocs)
             .addFilters(new CharacterEncodingFilter("UTF-8", true))
             .apply(springSecurity())
             .build();

@@ -1,6 +1,7 @@
 package salute.oneshot.domain.recipeReview;
 
 import com.epages.restdocs.apispec.ResourceSnippetParameters;
+import com.epages.restdocs.apispec.SimpleType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
@@ -92,6 +93,7 @@ class RecipeReviewControllerTest extends AbstractRestDocsTests {
                     preprocessResponse(prettyPrint()),
                     resource(ResourceSnippetParameters.builder()
                         .tag(API_TAG)
+                        .summary("레시피 리뷰 생성")
                         .build()
                     )));
     }
@@ -136,9 +138,10 @@ class RecipeReviewControllerTest extends AbstractRestDocsTests {
                     preprocessResponse(prettyPrint()),
                     resource(ResourceSnippetParameters.builder()
                         .tag(API_TAG)
+                        .summary("내 레시피 리뷰 조회")
                         .queryParameters(
-                            parameterWithName("page").description("기본값 : 1").optional(),
-                            parameterWithName("size").description("기본값 : 10").optional())
+                            parameterWithName("page").type(SimpleType.INTEGER).description("기본값 : 1").optional(),
+                            parameterWithName("size").type(SimpleType.INTEGER).description("기본값 : 10").optional())
                         .build()
                     )));
     }
@@ -179,6 +182,7 @@ class RecipeReviewControllerTest extends AbstractRestDocsTests {
                     preprocessResponse(prettyPrint()),
                     resource(ResourceSnippetParameters.builder()
                         .tag(API_TAG)
+                        .summary("레시피 리뷰 단건 조회")
                         .build()
                     )));
     }
@@ -226,9 +230,10 @@ class RecipeReviewControllerTest extends AbstractRestDocsTests {
                     preprocessResponse(prettyPrint()),
                     resource(ResourceSnippetParameters.builder()
                         .tag(API_TAG)
+                        .summary("레시피 리뷰 전체 조회")
                         .queryParameters(
-                            parameterWithName("page").description("기본값 : 1").optional(),
-                            parameterWithName("size").description("기본값 : 10").optional())
+                            parameterWithName("page").type(SimpleType.INTEGER).description("기본값 : 1").optional(),
+                            parameterWithName("size").type(SimpleType.INTEGER).description("기본값 : 10").optional())
                         .build()
                     )));
     }
@@ -272,6 +277,7 @@ class RecipeReviewControllerTest extends AbstractRestDocsTests {
                     preprocessResponse(prettyPrint()),
                     resource(ResourceSnippetParameters.builder()
                         .tag(API_TAG)
+                        .summary("레시피 리뷰 수정")
                         .build()
                     )));
     }
@@ -293,6 +299,7 @@ class RecipeReviewControllerTest extends AbstractRestDocsTests {
                     preprocessResponse(prettyPrint()),
                     resource(ResourceSnippetParameters.builder()
                         .tag(API_TAG)
+                        .summary("레시피 리뷰 제거")
                         .build()
                     )));
     }
