@@ -24,7 +24,6 @@ public class ProductTestFactory {
     public static final ProductCategory CATEGORY= ProductCategory.ALCOHOL;
     public static final ProductStatus STATUS = ProductStatus.SALE;
 
-
     public static Product createProduct() throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
         Constructor<Product> constructor = Product.class.getDeclaredConstructor();
         constructor.setAccessible(true);
