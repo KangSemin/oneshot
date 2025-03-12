@@ -4,6 +4,8 @@ import org.springframework.test.util.ReflectionTestUtils;
 import salute.oneshot.domain.banner.dto.request.BannerRequestDto;
 import salute.oneshot.domain.banner.entity.Banner;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.time.LocalDateTime;
 
 public class BannerTestFactory {
@@ -53,8 +55,20 @@ public class BannerTestFactory {
         return banner;
     }
 
-    public static BannerRequestDto createBannerRequestDto() {
-        return BannerRequestDto.of(
+    public static BannerRequestDto createBannerRequestDto()
+            throws NoSuchMethodException, InvocationTargetException,
+            InstantiationException, IllegalAccessException {
+        Constructor<BannerRequestDto> bannerCont = BannerRequestDto.class
+                .getDeclaredConstructor(
+                        Long.class,
+                        String.class,
+                        String.class,
+                        String.class,
+                        String.class,
+                        String.class);
+        bannerCont.setAccessible(true);
+
+        return bannerCont.newInstance(
                 BANNER_ID,
                 IMAGE_URL,
                 START_DATE,
@@ -63,8 +77,20 @@ public class BannerTestFactory {
                 END_TIME);
     }
 
-    public static BannerRequestDto createInvalidBannerRequestDto() {
-        return BannerRequestDto.of(
+    public static BannerRequestDto createInvalidBannerRequestDto()
+            throws InvocationTargetException, InstantiationException,
+            IllegalAccessException, NoSuchMethodException {
+        Constructor<BannerRequestDto> bannerCont = BannerRequestDto.class
+                .getDeclaredConstructor(
+                        Long.class,
+                        String.class,
+                        String.class,
+                        String.class,
+                        String.class,
+                        String.class);
+        bannerCont.setAccessible(true);
+
+        return bannerCont.newInstance(
                 BANNER_ID,
                 IMAGE_URL,
                 START_DATE,

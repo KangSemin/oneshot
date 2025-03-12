@@ -2,12 +2,13 @@ package salute.oneshot.util;
 
 import org.springframework.test.util.ReflectionTestUtils;
 import salute.oneshot.domain.event.dto.request.EventRequestDto;
-import salute.oneshot.domain.event.dto.service.CreateEventSDto;
 import salute.oneshot.domain.event.entity.Event;
 import salute.oneshot.domain.event.entity.EventDetail;
 import salute.oneshot.domain.event.entity.EventStatus;
 import salute.oneshot.domain.event.entity.EventType;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
@@ -57,7 +58,7 @@ public class EventTestFactory {
                 EventDetail.of(event, EVENT_DETAIL_DATA.toString());
         event.addEventDetail(eventDetail);
 
-        ReflectionTestUtils.setField(event, "id",2L);
+        ReflectionTestUtils.setField(event, "id", 2L);
         return event;
     }
 
@@ -78,7 +79,9 @@ public class EventTestFactory {
         return event;
     }
 
-    public static EventRequestDto createEventRequestDto() {
+    public static EventRequestDto createEventRequestDto()
+            throws InvocationTargetException, NoSuchMethodException,
+            InstantiationException, IllegalAccessException {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime startTime = now.plusDays(1);
         LocalDateTime endTime = now.plusDays(7);
@@ -86,7 +89,7 @@ public class EventTestFactory {
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
 
-        return EventRequestDto.of(
+        return reflectEventRequestDto(
                 NAME,
                 DESCRIPTION,
                 startTime.format(dateFormatter),
@@ -98,14 +101,16 @@ public class EventTestFactory {
                 EVENT_DETAIL_DATA);
     }
 
-    public static EventRequestDto createInvalidEndEventRequestDto() {
+    public static EventRequestDto createInvalidEndEventRequestDto()
+            throws InvocationTargetException, NoSuchMethodException,
+            InstantiationException, IllegalAccessException {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime startTime = now.plusDays(1);
 
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
 
-        return EventRequestDto.of(
+        return reflectEventRequestDto(
                 NAME,
                 DESCRIPTION,
                 startTime.format(dateFormatter),
@@ -117,7 +122,9 @@ public class EventTestFactory {
                 EVENT_DETAIL_DATA);
     }
 
-    public static EventRequestDto createInvalidStartEventRequestDto() {
+    public static EventRequestDto createInvalidStartEventRequestDto()
+            throws InvocationTargetException, NoSuchMethodException,
+            InstantiationException, IllegalAccessException {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime startTime = now.plusDays(10);
         LocalDateTime endTime = now.plusDays(5);
@@ -125,7 +132,7 @@ public class EventTestFactory {
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
 
-        return EventRequestDto.of(
+        return reflectEventRequestDto(
                 NAME,
                 DESCRIPTION,
                 startTime.format(dateFormatter),
@@ -135,5 +142,33 @@ public class EventTestFactory {
                 EVENT_TYPE,
                 LIMIT_COUNT,
                 EVENT_DETAIL_DATA);
+    }
+
+    public static EventRequestDto reflectEventRequestDto(String name, String description, String startDate, String startTime, String endDate, String endTime, String eventType, int limitCount, Object eventDetailDate)
+            throws NoSuchMethodException, InvocationTargetException,
+            InstantiationException, IllegalAccessException {
+        Constructor<EventRequestDto> eventCont = EventRequestDto.class
+                .getDeclaredConstructor(
+                        String.class,
+                        String.class,
+                        String.class,
+                        String.class,
+                        String.class,
+                        String.class,
+                        String.class,
+                        int.class,
+                        Object.class);
+        eventCont.setAccessible(true);
+
+        return eventCont.newInstance(
+                name,
+                description,
+                startDate,
+                startTime,
+                endDate,
+                endTime,
+                eventType,
+                limitCount,
+                eventDetailDate);
     }
 }

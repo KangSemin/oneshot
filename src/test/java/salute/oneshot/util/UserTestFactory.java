@@ -8,10 +8,12 @@ import salute.oneshot.domain.auth.dto.service.LogOutSDto;
 import salute.oneshot.domain.auth.dto.service.SignUpSDto;
 import salute.oneshot.domain.user.dto.repuest.UpdateRoleRequestDto;
 import salute.oneshot.domain.user.dto.repuest.UpdateUserRequestDto;
-import salute.oneshot.domain.user.dto.response.UserResponseDto;
 import salute.oneshot.domain.user.entity.User;
 import salute.oneshot.domain.user.entity.UserRole;
 import salute.oneshot.global.security.model.CustomUserDetails;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 
 public class UserTestFactory {
 
@@ -42,21 +44,46 @@ public class UserTestFactory {
         return LogOutSDto.of(USER_ID, TokenTestFactory.ACCESS_TOKEN);
     }
 
-    public static SignUpRequestDto createSignUpRequestDto() {
-        return SignUpRequestDto.of(EMAIL, RAW_PASSWORD, NICKNAME);
+    public static SignUpRequestDto createSignUpRequestDto()
+            throws NoSuchMethodException, InvocationTargetException,
+            InstantiationException, IllegalAccessException {
+        Constructor<SignUpRequestDto> userCon = SignUpRequestDto.class
+                .getDeclaredConstructor(String.class, String.class, String.class);
+        userCon.setAccessible(true);
+
+        return userCon.newInstance(EMAIL, RAW_PASSWORD, NICKNAME);
     }
 
-    public static LogInRequestDto createLogInRequestDto() {
-        return LogInRequestDto.of(EMAIL, RAW_PASSWORD);
+    public static LogInRequestDto createLogInRequestDto()
+            throws NoSuchMethodException, InvocationTargetException,
+            InstantiationException, IllegalAccessException {
+        Constructor<LogInRequestDto> userCon = LogInRequestDto.class
+                .getDeclaredConstructor(String.class, String.class);
+        userCon.setAccessible(true);
+
+        return userCon.newInstance(EMAIL, RAW_PASSWORD);
     }
 
-    public static UpdateRoleRequestDto createUpdateRoleRequestDto() {
-        return UpdateRoleRequestDto.of(ROLE_ADMIN.name());
+    public static UpdateRoleRequestDto createUpdateRoleRequestDto()
+            throws NoSuchMethodException, InvocationTargetException,
+            InstantiationException, IllegalAccessException {
+        Constructor<UpdateRoleRequestDto> userCon = UpdateRoleRequestDto.class
+                .getDeclaredConstructor(String.class);
+        userCon.setAccessible(true);
+
+        return userCon.newInstance(ROLE_ADMIN.name());
     }
 
-    public static UpdateUserRequestDto createUpdateUserRequestDto() {
-        return UpdateUserRequestDto.of(NICKNAME, RAW_PASSWORD);
+    public static UpdateUserRequestDto createUpdateUserRequestDto()
+            throws NoSuchMethodException, InvocationTargetException,
+            InstantiationException, IllegalAccessException {
+        Constructor<UpdateUserRequestDto> userCon = UpdateUserRequestDto.class
+                .getDeclaredConstructor(String.class, String.class);
+        userCon.setAccessible(true);
+
+        return userCon.newInstance(NICKNAME, RAW_PASSWORD);
     }
+
     public static CustomUserDetails createMockUserDetails() {
         return CustomUserDetails.of(USER_ID, ROLE_USER);
     }
