@@ -58,6 +58,7 @@ class IngredientControllerTest extends AbstractRestDocsTests {
 
 
     Ingredient ingredient = IngredientTestFactory.createVodka();
+    Long ingrId = IngredientTestFactory.INGREDIENT_ID;
 
     MockMultipartFile multipartFile = new MockMultipartFile("imageFile", "test.jpg",
             MediaType.IMAGE_JPEG_VALUE, new byte[0]);
@@ -90,7 +91,8 @@ class IngredientControllerTest extends AbstractRestDocsTests {
                         .file(multipartFile)
                         .file(requestFile)
                         .with(user(UserTestFactory.createMockAdminDetails()))
-                        .contentType(MediaType.MULTIPART_FORM_DATA)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(requestDto))
                         .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(jsonPath("$.message").value(ApiResponseConst.ADD_INGR_SUCCESS))
@@ -100,44 +102,47 @@ class IngredientControllerTest extends AbstractRestDocsTests {
                 .andExpect(jsonPath("$.data.avb").value(responseDto.getAVB()));
     }
 
-//    @Test
-//    @WithMockUser
-//    void 재료생성_실패_일반유저_시도() throws Exception {
-//
-//        Constructor<CreateIngrRequestDto> createConst =
-//                CreateIngrRequestDto.class.getDeclaredConstructor(
-//                        String.class, String.class, String.class, Double.class);
-//
-//        createConst.setAccessible(true);
-//
-//        CreateIngrRequestDto requestDto = createConst.newInstance("보드카", "보드카", "VODKA", 40.0d);
-//
-//
-//
-//        IngrResponseDto responseDto = IngrResponseDto.from(ingredient);
-//
-//        given(ingredientService.createIngredient(any(CreateIngrSDto.class))).willReturn(responseDto);
-//
-//
-//        mockMvc.perform(multipart("/api/ingredients")
-//                        .file(multipartFile)
-//                        .with(user(UserTestFactory.createMockAdminDetails()))
-//                        .content(objectMapper.writeValueAsString(requestDto))
-//                        .contentType(MediaType.MULTIPART_FORM_DATA)
-//                        .accept(MediaType.APPLICATION_JSON))
-//                .andDo(print())
-//                .andExpect(jsonPath("$.message").value(ApiResponseConst.ADD_INGR_SUCCESS))
-//                .andExpect(jsonPath("$.data.id").value(responseDto.getId()))
-//                .andExpect(jsonPath("$.data.name").value(responseDto.getName()))
-//                .andExpect(jsonPath("$.data.category").value(responseDto.getCategory().name()))
-//                .andExpect(jsonPath("$.data.avb").value(responseDto.getAVB()));
-//    }
+    @Test
+    @WithMockUser
+    void 재료생성_실패_일반유저_시도() throws Exception {
+
+        Constructor<CreateIngrRequestDto> createConst =
+                CreateIngrRequestDto.class.getDeclaredConstructor(
+                        String.class, String.class, String.class, Double.class);
+
+        createConst.setAccessible(true);
+
+        CreateIngrRequestDto requestDto = createConst.newInstance("보드카", "보드카", "VODKA", 40.0d);
+
+        byte[] jsonRequest = objectMapper.writeValueAsBytes(requestDto);
+
+        MockMultipartFile requestFile =
+                new MockMultipartFile("request", "test.json", MediaType.APPLICATION_JSON_VALUE, jsonRequest);
+
+
+
+        IngrResponseDto responseDto = IngrResponseDto.from(ingredient);
+
+        given(ingredientService.createIngredient(any(CreateIngrSDto.class))).willReturn(responseDto);
+
+
+        mockMvc.perform(multipart("/api/ingredients")
+                        .file(multipartFile)
+                        .file(requestFile)
+                        .with(user(UserTestFactory.createMockUserDetails()))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(requestDto))
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isForbidden());
+    }
 
 
 
 
     @Test
-    public void 재료생성_실패_CASE_이미지업로드_실패() throws Exception{
+    @WithMockUser
+    public void 재료생성_실패_이미지업로드_실패() throws Exception{
         Constructor<CreateIngrRequestDto> createConst =
                 CreateIngrRequestDto.class.getDeclaredConstructor(
                         String.class, String.class, String.class, Double.class);
@@ -161,8 +166,9 @@ class IngredientControllerTest extends AbstractRestDocsTests {
         mockMvc.perform(multipart("/api/ingredients")
                         .file(multipartFile)
                         .file(requestFile)
+                        .with(user(UserTestFactory.createMockAdminDetails()))
+                        .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestDto))
-                        .contentType(MediaType.MULTIPART_FORM_DATA)
                         .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isBadRequest());
@@ -178,7 +184,7 @@ class IngredientControllerTest extends AbstractRestDocsTests {
 
         given(ingredientService.getIngredient(any(Long.class))).willReturn(responseDto);
 
-        mockMvc.perform(get("/api/ingredients/{ingredientId}", 1))
+        mockMvc.perform(get("/api/ingredients/{ingredientId}", ingrId))
                 .andExpect(jsonPath("$.message").value(ApiResponseConst.GET_INGR_SUCCESS))
                 .andExpect(jsonPath("$.data.id").value(responseDto.getId()));
 
@@ -200,14 +206,15 @@ class IngredientControllerTest extends AbstractRestDocsTests {
         given(ingredientService.searchByCondition(any(SearchIngrSDto.class))).willReturn(responseDtoPage);
 
         mockMvc.perform(get("/api/ingredients/search")
-                        .param("keyword", "golden")
-                        .param("category", " ")
-                        .param("page", "1")
-                        .param("size", "10"))
-                .andExpect(jsonPath("$.message").value(ApiResponseConst.GET_INGR_LIST_SUCCESS)
-
-                       );
+                        .queryParam("keyword", "golden")
+                        .queryParam("category", " ")
+                        .queryParam("page", "1")
+                        .queryParam("size", "10")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.message").value(ApiResponseConst.GET_INGR_LIST_SUCCESS));
     }
+
 
     @Test
     void 재료수정_성공() throws Exception {
@@ -224,19 +231,22 @@ class IngredientControllerTest extends AbstractRestDocsTests {
 
         IngredientCategory category = IngredientCategory.valueOf(requestDto.getCategory());
 
-        UpdateIngrSDto sDto = UpdateIngrSDto.of(1L, requestDto.getName(), requestDto.getDescription(),
+        UpdateIngrSDto sDto = UpdateIngrSDto.of(ingrId, requestDto.getName(), requestDto.getDescription(),
                 category, requestDto.getAvb(), multipartFile);//mockMulti
 
         Ingredient updateIngr = Ingredient.of(sDto.getName(), sDto.getDescription(), sDto.getCategory(), sDto.getAvb(), "url");
+
+        ReflectionTestUtils.setField(updateIngr, "id", sDto.getId());
+
 
         IngrResponseDto responseDto = IngrResponseDto.from(updateIngr);
 
         given(ingredientService.updateIngredient(any(UpdateIngrSDto.class))).willReturn(responseDto);
 
-        mockMvc.perform(multipart("/api/ingredients/{ingredientId}", 1L)
+        mockMvc.perform(multipart("/api/ingredients/{ingredientId}", ingrId)
                         .file(multipartFile)
                         .file(requestFile)
-                        .content(objectMapper.writeValueAsString(requestDto))
+                        .with(user(UserTestFactory.createMockAdminDetails()))
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.MULTIPART_FORM_DATA)
                         .with(request -> {
@@ -254,11 +264,13 @@ class IngredientControllerTest extends AbstractRestDocsTests {
 
 
     @Test
+    @WithMockUser
     void 재료삭제_성공() throws Exception{
 
         doNothing().when(ingredientService).deleteIngredient(any(Long.class));
 
-        mockMvc.perform(delete("/api/ingredients/{ingreientId}", 1L))
+        mockMvc.perform(delete("/api/ingredients/{ingreientId}", ingrId)
+                        .with(user(UserTestFactory.createMockAdminDetails())))
                 .andExpect(jsonPath("$.message").value(ApiResponseConst.DELETE_INGR_SUCCESS));
     }
 }

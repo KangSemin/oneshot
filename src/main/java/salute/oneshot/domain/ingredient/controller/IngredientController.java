@@ -81,7 +81,7 @@ public class IngredientController {
         return ResponseEntity.ok(ApiResponse.success(ApiResponseConst.GET_INGR_LIST_SUCCESS, responseDtoPage));
     }
 
-
+    @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping(value = "/{ingredientId}", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<ApiResponse<IngrResponseDto>> updateIngredient (@PathVariable Long ingredientId,
                                                                           @Valid @RequestPart("request") UpdateIngrRequestDto request,
@@ -96,7 +96,7 @@ public class IngredientController {
         return ResponseEntity.ok(
             ApiResponse.success(ApiResponseConst.UPDATE_INGR_SUCCESS, responseDto));
     }
-
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{ingredientId}")
     public ResponseEntity<ApiResponse<Void>> deleteIngredient(
         @PathVariable Long ingredientId) throws IOException{
