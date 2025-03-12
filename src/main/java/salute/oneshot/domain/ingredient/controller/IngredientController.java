@@ -56,9 +56,6 @@ public class IngredientController {
 
 
 
-
-
-
     @GetMapping("/{ingredientId}")
     public ResponseEntity<ApiResponse<IngrResponseDto>> getIngredient(
             @PathVariable Long ingredientId) {
