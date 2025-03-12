@@ -1,6 +1,8 @@
 package salute.oneshot.domain.recipeReview;
 
+import com.epages.restdocs.apispec.ResourceSnippetParameters;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +11,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.util.MultiValueMap;
 import salute.oneshot.config.TestSecurityConfig;
 import salute.oneshot.domain.common.AbstractRestDocsTests;
 import salute.oneshot.domain.common.dto.success.ApiResponseConst;
@@ -25,8 +28,14 @@ import salute.oneshot.util.CocktailTestFactory;
 import salute.oneshot.util.RecipeReviewTestFactory;
 import salute.oneshot.util.UserTestFactory;
 
+import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.document;
+import static com.epages.restdocs.apispec.ResourceDocumentation.parameterWithName;
+import static com.epages.restdocs.apispec.ResourceDocumentation.resource;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -35,6 +44,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(controllers = RecipeReviewController.class)
 @Import(TestSecurityConfig.class)
 class RecipeReviewControllerTest extends AbstractRestDocsTests {
+
+    private static final String API_TAG = "RecipeReview API";
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -76,7 +87,13 @@ class RecipeReviewControllerTest extends AbstractRestDocsTests {
                 .andExpect(jsonPath("$.data.reviewId").value(RecipeReviewTestFactory.RECIPE_REVIEW_ID))
                 .andExpect(jsonPath("$.data.star").value(RecipeReviewTestFactory.STAR.toString()))
                 .andExpect(jsonPath("$.data.content").value(RecipeReviewTestFactory.CONTENT))
-                .andReturn();
+                .andDo(document("recipeReview/createRecipeReview",
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    resource(ResourceSnippetParameters.builder()
+                        .tag(API_TAG)
+                        .build()
+                    )));
     }
 
     @DisplayName("내 레시피 리뷰 조회 성공")
@@ -89,12 +106,17 @@ class RecipeReviewControllerTest extends AbstractRestDocsTests {
 
         // when & then
         mockMvc.perform(get("/api/recipes/reviews/me")
+                        .queryParams(
+                            MultiValueMap.fromSingleValue(
+                                Map.of(
+                                    "page", "1",
+                                    "size", "10"
+                                )))
                         .contentType(MediaType.APPLICATION_JSON)
                         .with(user(UserTestFactory.createMockUserDetails()))
                 )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value(ApiResponseConst.GET_RCP_RVW_SUCCESS))
-
                 .andExpect(jsonPath("$.data.content[0].cocktail.id").value(CocktailTestFactory.COCKTAIL_ID))
                 .andExpect(jsonPath("$.data.content[0].cocktail.name").value(CocktailTestFactory.NAME))
                 .andExpect(jsonPath("$.data.content[0].cocktail.description").value(CocktailTestFactory.DESCRIPTION))
@@ -102,16 +124,23 @@ class RecipeReviewControllerTest extends AbstractRestDocsTests {
                 .andExpect(jsonPath("$.data.content[0].cocktail.type").value(CocktailTestFactory.TYPE.toString()))
                 .andExpect(jsonPath("$.data.content[0].cocktail.likeCounts").value(CocktailTestFactory.LIKE_COUNT))
                 .andExpect(jsonPath("$.data.content[0].cocktail.userId").value(UserTestFactory.USER_ID))
-
                 .andExpect(jsonPath("$.data.content[0].user.id").value(UserTestFactory.USER_ID))
                 .andExpect(jsonPath("$.data.content[0].user.email").value(UserTestFactory.EMAIL))
                 .andExpect(jsonPath("$.data.content[0].user.nickName").value(UserTestFactory.NICKNAME))
                 .andExpect(jsonPath("$.data.content[0].user.userRole").value(UserTestFactory.ROLE_USER.toString()))
-
                 .andExpect(jsonPath("$.data.content[0].reviewId").value(RecipeReviewTestFactory.RECIPE_REVIEW_ID))
                 .andExpect(jsonPath("$.data.content[0].star").value(RecipeReviewTestFactory.STAR.toString()))
                 .andExpect(jsonPath("$.data.content[0].content").value(RecipeReviewTestFactory.CONTENT))
-                .andReturn();
+                .andDo(document("recipeReview/getMyRecipeReview",
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    resource(ResourceSnippetParameters.builder()
+                        .tag(API_TAG)
+                        .queryParameters(
+                            parameterWithName("page").description("기본값 : 1").optional(),
+                            parameterWithName("size").description("기본값 : 10").optional())
+                        .build()
+                    )));
     }
 
     @DisplayName("레시피 리뷰 단건 조회 성공")
@@ -145,7 +174,13 @@ class RecipeReviewControllerTest extends AbstractRestDocsTests {
                 .andExpect(jsonPath("$.data.reviewId").value(RecipeReviewTestFactory.RECIPE_REVIEW_ID))
                 .andExpect(jsonPath("$.data.star").value(RecipeReviewTestFactory.STAR.toString()))
                 .andExpect(jsonPath("$.data.content").value(RecipeReviewTestFactory.CONTENT))
-                .andReturn();
+                .andDo(document("recipeReview/getRecipeReview",
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    resource(ResourceSnippetParameters.builder()
+                        .tag(API_TAG)
+                        .build()
+                    )));
     }
 
     @DisplayName("레시피 리뷰 전체 조회 성공")
@@ -158,6 +193,12 @@ class RecipeReviewControllerTest extends AbstractRestDocsTests {
 
         // when & then
         mockMvc.perform(get("/api/recipes/{cocktailId}/reviews", CocktailTestFactory.COCKTAIL_ID)
+                        .queryParams(
+                            MultiValueMap.fromSingleValue(
+                                Map.of(
+                                    "page", "1",
+                                    "size", "10"
+                                )))
                         .contentType(MediaType.APPLICATION_JSON)
                         .with(user(UserTestFactory.createMockUserDetails()))
                 )
@@ -180,7 +221,16 @@ class RecipeReviewControllerTest extends AbstractRestDocsTests {
                 .andExpect(jsonPath("$.data.content[0].reviewId").value(RecipeReviewTestFactory.RECIPE_REVIEW_ID))
                 .andExpect(jsonPath("$.data.content[0].star").value(RecipeReviewTestFactory.STAR.toString()))
                 .andExpect(jsonPath("$.data.content[0].content").value(RecipeReviewTestFactory.CONTENT))
-                .andReturn();
+                .andDo(document("recipeReview/getAllRecipeReview",
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    resource(ResourceSnippetParameters.builder()
+                        .tag(API_TAG)
+                        .queryParameters(
+                            parameterWithName("page").description("기본값 : 1").optional(),
+                            parameterWithName("size").description("기본값 : 10").optional())
+                        .build()
+                    )));
     }
 
     @DisplayName("레시피 리뷰 수정 성공")
@@ -217,7 +267,13 @@ class RecipeReviewControllerTest extends AbstractRestDocsTests {
                 .andExpect(jsonPath("$.data.reviewId").value(RecipeReviewTestFactory.RECIPE_REVIEW_ID))
                 .andExpect(jsonPath("$.data.star").value(RecipeReviewTestFactory.STAR.toString()))
                 .andExpect(jsonPath("$.data.content").value(RecipeReviewTestFactory.CONTENT))
-                .andReturn();
+                .andDo(document("recipeReview/updateRecipeReview",
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    resource(ResourceSnippetParameters.builder()
+                        .tag(API_TAG)
+                        .build()
+                    )));
     }
 
     @DisplayName("레시피 리뷰 제거 성공")
@@ -232,6 +288,12 @@ class RecipeReviewControllerTest extends AbstractRestDocsTests {
                 )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value(ApiResponseConst.DELETE_RCP_RVW_SUCCESS))
-                .andReturn();
+                .andDo(document("recipeReview/updateRecipeReview",
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    resource(ResourceSnippetParameters.builder()
+                        .tag(API_TAG)
+                        .build()
+                    )));
     }
 }
