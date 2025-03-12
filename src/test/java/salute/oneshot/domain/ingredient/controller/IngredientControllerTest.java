@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.http.HttpMethod;
@@ -31,22 +30,26 @@ import salute.oneshot.util.IngredientTestFactory;
 import salute.oneshot.util.UserTestFactory;
 
 import java.lang.reflect.Constructor;
+
+import salute.oneshot.util.UserTestFactory;
+
 import java.util.List;
 
 import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.document;
 import static com.epages.restdocs.apispec.ResourceDocumentation.resource;
+
 import static org.mockito.BDDMockito.given;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
 import static com.epages.restdocs.apispec.ResourceDocumentation.parameterWithName;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(IngredientController.class)
-@Import({TestSecurityConfig.class})
 class IngredientControllerTest extends AbstractRestDocsTests {
 
 
@@ -57,8 +60,9 @@ class IngredientControllerTest extends AbstractRestDocsTests {
     ObjectMapper objectMapper;
 
 
-    Ingredient ingredient = IngredientTestFactory.createVodka();
-    Long ingrId = IngredientTestFactory.INGREDIENT_ID;
+    private final String  API_TAG = "Ingredient_API";
+    private Ingredient ingredient = IngredientTestFactory.createVodka();
+    private Long ingrId = IngredientTestFactory.INGREDIENT_ID;
 
     MockMultipartFile multipartFile = new MockMultipartFile("imageFile", "test.jpg",
             MediaType.IMAGE_JPEG_VALUE, new byte[0]);
@@ -86,6 +90,7 @@ class IngredientControllerTest extends AbstractRestDocsTests {
 
         given(ingredientService.createIngredient(any(CreateIngrSDto.class))).willReturn(responseDto);
 
+
         mockMvc.perform(multipart("/api/ingredients")
                         .file(multipartFile)
                         .file(requestFile)
@@ -102,7 +107,7 @@ class IngredientControllerTest extends AbstractRestDocsTests {
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint()),
                         resource(ResourceSnippetParameters.builder()
-                                .tag("ingredient")
+                                .tag(API_TAG)
                                 .summary("재료 생성 성공")
                                 .description("재료를 생성하는 API, 재료 생성에 성공")
                                 .build()
@@ -147,7 +152,7 @@ class IngredientControllerTest extends AbstractRestDocsTests {
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint()),
                         resource(ResourceSnippetParameters.builder()
-                                .tag("ingredient")
+                                .tag(API_TAG)
                                 .summary("재료 생성 살패 case1 ")
                                 .description("재료를 생성하는 API로, 일반유저 권한 없음으로 실패.")
                                 .build()
@@ -189,7 +194,7 @@ class IngredientControllerTest extends AbstractRestDocsTests {
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint()),
                         resource(ResourceSnippetParameters.builder()
-                                .tag("ingredient")
+                                .tag(API_TAG)
                                 .summary("재료 생성 실패 case2")
                                 .description(" 재료를 생성하는 API, 이미지 업로드에 실패로 재료 생성 실패.")
                                 .build()
@@ -213,7 +218,7 @@ class IngredientControllerTest extends AbstractRestDocsTests {
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint()),
                         resource(ResourceSnippetParameters.builder()
-                                .tag("ingredient")
+                                .tag(API_TAG)
                                 .summary("재료 단건 조회 성공 ")
                                 .description("재료 단건 조회에 성공합니다.")
                                 .pathParameters(
@@ -251,7 +256,7 @@ class IngredientControllerTest extends AbstractRestDocsTests {
                         resource(ResourceSnippetParameters.builder()
                                 .summary("재료 검색 성공")
                                 .description("사용자가 검색 키워드와 카테고리를 입력하여 재료를 검색할 수 있는 API")
-                                .tag("ingredient")
+                                .tag(API_TAG)
                                 .queryParameters(
                                         parameterWithName("keyword").defaultValue(" ").description("검색할 재료 키워드(선택)"),
                                         parameterWithName("category").defaultValue(" ").description("재료 카테고리(선택)"),
@@ -301,7 +306,7 @@ class IngredientControllerTest extends AbstractRestDocsTests {
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint()),
                         resource(ResourceSnippetParameters.builder()
-                                .tag("ingredient")
+                                .tag(API_TAG)
                                 .summary("재료 수정 성공")
                                 .description("재료 수정 성공")
                                 .pathParameters(
@@ -324,7 +329,7 @@ class IngredientControllerTest extends AbstractRestDocsTests {
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint()),
                         resource(ResourceSnippetParameters.builder()
-                                .tag("ingredient")
+                                .tag(API_TAG)
                                 .summary("재료 삭제 성공")
                                 .description("재료 삭제 성공")
                                 .pathParameters(
