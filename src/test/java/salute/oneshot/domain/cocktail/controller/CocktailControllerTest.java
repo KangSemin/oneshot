@@ -210,6 +210,7 @@ class CocktailControllerTest extends AbstractRestDocsTests {
                 )
             );
 
+
         // when & then
         mockMvc.perform(get("/api/cocktails/search")
                 .content(objectMapper.writeValueAsString(request))

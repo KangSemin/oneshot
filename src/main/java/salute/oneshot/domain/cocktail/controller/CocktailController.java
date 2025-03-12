@@ -44,18 +44,12 @@ public class CocktailController {
 
     @PostMapping
     public ResponseEntity<ApiResponse<CocktailResponseDto>> createCocktail(
-        @RequestPart MultipartFile imageFile,
-        @RequestPart CreateCocktailRequestDto request,
-        @AuthenticationPrincipal CustomUserDetails userDetails) throws IOException {
-
-        if (!S3Util.isTypeImage(imageFile)) {
-            throw new IOException("이미지 파일만 업로드 가능합니다");
-        }
+            @ModelAttribute CreateCocktailRequestDto request,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
 
         CreateCocktailSDto sDto = CreateCocktailSDto.of(userDetails.getId(),
-            userDetails.getUserRole(), request.getName(),
-            request.getDescription(), request.getRecipe(), request.getIngredientList(),
-            imageFile);
+                userDetails.getUserRole(), request.getName(),
+                request.getDescription(), request.getRecipe(), request.getIngredientList(), request.getImageFile());
 
         cocktailService.createCocktail(sDto);
 
@@ -63,48 +57,29 @@ public class CocktailController {
     }
 
 
+
     @GetMapping("/{cocktailId}")
     private ResponseEntity<ApiResponse<CocktailResponseDto>> getCocktail(HttpServletRequest request,
-        HttpServletResponse httpResponse,
-        @PathVariable(name = "cocktailId") Long cocktailId
-    ) {
+                                                                                  HttpServletResponse httpResponse,
+                                                                                  @PathVariable(name = "cocktailId") Long cocktailId
+    ){
 
-        Cookie[] cookies = request.getCookies();
+        Cookie viewCookie = CookieUtil.getOrCreateCookie(request, "viewCount");
 
-        Cookie cookie = null;
-
-        boolean isCookieExist = false;
-
-        Optional<Cookie> optionalCookie = Arrays.stream(cookies)
-            .filter(c -> c.getName().equals("viewCount")).findAny();
-
-        if (optionalCookie.isEmpty()) {
-
-            cookie = new Cookie("viewCount", "");
-
-        } else {
-
-            cookie = optionalCookie.get();
-            isCookieExist = cookie.getValue().contains("[" + cocktailId + "]");
-
-        }
-
-        if (!isCookieExist) {
-            cookie.setValue(cookie.getValue() + "[" + cocktailId + "]");
+        if(!CookieUtil.isExistValue(viewCookie, cocktailId)){
+            CookieUtil.SetValue(viewCookie, cocktailId);
             cocktailService.increaseViewCountAndScore(cocktailId);
         }
 
         long todayEndTime = LocalDate.now().atTime(LocalTime.MAX).toEpochSecond(ZoneOffset.UTC);
         long currentTime = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
-        cookie.setPath("/");
-        cookie.setMaxAge((int) (todayEndTime - currentTime));
+        viewCookie.setPath("/");
+        viewCookie.setMaxAge((int) (todayEndTime - currentTime));
 
-        httpResponse.addCookie(cookie);
+        httpResponse.addCookie(viewCookie);
 
         CocktailResponseDto responseDto = cocktailService.getCocktail(cocktailId);
-
-        return ResponseEntity.ok(
-            ApiResponse.success(ApiResponseConst.GET_CCKTL_SUCCESS, responseDto));
+        return ResponseEntity.ok(ApiResponse.success(ApiResponseConst.GET_CCKTL_SUCCESS, responseDto));
     }
 
 

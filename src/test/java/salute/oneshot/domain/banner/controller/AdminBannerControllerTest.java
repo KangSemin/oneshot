@@ -66,7 +66,7 @@ class AdminBannerControllerTest extends AbstractRestDocsTests {
         mockMvc.perform(post("/api/admin/banners")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(requestDto))
-                .with(user(UserTestFactory.createMockUserDetails())))
+                .with(user(UserTestFactory.createMockAdminDetails())))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.message").value(ApiResponseConst.ADD_BANNER_SUCCESS))
                 .andExpect(jsonPath("$.data.eventId").value(BannerTestFactory.BANNER_ID))
@@ -90,7 +90,7 @@ class AdminBannerControllerTest extends AbstractRestDocsTests {
         mockMvc.perform(post("/api/admin/banners")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestDto))
-                        .with(user(UserTestFactory.createMockUserDetails())))
+                        .with(user(UserTestFactory.createMockAdminDetails())))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errorMessage").value(ValidationConst.TIME_TYPE_MESSAGE))
 
@@ -110,7 +110,7 @@ class AdminBannerControllerTest extends AbstractRestDocsTests {
         mockMvc.perform(post("/api/admin/banners")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestDto))
-                        .with(user(UserTestFactory.createMockUserDetails())))
+                        .with(user(UserTestFactory.createMockAdminDetails())))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.errorMessage").value(ErrorCode.EVENT_NOT_FOUND.getMessage()))
                 .andReturn();
@@ -132,7 +132,7 @@ class AdminBannerControllerTest extends AbstractRestDocsTests {
         mockMvc.perform(patch("/api/admin/banners/{bannerId}", BannerTestFactory.BANNER_ID)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(requestDto))
-                .with(user(UserTestFactory.createMockUserDetails())))
+                .with(user(UserTestFactory.createMockAdminDetails())))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value(ApiResponseConst.UPDATE_BANNER_SUCCESS))
                 .andExpect(jsonPath("$.data.eventId").value(BannerTestFactory.BANNER_ID))
@@ -156,7 +156,7 @@ class AdminBannerControllerTest extends AbstractRestDocsTests {
         mockMvc.perform(patch("/api/admin/banners/{bannerId}", BannerTestFactory.BANNER_ID)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestDto))
-                        .with(user(UserTestFactory.createMockUserDetails())))
+                        .with(user(UserTestFactory.createMockAdminDetails())))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.errorMessage").value(ErrorCode.BANNER_NOT_FOUND.getMessage()))
                 .andReturn();
@@ -176,7 +176,7 @@ class AdminBannerControllerTest extends AbstractRestDocsTests {
         mockMvc.perform(patch("/api/admin/banners/{bannerId}", BannerTestFactory.BANNER_ID)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestDto))
-                        .with(user(UserTestFactory.createMockUserDetails())))
+                        .with(user(UserTestFactory.createMockAdminDetails())))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.errorMessage").value(ErrorCode.EVENT_NOT_FOUND.getMessage()))
                 .andReturn();
@@ -196,7 +196,7 @@ class AdminBannerControllerTest extends AbstractRestDocsTests {
         mockMvc.perform(post("/api/admin/banners")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestDto))
-                        .with(user(UserTestFactory.createMockUserDetails())))
+                        .with(user(UserTestFactory.createMockAdminDetails())))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errorMessage").value(ValidationConst.TIME_TYPE_MESSAGE))
                 .andReturn();
@@ -210,7 +210,7 @@ class AdminBannerControllerTest extends AbstractRestDocsTests {
 
         // when & then
         mockMvc.perform(delete("/api/admin/banners/{bannerId}", BannerTestFactory.BANNER_ID)
-                        .with(user(UserTestFactory.createMockUserDetails())))
+                        .with(user(UserTestFactory.createMockAdminDetails())))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value(ApiResponseConst.DELETE_BANNER_SUCCESS))
                 .andExpect(jsonPath("$.data").value(bannerId))
@@ -228,7 +228,7 @@ class AdminBannerControllerTest extends AbstractRestDocsTests {
 
         // when & then
         mockMvc.perform(delete("/api/admin/banners/{bannerId}", BannerTestFactory.BANNER_ID)
-                        .with(user(UserTestFactory.createMockUserDetails())))
+                        .with(user(UserTestFactory.createMockAdminDetails())))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.errorMessage").value(ErrorCode.BANNER_NOT_FOUND.getMessage()))
                 .andReturn();

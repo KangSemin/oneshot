@@ -48,22 +48,22 @@ class SuperAdminUserControllerTest extends AbstractRestDocsTests {
 
     @DisplayName("유저 권한 변경")
     @Test
-    void successUpdateUserRole() throws Exception{
+    void successUpdateUserRole() throws Exception {
         // given
         UpdateRoleRequestDto requestDto =
                 UserTestFactory.createUpdateRoleRequestDto();
         UserRoleResponseDto responseDto = UserRoleResponseDto.of(
-                    user.getId(),
-                    UserRole.of(requestDto.getUserRole()));
+                user.getId(),
+                UserRole.of(requestDto.getUserRole()));
 
         given(userService.updateUserRole(any(UpdateRoleSDto.class)))
                 .willReturn(responseDto);
 
         // when & then
         mockMvc.perform(patch("/api/super-admin/users//{userId}/role", UserTestFactory.USER_ID)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(requestDto))
-                .with(user(UserTestFactory.createMockUserDetails())))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(requestDto))
+                        .with(user(UserTestFactory.createMockSuperAdminDetails())))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value(ApiResponseConst.UPDATE_ROLE_SUCCESS))
                 .andExpect(jsonPath("$.data.userId").value(UserTestFactory.USER_ID))
@@ -73,7 +73,7 @@ class SuperAdminUserControllerTest extends AbstractRestDocsTests {
 
     @DisplayName("유저 권한 변경 실패: 같은 권한으로 변경 시도")
     @Test
-    void duplicatedUserRoleUpdateUserRole() throws Exception{
+    void duplicatedUserRoleUpdateUserRole() throws Exception {
         // given
         UpdateRoleRequestDto requestDto =
                 UserTestFactory.createUpdateRoleRequestDto();
@@ -85,7 +85,7 @@ class SuperAdminUserControllerTest extends AbstractRestDocsTests {
         mockMvc.perform(patch("/api/super-admin/users//{userId}/role", UserTestFactory.USER_ID)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestDto))
-                        .with(user(UserTestFactory.createMockUserDetails())))
+                        .with(user(UserTestFactory.createMockSuperAdminDetails())))
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.errorMessage").value(ErrorCode.DUPLICATE_ROLE.getMessage()))
                 .andReturn();
