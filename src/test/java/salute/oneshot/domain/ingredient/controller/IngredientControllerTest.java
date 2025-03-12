@@ -1,14 +1,17 @@
 package salute.oneshot.domain.ingredient.controller;
 
+import com.epages.restdocs.apispec.ResourceSnippetParameters;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -36,9 +39,16 @@ import salute.oneshot.util.UserTestFactory;
 import java.lang.reflect.Constructor;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+
+import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.document;
+import static com.epages.restdocs.apispec.ResourceDocumentation.resource;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -205,6 +215,7 @@ class IngredientControllerTest extends AbstractRestDocsTests {
 
         given(ingredientService.searchByCondition(any(SearchIngrSDto.class))).willReturn(responseDtoPage);
 
+
         mockMvc.perform(get("/api/ingredients/search")
                         .queryParam("keyword", "golden")
                         .queryParam("category", " ")
@@ -212,7 +223,21 @@ class IngredientControllerTest extends AbstractRestDocsTests {
                         .queryParam("size", "10")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.message").value(ApiResponseConst.GET_INGR_LIST_SUCCESS));
+                .andExpect(jsonPath("$.message").value(ApiResponseConst.GET_INGR_LIST_SUCCESS))
+                .andDo(document("ingredient/search",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        resource(ResourceSnippetParameters.builder()
+                                .summary("재료 검색 API")
+                                .description("사용자가 검색 키워드와 카테고리를 입력하여 재료를 검색할 수 있는 API")
+                                .tag("ingredient")
+                                .queryParameters(
+                                        parameterWithName("keyword").description("검색할 재료 키워드"),
+                                        parameterWithName("category").description("재료 카테고리 (비워둘 수 있음)"),
+                                        parameterWithName("page").description("페이지 번호 (1부터 시작)"),
+                                        parameterWithName("size").description("한 페이지당 조회할 개수")
+                                )
+                                .build())));
     }
 
 
@@ -243,17 +268,13 @@ class IngredientControllerTest extends AbstractRestDocsTests {
 
         given(ingredientService.updateIngredient(any(UpdateIngrSDto.class))).willReturn(responseDto);
 
-        mockMvc.perform(multipart("/api/ingredients/{ingredientId}", ingrId)
+        mockMvc.perform(multipart(HttpMethod.PATCH, "/api/ingredients/{ingredientId}", ingrId)
                         .file(multipartFile)
                         .file(requestFile)
                         .with(user(UserTestFactory.createMockAdminDetails()))
-                        .accept(MediaType.APPLICATION_JSON)
-                        .contentType(MediaType.MULTIPART_FORM_DATA)
-                        .with(request -> {
-                            request.setMethod("PATCH"); // PATCH 요청으로 변경
-                            return request;
-                        })
-                )
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(requestDto))
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.message").value(ApiResponseConst.UPDATE_INGR_SUCCESS))
                 .andExpect(jsonPath("$.data.name").value(responseDto.getName()))
                 .andExpect(jsonPath("$.data.description").value(responseDto.getDescription()))
