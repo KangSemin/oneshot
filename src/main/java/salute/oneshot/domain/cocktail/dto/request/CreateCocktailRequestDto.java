@@ -21,7 +21,7 @@ public class CreateCocktailRequestDto {
     @NotNull
     private final List<IngredientRequestDto> ingredientList;
 
-    private final MultipartFile imageFile;
+//    private final MultipartFile imageFile;
 
 
 }

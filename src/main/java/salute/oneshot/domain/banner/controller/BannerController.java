@@ -29,7 +29,7 @@ public class BannerController {
             @RequestParam(required = false) String endDate
     ) {
         Pageable pageable = PageRequest.of(
-                page - 1, size, Sort.by("modifiedAt").descending()
+                page - 1, size, Sort.by("endTime").ascending()
         );
 
         GetBannersSDto serviceDto =

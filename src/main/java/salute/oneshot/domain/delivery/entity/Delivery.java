@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import salute.oneshot.domain.common.dto.entity.BaseEntity;
+import salute.oneshot.domain.common.entity.BaseEntity;
 import salute.oneshot.domain.common.dto.error.ErrorCode;
 import salute.oneshot.domain.order.entity.Order;
 import salute.oneshot.domain.delivery.enums.CourierCompany;
@@ -66,8 +66,7 @@ public class Delivery extends BaseEntity {
                 receiverPhone,
                 deliveryMessage,
                 trackingNumber,
-                courierCompany
-        );
+                courierCompany);
     }
 
     public void updateStatus(ShippingStatus status) {

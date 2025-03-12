@@ -11,7 +11,9 @@ endif
 APP_NAME=oneshot:latest
 
 build:
+
 	$(GRADLE_CMD) build
+
 
 docker-build:
 	docker build -t $(APP_NAME) .

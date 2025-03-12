@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import salute.oneshot.domain.common.dto.entity.BaseEntity;
+import salute.oneshot.domain.common.entity.BaseEntity;
 import salute.oneshot.domain.event.entity.Event;
 
 import java.time.LocalDateTime;
@@ -61,10 +61,5 @@ public class Banner extends BaseEntity {
     ) {
         this.event = event;
         this.imageUrl = imageUrl;
-    }
-
-    public void syncWithEventTime() {
-        this.startTime = event.getStartTime().minusDays(7);
-        this.endTime = event.getEndTime();
     }
 }

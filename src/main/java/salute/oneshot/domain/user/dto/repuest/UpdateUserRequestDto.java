@@ -18,12 +18,8 @@ public class UpdateUserRequestDto {
     private final String nickname;
 
     @Pattern(
-            regexp = UserValidationConst.EMAIL_REG,
-            message = UserValidationConst.INVALID_EMAIL_MESSAGE
+            regexp = UserValidationConst.PASSWORD_REG,
+            message = UserValidationConst.INVALID_PASSWORD_MESSAGE
     )
     private final String password;
-
-    public static UpdateUserRequestDto of(String nickname, String rawPassword) {
-        return new UpdateUserRequestDto(nickname, rawPassword);
-    }
 }

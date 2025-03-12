@@ -14,11 +14,9 @@ public class EventBriefResponseDto {
 
     private final Long id;
     private final String name;
-
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     private final LocalDateTime startTime;
-
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     private final LocalDateTime endTime;
 
     public static EventBriefResponseDto from(Event event) {

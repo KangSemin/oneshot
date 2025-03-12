@@ -1,5 +1,6 @@
 package salute.oneshot.domain.user.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,7 +37,7 @@ public class UserController {
     @PatchMapping
     public ResponseEntity<ApiResponse<UserResponseDto>> updateUserInfo(
             @AuthenticationPrincipal CustomUserDetails userDetails,
-            @RequestBody UpdateUserRequestDto requestDto
+            @Valid @RequestBody UpdateUserRequestDto requestDto
     ) {
         UpdateUserSDto serviceDto = UpdateUserSDto.of(
                 userDetails.getId(),

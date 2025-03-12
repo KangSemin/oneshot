@@ -5,6 +5,9 @@ import salute.oneshot.domain.address.dto.request.CreateAddressRequestDto;
 import salute.oneshot.domain.address.dto.request.UpdateAddressRequestDto;
 import salute.oneshot.domain.address.entity.Address;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+
 public class AddressTestFactory {
     public static final Long USER_ID = 1L;
     public static final Long ADDRESS_ID = 1L;
@@ -28,13 +31,24 @@ public class AddressTestFactory {
                 DETAIL_ADDRESS,
                 EXTRA_ADDRESS,
                 USER_ID);
-        ReflectionTestUtils.setField(address,"id",ADDRESS_ID);
+        ReflectionTestUtils.setField(address, "id", ADDRESS_ID);
 
         return address;
     }
 
-    public static CreateAddressRequestDto createCreateRequestDto() {
-        return CreateAddressRequestDto.of(
+    public static CreateAddressRequestDto createCreateRequestDto()
+            throws NoSuchMethodException, InvocationTargetException,
+            InstantiationException, IllegalAccessException {
+        Constructor<CreateAddressRequestDto> addressCont = CreateAddressRequestDto.class.
+                getDeclaredConstructor(
+                        String.class,
+                        String.class,
+                        String.class,
+                        String.class,
+                        String.class);
+        addressCont.setAccessible(true);
+
+        return addressCont.newInstance(
                 ADDRESS_NAME,
                 POSTCODE,
                 POST_ADDRESS,
@@ -42,8 +56,20 @@ public class AddressTestFactory {
                 EXTRA_ADDRESS);
     }
 
-    public static UpdateAddressRequestDto createUpdateRequestDto() {
-        return UpdateAddressRequestDto.of(
+    public static UpdateAddressRequestDto createUpdateRequestDto()
+            throws NoSuchMethodException, InvocationTargetException,
+            InstantiationException, IllegalAccessException {
+        Constructor<UpdateAddressRequestDto> addressCont = UpdateAddressRequestDto.class
+                .getDeclaredConstructor(
+                        String.class,
+                        String.class,
+                        String.class,
+                        String.class,
+                        String.class,
+                        boolean.class);
+        addressCont.setAccessible(true);
+
+        return addressCont.newInstance(
                 NEW_ADDRESS_NAME,
                 NEW_POSTCODE,
                 NEW_POST_ADDRESS,

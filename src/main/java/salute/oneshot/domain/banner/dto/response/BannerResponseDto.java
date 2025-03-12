@@ -12,17 +12,19 @@ import java.time.LocalDateTime;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class BannerResponseDto {
 
+    private final Long bannerId;
     private final Long eventId;
     private final String imageUrl;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     private final LocalDateTime startTime;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     private final LocalDateTime endTime;
 
     public static BannerResponseDto from(Banner banner) {
         return new BannerResponseDto(
+                banner.getId(),
                 banner.getEvent().getId(),
                 banner.getImageUrl(),
                 banner.getStartTime(),

@@ -15,5 +15,8 @@ public class UserValidationConst {
     public static final String NICKNAME_BLANK_MESSAGE = "닉네임을 입력해 주세요.";
     public static final int NICKNAME_MAX = 15;
     public static final int NICKNAME_MIN = 2;
+
+    public static final String USER_ROLE_MESSAGE = "유저권한을 입력해주세요.";
+
 }
 

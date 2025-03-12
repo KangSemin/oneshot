@@ -1,5 +1,6 @@
 package salute.oneshot.domain.event.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,7 +30,7 @@ public class AdminEventController {
 
     @PostMapping
     public ResponseEntity<ApiResponse<EventBriefResponseDto>> createEvent(
-            @RequestBody EventRequestDto requestDto
+            @Valid @RequestBody EventRequestDto requestDto
     ) {
         CreateEventSDto serviceDto = CreateEventSDto.of(
                 requestDto.getName(),
@@ -56,7 +57,7 @@ public class AdminEventController {
     @PatchMapping("/{eventId}")
     public ResponseEntity<ApiResponse<EventDetailResponseDto>> updateEvent(
             @PathVariable Long eventId,
-            @RequestBody EventRequestDto requestDto
+            @Valid @RequestBody EventRequestDto requestDto
     ) {
         UpdateEventSDto serviceDto = UpdateEventSDto.of(
                 eventId,
@@ -84,13 +85,14 @@ public class AdminEventController {
     public ResponseEntity<ApiResponse<Long>> deleteEvent(
             @PathVariable Long eventId
     ) {
-        Long deletedId = eventService.deleteEvent(eventId);
+        eventService.deleteEvent(eventId);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ApiResponse.success(
                         ApiResponseConst.DELETE_EVENT_SUCCESS,
-                        deletedId));
+                        eventId));
     }
+
     // 배너 클릭 -> 이벤트 GET 화면에서 SSE 구독
     @GetMapping("/event-stream/{eventId}")
     public SseEmitter streamEventUpdates(

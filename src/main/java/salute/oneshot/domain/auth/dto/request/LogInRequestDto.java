@@ -14,14 +14,9 @@ public class LogInRequestDto {
     @NotBlank(message = UserValidationConst.EMAIL_BLANK_MESSAGE)
     @Pattern(
             regexp = UserValidationConst.EMAIL_REG,
-            message = UserValidationConst.INVALID_EMAIL_MESSAGE
-    )
+            message = UserValidationConst.INVALID_EMAIL_MESSAGE)
     private final String email;
 
     @NotBlank(message = UserValidationConst.PASSWORD_BLANK_MESSAGE)
     private final String password;
-
-    public static LogInRequestDto of(String email, String password) {
-        return new LogInRequestDto(email, password);
-    }
 }

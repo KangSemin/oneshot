@@ -1,5 +1,6 @@
 package salute.oneshot.domain.banner.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,14 +17,14 @@ import salute.oneshot.domain.common.dto.success.ApiResponseConst;
 @RestController
 @RequestMapping("/api/admin/banners")
 @RequiredArgsConstructor
+@PreAuthorize("hasRole('ADMIN')")
 public class AdminBannerController {
 
     private final BannerService bannerService;
 
-    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<ApiResponse<BannerResponseDto>> createBanner(
-            @RequestBody BannerRequestDto requestDto
+            @Valid @RequestBody BannerRequestDto requestDto
     ) {
         BannerSDto serviceDto = BannerSDto.of(
                 requestDto.getEventId(),
@@ -40,11 +41,10 @@ public class AdminBannerController {
                         responseDto));
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/{bannerId}")
     public ResponseEntity<ApiResponse<BannerResponseDto>> updateBanner(
             @PathVariable Long bannerId,
-            @RequestBody BannerRequestDto requestDto
+            @Valid @RequestBody BannerRequestDto requestDto
     ) {
         UpdateBannerSDto serviceDto = UpdateBannerSDto.of(
                 bannerId, requestDto.getEventId(),
@@ -62,16 +62,14 @@ public class AdminBannerController {
                         responseDto));
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{bannerId}")
     public ResponseEntity<ApiResponse<Long>> deleteBanner(
             @PathVariable Long bannerId
     ) {
-        Long deletedId =
-                bannerService.deleteBanner(bannerId);
+        bannerService.deleteBanner(bannerId);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ApiResponse.success(
                         ApiResponseConst.DELETE_BANNER_SUCCESS,
-                        deletedId));
+                        bannerId));
     }
 }

@@ -54,22 +54,17 @@ public class EventProducerService {
             Long couponId,
             String limitCount
     ) {
-        log.info("프로듀서서비스 processEventParticipation 1");
         String counterKey = "event:" + eventId + ":counter";
         String limitKey = "event:" + eventId + ":limit";
         String winnersKey = "event:" + eventId + ":winners";
 
-        log.info("프로듀서서비스 processEventParticipation 2");
         List<String> keysForScript = List.of(counterKey, limitKey, winnersKey);
 
-        log.info("프로듀서서비스 processEventParticipation 3");
         Object[] args = { limitCount, userId };
 
-        log.info("프로듀서서비스 processEventParticipation 3");
         Long result = redisTemplate
                 .execute(eventParticipationScript, keysForScript, args);
 
-        log.info("프로듀서서비스 processEventParticipation 4");
         return switch (result.intValue()) {
             case -1 -> getDto(eventId, userId, couponId, EventResult.ALREADY_PARTICIPATED);
             case 0 -> getDto(eventId, userId, couponId, EventResult.LIMIT_EXCEEDED);
@@ -83,7 +78,6 @@ public class EventProducerService {
             Long couponId,
             EventResult eventResult
     ) {
-        log.info("프로듀서서비스 getDto");
         return ParticipateEventDto
                 .of(eventId, Long.parseLong(userId), couponId, eventResult);
     }

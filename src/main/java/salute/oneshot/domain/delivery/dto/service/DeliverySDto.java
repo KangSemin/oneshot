@@ -22,7 +22,7 @@ public class DeliverySDto {
             String receiverPhone,
             String deliveryMessage,
             String trackingNumber,
-            CourierCompany courierCompany
+            String courierCompany
     ){
         return new DeliverySDto(
                 orderId,
@@ -30,7 +30,6 @@ public class DeliverySDto {
                 receiverPhone,
                 deliveryMessage,
                 trackingNumber,
-                courierCompany
-        );
+                CourierCompany.ofName(courierCompany));
     }
 }

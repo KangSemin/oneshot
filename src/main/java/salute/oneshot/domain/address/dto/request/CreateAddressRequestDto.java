@@ -8,7 +8,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class CreateAddressRequestDto {
-
+    // 카카오 API 주소정보를 받아오므로 @NoBlank 만 적용
     @NotBlank
     private final String addressName;
     @NotBlank
@@ -18,19 +18,4 @@ public class CreateAddressRequestDto {
     @NotBlank
     private final String detailAddress;
     private final String extraAddress;
-
-    public static CreateAddressRequestDto of(
-            String addressName,
-            String postcode,
-            String postAddress,
-            String detailAddress,
-            String extraAddress
-    ) {
-        return new CreateAddressRequestDto(
-                addressName,
-                postcode,
-                postAddress,
-                detailAddress,
-                extraAddress);
-    }
 }

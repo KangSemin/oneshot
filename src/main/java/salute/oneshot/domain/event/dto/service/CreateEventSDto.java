@@ -27,7 +27,7 @@ public class CreateEventSDto {
             String startTime,
             String endDate,
             String endTime,
-            EventType eventType,
+            String eventType,
             int limitCount,
             Object eventDetailData
     ) {
@@ -40,7 +40,7 @@ public class CreateEventSDto {
                 DateTimeUtil.parseEndDateTime(
                         endDate,
                         endTime),
-                eventType,
+                EventType.of(eventType),
                 limitCount,
                 eventDetailData);
     }

@@ -15,31 +15,20 @@ public class SignUpRequestDto {
     @NotBlank(message = UserValidationConst.EMAIL_BLANK_MESSAGE)
     @Pattern(
             regexp = UserValidationConst.EMAIL_REG,
-            message = UserValidationConst.INVALID_EMAIL_MESSAGE
-    )
+            message = UserValidationConst.INVALID_EMAIL_MESSAGE)
     private final String email;
 
     @NotBlank(message = UserValidationConst.PASSWORD_BLANK_MESSAGE)
     @Size(min = UserValidationConst.PASSWORD_MIN, message = UserValidationConst.PASSWORD_MIN_MESSAGE)
     @Pattern(
             regexp = UserValidationConst.PASSWORD_REG,
-            message = UserValidationConst.INVALID_PASSWORD_MESSAGE
-    )
+            message = UserValidationConst.INVALID_PASSWORD_MESSAGE)
     private final String password;
 
     @NotBlank(message = UserValidationConst.NICKNAME_BLANK_MESSAGE)
     @Size(
             min = UserValidationConst.NICKNAME_MIN,
             max = UserValidationConst.NICKNAME_MAX,
-            message = UserValidationConst.NICKNAME_RANGE_MESSAGE
-    )
+            message = UserValidationConst.NICKNAME_RANGE_MESSAGE)
     private final String nickName;
-
-    public static SignUpRequestDto of(
-            String email,
-            String password,
-            String nickName
-    ) {
-        return new SignUpRequestDto(email, password, nickName);
-    }
 }
