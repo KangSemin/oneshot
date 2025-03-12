@@ -1,5 +1,6 @@
 package salute.oneshot.domain.pantry.controller;
 
+import com.epages.restdocs.apispec.ResourceSnippetParameters;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -21,8 +22,12 @@ import salute.oneshot.util.UserTestFactory;
 
 import java.util.List;
 
+import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.document;
+import static com.epages.restdocs.apispec.ResourceDocumentation.resource;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -43,7 +48,7 @@ class PantryControllerTest extends AbstractRestDocsTests {
 
 
     @Test
-    void addIngrToPantry() throws Exception {
+    void 펜트리_재료추가_성공() throws Exception {
         AddIngrToPantrySDto sDto = AddIngrToPantrySDto.of(userId, ingredientId);
 
 
@@ -53,11 +58,24 @@ class PantryControllerTest extends AbstractRestDocsTests {
         mockMvc.perform(post("/api/pantries/ingredients/{ingredientId}", 1L)
                         .with(user(UserTestFactory.createMockUserDetails()))
                         .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+                        .accept(MediaType.APPLICATION_JSON)) // 위치 수정
                 .andExpect(jsonPath("$.message").value(ApiResponseConst.ADD_PNTR_INGR_SUCCESS))
                 .andExpect(jsonPath("$.data.userId").value(responseDto.getUserId()))
-                .andExpect(jsonPath("$.data.pantryId").value(responseDto.getPantryId()));
+                .andExpect(jsonPath("$.data.pantryId").value(responseDto.getPantryId()))
+                .andDo(document("pantry/addIngrToPantry",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("pantry")
+                                .summary("펜트리에 재료 추가 API")
+                                .description("사용자의 펜트리에 특정 재료를 추가하는 API")
+                                .pathParameters(
+                                        parameterWithName("ingredientId").description("추가할 재료의 ID")
+                                )
+                                .build()
+                        )
+                ));
+
     }
 
     @Test
@@ -74,8 +92,21 @@ class PantryControllerTest extends AbstractRestDocsTests {
                         .with(user(UserTestFactory.createMockUserDetails()))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
-                .andExpect(jsonPath("$.errorMessage").value(ErrorCode.INGREDIENT_NOT_FOUND.getMessage()));
+                .andExpect(jsonPath("$.errorMessage").value(ErrorCode.INGREDIENT_NOT_FOUND.getMessage()))
+                .andDo(document("pantry/addIngrToPantry_failedCase1",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("pantry")
+                                .summary("펜트리 재료 추가 실패")
+                                .description("펜트리 재료 추가 실패 - 해당 재료가 존재하지 않는 경우")
+                                .pathParameters(
+                                        parameterWithName("ingredientId").description("추가하려는 재료의 ID (존재하지 않는 경우 예외 발생)")
+                                )
+                                .build()
+                        )
+                ));
+
     }
 
     @Test
@@ -92,8 +123,21 @@ class PantryControllerTest extends AbstractRestDocsTests {
                         .with(user(UserTestFactory.createMockUserDetails()))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
-                .andExpect(jsonPath("$.errorMessage").value(ErrorCode.DUPLICATE_INGREDIENT.getMessage()));
+                .andExpect(jsonPath("$.errorMessage").value(ErrorCode.DUPLICATE_INGREDIENT.getMessage()))
+                .andDo(document("pantry/addIngrToPantry_failedCase2",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("pantry")
+                                .summary("펜트리 재료 추가 실패")
+                                .description("펜트리 재료 추가 실패 - 이미 추가된 재료")
+                                .pathParameters(
+                                        parameterWithName("ingredientId").description("추가할 재료의 ID (이미 추가된 경우 예외 발생)")
+                                )
+                                .build()
+                        )
+                ));
+
     }
 
 
@@ -106,10 +150,20 @@ class PantryControllerTest extends AbstractRestDocsTests {
                         .with(user(UserTestFactory.createMockUserDetails()))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
                 .andExpect(jsonPath("$.message").value(ApiResponseConst.GET_PNTR_SUCCESS))
                 .andExpect(jsonPath("$.data[0].userId").value(pantryResponseDtoList.get(0).getUserId()))
-                .andExpect(jsonPath("$.data[0].pantryId").value(pantryResponseDtoList.get(0).getPantryId()));
+                .andExpect(jsonPath("$.data[0].pantryId").value(pantryResponseDtoList.get(0).getPantryId()))
+                .andDo(document("pantry/getMyPantry",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("pantry")
+                                .summary("나의 펜트리 조회 API")
+                                .description("로그인한 사용자의 펜트리 목록을 조회하는 API")
+                                .build()
+                        )
+                ));
+
     }
 
     @Test
@@ -121,8 +175,18 @@ class PantryControllerTest extends AbstractRestDocsTests {
                         .with(user(UserTestFactory.createMockUserDetails()))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
-                .andExpect(jsonPath("$.message").value(ApiResponseConst.DELETE_PNTR_SUCCESS));
+                .andExpect(jsonPath("$.message").value(ApiResponseConst.DELETE_PNTR_SUCCESS))
+                .andDo(document("pantry/clearPantryIngredients",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("pantry")
+                                .summary("펜트리 비우기 API")
+                                .description("사용자의 펜트리에 있는 모든 재료를 삭제하는 API")
+                                .build()
+                        )
+                ));
+
     }
 
     @Test
@@ -132,12 +196,22 @@ class PantryControllerTest extends AbstractRestDocsTests {
         doNothing().when(pantryService).removeIngredientsFromPantry(any(RemoveIngrFromPantrySDto.class));
 
         mockMvc.perform(delete("/api/pantries/ingredients")
-                        .param("ingredientIds", "1", "2")
+                        .queryParam("ingredientIds", "1", "2", "3")
                         .with(user(UserTestFactory.createMockUserDetails()))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
-                .andExpect(jsonPath("$.message").value(ApiResponseConst.DELETE_INGR_SUCCESS));
-
+                .andExpect(jsonPath("$.message").value(ApiResponseConst.DELETE_INGR_SUCCESS))
+                .andDo(document("pantry/removeIngredient",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        resource(ResourceSnippetParameters.builder()
+                                .summary("펜트리 내의 재료 삭제 API")
+                                .description("사용자의 펜트리에서 재료를 삭제하는 API")
+                                .tag("pantry")
+                                .queryParameters(
+                                        parameterWithName("ingredientIds").description("삭제할 재료의 ID 리스트 "))
+                                .build()
+                        )
+                ));
     }
 }
