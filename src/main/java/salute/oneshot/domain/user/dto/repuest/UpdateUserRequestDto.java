@@ -22,8 +22,4 @@ public class UpdateUserRequestDto {
             message = UserValidationConst.INVALID_PASSWORD_MESSAGE
     )
     private final String password;
-
-    public static UpdateUserRequestDto of(String nickname, String rawPassword) {
-        return new UpdateUserRequestDto(nickname, rawPassword);
-    }
 }

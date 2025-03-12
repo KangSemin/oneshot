@@ -54,27 +54,4 @@ public class EventRequestDto {
 
     @NotNull(message = EventValidationConst.EVENT_DETAIL_DATE_MESSAGE)
     private final Object eventDetailData;
-
-    public static EventRequestDto of(
-            String name,
-            String description,
-            String startDate,
-            String startTime,
-            String endDate,
-            String endTime,
-            String eventType,
-            int limitCount,
-            Object eventDetailData
-    ) {
-        return new EventRequestDto(
-                name,
-                description,
-                startDate,
-                startTime,
-                endDate,
-                endTime,
-                eventType,
-                limitCount,
-                eventDetailData);
-    }
 }

@@ -19,8 +19,4 @@ public class LogInRequestDto {
 
     @NotBlank(message = UserValidationConst.PASSWORD_BLANK_MESSAGE)
     private final String password;
-
-    public static LogInRequestDto of(String email, String password) {
-        return new LogInRequestDto(email, password);
-    }
 }

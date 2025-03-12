@@ -9,8 +9,4 @@ import lombok.Getter;
 public class UpdateDeliveryRequestDto {
 
     private final String status;
-
-    public static UpdateDeliveryRequestDto of(String status) {
-        return new UpdateDeliveryRequestDto(status);
-    }
 }
