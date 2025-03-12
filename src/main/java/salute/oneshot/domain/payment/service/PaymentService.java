@@ -56,8 +56,8 @@ public class PaymentService {
         return PaymentResponseDto.from(tossPayment);
     }
 
-    public PaymentResponseDto getPayment(Long paymentId) {
-        Payment foundPayment = paymentRepository.findById(paymentId).orElseThrow(() -> new NotFoundException(ErrorCode.PAYMENT_NOT_FOUND));
+    public PaymentResponseDto getPayment(String paymentKey) {
+        Payment foundPayment = paymentRepository.findPaymentByPaymentKey(paymentKey).orElseThrow(() -> new NotFoundException(ErrorCode.PAYMENT_NOT_FOUND));
         return PaymentResponseDto.from(foundPayment);
     }
 
