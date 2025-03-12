@@ -8,7 +8,7 @@ import static org.mockito.Mockito.mock;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
-import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static com.epages.restdocs.apispec.ResourceDocumentation.parameterWithName;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.util.ReflectionTestUtils.setField;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -19,6 +19,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.epages.restdocs.apispec.ResourceSnippetParameters;
+import com.epages.restdocs.apispec.SimpleType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.lang.reflect.Constructor;
 import java.util.List;
@@ -175,10 +176,10 @@ class CocktailControllerTest extends AbstractRestDocsTests {
                     .tag(API_TAG)
                     .summary("키워드를 통한 칵테일 검색")
                     .queryParameters(
-                        parameterWithName("page").description("페이지 넘버").optional(),
-                        parameterWithName("size").description("페이지당 항목 수").optional(),
+                        parameterWithName("page").type(SimpleType.INTEGER).description("기본값 : 1").optional(),
+                        parameterWithName("size").type(SimpleType.INTEGER).description("기본값 : 10").optional(),
                         parameterWithName("recipeType").description("OFFICIAL/CUSTOM").optional(),
-                        parameterWithName("keyword").description("검색 키워드").optional())
+                        parameterWithName("keyword").type(SimpleType.STRING).description("검색 키워드").optional())
                     .build()
                 )));
     }
@@ -222,9 +223,9 @@ class CocktailControllerTest extends AbstractRestDocsTests {
                     .tag(API_TAG)
                     .summary("키워드를 통한 칵테일 검색")
                     .queryParameters(
-                        parameterWithName("page").description("페이지 넘버").optional(),
-                        parameterWithName("size").description("페이지당 항목 수").optional(),
-                        parameterWithName("isCraftable").description("조주 가능한 칵테일만 검색").optional(),
+                        parameterWithName("page").type(SimpleType.INTEGER).description("기본값 : 1").optional(),
+                        parameterWithName("size").type(SimpleType.INTEGER).description("기본값 : 10").optional(),
+                        parameterWithName("isCraftable").type(SimpleType.BOOLEAN).description("기본값 : false").optional(),
                         parameterWithName("recipeType").description("OFFICIAL/CUSTOM").optional())
                     .build()
                 )));
