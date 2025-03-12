@@ -30,7 +30,7 @@ public class BannerService {
     public BannerResponseDto createBanner(BannerSDto serviceDto) {
         Event event = eventRepository.findById(serviceDto.getEventId())
                 .orElseThrow(() ->
-                        new NotFoundException(ErrorCode.BANNER_NOT_FOUND));
+                        new NotFoundException(ErrorCode.EVENT_NOT_FOUND));
 
         Banner banner = Banner.of(
                 event,

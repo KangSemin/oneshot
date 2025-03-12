@@ -22,6 +22,7 @@ import salute.oneshot.domain.address.dto.service.UpdateAddressSDto;
 import salute.oneshot.domain.address.entity.Address;
 import salute.oneshot.domain.address.service.AddressService;
 import salute.oneshot.domain.common.AbstractRestDocsTests;
+import salute.oneshot.domain.common.ApiDocHelper;
 import salute.oneshot.domain.common.dto.error.ErrorCode;
 import salute.oneshot.domain.common.dto.success.ApiResponseConst;
 import salute.oneshot.global.exception.InvalidException;
@@ -82,6 +83,7 @@ class AddressControllerTest extends AbstractRestDocsTests {
                 .andExpect(jsonPath("$.data.postAddress").value(AddressTestFactory.POST_ADDRESS))
                 .andExpect(jsonPath("$.data.detailAddress").value(AddressTestFactory.DETAIL_ADDRESS))
                 .andExpect(jsonPath("$.data.extraAddress").value(AddressTestFactory.EXTRA_ADDRESS))
+                .andDo(ApiDocHelper.getDocument("address-api", ApiDocHelper.TAG_ADDRESS, "주소 등록 API", "주소를 등록합니다."))
                 .andReturn();
     }
 
@@ -111,7 +113,8 @@ class AddressControllerTest extends AbstractRestDocsTests {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value(ApiResponseConst.GET_ADR_LIST_SUCCESS))
                 .andExpect(jsonPath("$.data.addresses[0].addressId").value(AddressTestFactory.ADDRESS_ID))
-                .andExpect(jsonPath("$.data.addresses[1].addressId").value(AddressTestFactory.ADDRESS_ID))                .andExpect(jsonPath("$.data.addresses").isArray())
+                .andExpect(jsonPath("$.data.addresses[1].addressId").value(AddressTestFactory.ADDRESS_ID))
+                .andExpect(jsonPath("$.data.addresses").isArray())
                 .andExpect(jsonPath("$.data.addresses.length()").value(2))
                 .andExpect(jsonPath("$.data.hasNext").value(true))
                 .andExpect(jsonPath("$.data.nextCursor").value(2))

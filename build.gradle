@@ -1,8 +1,4 @@
-
-import com.sun.security.ntlm.Server
 import org.hidetake.gradle.swagger.generator.GenerateSwaggerUI
-import org.springframework.boot.gradle.tasks.bundling.BootJar
-
 
 plugins {
 	id 'java'
@@ -114,7 +110,7 @@ dependencies {
 openapi3 {
 	servers = [
 			{ url = "http://localhost:8080" },
-			{ url = "http://대충 배포중인 주소" }
+			{ url = "http://43.200.158.39:8080" }
 	]
 	title = "API 문서"
 	description = "RestDocsWithSwagger Docs"
@@ -128,7 +124,7 @@ tasks.named('test') {
 
 
 tasks.withType(GenerateSwaggerUI) {
-	dependsOn 'openapi3'
+	mustRunAfter 'openapi3'
 	doFirst {
 		def swaggerUIFile = file("${openapi3.outputDirectory}/openapi3.yaml")
 
@@ -177,4 +173,6 @@ sourceSets {
 //	delete generated
 //}
 
-
+tasks.named("processResources") {
+	dependsOn tasks.named("copySwaggerUI")
+}

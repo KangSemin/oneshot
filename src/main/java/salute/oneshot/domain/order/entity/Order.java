@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import salute.oneshot.domain.address.entity.Address;
 import salute.oneshot.domain.cart.entity.Cart;
-import salute.oneshot.domain.common.dto.entity.BaseEntity;
+import salute.oneshot.domain.common.entity.BaseEntity;
 import salute.oneshot.domain.user.entity.User;
 
 import java.util.ArrayList;

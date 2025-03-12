@@ -5,8 +5,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import salute.oneshot.domain.common.dto.entity.BaseEntity;
-import salute.oneshot.domain.coupon.dto.service.CreateCpnSDto;
+import salute.oneshot.domain.common.entity.BaseEntity;
 import salute.oneshot.domain.coupon.dto.service.UpdateCpnSDto;
 
 import java.time.LocalDateTime;

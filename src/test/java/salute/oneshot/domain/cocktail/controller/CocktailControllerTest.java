@@ -52,6 +52,7 @@ class CocktailControllerTest extends AbstractRestDocsTests {
                 )
             );
 
+
         // when & then
         mockMvc.perform(get("/api/cocktails")
                 .param("page", "1")
