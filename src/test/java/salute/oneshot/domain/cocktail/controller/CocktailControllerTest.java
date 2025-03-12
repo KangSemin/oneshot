@@ -2,6 +2,7 @@ package salute.oneshot.domain.cocktail.controller;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
@@ -41,6 +42,7 @@ import salute.oneshot.domain.cocktail.dto.service.UpdateCocktailSDto;
 import salute.oneshot.domain.cocktail.service.CocktailService;
 import salute.oneshot.domain.common.AbstractRestDocsTests;
 import salute.oneshot.domain.common.dto.success.ApiResponseConst;
+import salute.oneshot.global.util.CookieUtil;
 import salute.oneshot.global.util.S3Util;
 import salute.oneshot.util.CocktailTestFactory;
 import salute.oneshot.util.UserTestFactory;
@@ -87,18 +89,10 @@ class CocktailControllerTest extends AbstractRestDocsTests {
             "1.칠링한 온더락 글라스에 재료들을 붓는다.\n2.젓는다.",
             List.of(ingrRequest1, ingrRequest2));
 
-        MockMultipartFile requestPart = new MockMultipartFile(
-            "request",
-            "",
-            MediaType.APPLICATION_JSON_VALUE,
-            objectMapper.writeValueAsString(request).getBytes()
-        );
-//        given(cocktailService.createCocktail(any(CreateCocktailSDto.class)))
 
         // when & then
         mockMvc.perform(multipart("/api/cocktails")
                 .file(imageFile)
-                .file(requestPart)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request))
                 .with(user(UserTestFactory.createMockUserDetails()))
@@ -113,7 +107,6 @@ class CocktailControllerTest extends AbstractRestDocsTests {
     void getCocktailById() throws Exception {
 
         // given
-
         CocktailResponseDto response = CocktailResponseDto.from(CocktailTestFactory.createBlackRussian());
 
         given(cocktailService.getCocktail(1L))

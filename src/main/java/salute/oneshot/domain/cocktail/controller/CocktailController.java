@@ -22,6 +22,7 @@ import salute.oneshot.domain.cocktail.service.CocktailService;
 import salute.oneshot.domain.common.dto.success.ApiResponse;
 import salute.oneshot.domain.common.dto.success.ApiResponseConst;
 import salute.oneshot.global.security.model.CustomUserDetails;
+import salute.oneshot.global.util.CookieUtil;
 import salute.oneshot.global.util.S3Util;
 
 import java.io.IOException;
@@ -29,9 +30,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneOffset;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @RestController
@@ -44,12 +43,13 @@ public class CocktailController {
 
     @PostMapping
     public ResponseEntity<ApiResponse<CocktailResponseDto>> createCocktail(
-            @ModelAttribute CreateCocktailRequestDto request,
+            @RequestPart MultipartFile imageFile,
+            @RequestBody CreateCocktailRequestDto request,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
 
         CreateCocktailSDto sDto = CreateCocktailSDto.of(userDetails.getId(),
                 userDetails.getUserRole(), request.getName(),
-                request.getDescription(), request.getRecipe(), request.getIngredientList(), request.getImageFile());
+                request.getDescription(), request.getRecipe(), request.getIngredientList(), imageFile);
 
         cocktailService.createCocktail(sDto);
 

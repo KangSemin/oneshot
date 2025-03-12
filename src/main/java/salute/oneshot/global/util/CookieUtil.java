@@ -23,8 +23,12 @@ public class CookieUtil {
 
         Cookie[] cookies = request.getCookies();
 
+        if (cookies == null) {
+            return new Cookie(cookieName, "[]");
+        }
+
         Optional<Cookie> optionalCookie = Arrays.stream(cookies)
-                .filter(c -> c.getName().equals(cookieName)).findAny();
+                .filter(c -> c.getName().equals(cookieName)).findFirst();
 
         if (optionalCookie.isEmpty()) {
             return new Cookie(cookieName, "[]");
