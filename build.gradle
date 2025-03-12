@@ -1,178 +1,173 @@
 import org.hidetake.gradle.swagger.generator.GenerateSwaggerUI
 
 plugins {
-	id 'java'
-	id 'org.springframework.boot' version '3.4.2'
-	id 'io.spring.dependency-management' version '1.1.7'
+    id 'java'
+    id 'org.springframework.boot' version '3.4.2'
+    id 'io.spring.dependency-management' version '1.1.7'
 
-	id 'com.epages.restdocs-api-spec' version '0.17.1'
-	id 'org.hidetake.swagger.generator' version '2.18.2'
-
+    id 'com.epages.restdocs-api-spec' version '0.17.1'
+    id 'org.hidetake.swagger.generator' version '2.18.2'
 }
 
 group = 'salute'
 version = '0.0.1-SNAPSHOT'
 
 java {
-	toolchain {
-		languageVersion = JavaLanguageVersion.of(17)
-	}
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
 }
 
 repositories {
-	mavenCentral()
+    mavenCentral()
 }
 
 swaggerSources {
-	sample {
-		setInputFile(file("${project.buildDir}/api-spec/openapi3.yaml"))
-	}
+    sample {
+        setInputFile(file("${project.buildDir}/api-spec/openapi3.yaml"))
+    }
 }
 
-
-
 ext {
-	set('springCloudVersion', "2024.0.0")
+    set('springCloudVersion', "2024.0.0")
 }
 
 dependencyManagement {
-	imports {
-		mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
-	}
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+    }
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	implementation 'org.springframework.boot:spring-boot-starter-security'
-	implementation 'org.springframework.boot:spring-boot-starter-validation'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
-	implementation 'org.springframework.boot:spring-boot-starter-websocket'
-	implementation("org.springframework.security:spring-security-messaging")
-	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
+    implementation("org.springframework.security:spring-security-messaging")
+    implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
 
-	compileOnly 'org.projectlombok:lombok'
-//	developmentOnly 'org.springframework.boot:spring-boot-docker-compose'
-	runtimeOnly 'com.mysql:mysql-connector-j'
-	annotationProcessor 'org.projectlombok:lombok'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testImplementation 'org.springframework.security:spring-security-test'
-	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-	implementation 'org.springframework.retry:spring-retry'
-	implementation 'io.github.cdimascio:dotenv-java:3.0.0'
+    compileOnly 'org.projectlombok:lombok'
+    runtimeOnly 'com.mysql:mysql-connector-j'
+    annotationProcessor 'org.projectlombok:lombok'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.security:spring-security-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    implementation 'org.springframework.retry:spring-retry'
+    implementation 'io.github.cdimascio:dotenv-java:3.0.0'
 
-	//elasticSearch
-	implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch'
-	implementation 'co.elastic.clients:elasticsearch-java:8.15.1'
+    //elasticSearch
+    implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch'
+    implementation 'co.elastic.clients:elasticsearch-java:8.15.1'
 
-	// redis
-	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    // redis
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
-	//querydsl
-	implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
-	annotationProcessor 'com.querydsl:querydsl-apt:5.0.0:jakarta'
-	annotationProcessor "jakarta.annotation:jakarta.annotation-api"
-	annotationProcessor "jakarta.persistence:jakarta.persistence-api"
+    //querydsl
+    implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
+    annotationProcessor 'com.querydsl:querydsl-apt:5.0.0:jakarta'
+    annotationProcessor "jakarta.annotation:jakarta.annotation-api"
+    annotationProcessor "jakarta.persistence:jakarta.persistence-api"
 
-	// jwt
-	implementation 'io.jsonwebtoken:jjwt-api:0.12.3'
-	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.3'
-	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.3'
+    // jwt
+    implementation 'io.jsonwebtoken:jjwt-api:0.12.3'
+    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.3'
+    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.3'
 
-	// openfeign for payments
-	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
-	implementation 'org.springframework.cloud:spring-cloud-config-server'
+    // openfeign for payments
+    implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+    implementation 'org.springframework.cloud:spring-cloud-config-server'
 
-	// OAuth2.0
-	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+    // OAuth2.0
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 
-	//hide on bush
-	implementation 'net.datafaker:datafaker:1.5.0'
+    //hide on bush
+    implementation 'net.datafaker:datafaker:1.5.0'
 
-	// RabbitMQ
-	implementation 'org.springframework.boot:spring-boot-starter-amqp'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'com.fasterxml.jackson.core:jackson-databind'
+    // RabbitMQ
+    implementation 'org.springframework.boot:spring-boot-starter-amqp'
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
 
-	// aws sdk
-	implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
+    // aws sdk
+    implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
 
-	//Spring REST Docks
-	testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
+    //Spring REST Docks
+    testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
 
-	// openAPI3
-	testImplementation 'com.epages:restdocs-api-spec-mockmvc:0.17.1'
-	// SwaggerUI
-	swaggerUI 'org.webjars:swagger-ui:4.11.1'
+    // openAPI3
+    testImplementation 'com.epages:restdocs-api-spec-mockmvc:0.17.1'
 
+    // SwaggerUI
+    swaggerUI 'org.webjars:swagger-ui:4.11.1'
 }
 
 openapi3 {
-	servers = [
-			{ url = "http://localhost:8080" },
-			{ url = "http://43.200.158.39:8080" }
-	]
-	title = "API 문서"
-	description = "RestDocsWithSwagger Docs"
-	version = "0.0.1"
-	format = "yaml"
+    servers = [
+            { url = "http://localhost:8080" },
+            { url = "http://43.200.158.39:8080" }
+    ]
+    title = "API 문서"
+    description = "RestDocsWithSwagger Docs"
+    version = "0.0.1"
+    format = "yaml"
 }
 
 tasks.named('test') {
-	useJUnitPlatform()
+    useJUnitPlatform()
 }
 
+// 1. OpenAPI 스펙 생성
+tasks.register('enhanceOpenApiSpec') {
+    dependsOn 'openapi3'
+    doLast {
+        def swaggerUIFile = file("${openapi3.outputDirectory}/openapi3.yaml")
+        if (swaggerUIFile.exists()) {
+            def securitySchemesContent = """  securitySchemes:
+    APIKey:
+      type: apiKey
+      name: Authorization
+      in: header
+security:
+  - APIKey: []  # Apply the security scheme here"""
 
+            swaggerUIFile.append securitySchemesContent
+        } else {
+            logger.warn("openapi3.yaml file does not exist. Skipping security schema addition.")
+        }
+    }
+}
+
+// 2. GenerateSwaggerUI 태스크 설정 - enhanceOpenApiSpec 후에 실행되어야 함
 tasks.withType(GenerateSwaggerUI) {
-	mustRunAfter 'openapi3'
-	doFirst {
-		def swaggerUIFile = file("${openapi3.outputDirectory}/openapi3.yaml")
-
-		def securitySchemesContent =  "  securitySchemes:\n" +  \
-                                      "    APIKey:\n" +  \
-                                      "      type: apiKey\n" +  \
-                                      "      name: Authorization\n" +  \
-                                      "      in: header\n" + \
-                                      "security:\n" +
-				"  - APIKey: []  # Apply the security scheme here"
-
-		swaggerUIFile.append securitySchemesContent
-	}
+    dependsOn 'enhanceOpenApiSpec'
 }
 
+// 3. Swagger UI 복사 태스크
 tasks.register('copySwaggerUI', Copy) {
-	dependsOn 'generateSwaggerUISample'
+    dependsOn 'generateSwaggerUISample'
 
-	def generateSwaggerUISampleTask = tasks.named('generateSwaggerUISample', GenerateSwaggerUI).get()
-	from("${generateSwaggerUISampleTask.outputDir}")
-
-	into("${project.projectDir}/src/main/resources/static/docs")
+    def generateSwaggerUISampleTask = tasks.named('generateSwaggerUISample', GenerateSwaggerUI).get()
+    from("${generateSwaggerUISampleTask.outputDir}")
+    into("${project.projectDir}/src/main/resources/static/docs")
 }
 
-bootJar {
-	dependsOn 'copySwaggerUI'
+// 4. bootJar 태스크가 copySwaggerUI 후에 실행되도록 설정
+tasks.named('bootJar') {
+    dependsOn 'copySwaggerUI'
 }
 
-// queryDSL 시작
+// queryDSL 설정
 def generated = file('build/generated/querydsl')
 
 tasks.withType(JavaCompile).configureEach {
-	options.getGeneratedSourceOutputDirectory().set(generated)
+    options.getGeneratedSourceOutputDirectory().set(generated)
 }
 
 sourceSets {
-	main {
-		java {
-			srcDirs = ['src/main/java', 'build/generated/querydsl']
-		}
-	}
-}
-
-
-//clean {
-//	delete generated
-//}
-
-tasks.named("processResources") {
-	dependsOn tasks.named("copySwaggerUI")
+    main {
+        java {
+            srcDirs = ['src/main/java', 'build/generated/querydsl']
+        }
+    }
 }
