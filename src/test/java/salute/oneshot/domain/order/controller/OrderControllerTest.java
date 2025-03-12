@@ -79,7 +79,7 @@ class OrderControllerTest extends AbstractRestDocsTests {
                 .willReturn(responseDto);
 
         // when & then
-        mockMvc.perform(get("/api/orders/" + 1L)
+        mockMvc.perform(get("/api/orders/{orderId}", OrderTestFactory.ORDER_ID)
                         .contentType(MediaType.APPLICATION_JSON)
                         .with(user(UserTestFactory.createMockUserDetails())))
                 .andExpect(status().isOk())
@@ -129,7 +129,7 @@ class OrderControllerTest extends AbstractRestDocsTests {
         given(orderPaymentFacade.updateOrder(any(UpdateOrderSDto.class)))
                 .willReturn(responseDto);
         // when & then
-        mockMvc.perform(patch("/api/orders/" + 1L)
+        mockMvc.perform(patch("/api/orders/{orderId}", OrderTestFactory.ORDER_ID)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestDto))
                         .with(user(UserTestFactory.createMockUserDetails())))
@@ -148,7 +148,7 @@ class OrderControllerTest extends AbstractRestDocsTests {
         // given
 
         // when & then
-        mockMvc.perform(delete("/api/orders/" + 1L)
+        mockMvc.perform(delete("/api/orders/{orderId}", OrderTestFactory.ORDER_ID)
                         .contentType(MediaType.APPLICATION_JSON)
                         .with(user(UserTestFactory.createMockUserDetails())))
                 .andExpect(status().isOk())

@@ -7,30 +7,42 @@ import salute.oneshot.domain.cart.dto.response.CartItemResponseDto;
 import salute.oneshot.domain.cart.dto.response.CartResponseDto;
 import salute.oneshot.domain.cart.entity.Cart;
 import salute.oneshot.domain.cart.entity.CartItem;
+import salute.oneshot.domain.product.dto.response.ProductResponseDto;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
 import java.util.List;
 
 public class CartTestFactory {
 
     public static final Long CART_ITEM_ID = 1L;
+    public static final Long CART_ID = 1L;
     public static final int QUANTITY = 3;
     public static final int UPDATED_QUANTITY = 2;
 
-    // Cart 필드값 user 제외하면 없는 상태
-    public static Cart createCart() {
-        return Cart.from(UserTestFactory.createUser());
+    public static Cart createCart() throws InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchMethodException {
+        CartItem cartItem = createCartItem();
+
+        Constructor<Cart> constructor = Cart.class.getDeclaredConstructor();
+        constructor.setAccessible(true);
+
+        Cart cart = constructor.newInstance();
+        ReflectionTestUtils.setField(cart, "id", CART_ID);
+        ReflectionTestUtils.setField(cart, "user", UserTestFactory.createUser());
+        ReflectionTestUtils.setField(cart, "itemList", List.of(cartItem));
+        ReflectionTestUtils.setField(cart, "isOrdered", false);
+
+        ReflectionTestUtils.setField(cartItem, "cart", cart);
+        return cart;
     }
 
     public static CartItem createCartItem() throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
         Constructor<CartItem> constructor = CartItem.class.getDeclaredConstructor();
         constructor.setAccessible(true);
-        CartItem cartItem = constructor.newInstance();
 
+        CartItem cartItem = constructor.newInstance();
         ReflectionTestUtils.setField(cartItem, "id", CART_ITEM_ID);
-        ReflectionTestUtils.setField(cartItem, "cart", createCart());
+//        ReflectionTestUtils.setField(cartItem, "cart", null);
         ReflectionTestUtils.setField(cartItem, "product", ProductTestFactory.createProduct());
         ReflectionTestUtils.setField(cartItem, "quantity", QUANTITY);
 
@@ -38,8 +50,11 @@ public class CartTestFactory {
     }
 
     public static CartItemResponseDto createCartItemResponseDto() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
-        CartItem cartItem = createCartItem();
-        return CartItemResponseDto.from(cartItem);
+        Constructor<CartItemResponseDto> constructor =
+                CartItemResponseDto.class.getDeclaredConstructor(Long.class, ProductResponseDto.class, Integer.class);
+        constructor.setAccessible(true);
+
+        return constructor.newInstance(CART_ITEM_ID, ProductTestFactory.createProductResponseDto(), QUANTITY);
     }
 
     public static AddCartItemRequestDto createAddCartItemRequestDto() throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
@@ -63,8 +78,7 @@ public class CartTestFactory {
                 CartResponseDto.class.getDeclaredConstructor(List.class);
         constructor.setAccessible(true);
 
-        List<CartItemResponseDto> itemList = new ArrayList<>();
-        itemList.add(createCartItemResponseDto());
+        List<CartItemResponseDto> itemList = List.of(createCartItemResponseDto());
 
         return constructor.newInstance(itemList);
     }

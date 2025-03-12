@@ -3,7 +3,6 @@ package salute.oneshot.util;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import salute.oneshot.domain.cocktail.entity.RecipeType;
-import salute.oneshot.domain.ingredientReview.dto.response.IngredientResponseDto;
 import salute.oneshot.domain.recipeReview.dto.request.CreateRecipeReviewRequestDto;
 import salute.oneshot.domain.recipeReview.dto.request.UpdateRecipeRequestDto;
 import salute.oneshot.domain.recipeReview.dto.response.CocktailResponseDto;
@@ -13,7 +12,6 @@ import salute.oneshot.domain.user.entity.UserRole;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
 import java.util.List;
 
 public class RecipeReviewTestFactory {
@@ -31,8 +29,7 @@ public class RecipeReviewTestFactory {
     }
 
     public static Page<RecipeReviewResponseDto> createRecipeReviewResponseDtoPage() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
-        List<RecipeReviewResponseDto> recipeReviewResponseDtoList = new ArrayList<>();
-        recipeReviewResponseDtoList.add(createRecipeReviewResponseDto());
+        List<RecipeReviewResponseDto> recipeReviewResponseDtoList = List.of(createRecipeReviewResponseDto());
         return new PageImpl<>(recipeReviewResponseDtoList);
     }
 
@@ -63,9 +60,6 @@ public class RecipeReviewTestFactory {
 
     // TODO: 도메인 분리 필요
     public static CocktailResponseDto createCocktailResponseDto() throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
-        List<IngredientResponseDto> ingredientList = new ArrayList<>();
-        ingredientList.add(IngredientTestFactory.createIngredientResponseDto());
-
         Constructor<CocktailResponseDto> constructor =
                 CocktailResponseDto.class.getDeclaredConstructor(Long.class, String.class, String.class, String.class, RecipeType.class, Integer.class, Long.class);
         constructor.setAccessible(true);

@@ -28,11 +28,11 @@ public class PaymentController {
                 .body(ApiResponse.success(ApiResponseConst.ADD_PMNT_SUCCESS, responseDto));
     }
 
-    @GetMapping("/{paymentId}")
+    @GetMapping("/{paymentKey}")
     public ResponseEntity<ApiResponse<PaymentResponseDto>> findPayment(
-            @PathVariable Long paymentId
+            @PathVariable String paymentKey
     ) {
-        PaymentResponseDto responseDto = orderPaymentFacade.getPayment(paymentId);
+        PaymentResponseDto responseDto = orderPaymentFacade.getPayment(paymentKey);
 
         return ResponseEntity.ok()
                 .body(ApiResponse.success(ApiResponseConst.GET_PMNT_SUCCESS, responseDto));
