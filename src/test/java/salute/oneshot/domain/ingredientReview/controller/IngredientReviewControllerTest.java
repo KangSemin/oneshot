@@ -1,6 +1,7 @@
 package salute.oneshot.domain.ingredientReview.controller;
 
 import com.epages.restdocs.apispec.ResourceSnippetParameters;
+import com.epages.restdocs.apispec.SimpleType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
@@ -34,7 +35,7 @@ import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
-import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static com.epages.restdocs.apispec.ResourceDocumentation.parameterWithName;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -87,6 +88,7 @@ class IngredientReviewControllerTest extends AbstractRestDocsTests {
                 preprocessResponse(prettyPrint()),
                 resource(ResourceSnippetParameters.builder()
                     .tag(API_TAG)
+                    .summary("재료 리뷰 생성")
                     .build()
                 )));
     }
@@ -129,9 +131,10 @@ class IngredientReviewControllerTest extends AbstractRestDocsTests {
                 preprocessResponse(prettyPrint()),
                 resource(ResourceSnippetParameters.builder()
                     .tag(API_TAG)
+                    .summary("내 재료 리뷰 조회")
                     .queryParameters(
-                        parameterWithName("page").description("기본값 : 1").optional(),
-                        parameterWithName("size").description("기본값 : 10").optional())
+                        parameterWithName("page").type(SimpleType.INTEGER).description("기본값 : 1").optional(),
+                        parameterWithName("size").type(SimpleType.INTEGER).description("기본값 : 10").optional())
                     .build()
                 )));
     }
@@ -168,6 +171,7 @@ class IngredientReviewControllerTest extends AbstractRestDocsTests {
                 preprocessResponse(prettyPrint()),
                 resource(ResourceSnippetParameters.builder()
                     .tag(API_TAG)
+                    .summary("재료 리뷰 단건 조회")
                     .build()
                 )));
     }
@@ -211,9 +215,10 @@ class IngredientReviewControllerTest extends AbstractRestDocsTests {
                 preprocessResponse(prettyPrint()),
                 resource(ResourceSnippetParameters.builder()
                     .tag(API_TAG)
+                    .summary("재료 리뷰 전체 조회")
                     .queryParameters(
-                        parameterWithName("page").description("기본값 : 1").optional(),
-                        parameterWithName("size").description("기본값 : 10").optional())
+                        parameterWithName("page").type(SimpleType.INTEGER).description("기본값 : 1").optional(),
+                        parameterWithName("size").type(SimpleType.INTEGER).description("기본값 : 10").optional())
                     .build()
                 )));
     }
@@ -253,6 +258,7 @@ class IngredientReviewControllerTest extends AbstractRestDocsTests {
                 preprocessResponse(prettyPrint()),
                 resource(ResourceSnippetParameters.builder()
                     .tag(API_TAG)
+                    .summary("재료 리뷰 수정")
                     .build()
                 )));
     }
@@ -275,6 +281,7 @@ class IngredientReviewControllerTest extends AbstractRestDocsTests {
                 preprocessResponse(prettyPrint()),
                 resource(ResourceSnippetParameters.builder()
                     .tag(API_TAG)
+                    .summary("재료 리뷰 제거")
                     .build()
                 )));
     }
