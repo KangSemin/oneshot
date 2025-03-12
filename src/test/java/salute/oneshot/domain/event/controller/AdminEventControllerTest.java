@@ -68,7 +68,7 @@ class AdminEventControllerTest extends AbstractRestDocsTests {
         mockMvc.perform(post("/api/admin/events")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestDto))
-                        .with(user(UserTestFactory.createMockUserDetails())))
+                        .with(user(UserTestFactory.createMockAdminDetails())))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.message").value(ApiResponseConst.ADD_EVENT_SUCCESS))
                 .andExpect(jsonPath("$.data.id").value(EventTestFactory.EVENT_ID))
@@ -89,7 +89,7 @@ class AdminEventControllerTest extends AbstractRestDocsTests {
         mockMvc.perform(post("/api/admin/events")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestDto))
-                        .with(user(UserTestFactory.createMockUserDetails())))
+                        .with(user(UserTestFactory.createMockAdminDetails())))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errorMessage").value(ErrorCode.EXPIRED_EVENT.getMessage()))
                 .andReturn();
@@ -106,7 +106,7 @@ class AdminEventControllerTest extends AbstractRestDocsTests {
         mockMvc.perform(post("/api/admin/events")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestDto))
-                        .with(user(UserTestFactory.createMockUserDetails())))
+                        .with(user(UserTestFactory.createMockAdminDetails())))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errorMessage").value(ErrorCode.INVALID_EVENT_PERIOD.getMessage()))
                 .andReturn();
@@ -126,7 +126,7 @@ class AdminEventControllerTest extends AbstractRestDocsTests {
         mockMvc.perform(post("/api/admin/events")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestDto))
-                        .with(user(UserTestFactory.createMockUserDetails())))
+                        .with(user(UserTestFactory.createMockAdminDetails())))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errorMessage").value(ErrorCode.MISSING_COUPON.getMessage()))
                 .andReturn();
@@ -146,7 +146,7 @@ class AdminEventControllerTest extends AbstractRestDocsTests {
         mockMvc.perform(post("/api/admin/events")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestDto))
-                        .with(user(UserTestFactory.createMockUserDetails())))
+                        .with(user(UserTestFactory.createMockAdminDetails())))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errorMessage").value(ErrorCode.INVALID_JSON_DATA.getMessage()))
                 .andReturn();
@@ -168,7 +168,7 @@ class AdminEventControllerTest extends AbstractRestDocsTests {
         mockMvc.perform(patch("/api/admin/events/{eventId}", EventTestFactory.EVENT_ID)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestDto))
-                        .with(user(UserTestFactory.createMockUserDetails())))
+                        .with(user(UserTestFactory.createMockAdminDetails())))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value(ApiResponseConst.UPDATE_EVENT_SUCCESS))
                 .andExpect(jsonPath("$.data.id").value(EventTestFactory.EVENT_ID))
@@ -195,7 +195,7 @@ class AdminEventControllerTest extends AbstractRestDocsTests {
         mockMvc.perform(patch("/api/admin/events/{eventId}", EventTestFactory.EVENT_ID)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestDto))
-                        .with(user(UserTestFactory.createMockUserDetails())))
+                        .with(user(UserTestFactory.createMockAdminDetails())))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.errorMessage").value(ErrorCode.BANNER_NOT_FOUND.getMessage()))
                 .andReturn();
@@ -215,7 +215,7 @@ class AdminEventControllerTest extends AbstractRestDocsTests {
         mockMvc.perform(patch("/api/admin/events/{eventId}", EventTestFactory.EVENT_ID)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestDto))
-                        .with(user(UserTestFactory.createMockUserDetails())))
+                        .with(user(UserTestFactory.createMockAdminDetails())))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errorMessage").value(ErrorCode.MISSING_COUPON.getMessage()))
                 .andReturn();
@@ -235,7 +235,7 @@ class AdminEventControllerTest extends AbstractRestDocsTests {
         mockMvc.perform(patch("/api/admin/events/{eventId}", EventTestFactory.EVENT_ID)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestDto))
-                        .with(user(UserTestFactory.createMockUserDetails())))
+                        .with(user(UserTestFactory.createMockAdminDetails())))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errorMessage").value(ErrorCode.INVALID_JSON_DATA.getMessage()))
                 .andReturn();
@@ -255,7 +255,7 @@ class AdminEventControllerTest extends AbstractRestDocsTests {
         mockMvc.perform(patch("/api/admin/events/{eventId}", EventTestFactory.EVENT_ID)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestDto))
-                        .with(user(UserTestFactory.createMockUserDetails())))
+                        .with(user(UserTestFactory.createMockAdminDetails())))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errorMessage").value(ErrorCode.INVALID_JSON_DATA.getMessage()))
                 .andReturn();
@@ -270,7 +270,7 @@ class AdminEventControllerTest extends AbstractRestDocsTests {
         // when & then
         mockMvc.perform(delete("/api/admin/events/{eventId}", eventId)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .with(user(UserTestFactory.createMockUserDetails())))
+                        .with(user(UserTestFactory.createMockAdminDetails())))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value(ApiResponseConst.DELETE_EVENT_SUCCESS))
                 .andExpect(jsonPath("$.data").value(eventId))
@@ -289,7 +289,7 @@ class AdminEventControllerTest extends AbstractRestDocsTests {
         // when & then
         mockMvc.perform(delete("/api/admin/events/{eventId}", eventId)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .with(user(UserTestFactory.createMockUserDetails())))
+                        .with(user(UserTestFactory.createMockAdminDetails())))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.errorMessage").value(ErrorCode.EVENT_NOT_FOUND.getMessage()))
                 .andReturn();
@@ -306,8 +306,9 @@ class AdminEventControllerTest extends AbstractRestDocsTests {
                 .willReturn(emitter);
 
         // When & Then
-        MvcResult mvcResult = mockMvc.perform(get("/api/admin/events/event-stream/{eventId}", eventId)
-                        .accept(MediaType.TEXT_EVENT_STREAM_VALUE))
+        mockMvc.perform(get("/api/admin/events/event-stream/{eventId}", eventId)
+                        .accept(MediaType.TEXT_EVENT_STREAM_VALUE)
+                .with(user(UserTestFactory.createMockAdminDetails())))
                 .andExpect(status().isOk())
                 .andExpect(request().asyncStarted())
                 .andReturn();
@@ -325,8 +326,9 @@ class AdminEventControllerTest extends AbstractRestDocsTests {
                 .willThrow(new NotFoundException(ErrorCode.EVENT_NOT_FOUND));
 
         // When & Then
-        MvcResult mvcResult = mockMvc.perform(get("/api/admin/events/event-stream/{eventId}", eventId)
-                        .accept(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get("/api/admin/events/event-stream/{eventId}", eventId)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .with(user(UserTestFactory.createMockAdminDetails())))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.errorMessage").value(ErrorCode.EVENT_NOT_FOUND.getMessage()))
                 .andReturn();

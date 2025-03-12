@@ -76,7 +76,7 @@ class AdminCouponControllerTest extends AbstractRestDocsTests {
         mockMvc.perform(post("/api/admin/coupons")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestDto))
-                        .with(user(UserTestFactory.createMockUserDetails())))
+                        .with(user(UserTestFactory.createMockAdminDetails())))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.message").value(ApiResponseConst.ADD_CPN_SUCCESS))
                 .andExpect(jsonPath("$.data.id").value(CouponTestFactory.COUPON_ID))
@@ -101,7 +101,7 @@ class AdminCouponControllerTest extends AbstractRestDocsTests {
         mockMvc.perform(patch("/api/admin/coupons/{couponId}", CouponTestFactory.COUPON_ID)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestDto))
-                        .with(user(UserTestFactory.createMockUserDetails())))
+                        .with(user(UserTestFactory.createMockAdminDetails())))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value(ApiResponseConst.UPDATE_CPN_SUCCESS))
                 .andExpect(jsonPath("$.data.id").value(CouponTestFactory.COUPON_ID))
@@ -126,7 +126,7 @@ class AdminCouponControllerTest extends AbstractRestDocsTests {
         mockMvc.perform(patch("/api/admin/coupons/{couponId}", CouponTestFactory.COUPON_ID)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestDto))
-                        .with(user(UserTestFactory.createMockUserDetails())))
+                        .with(user(UserTestFactory.createMockAdminDetails())))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.errorMessage").value(ErrorCode.COUPON_NOT_FOUND.getMessage()))
                 .andReturn();
@@ -143,7 +143,7 @@ class AdminCouponControllerTest extends AbstractRestDocsTests {
         // when & then
         mockMvc.perform(delete("/api/admin/coupons/{couponId}", couponId)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .with(user(UserTestFactory.createMockUserDetails())))
+                        .with(user(UserTestFactory.createMockAdminDetails())))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value(ApiResponseConst.DELETE_CPN_SUCCESS))
                 .andExpect(jsonPath("$.data").value(couponId))
@@ -161,7 +161,7 @@ class AdminCouponControllerTest extends AbstractRestDocsTests {
         // when & then
         mockMvc.perform(delete("/api/admin/coupons/{couponId}", couponId)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .with(user(UserTestFactory.createMockUserDetails())))
+                        .with(user(UserTestFactory.createMockAdminDetails())))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.errorMessage").value(ErrorCode.COUPON_NOT_FOUND.getMessage()))
                 .andReturn();
@@ -183,7 +183,7 @@ class AdminCouponControllerTest extends AbstractRestDocsTests {
         mockMvc.perform(post("/api/admin/coupons/{couponId}/users", CouponTestFactory.COUPON_ID)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestDto))
-                        .with(user(UserTestFactory.createMockUserDetails())))
+                        .with(user(UserTestFactory.createMockAdminDetails())))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.message").value(ApiResponseConst.ADD_USER_CPN_SUCCESS))
                 .andExpect(jsonPath("$.data.userCouponId").value(1L))
@@ -206,7 +206,7 @@ class AdminCouponControllerTest extends AbstractRestDocsTests {
         mockMvc.perform(post("/api/admin/coupons/{couponId}/users", CouponTestFactory.COUPON_ID)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestDto))
-                        .with(user(UserTestFactory.createMockUserDetails())))
+                        .with(user(UserTestFactory.createMockAdminDetails())))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.errorMessage").value(ErrorCode.COUPON_NOT_FOUND.getMessage()))
                 .andReturn();

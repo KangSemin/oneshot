@@ -60,4 +60,12 @@ public class UserTestFactory {
     public static CustomUserDetails createMockUserDetails() {
         return CustomUserDetails.of(USER_ID, ROLE_USER);
     }
+
+    public static CustomUserDetails createMockAdminDetails() {
+        return CustomUserDetails.of(USER_ID, ROLE_ADMIN);
+    }
+
+    public static CustomUserDetails createMockSuperAdminDetails() {
+        return CustomUserDetails.of(USER_ID, UserRole.SUPER_ADMIN);
+    }
 }
