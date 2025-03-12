@@ -31,12 +31,4 @@ public class SignUpRequestDto {
             max = UserValidationConst.NICKNAME_MAX,
             message = UserValidationConst.NICKNAME_RANGE_MESSAGE)
     private final String nickName;
-
-    public static SignUpRequestDto of(
-            String email,
-            String password,
-            String nickName
-    ) {
-        return new SignUpRequestDto(email, password, nickName);
-    }
 }

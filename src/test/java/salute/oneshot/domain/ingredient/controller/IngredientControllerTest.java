@@ -2,20 +2,14 @@ package salute.oneshot.domain.ingredient.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockedStatic;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.web.multipart.MultipartFile;
-import salute.oneshot.config.TestSecurityConfig;
 import salute.oneshot.domain.common.AbstractRestDocsTests;
-import salute.oneshot.domain.common.dto.error.ErrorCode;
 import salute.oneshot.domain.common.dto.success.ApiResponseConst;
 import salute.oneshot.domain.ingredient.dto.request.CreateIngrRequestDto;
 import salute.oneshot.domain.ingredient.dto.request.UpdateIngrRequestDto;
@@ -26,20 +20,21 @@ import salute.oneshot.domain.ingredient.dto.service.UpdateIngrSDto;
 import salute.oneshot.domain.ingredient.entity.Ingredient;
 import salute.oneshot.domain.ingredient.entity.IngredientCategory;
 import salute.oneshot.domain.ingredient.service.IngredientService;
-import salute.oneshot.global.exception.NotFoundException;
-import salute.oneshot.global.util.S3Util;
 import salute.oneshot.util.IngredientTestFactory;
+import salute.oneshot.util.UserTestFactory;
+
 import java.util.List;
+
 import static org.mockito.BDDMockito.given;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(IngredientController.class)
-@Import({TestSecurityConfig.class})
 class IngredientControllerTest extends AbstractRestDocsTests {
 
 
@@ -62,6 +57,7 @@ class IngredientControllerTest extends AbstractRestDocsTests {
 
         IngrResponseDto responseDto = IngrResponseDto.from(ingredient);
 
+
         given(ingredientService.createIngredient(any(CreateIngrSDto.class))).willReturn(responseDto);
 
 
@@ -72,6 +68,7 @@ class IngredientControllerTest extends AbstractRestDocsTests {
                         .param("category", "VODKA")
                         .param("avb", "40.0d")
                         .contentType(MediaType.MULTIPART_FORM_DATA)
+                        .with(user(UserTestFactory.createMockAdminDetails()))
                         .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(jsonPath("$.message").value(ApiResponseConst.ADD_INGR_SUCCESS))
@@ -96,6 +93,7 @@ class IngredientControllerTest extends AbstractRestDocsTests {
                         .param("category", "VODKA")
                         .param("avb", "40.0d")
                         .contentType(MediaType.MULTIPART_FORM_DATA)
+                        .with(user(UserTestFactory.createMockAdminDetails()))
                         .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isBadRequest());
@@ -142,6 +140,7 @@ class IngredientControllerTest extends AbstractRestDocsTests {
                         .param("avb", "40.0d")
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.MULTIPART_FORM_DATA)
+                        .with(user(UserTestFactory.createMockAdminDetails()))
                         .with(request -> {
                             request.setMethod("PATCH"); // PATCH 요청으로 변경
                             return request;
@@ -182,7 +181,8 @@ class IngredientControllerTest extends AbstractRestDocsTests {
 
         doNothing().when(ingredientService).deleteIngredient(any(Long.class));
 
-        mockMvc.perform(delete("/api/ingredients/{ingreientId}", 1L))
+        mockMvc.perform(delete("/api/ingredients/{ingreientId}", 1L)
+                        .with(user(UserTestFactory.createMockAdminDetails())))
                 .andExpect(jsonPath("$.message").value(ApiResponseConst.DELETE_INGR_SUCCESS));
     }
 }

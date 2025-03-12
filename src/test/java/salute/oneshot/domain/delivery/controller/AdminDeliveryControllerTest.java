@@ -52,6 +52,7 @@ class AdminDeliveryControllerTest extends AbstractRestDocsTests {
     @BeforeEach
     void setUp() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         delivery = DeliveryTestFactory.createDelivery();
+
     }
 
     @DisplayName("배송정보 등록 성공")
@@ -195,7 +196,7 @@ class AdminDeliveryControllerTest extends AbstractRestDocsTests {
     void successUpdateDelivery() throws Exception {
         // given
         UpdateDeliveryRequestDto requestDto =
-                UpdateDeliveryRequestDto.of("registered");
+                DeliveryTestFactory.createUpdateDeliveryRequestDto();
 
         AdminDeliveryResponseDto responseDto =
                 AdminDeliveryResponseDto.from(delivery);
@@ -227,8 +228,7 @@ class AdminDeliveryControllerTest extends AbstractRestDocsTests {
     void invalidDeliveryIdUpdateDelivery() throws Exception {
         // given
         UpdateDeliveryRequestDto requestDto =
-                UpdateDeliveryRequestDto.of("registered");
-
+                DeliveryTestFactory.createUpdateDeliveryRequestDto();
         given(deliveryService.updateDelivery(any(AdminDeliverySDto.class)))
                 .willThrow(new NotFoundException(ErrorCode.SHIPPING_NOT_FOUND));
 
@@ -247,8 +247,7 @@ class AdminDeliveryControllerTest extends AbstractRestDocsTests {
     void conflictDeliveryStatusUpdateDelivery() throws Exception {
         // given
         UpdateDeliveryRequestDto requestDto =
-                UpdateDeliveryRequestDto.of("registered");
-
+                DeliveryTestFactory.createUpdateDeliveryRequestDto();
         given(deliveryService.updateDelivery(any(AdminDeliverySDto.class)))
                 .willThrow(new InvalidException(ErrorCode.SAME_STATUS_UPDATE));
 
@@ -267,8 +266,7 @@ class AdminDeliveryControllerTest extends AbstractRestDocsTests {
     void invalidDeliveryStatusUpdateDelivery() throws Exception {
         // given
         UpdateDeliveryRequestDto requestDto =
-                UpdateDeliveryRequestDto.of("registered");
-
+                DeliveryTestFactory.createUpdateDeliveryRequestDto();
         given(deliveryService.updateDelivery(any(AdminDeliverySDto.class)))
                 .willThrow(new InvalidException(ErrorCode.INVALID_STATUS_CHANGE));
 

@@ -44,21 +44,4 @@ public class CpnRequestDto {
             regexp = ValidationConst.TIME_REG,
             message = ValidationConst.TIME_TYPE_MESSAGE)
     private final String endTime;
-
-    public static CpnRequestDto of(
-            String couponName,
-            int discountValue,
-            String startDate,
-            String startTime,
-            String endDate,
-            String endTime
-    ) {
-        return new CpnRequestDto(
-                couponName,
-                discountValue,
-                startDate,
-                startTime,
-                endDate,
-                endTime);
-    }
 }

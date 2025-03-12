@@ -1,14 +1,14 @@
 package salute.oneshot.util;
 
-
 import org.springframework.test.util.ReflectionTestUtils;
 import salute.oneshot.domain.delivery.dto.request.DeliveryRequestDto;
+import salute.oneshot.domain.delivery.dto.request.UpdateDeliveryRequestDto;
 import salute.oneshot.domain.delivery.entity.Delivery;
 import salute.oneshot.domain.delivery.enums.CourierCompany;
 import salute.oneshot.domain.delivery.enums.ShippingStatus;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.sql.Ref;
 import java.time.LocalDateTime;
 
 public class DeliveryTestFactory {
@@ -38,13 +38,35 @@ public class DeliveryTestFactory {
         return delivery;
     }
 
-    public static DeliveryRequestDto createDeliveryRequestDto() {
-        return DeliveryRequestDto.of(
+    public static DeliveryRequestDto createDeliveryRequestDto()
+            throws NoSuchMethodException, InvocationTargetException,
+            InstantiationException, IllegalAccessException {
+        Constructor<DeliveryRequestDto> deliveryConst = DeliveryRequestDto.class
+                .getDeclaredConstructor(
+                        Long.class,
+                        String.class,
+                        String.class,
+                        String.class,
+                        String.class,
+                        String.class);
+        deliveryConst.setAccessible(true);
+
+        return deliveryConst.newInstance(
                 ORDER_ID,
                 RECEIVER_NAVE,
                 RECEIVER_PHONE,
                 DELIVERY_MESSAGE,
                 TRACKING_NUMBER,
                 COURIER_COMPANY);
+    }
+
+    public static UpdateDeliveryRequestDto createUpdateDeliveryRequestDto()
+            throws NoSuchMethodException, InvocationTargetException,
+            InstantiationException, IllegalAccessException {
+        Constructor<UpdateDeliveryRequestDto> deliveryCont = UpdateDeliveryRequestDto.class
+                .getDeclaredConstructor(String.class);
+        deliveryCont.setAccessible(true);
+
+        return deliveryCont.newInstance("registered");
     }
 }

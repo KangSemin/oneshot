@@ -13,10 +13,12 @@ public class RestDocsConfiguration {
 
     @Bean
     public RestDocumentationResultHandler write() {
+
         return document(
             "{class-name}/{method-name}",
             preprocessRequest(Preprocessors.prettyPrint()),
             preprocessResponse(Preprocessors.prettyPrint())
         );
     }
+
 }

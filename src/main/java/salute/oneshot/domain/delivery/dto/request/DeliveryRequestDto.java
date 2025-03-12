@@ -15,21 +15,4 @@ public class DeliveryRequestDto {
     private final String deliveryMessage;
     private final String trackingNumber;
     private final String courierCompany;
-
-    public static DeliveryRequestDto of(
-            Long orderId,
-            String receiverNave,
-            String receiverPhone,
-            String deliveryMessage,
-            String trackingNumber,
-            String courierCompany
-    ) {
-        return new DeliveryRequestDto(
-                orderId,
-                receiverNave,
-                receiverPhone,
-                deliveryMessage,
-                trackingNumber,
-                courierCompany);
-    }
 }

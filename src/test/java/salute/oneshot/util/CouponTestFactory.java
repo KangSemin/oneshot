@@ -5,6 +5,8 @@ import salute.oneshot.domain.coupon.dto.request.CpnRequestDto;
 import salute.oneshot.domain.coupon.dto.request.UserCpnRequestDto;
 import salute.oneshot.domain.coupon.entity.Coupon;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.time.LocalDateTime;
 
 public class CouponTestFactory {
@@ -53,11 +55,35 @@ public class CouponTestFactory {
         return coupon;
     }
 
-    public static CpnRequestDto createCpnRequestDto() {
-        return CpnRequestDto.of(COUPON_NAME, DISCOUNT_VALUE, START_DATE, START_TIME, END_DATE, END_TIME );
+    public static CpnRequestDto createCpnRequestDto()
+            throws NoSuchMethodException, InvocationTargetException,
+            InstantiationException, IllegalAccessException {
+        Constructor<CpnRequestDto> couponCont = CpnRequestDto.class
+                .getDeclaredConstructor(
+                        String.class,
+                        int.class,
+                        String.class,
+                        String.class,
+                        String.class,
+                        String.class);
+        couponCont.setAccessible(true);
+
+        return couponCont.newInstance(
+                COUPON_NAME,
+                DISCOUNT_VALUE,
+                START_DATE,
+                START_TIME,
+                END_DATE,
+                END_TIME );
     }
 
-    public static UserCpnRequestDto createUserCpnRequestDTo() {
-        return UserCpnRequestDto.of(COUPON_ID);
+    public static UserCpnRequestDto createUserCpnRequestDTo()
+            throws NoSuchMethodException, InvocationTargetException,
+            InstantiationException, IllegalAccessException {
+        Constructor<UserCpnRequestDto> couponCont = UserCpnRequestDto.class
+                .getDeclaredConstructor(Long.class);
+        couponCont.setAccessible(true);
+
+        return couponCont.newInstance(COUPON_ID);
     }
 }
