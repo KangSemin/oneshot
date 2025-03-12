@@ -42,21 +42,4 @@ public class BannerRequestDto {
             regexp = ValidationConst.TIME_REG,
             message = ValidationConst.TIME_TYPE_MESSAGE)
     private final String endTime;
-
-    public static BannerRequestDto of(
-            Long bannerId,
-            String imageUrl,
-            String startDate,
-            String startTime,
-            String endDate,
-            String endTime
-    ) {
-        return new BannerRequestDto(
-                bannerId,
-                imageUrl,
-                startDate,
-                startTime,
-                endDate,
-                endTime);
-    }
 }

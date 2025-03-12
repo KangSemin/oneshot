@@ -13,8 +13,6 @@ import salute.oneshot.domain.chat.dto.response.FindChatListResponseDto;
 import salute.oneshot.domain.chat.dto.response.FindChatResponseDto;
 import salute.oneshot.domain.chat.service.ChatService;
 import salute.oneshot.domain.common.AbstractRestDocsTests;
-import salute.oneshot.domain.user.entity.UserRole;
-import salute.oneshot.global.security.model.CustomUserDetails;
 import salute.oneshot.util.ChatTestFactory;
 import salute.oneshot.util.UserTestFactory;
 
@@ -67,7 +65,7 @@ class ChatControllerTest extends AbstractRestDocsTests {
         // when & then
         mockMvc.perform(get("/api/admin/chats/" + 2L)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .with(user(UserTestFactory.createMockUserDetails())))
+                        .with(user(UserTestFactory.createMockAdminDetails())))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.messageList[0].sender").value(ChatTestFactory.MESSAGE_SENDER))
                 .andExpect(jsonPath("$.messageList[0].content").value(ChatTestFactory.MESSAGE_CONTENT))
@@ -87,7 +85,7 @@ class ChatControllerTest extends AbstractRestDocsTests {
         // when & then
         mockMvc.perform(get("/api/admin/chats")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .with(user(CustomUserDetails.of(ChatTestFactory.SENDER_USER_ID, UserRole.SUPER_ADMIN))))
+                        .with(user(UserTestFactory.createMockAdminDetails())))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.chatList[0].userId").value(ChatTestFactory.RECEIVER_USER_ID))
                 .andExpect(jsonPath("$.chatList[0].lastMessage").value(ChatTestFactory.FORMATTED_MESSAGE))

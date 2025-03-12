@@ -13,8 +13,4 @@ public class UpdateRoleRequestDto {
 
     @NotBlank(message = UserValidationConst.USER_ROLE_MESSAGE)
     private final String userRole;
-
-    public static UpdateRoleRequestDto of(String userRole) {
-        return new UpdateRoleRequestDto(userRole);
-    }
 }
