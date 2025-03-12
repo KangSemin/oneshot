@@ -5,6 +5,8 @@ import static org.springframework.security.test.web.servlet.setup.SecurityMockMv
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
@@ -28,6 +30,8 @@ import salute.oneshot.global.security.jwt.JwtProvider;
 @ExtendWith(RestDocumentationExtension.class)
 public abstract class AbstractRestDocsTests {
 
+
+    private static final Logger log = LoggerFactory.getLogger(AbstractRestDocsTests.class);
     @Autowired
     protected RestDocumentationResultHandler restDocs;
 
@@ -51,9 +55,10 @@ public abstract class AbstractRestDocsTests {
         this.mockMvc = MockMvcBuilders.webAppContextSetup(context)
             .apply(documentationConfiguration(restDocumentation))
             .alwaysDo(MockMvcResultHandlers.print())
-            .alwaysDo(restDocs)
+            .alwaysDo(restDocs.document())
             .addFilters(new CharacterEncodingFilter("UTF-8", true))
             .apply(springSecurity())
             .build();
+
     }
 }
