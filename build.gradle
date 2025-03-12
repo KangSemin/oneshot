@@ -143,18 +143,31 @@ tasks.withType(GenerateSwaggerUI) {
     dependsOn 'enhanceOpenApiSpec'
 }
 
-// 3. Swagger UI 복사 태스크
-tasks.register('copySwaggerUI', Copy) {
-    dependsOn 'generateSwaggerUISample'
+//// 3. Swagger UI 복사 태스크
+//tasks.register('copySwaggerUI', Copy) {
+//    dependsOn 'generateSwaggerUISample'
+//
+//    def generateSwaggerUISampleTask = tasks.named('generateSwaggerUISample', GenerateSwaggerUI).get()
+//    from("${generateSwaggerUISampleTask.outputDir}")
+//    into("${project.projectDir}/build/resources/static/docs")
+//}
 
-    def generateSwaggerUISampleTask = tasks.named('generateSwaggerUISample', GenerateSwaggerUI).get()
-    from("${generateSwaggerUISampleTask.outputDir}")
-    into("${project.projectDir}/src/main/resources/static/docs")
+tasks.named('generateSwaggerUISample', GenerateSwaggerUI) {
+    outputDir = file("${project.projectDir}/build/resources/main/static/docs")
 }
 
 // 4. bootJar 태스크가 copySwaggerUI 후에 실행되도록 설정
 tasks.named('bootJar') {
-    dependsOn 'copySwaggerUI'
+//    dependsOn 'copySwaggerUI'
+    dependsOn 'generateSwaggerUISample'
+}
+
+tasks.named('jar') {
+    dependsOn 'generateSwaggerUISample'
+}
+
+tasks.named('resolveMainClassName') {
+    dependsOn 'generateSwaggerUISample'
 }
 
 // queryDSL 설정
