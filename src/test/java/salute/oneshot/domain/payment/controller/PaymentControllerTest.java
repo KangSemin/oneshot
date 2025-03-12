@@ -64,11 +64,11 @@ class PaymentControllerTest extends AbstractRestDocsTests {
     void successFindPayment() throws Exception {
         // given
         PaymentResponseDto responseDto = PaymentTestFactory.createPaymentResponseDto();
-        given(orderPaymentFacade.getPayment(any(Long.class)))
+        given(orderPaymentFacade.getPayment(any(String.class)))
                 .willReturn(responseDto);
 
         // when & then
-        mockMvc.perform(get("/api/payments/" + 1L)
+        mockMvc.perform(get("/api/payments/{paymentId}", PaymentTestFactory.PAYMENT_KEY)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value(ApiResponseConst.GET_PMNT_SUCCESS))

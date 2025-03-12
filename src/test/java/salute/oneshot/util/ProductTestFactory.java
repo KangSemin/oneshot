@@ -12,7 +12,6 @@ import salute.oneshot.domain.product.entity.ProductStatus;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
 import java.util.List;
 
 public class ProductTestFactory {
@@ -24,7 +23,6 @@ public class ProductTestFactory {
     public static final int STOCK_QUANTITY = 50;
     public static final ProductCategory CATEGORY= ProductCategory.ALCOHOL;
     public static final ProductStatus STATUS = ProductStatus.SALE;
-
 
     public static Product createProduct() throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
         Constructor<Product> constructor = Product.class.getDeclaredConstructor();
@@ -68,8 +66,7 @@ public class ProductTestFactory {
     }
 
     public static Page<ProductResponseDto> createProductResponseDtoPage() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
-        List<ProductResponseDto> productList = new ArrayList<>();
-        productList.add(createProductResponseDto());
+        List<ProductResponseDto> productList = List.of(createProductResponseDto());
         return new PageImpl<>(productList);
     }
 }

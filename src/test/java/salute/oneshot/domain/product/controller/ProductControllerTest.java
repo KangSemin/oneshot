@@ -74,7 +74,7 @@ class ProductControllerTest extends AbstractRestDocsTests {
                 .willReturn(responseDto);
 
         // when & then
-        mockMvc.perform(patch("/api/products/" + ProductTestFactory.PRODUCT_ID)
+        mockMvc.perform(patch("/api/products/{productId}", ProductTestFactory.PRODUCT_ID)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestDto))
                         .with(user(UserTestFactory.createMockUserDetails())))
@@ -98,7 +98,7 @@ class ProductControllerTest extends AbstractRestDocsTests {
                 .willReturn(responseDto);
 
         // when & then
-        mockMvc.perform(get("/api/products/" + ProductTestFactory.PRODUCT_ID)
+        mockMvc.perform(get("/api/products/{productId}", ProductTestFactory.PRODUCT_ID)
                         .contentType(MediaType.APPLICATION_JSON)
                         .with(user(UserTestFactory.createMockUserDetails())))
                 .andExpect(status().isOk())
@@ -140,7 +140,7 @@ class ProductControllerTest extends AbstractRestDocsTests {
         // given
 
         // when & then
-        mockMvc.perform(delete("/api/products/" + ProductTestFactory.PRODUCT_ID)
+        mockMvc.perform(delete("/api/products/{productId}", ProductTestFactory.PRODUCT_ID)
                         .contentType(MediaType.APPLICATION_JSON)
                         .with(user(UserTestFactory.createMockUserDetails())))
                 .andExpect(status().isOk())

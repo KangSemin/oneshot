@@ -12,7 +12,6 @@ import salute.oneshot.domain.user.entity.UserRole;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
 import java.util.List;
 
 public class IngredientReviewTestFactory {
@@ -38,8 +37,7 @@ public class IngredientReviewTestFactory {
     }
 
     public static Page<IngrReviewResponseDto> createIngrReviewResponseDtoPage() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
-        List<IngrReviewResponseDto> ingrReviewResponseDtoPage = new ArrayList<>();
-        ingrReviewResponseDtoPage.add(createIngrReviewResponseDto());
+        List<IngrReviewResponseDto> ingrReviewResponseDtoPage = List.of(createIngrReviewResponseDto());
 
         return new PageImpl<>(ingrReviewResponseDtoPage);
     }

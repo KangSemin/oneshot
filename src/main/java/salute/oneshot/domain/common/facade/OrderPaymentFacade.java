@@ -55,7 +55,7 @@ public class OrderPaymentFacade {
         return paymentResponseDto;
     }
 
-    public PaymentResponseDto getPayment(Long paymentId) {
-        return paymentService.getPayment(paymentId);
+    public PaymentResponseDto getPayment(String paymentKey) {
+        return paymentService.getPayment(paymentKey);
     }
 }

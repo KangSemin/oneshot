@@ -22,8 +22,6 @@ import salute.oneshot.config.TestSecurityConfig;
 import salute.oneshot.global.security.filter.JwtFilter;
 import salute.oneshot.global.security.jwt.JwtProvider;
 
-
-
 @Import({RestDocsConfiguration.class,TestSecurityConfig.class})
 @ExtendWith(RestDocumentationExtension.class)
 public abstract class AbstractRestDocsTests {
@@ -51,9 +49,10 @@ public abstract class AbstractRestDocsTests {
         this.mockMvc = MockMvcBuilders.webAppContextSetup(context)
             .apply(documentationConfiguration(restDocumentation))
             .alwaysDo(MockMvcResultHandlers.print())
-            .alwaysDo(restDocs)
+            .alwaysDo(restDocs.document())
             .addFilters(new CharacterEncodingFilter("UTF-8", true))
             .apply(springSecurity())
             .build();
+
     }
 }

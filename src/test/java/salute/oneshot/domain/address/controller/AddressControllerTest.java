@@ -1,7 +1,5 @@
 package salute.oneshot.domain.address.controller;
 
-import com.epages.restdocs.apispec.ParameterDescriptorWithType;
-import com.epages.restdocs.apispec.SimpleType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -10,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
-import org.springframework.restdocs.request.RequestDocumentation;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import salute.oneshot.config.TestSecurityConfig;
 import salute.oneshot.domain.address.dto.request.CreateAddressRequestDto;
@@ -28,29 +25,15 @@ import salute.oneshot.domain.common.AbstractRestDocsTests;
 import salute.oneshot.domain.common.dto.error.ErrorCode;
 import salute.oneshot.domain.common.dto.success.ApiResponseConst;
 import salute.oneshot.global.exception.InvalidException;
-import salute.oneshot.util.AddressTestFactory;
-import salute.oneshot.util.UserTestFactory;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static com.epages.restdocs.apispec.ResourceDocumentation.resource;
-import com.epages.restdocs.apispec.ResourceSnippetParameters;
-import salute.oneshot.domain.common.dto.error.ErrorCode;
-import salute.oneshot.domain.common.dto.success.ApiResponseConst;
-import salute.oneshot.global.exception.InvalidException;
 import salute.oneshot.global.exception.NotFoundException;
 import salute.oneshot.util.AddressTestFactory;
 import salute.oneshot.util.UserTestFactory;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;

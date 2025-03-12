@@ -5,7 +5,8 @@ import salute.oneshot.domain.chat.dto.response.FindChatListResponseDto;
 import salute.oneshot.domain.chat.dto.response.FindChatResponseDto;
 import salute.oneshot.domain.chat.dto.response.MessageResponseDto;
 
-import java.util.ArrayList;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 public class ChatTestFactory {
@@ -14,27 +15,45 @@ public class ChatTestFactory {
     public static final Long RECEIVER_USER_ID = 2L;
     public static final String MESSAGE_SENDER = "user";
     public static final String MESSAGE_CONTENT = "메시지 입니다.";
-    public static final String MESSAGE_TIME_MILLIS = "1741314450785";
+    public static final Long MESSAGE_TIME_MILLIS = 1741314450785L;
 
     public static final String FORMATTED_MESSAGE = "u" + "::" + MESSAGE_CONTENT + "::" + MESSAGE_TIME_MILLIS;
     public static final String CURSOR = "";
 
 
-    public static FindChatResponseDto createFindChatResponseDto() {
-        MessageResponseDto messageResponseDto = MessageResponseDto.from(FORMATTED_MESSAGE);
+    public static FindChatResponseDto createFindChatResponseDto() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+        List<MessageResponseDto> messageList = List.of(createMessageResponseDto());
 
-        List<MessageResponseDto> messageList = new ArrayList<>();
-        messageList.add(messageResponseDto);
+        Constructor<FindChatResponseDto> constructor =
+                FindChatResponseDto.class.getDeclaredConstructor(List.class);
+        constructor.setAccessible(true);
 
-        return FindChatResponseDto.from(messageList);
+        return constructor.newInstance(messageList);
     }
 
-    public static FindChatListResponseDto createFindChatListResponseDto() {
-        ChatPreviewResponseDto chatPreviewResponseDto = ChatPreviewResponseDto.of(Long.toString(RECEIVER_USER_ID), FORMATTED_MESSAGE);
+    public static FindChatListResponseDto createFindChatListResponseDto() throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+        List<ChatPreviewResponseDto> chatList = List.of(createChatPreviewResponseDto());
 
-        List<ChatPreviewResponseDto> chatList = new ArrayList<>();
-        chatList.add(chatPreviewResponseDto);
+        Constructor<FindChatListResponseDto> constructor =
+                FindChatListResponseDto.class.getDeclaredConstructor(List.class, String.class);
+        constructor.setAccessible(true);
 
-        return FindChatListResponseDto.of(chatList, CURSOR);
+        return constructor.newInstance(chatList, CURSOR);
+    }
+
+    public static MessageResponseDto createMessageResponseDto() throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+        Constructor<MessageResponseDto> constructor =
+                MessageResponseDto.class.getDeclaredConstructor(String.class, String.class, Long.class);
+        constructor.setAccessible(true);
+
+        return constructor.newInstance(MESSAGE_SENDER, MESSAGE_CONTENT, MESSAGE_TIME_MILLIS);
+    }
+
+    private static ChatPreviewResponseDto createChatPreviewResponseDto() throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+        Constructor<ChatPreviewResponseDto> constructor =
+                ChatPreviewResponseDto.class.getDeclaredConstructor(Long.class, String.class);
+        constructor.setAccessible(true);
+
+        return constructor.newInstance(UserTestFactory.USER_ID, FORMATTED_MESSAGE);
     }
 }
