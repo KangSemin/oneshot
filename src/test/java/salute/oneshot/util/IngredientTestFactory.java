@@ -2,6 +2,8 @@ package salute.oneshot.util;
 
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.util.ReflectionTestUtils;
+import salute.oneshot.domain.cocktail.dto.request.CreateCocktailRequestDto;
+import salute.oneshot.domain.ingredient.dto.request.CreateIngrRequestDto;
 import salute.oneshot.domain.ingredient.dto.request.UpdateIngrRequestDto;
 import salute.oneshot.domain.ingredient.entity.Ingredient;
 import salute.oneshot.domain.ingredient.entity.IngredientCategory;
@@ -9,6 +11,8 @@ import salute.oneshot.domain.ingredientReview.dto.response.IngredientResponseDto
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+
+import static org.mockito.Mockito.mock;
 
 public class IngredientTestFactory {
 
@@ -20,11 +24,11 @@ public class IngredientTestFactory {
 
     public static Ingredient createVodka() {
         Ingredient ingredient = Ingredient.of(
-            "보드카",
-            "보드카",
-            IngredientCategory.VODKA,
-            40.0d,
-            "대충 이미지 주소"
+                "보드카",
+                "보드카",
+                IngredientCategory.VODKA,
+                40.0d,
+                "대충 이미지 주소"
         );
 
         ReflectionTestUtils.setField(ingredient,"id",1L);
@@ -33,11 +37,11 @@ public class IngredientTestFactory {
 
     public static Ingredient createJin() {
         Ingredient ingredient = Ingredient.of(
-            "봄베이 사파이어",
-            "주류계의 민트초코",
-            IngredientCategory.JIN,
-            47.0d,
-            "대충 이미지 주소"
+                "봄베이 사파이어",
+                "주류계의 민트초코",
+                IngredientCategory.JIN,
+                47.0d,
+                "대충 이미지 주소"
         );
 
         ReflectionTestUtils.setField(ingredient,"id",2L);
@@ -46,11 +50,11 @@ public class IngredientTestFactory {
 
     public static Ingredient createSmirnoff() {
         Ingredient ingredient = Ingredient.of(
-            "스미노프 레드",
-            "3대 보드카 브랜드중 하나인 스미노프의 보드카",
-            IngredientCategory.VODKA,
-            40.0d,
-            "대충 이미지 주소"
+                "스미노프 레드",
+                "3대 보드카 브랜드중 하나인 스미노프의 보드카",
+                IngredientCategory.VODKA,
+                40.0d,
+                "대충 이미지 주소"
         );
 
         ReflectionTestUtils.setField(ingredient,"id",3L);
@@ -59,11 +63,11 @@ public class IngredientTestFactory {
 
     public static Ingredient createKahlua() {
         Ingredient ingredient = Ingredient.of(
-            "깔루아 오리지널",
-            "커피 리큐르",
-            IngredientCategory.OTHER,
-            16.0d,
-            "대충 이미지 주소"
+                "깔루아 오리지널",
+                "커피 리큐르",
+                IngredientCategory.OTHER,
+                16.0d,
+                "대충 이미지 주소"
         );
 
         ReflectionTestUtils.setField(ingredient,"id",4L);
@@ -72,11 +76,11 @@ public class IngredientTestFactory {
 
     public static Ingredient createMilk() {
         Ingredient ingredient = Ingredient.of(
-            "우유",
-            "어릴 때 좀 많이 마실 걸",
-            IngredientCategory.OTHER,
-            0.0d,
-            "대충 이미지 주소"
+                "우유",
+                "어릴 때 좀 많이 마실 걸",
+                IngredientCategory.OTHER,
+                0.0d,
+                "대충 이미지 주소"
         );
 
         ReflectionTestUtils.setField(ingredient,"id",5L);
@@ -112,10 +116,17 @@ public class IngredientTestFactory {
 
     }
 
-    public static UpdateIngrRequestDto updateIngrRequestDto() {
-        MockMultipartFile multipartFile = new MockMultipartFile("image", "test.jpg", "image/jpeg", new byte[0]);
-        return new UpdateIngrRequestDto("깔루아", "맛있는 깔루아", "OTHER", multipartFile, 2.0);
+    public static UpdateIngrRequestDto updateIngrRequestDto() throws Exception {
+        Constructor<UpdateIngrRequestDto> updateConst =
+                UpdateIngrRequestDto.class.getDeclaredConstructor(String.class, String.class, String.class, Double.class);
+
+        updateConst.setAccessible(true);
+
+        UpdateIngrRequestDto requestDto = updateConst.newInstance("보드카", "보드카", "VODKA", 40.0d);
+
+        return  requestDto;
     }
+
 
     public static IngredientResponseDto createIngredientResponseDto() throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
         Constructor<IngredientResponseDto> constructor =
