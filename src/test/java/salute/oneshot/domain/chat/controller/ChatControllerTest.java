@@ -1,6 +1,7 @@
 package salute.oneshot.domain.chat.controller;
 
 import com.epages.restdocs.apispec.ResourceSnippetParameters;
+import com.epages.restdocs.apispec.SimpleType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -137,8 +138,8 @@ class ChatControllerTest extends AbstractRestDocsTests {
                                 .tag(API_TAG)
                                 .summary("어드민용 채팅방 리스트 조회 성공")
                                 .queryParameters(
-                                        parameterWithName("cursor").description("불러온 마지막 항목").optional(),
-                                        parameterWithName("limit").description("로딩되는 항목 갯수").optional())
+                                        parameterWithName("cursor").type(SimpleType.INTEGER).description("불러온 마지막 항목").optional(),
+                                        parameterWithName("limit").type(SimpleType.INTEGER).description("로딩되는 항목 갯수").optional())
                                 .build())))
                 .andReturn();
     }

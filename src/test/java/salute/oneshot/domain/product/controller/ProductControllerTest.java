@@ -1,6 +1,7 @@
 package salute.oneshot.domain.product.controller;
 
 import com.epages.restdocs.apispec.ResourceSnippetParameters;
+import com.epages.restdocs.apispec.SimpleType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -184,9 +185,9 @@ class ProductControllerTest extends AbstractRestDocsTests {
                                 .tag(API_TAG)
                                 .summary("상품 전체 조회 성공")
                                 .queryParameters(
-                                        parameterWithName("category").description("상품의 카테고리").optional(),
-                                        parameterWithName("page").description("페이지 넘버").optional(),
-                                        parameterWithName("size").description("페이지당 항목 수").optional())
+                                        parameterWithName("category").type(SimpleType.STRING).description("상품의 카테고리").optional(),
+                                        parameterWithName("page").type(SimpleType.INTEGER).description("페이지 넘버").optional(),
+                                        parameterWithName("size").type(SimpleType.INTEGER).description("페이지당 항목 수").optional())
                                 .build())))
                 .andReturn();
     }

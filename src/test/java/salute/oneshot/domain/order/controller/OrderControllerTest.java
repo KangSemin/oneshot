@@ -1,6 +1,7 @@
 package salute.oneshot.domain.order.controller;
 
 import com.epages.restdocs.apispec.ResourceSnippetParameters;
+import com.epages.restdocs.apispec.SimpleType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -37,7 +38,6 @@ import static com.epages.restdocs.apispec.ResourceDocumentation.resource;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -161,8 +161,8 @@ class OrderControllerTest extends AbstractRestDocsTests {
                                 .tag(API_TAG)
                                 .summary("주문 전체 조회 성공")
                                 .queryParameters(
-                                        parameterWithName("page").description("페이지 넘버").optional(),
-                                        parameterWithName("size").description("페이지당 항목 수").optional())
+                                        parameterWithName("page").type(SimpleType.INTEGER).description("페이지 넘버").optional(),
+                                        parameterWithName("size").type(SimpleType.INTEGER).description("페이지당 항목 수").optional())
                                 .build())))
                 .andReturn();
     }
