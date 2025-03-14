@@ -36,7 +36,7 @@ public class DeliveryService {
             throw new InvalidException(ErrorCode.INVALID_ORDER_STATE);
         }
 
-        order.updateStatus(OrderStatus.IN_TRANSIT);
+        order.updateOrderStatus(OrderStatus.IN_TRANSIT);
 
         Delivery delivery = Delivery.of(
                 order,
@@ -72,7 +72,7 @@ public class DeliveryService {
 
     @Transactional
     public AdminDeliveryResponseDto updateDelivery(AdminDeliverySDto serviceDto) {
-        Delivery delivery = deliveryRepository.findById(serviceDto.getDeliveryId())
+        Delivery delivery = deliveryRepository.findDeliveryById(serviceDto.getDeliveryId())
                 .orElseThrow(() -> new NotFoundException(ErrorCode.SHIPPING_NOT_FOUND));
 
         delivery.updateStatus(serviceDto.getStatus());

@@ -1,5 +1,6 @@
 package salute.oneshot.domain.delivery.repository;
 
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -13,4 +14,7 @@ public interface DeliveryRepository extends JpaRepository<Delivery, Long> {
     boolean existsByOrderId(@Param("orderId") Long orderId);
 
     Optional<Delivery> findByOrderId(Long orderId);
+
+    @EntityGraph
+    Optional<Delivery> findDeliveryById(Long id);
 }

@@ -9,6 +9,7 @@ import salute.oneshot.domain.common.dto.error.ErrorCode;
 import salute.oneshot.domain.order.entity.Order;
 import salute.oneshot.domain.delivery.enums.CourierCompany;
 import salute.oneshot.domain.delivery.enums.ShippingStatus;
+import salute.oneshot.domain.order.entity.OrderStatus;
 import salute.oneshot.global.exception.InvalidException;
 
 @Entity
@@ -78,6 +79,11 @@ public class Delivery extends BaseEntity {
             throw new InvalidException(ErrorCode.INVALID_STATUS_CHANGE);
         }
 
+        switch (status) {
+            case IN_TRANSIT -> order.updateOrderStatus(OrderStatus.IN_TRANSIT);
+            case DELIVERED -> order.updateOrderStatus(OrderStatus.DELIVERED);
+            case RETURNED -> order.updateOrderStatus(OrderStatus.CANCELLED);
+        }
         this.status = status;
     }
 }
