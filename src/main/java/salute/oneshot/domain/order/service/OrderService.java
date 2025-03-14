@@ -171,7 +171,7 @@ public class OrderService {
             throw new ForbiddenException(ErrorCode.ORDER_CANCEL_FORBIDDEN);
         }
 
-        if (order.getStatus() == OrderStatus.SHIPPED) {
+        if (order.getStatus() == OrderStatus.DELIVERED) {
 
             throw new CustomRuntimeException(ErrorCode.CANNOT_CANCEL_SHIPPED_ORDER);
 
