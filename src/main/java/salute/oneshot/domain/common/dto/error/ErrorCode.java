@@ -92,8 +92,8 @@ public enum ErrorCode {
     // 이벤트 관련 익셉션
     EVENT_NOT_FOUND(HttpStatus.NOT_FOUND, "이벤트가 존재하지 않습니다."),
     INVALID_EVENT_STATUS(HttpStatus.BAD_REQUEST, "유효하지 않은 이벤트 상태입니다."),
-    EXPIRED_EVENT(HttpStatus.BAD_REQUEST, "이벤트 종료일이 현재 시간보다 이전입니다."),
-    INVALID_EVENT_PERIOD(HttpStatus.BAD_REQUEST, "이벤트 시작일이 종료일보다 이후입니다."),
+    EXPIRED_DATE(HttpStatus.BAD_REQUEST, "종료일이 현재 시간보다 이전입니다."),
+    INVALID_DATE(HttpStatus.BAD_REQUEST, "종료일이 시작일보다 이전입니다."),
     CPN_EXPIRES_BEFORE_EVENT(HttpStatus.BAD_REQUEST, "쿠폰이 이벤트 종료일보다 먼저 만료됩니다."),
     INVALID_DATETIME(HttpStatus.BAD_REQUEST, "유효하지 않은 날짜 또는 시간 형식입니다."),
     INVALID_EVENT_TYPE(HttpStatus.BAD_REQUEST,"유효하지 않은 이벤트 타입 입니다."),
