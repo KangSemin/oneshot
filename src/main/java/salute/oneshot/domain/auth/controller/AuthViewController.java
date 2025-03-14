@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequiredArgsConstructor
 public class AuthViewController {
 
-
     @GetMapping("/login")
     public String loginPage() {
 
