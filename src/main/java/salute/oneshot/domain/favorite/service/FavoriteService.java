@@ -16,10 +16,8 @@ import salute.oneshot.domain.favorite.dto.service.FavoriteSDto;
 import salute.oneshot.domain.favorite.dto.service.GetFavoritesSDto;
 import salute.oneshot.domain.favorite.entity.Favorite;
 import salute.oneshot.domain.favorite.repository.FavoriteRepository;
-import salute.oneshot.domain.user.repository.UserRepository;
 import salute.oneshot.global.exception.ConflictException;
 import salute.oneshot.global.exception.ForbiddenException;
-import salute.oneshot.global.exception.NotFoundException;
 import salute.oneshot.global.util.RedisConst;
 
 @Service
@@ -40,11 +38,9 @@ public class FavoriteService {
             throw new ConflictException(ErrorCode.DUPLICATE_FAVORITE);
         }
 
-        Cocktail cocktail = cocktailRepository.findById(cocktailId)
-                .orElseThrow(() ->
-                        new NotFoundException(ErrorCode.COCKTAIL_NOT_FOUND));
-
+        Cocktail cocktail = cocktailRepository.getReferenceById(cocktailId);
         Favorite favorite = Favorite.of(userId, cocktail);
+
         favoriteRepository.save(favorite);
 
         increaseFavoriteScore(cocktailId);

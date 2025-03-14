@@ -17,8 +17,7 @@ public interface FavoriteRepository extends JpaRepository<Favorite, Long> {
             "WHERE f.cocktail.id = :cocktailId AND f.userId = :userId)")
     boolean existsByRecipeIdAndUserId(
             @Param("cocktailId") Long cocktailId,
-            @Param("userId") Long userId
-    );
+            @Param("userId") Long userId);
 
     Page<Favorite> findAllByUserId(Long id, Pageable pageable);
 
