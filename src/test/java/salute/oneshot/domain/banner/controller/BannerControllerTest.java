@@ -16,6 +16,8 @@ import salute.oneshot.domain.banner.dto.service.GetBannersSDto;
 import salute.oneshot.domain.banner.entity.Banner;
 import salute.oneshot.domain.banner.service.BannerService;
 import salute.oneshot.domain.common.AbstractRestDocsTests;
+import salute.oneshot.domain.common.ApiDocumentFactory;
+import salute.oneshot.domain.common.ApiDocumentationLoader;
 import salute.oneshot.domain.common.dto.error.ErrorCode;
 import salute.oneshot.domain.common.dto.success.ApiResponseConst;
 import salute.oneshot.global.exception.NotFoundException;
@@ -71,9 +73,9 @@ class BannerControllerTest extends AbstractRestDocsTests {
 
         // when & then
         mockMvc.perform(get("/api/banners", BannerTestFactory.BANNER_ID)
-                .param("page", "1")
-                .param("size", "10")
-                .with(user(UserTestFactory.createMockUserDetails())))
+                        .param("page", "1")
+                        .param("size", "10")
+                        .with(user(UserTestFactory.createMockUserDetails())))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value(ApiResponseConst.GET_BANNER_SUCCESS))
                 .andExpect(jsonPath("$.data.banners[0].bannerId").value(BannerTestFactory.BANNER_ID))
@@ -84,6 +86,13 @@ class BannerControllerTest extends AbstractRestDocsTests {
                 .andExpect(jsonPath("$.data.banners[2].eventId").value(3L))
                 .andExpect(jsonPath("$.data.totalPages").value(1))
                 .andExpect(jsonPath("$.data.hasNext").value(false))
+                .andDo(ApiDocumentFactory.listDoc(
+                        "banner-controller-test/success-get-banners",
+                        ApiDocumentFactory.BANNER_TAG,
+                        ApiDocumentationLoader.getSummary("banner", "BANNER_LIST_API"),
+                        ApiDocumentationLoader.getDescription("banner", "BANNER_LIST_API"),
+                        ApiDocumentFactory.PAGE_PARAM,
+                        ApiDocumentFactory.SIZE_PARAM))
                 .andReturn();
     }
 
@@ -120,6 +129,14 @@ class BannerControllerTest extends AbstractRestDocsTests {
                 .andExpect(jsonPath("$.data.banners[1].eventId").value(3L))
                 .andExpect(jsonPath("$.data.totalPages").value(1))
                 .andExpect(jsonPath("$.data.hasNext").value(false))
+                .andDo(ApiDocumentFactory.listDoc(
+                        "banner-controller-test/success-get-banners-with-start-date",
+                        ApiDocumentFactory.BANNER_TAG,
+                        ApiDocumentationLoader.getSummary("banner", "BANNER_LIST_API"),
+                        ApiDocumentationLoader.getDescription("banner", "BANNER_LIST_API"),
+                        ApiDocumentFactory.PAGE_PARAM,
+                        ApiDocumentFactory.SIZE_PARAM,
+                        ApiDocumentFactory.START_DATE_PARAM))
                 .andReturn();
     }
 
@@ -150,6 +167,14 @@ class BannerControllerTest extends AbstractRestDocsTests {
                 .andExpect(jsonPath("$.data.banners[0].eventId").value(EventTestFactory.EVENT_ID))
                 .andExpect(jsonPath("$.data.totalPages").value(1))
                 .andExpect(jsonPath("$.data.hasNext").value(false))
+                .andDo(ApiDocumentFactory.listDoc(
+                        "banner-controller-test/success-get-banners-with-end-date",
+                        ApiDocumentFactory.BANNER_TAG,
+                        ApiDocumentationLoader.getSummary("banner", "BANNER_LIST_API"),
+                        ApiDocumentationLoader.getDescription("banner", "BANNER_LIST_API"),
+                        ApiDocumentFactory.PAGE_PARAM,
+                        ApiDocumentFactory.SIZE_PARAM,
+                        ApiDocumentFactory.END_DATE_PARAM))
                 .andReturn();
     }
 
@@ -183,6 +208,15 @@ class BannerControllerTest extends AbstractRestDocsTests {
                 .andExpect(jsonPath("$.data.banners[0].eventId").value(3L))
                 .andExpect(jsonPath("$.data.totalPages").value(1))
                 .andExpect(jsonPath("$.data.hasNext").value(false))
+                .andDo(ApiDocumentFactory.listDoc(
+                        "banner-controller-test/success-get-banners-with-start-and-end-date",
+                        ApiDocumentFactory.BANNER_TAG,
+                        ApiDocumentationLoader.getSummary("banner", "BANNER_LIST_API"),
+                        ApiDocumentationLoader.getDescription("banner", "BANNER_LIST_API"),
+                        ApiDocumentFactory.PAGE_PARAM,
+                        ApiDocumentFactory.SIZE_PARAM,
+                        ApiDocumentFactory.START_DATE_PARAM,
+                        ApiDocumentFactory.END_DATE_PARAM))
                 .andReturn();
     }
 
@@ -204,6 +238,8 @@ class BannerControllerTest extends AbstractRestDocsTests {
         mockMvc.perform(get("/api/banners", BannerTestFactory.BANNER_ID)
                         .param("page", "1")
                         .param("size", "10")
+                        .param("startDate", "2025-03-08")
+                        .param("endDate", "2025-03-08")
                         .with(user(UserTestFactory.createMockUserDetails())))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value(ApiResponseConst.GET_BANNER_SUCCESS))
@@ -211,6 +247,15 @@ class BannerControllerTest extends AbstractRestDocsTests {
                 .andExpect(jsonPath("$.data.banners").isEmpty())
                 .andExpect(jsonPath("$.data.totalPages").value(1))
                 .andExpect(jsonPath("$.data.hasNext").value(false))
+                .andDo(ApiDocumentFactory.listDoc(
+                        "banner-controller-test/success-get-banners-with-empty",
+                        ApiDocumentFactory.BANNER_TAG,
+                        ApiDocumentationLoader.getSummary("banner", "BANNER_LIST_API"),
+                        ApiDocumentationLoader.getDescription("banner", "BANNER_LIST_API"),
+                        ApiDocumentFactory.PAGE_PARAM,
+                        ApiDocumentFactory.SIZE_PARAM,
+                        ApiDocumentFactory.START_DATE_PARAM,
+                        ApiDocumentFactory.END_DATE_PARAM))
                 .andReturn();
     }
 
@@ -227,7 +272,7 @@ class BannerControllerTest extends AbstractRestDocsTests {
 
         // when & then
         mockMvc.perform(get("/api/banners/{bannerId}", BannerTestFactory.BANNER_ID)
-                .with(user(UserTestFactory.createMockUserDetails())))
+                        .with(user(UserTestFactory.createMockUserDetails())))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value(ApiResponseConst.GET_BANNER_SUCCESS))
                 .andExpect(jsonPath("$.data.bannerId").value(BannerTestFactory.BANNER_ID))
@@ -235,6 +280,11 @@ class BannerControllerTest extends AbstractRestDocsTests {
                 .andExpect(jsonPath("$.data.imageUrl").value(BannerTestFactory.IMAGE_URL))
                 .andExpect(jsonPath("$.data.startTime").value(BannerTestFactory.START_LOCAL_DATE_TIME.toString()))
                 .andExpect(jsonPath("$.data.endTime").value(BannerTestFactory.END_LOCAL_DATE_TIME.toString()))
+                .andDo(ApiDocumentFactory.listDoc(
+                        "banner-controller-test/success-get-banner",
+                        ApiDocumentFactory.BANNER_TAG,
+                        ApiDocumentationLoader.getSummary("banner", "BANNER_GET_API"),
+                        ApiDocumentationLoader.getDescription("banner", "BANNER_GET_API")))
                 .andReturn();
     }
 
@@ -252,6 +302,11 @@ class BannerControllerTest extends AbstractRestDocsTests {
                         .with(user(UserTestFactory.createMockUserDetails())))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.errorMessage").value(ErrorCode.BANNER_NOT_FOUND.getMessage()))
+                .andDo(ApiDocumentFactory.listDoc(
+                        "banner-controller-test/invalid-banner-id-get-banner",
+                        ApiDocumentFactory.BANNER_TAG,
+                        ApiDocumentationLoader.getSummary("banner", "BANNER_GET_API"),
+                        ApiDocumentationLoader.getDescription("banner", "BANNER_GET_API")))
                 .andReturn();
     }
 }

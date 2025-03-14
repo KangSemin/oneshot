@@ -17,6 +17,8 @@ import salute.oneshot.domain.banner.dto.service.UpdateBannerSDto;
 import salute.oneshot.domain.banner.entity.Banner;
 import salute.oneshot.domain.banner.service.BannerService;
 import salute.oneshot.domain.common.AbstractRestDocsTests;
+import salute.oneshot.domain.common.ApiDocumentFactory;
+import salute.oneshot.domain.common.ApiDocumentationLoader;
 import salute.oneshot.domain.common.dto.error.ErrorCode;
 import salute.oneshot.domain.common.dto.success.ApiResponseConst;
 import salute.oneshot.domain.common.entity.ValidationConst;
@@ -64,36 +66,20 @@ class AdminBannerControllerTest extends AbstractRestDocsTests {
 
         // when & then
         mockMvc.perform(post("/api/admin/banners")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(requestDto))
-                .with(user(UserTestFactory.createMockAdminDetails())))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(requestDto))
+                        .with(user(UserTestFactory.createMockAdminDetails())))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.message").value(ApiResponseConst.ADD_BANNER_SUCCESS))
                 .andExpect(jsonPath("$.data.eventId").value(BannerTestFactory.BANNER_ID))
                 .andExpect(jsonPath("$.data.imageUrl").value(BannerTestFactory.IMAGE_URL))
                 .andExpect(jsonPath("$.data.startTime").value(BannerTestFactory.START_LOCAL_DATE_TIME.toString()))
                 .andExpect(jsonPath("$.data.endTime").value(BannerTestFactory.END_LOCAL_DATE_TIME.toString()))
-                .andReturn();
-    }
-
-    @DisplayName("배너 생성 실패: 잘못된 형태의 날짜, 시간 입력")
-    @Test
-    void invalidDateCreateBanner() throws Exception {
-        // given
-        BannerRequestDto requestDto =
-                BannerTestFactory.createInvalidBannerRequestDto();
-
-        given(bannerService.createBanner(any(BannerSDto.class)))
-                .willThrow(new InvalidException(ErrorCode.INVALID_DATETIME));
-
-        // when & then
-        mockMvc.perform(post("/api/admin/banners")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(requestDto))
-                        .with(user(UserTestFactory.createMockAdminDetails())))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.errorMessage").value(ValidationConst.TIME_TYPE_MESSAGE))
-
+                .andDo(ApiDocumentFactory.listDoc(
+                        "admin-banner-controller-test/success-create-banner",
+                        ApiDocumentFactory.BANNER_TAG,
+                        ApiDocumentationLoader.getSummary("banner", "ADMIN_BANNER_CREATE_API"),
+                        ApiDocumentationLoader.getDescription("banner", "ADMIN_BANNER_CREATE_API")))
                 .andReturn();
     }
 
@@ -113,6 +99,11 @@ class AdminBannerControllerTest extends AbstractRestDocsTests {
                         .with(user(UserTestFactory.createMockAdminDetails())))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.errorMessage").value(ErrorCode.EVENT_NOT_FOUND.getMessage()))
+                .andDo(ApiDocumentFactory.listDoc(
+                        "admin-banner-controller-test/invalid-banner-id-create-banner",
+                        ApiDocumentFactory.BANNER_TAG,
+                        ApiDocumentationLoader.getSummary("banner", "ADMIN_BANNER_CREATE_API"),
+                        ApiDocumentationLoader.getDescription("banner", "ADMIN_BANNER_CREATE_API")))
                 .andReturn();
     }
 
@@ -130,15 +121,20 @@ class AdminBannerControllerTest extends AbstractRestDocsTests {
 
         // when & then
         mockMvc.perform(patch("/api/admin/banners/{bannerId}", BannerTestFactory.BANNER_ID)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(requestDto))
-                .with(user(UserTestFactory.createMockAdminDetails())))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(requestDto))
+                        .with(user(UserTestFactory.createMockAdminDetails())))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value(ApiResponseConst.UPDATE_BANNER_SUCCESS))
                 .andExpect(jsonPath("$.data.eventId").value(BannerTestFactory.BANNER_ID))
                 .andExpect(jsonPath("$.data.imageUrl").value(BannerTestFactory.IMAGE_URL))
                 .andExpect(jsonPath("$.data.startTime").value(BannerTestFactory.START_LOCAL_DATE_TIME.toString()))
                 .andExpect(jsonPath("$.data.endTime").value(BannerTestFactory.END_LOCAL_DATE_TIME.toString()))
+                .andDo(ApiDocumentFactory.listDoc(
+                        "admin-banner-controller-test/success-update-banner",
+                        ApiDocumentFactory.BANNER_TAG,
+                        ApiDocumentationLoader.getSummary("banner", "ADMIN_BANNER_UPDATE_API"),
+                        ApiDocumentationLoader.getDescription("banner", "ADMIN_BANNER_UPDATE_API")))
                 .andReturn();
     }
 
@@ -159,6 +155,11 @@ class AdminBannerControllerTest extends AbstractRestDocsTests {
                         .with(user(UserTestFactory.createMockAdminDetails())))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.errorMessage").value(ErrorCode.BANNER_NOT_FOUND.getMessage()))
+                .andDo(ApiDocumentFactory.listDoc(
+                        "admin-banner-controller-test/invalid-banner-id-update-banner",
+                        ApiDocumentFactory.BANNER_TAG,
+                        ApiDocumentationLoader.getSummary("banner", "ADMIN_BANNER_UPDATE_API"),
+                        ApiDocumentationLoader.getDescription("banner", "ADMIN_BANNER_UPDATE_API")))
                 .andReturn();
     }
 
@@ -179,26 +180,11 @@ class AdminBannerControllerTest extends AbstractRestDocsTests {
                         .with(user(UserTestFactory.createMockAdminDetails())))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.errorMessage").value(ErrorCode.EVENT_NOT_FOUND.getMessage()))
-                .andReturn();
-    }
-
-    @DisplayName("배너 수정 실패: 잘못된 형태의 날짜, 시간 입력")
-    @Test
-    void invalidDateUpdateBanner() throws Exception {
-        // given
-        BannerRequestDto requestDto =
-                BannerTestFactory.createInvalidBannerRequestDto();
-
-        given(bannerService.updateBanner(any(UpdateBannerSDto.class)))
-                .willThrow(new InvalidException(ErrorCode.INVALID_DATETIME));
-
-        // when & then
-        mockMvc.perform(post("/api/admin/banners")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(requestDto))
-                        .with(user(UserTestFactory.createMockAdminDetails())))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.errorMessage").value(ValidationConst.TIME_TYPE_MESSAGE))
+                .andDo(ApiDocumentFactory.listDoc(
+                        "admin-banner-controller-test/invalid-event-id-update-banner",
+                        ApiDocumentFactory.BANNER_TAG,
+                        ApiDocumentationLoader.getSummary("banner", "ADMIN_BANNER_UPDATE_API"),
+                        ApiDocumentationLoader.getDescription("banner", "ADMIN_BANNER_UPDATE_API")))
                 .andReturn();
     }
 
@@ -214,6 +200,11 @@ class AdminBannerControllerTest extends AbstractRestDocsTests {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value(ApiResponseConst.DELETE_BANNER_SUCCESS))
                 .andExpect(jsonPath("$.data").value(bannerId))
+                .andDo(ApiDocumentFactory.listDoc(
+                        "admin-banner-controller-test/success-delete-banner",
+                        ApiDocumentFactory.BANNER_TAG,
+                        ApiDocumentationLoader.getSummary("banner", "ADMIN_BANNER_DELETE_API"),
+                        ApiDocumentationLoader.getDescription("banner", "ADMIN_BANNER_DELETE_API")))
                 .andReturn();
     }
 
@@ -231,6 +222,11 @@ class AdminBannerControllerTest extends AbstractRestDocsTests {
                         .with(user(UserTestFactory.createMockAdminDetails())))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.errorMessage").value(ErrorCode.BANNER_NOT_FOUND.getMessage()))
+                .andDo(ApiDocumentFactory.listDoc(
+                        "admin-banner-controller-test/invalid-banner-id-delete-banner",
+                        ApiDocumentFactory.BANNER_TAG,
+                        ApiDocumentationLoader.getSummary("banner", "ADMIN_BANNER_DELETE_API"),
+                        ApiDocumentationLoader.getDescription("banner", "ADMIN_BANNER_DELETE_API")))
                 .andReturn();
     }
 }

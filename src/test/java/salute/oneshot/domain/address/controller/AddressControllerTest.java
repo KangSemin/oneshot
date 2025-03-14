@@ -1,8 +1,5 @@
 package salute.oneshot.domain.address.controller;
 
-import com.epages.restdocs.apispec.ParameterDescriptorWithType;
-import com.epages.restdocs.apispec.ResourceSnippetParameters;
-import com.epages.restdocs.apispec.SimpleType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -24,20 +21,18 @@ import salute.oneshot.domain.address.dto.service.GetAddressesSDto;
 import salute.oneshot.domain.address.dto.service.UpdateAddressSDto;
 import salute.oneshot.domain.address.entity.Address;
 import salute.oneshot.domain.address.service.AddressService;
-import salute.oneshot.domain.common.AbstractRestDocsTests;
+import salute.oneshot.domain.common.*;
 import salute.oneshot.domain.common.dto.error.ErrorCode;
 import salute.oneshot.domain.common.dto.success.ApiResponseConst;
 import salute.oneshot.global.exception.InvalidException;
-import salute.oneshot.global.exception.NotFoundException;
 import salute.oneshot.util.AddressTestFactory;
 import salute.oneshot.util.UserTestFactory;
+import salute.oneshot.global.exception.NotFoundException;
 
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
-import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.document;
-import static com.epages.restdocs.apispec.ResourceDocumentation.resource;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
@@ -87,6 +82,11 @@ class AddressControllerTest extends AbstractRestDocsTests {
                 .andExpect(jsonPath("$.data.postAddress").value(AddressTestFactory.POST_ADDRESS))
                 .andExpect(jsonPath("$.data.detailAddress").value(AddressTestFactory.DETAIL_ADDRESS))
                 .andExpect(jsonPath("$.data.extraAddress").value(AddressTestFactory.EXTRA_ADDRESS))
+                .andDo(ApiDocumentFactory.listDoc(
+                        "address-controller-test/success-create-address",
+                        ApiDocumentFactory.ADDRESS_TAG,
+                        ApiDocumentationLoader.getSummary("address", "ADDRESS_POST_API"),
+                        ApiDocumentationLoader.getDescription("address", "ADDRESS_POST_API")))
                 .andReturn();
     }
 
@@ -113,15 +113,6 @@ class AddressControllerTest extends AbstractRestDocsTests {
                         .param("size", String.valueOf(AddressTestFactory.DEFAULT_PAGE_SIZE))
                         .contentType(MediaType.APPLICATION_JSON)
                         .with(user(UserTestFactory.createMockUserDetails())))
-                .andDo(document("address-list",
-                        resource(ResourceSnippetParameters.builder()
-                                .tag("주소 API")
-                                .queryParameters(
-                                        new ParameterDescriptorWithType("lastAddressId").description("마지막으로 조회한 주소 ID").type(SimpleType.STRING).optional(),
-                                        new ParameterDescriptorWithType("size").description("페이지 크기").type(SimpleType.STRING).defaultValue("10")
-                                )
-                                .build())
-                ))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value(ApiResponseConst.GET_ADR_LIST_SUCCESS))
                 .andExpect(jsonPath("$.data.addresses[0].addressId").value(AddressTestFactory.ADDRESS_ID))
@@ -130,6 +121,13 @@ class AddressControllerTest extends AbstractRestDocsTests {
                 .andExpect(jsonPath("$.data.addresses.length()").value(2))
                 .andExpect(jsonPath("$.data.hasNext").value(true))
                 .andExpect(jsonPath("$.data.nextCursor").value(2))
+                .andDo(ApiDocumentFactory.listDoc(
+                        "address-controller-test/success-get-addresses",
+                        ApiDocumentFactory.ADDRESS_TAG,
+                        ApiDocumentationLoader.getSummary("address", "ADDRESS_LIST_API"),
+                        ApiDocumentationLoader.getDescription("address", "ADDRESS_LIST_API"),
+                        ApiDocumentFactory.LAST_ID_PARAM,
+                        ApiDocumentFactory.SIZE_PARAM))
                 .andReturn();
     }
 
@@ -159,6 +157,12 @@ class AddressControllerTest extends AbstractRestDocsTests {
                 .andExpect(jsonPath("$.data.addresses").isArray())
                 .andExpect(jsonPath("$.data.addresses.length()").value(1))
                 .andExpect(jsonPath("$.data.hasNext").value(false))
+                .andDo(ApiDocumentFactory.listDoc(
+                        "address-controller-test/success-get-addresses-first-page",
+                        ApiDocumentFactory.ADDRESS_TAG,
+                        ApiDocumentationLoader.getSummary("address", "ADDRESS_LIST_API"),
+                        ApiDocumentationLoader.getDescription("address", "ADDRESS_LIST_API"),
+                        ApiDocumentFactory.SIZE_PARAM))
                 .andReturn();
     }
 
@@ -185,6 +189,13 @@ class AddressControllerTest extends AbstractRestDocsTests {
                 .andExpect(jsonPath("$.data.addresses.length()").value(0))
                 .andExpect(jsonPath("$.data.hasNext").value(false))
                 .andExpect(jsonPath("$.data.nextCursor").isEmpty())
+                .andDo(ApiDocumentFactory.listDoc(
+                        "address-controller-test/success-get-addresses-empty-list",
+                        ApiDocumentFactory.ADDRESS_TAG,
+                        ApiDocumentationLoader.getSummary("address", "ADDRESS_LIST_API"),
+                        ApiDocumentationLoader.getDescription("address", "ADDRESS_LIST_API"),
+                        ApiDocumentFactory.LAST_ID_PARAM,
+                        ApiDocumentFactory.SIZE_PARAM))
                 .andReturn();
     }
 
@@ -209,6 +220,11 @@ class AddressControllerTest extends AbstractRestDocsTests {
                 .andExpect(jsonPath("$.data.postAddress").value(AddressTestFactory.POST_ADDRESS))
                 .andExpect(jsonPath("$.data.detailAddress").value(AddressTestFactory.DETAIL_ADDRESS))
                 .andExpect(jsonPath("$.data.extraAddress").value(AddressTestFactory.EXTRA_ADDRESS))
+                .andDo(ApiDocumentFactory.listDoc(
+                        "address-controller-test/success-get-address",
+                        ApiDocumentFactory.ADDRESS_TAG,
+                        ApiDocumentationLoader.getSummary("address", "ADDRESS_GET_API"),
+                        ApiDocumentationLoader.getDescription("address", "ADDRESS_GET_API")))
                 .andReturn();
     }
 
@@ -225,6 +241,11 @@ class AddressControllerTest extends AbstractRestDocsTests {
                         .with(user(UserTestFactory.createMockUserDetails())))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.errorMessage").value(ErrorCode.ADR_NOT_FOUND.getMessage()))
+                .andDo(ApiDocumentFactory.listDoc(
+                        "address-controller-test/invalid-address-id-get-address",
+                        ApiDocumentFactory.ADDRESS_TAG,
+                        ApiDocumentationLoader.getSummary("address", "ADDRESS_GET_API"),
+                        ApiDocumentationLoader.getDescription("address", "ADDRESS_GET_API")))
                 .andReturn();
     }
 
@@ -262,6 +283,11 @@ class AddressControllerTest extends AbstractRestDocsTests {
                 .andExpect(jsonPath("$.data.detailAddress").value(AddressTestFactory.NEW_DETAIL_ADDRESS))
                 .andExpect(jsonPath("$.data.extraAddress").value(AddressTestFactory.EXTRA_ADDRESS))
                 .andExpect(jsonPath("$.data.default").value(AddressTestFactory.IS_DEFAULT))
+                .andDo(ApiDocumentFactory.listDoc(
+                        "address-controller-test/success-update-address",
+                        ApiDocumentFactory.ADDRESS_TAG,
+                        ApiDocumentationLoader.getSummary("address", "ADDRESS_UPDATE_API"),
+                        ApiDocumentationLoader.getDescription("address", "ADDRESS_UPDATE_API")))
                 .andReturn();
     }
 
@@ -283,6 +309,11 @@ class AddressControllerTest extends AbstractRestDocsTests {
                         .with(user(UserTestFactory.createMockUserDetails())))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errorMessage").value(ErrorCode.DEFAULT_ADDRESS_REQUIRED.getMessage()))
+                .andDo(ApiDocumentFactory.listDoc(
+                        "address-controller-test/invalid-default-update-address",
+                        ApiDocumentFactory.ADDRESS_TAG,
+                        ApiDocumentationLoader.getSummary("address", "ADDRESS_UPDATE_API"),
+                        ApiDocumentationLoader.getDescription("address", "ADDRESS_UPDATE_API")))
                 .andReturn();
     }
 
@@ -303,12 +334,17 @@ class AddressControllerTest extends AbstractRestDocsTests {
                         .with(user(UserTestFactory.createMockUserDetails())))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.errorMessage").value(ErrorCode.ADR_NOT_FOUND.getMessage()))
+                .andDo(ApiDocumentFactory.listDoc(
+                        "address-controller-test/invalid-address-id-update-address",
+                        ApiDocumentFactory.ADDRESS_TAG,
+                        ApiDocumentationLoader.getSummary("address", "ADDRESS_UPDATE_API"),
+                        ApiDocumentationLoader.getDescription("address", "ADDRESS_UPDATE_API")))
                 .andReturn();
     }
 
     @DisplayName("주소 삭제 성공")
     @Test
-    void successAddressDelete() throws Exception {
+    void successDeleteAddress() throws Exception {
         // given
         given(addressService.deleteAddress(any(AddressSDto.class)))
                 .willReturn(AddressTestFactory.ADDRESS_ID);
@@ -320,6 +356,11 @@ class AddressControllerTest extends AbstractRestDocsTests {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value(ApiResponseConst.DELETE_ADR_SUCCESS))
                 .andExpect(jsonPath("$.data").value(AddressTestFactory.ADDRESS_ID))
+                .andDo(ApiDocumentFactory.listDoc(
+                        "address-controller-test/success-delete-address",
+                        ApiDocumentFactory.ADDRESS_TAG,
+                        ApiDocumentationLoader.getSummary("address", "ADDRESS_DELETE_API"),
+                        ApiDocumentationLoader.getDescription("address", "ADDRESS_DELETE_API")))
                 .andReturn();
     }
 
@@ -340,9 +381,13 @@ class AddressControllerTest extends AbstractRestDocsTests {
                         .with(user(UserTestFactory.createMockUserDetails())))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errorMessage").value(ErrorCode.DEFAULT_ADDRESS.getMessage()))
+                .andDo(ApiDocumentFactory.listDoc(
+                        "address-controller-test/invalid-default-delete-address",
+                        ApiDocumentFactory.ADDRESS_TAG,
+                        ApiDocumentationLoader.getSummary("address", "ADDRESS_DELETE_API"),
+                        ApiDocumentationLoader.getDescription("address", "ADDRESS_DELETE_API")))
                 .andReturn();
     }
-
 
     @DisplayName("주소 삭제 실패: 존재하지 않는 주소로 조회 시도")
     @Test
@@ -357,6 +402,11 @@ class AddressControllerTest extends AbstractRestDocsTests {
                         .with(user(UserTestFactory.createMockUserDetails())))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.errorMessage").value(ErrorCode.ADR_NOT_FOUND.getMessage()))
+                .andDo(ApiDocumentFactory.listDoc(
+                        "address-controller-test/invalid-address-id-delete-address",
+                        ApiDocumentFactory.ADDRESS_TAG,
+                        ApiDocumentationLoader.getSummary("address", "ADDRESS_DELETE_API"),
+                        ApiDocumentationLoader.getDescription("address", "ADDRESS_DELETE_API")))
                 .andReturn();
     }
 }

@@ -10,6 +10,8 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import salute.oneshot.config.TestSecurityConfig;
 import salute.oneshot.domain.common.AbstractRestDocsTests;
+import salute.oneshot.domain.common.ApiDocumentFactory;
+import salute.oneshot.domain.common.ApiDocumentationLoader;
 import salute.oneshot.domain.common.dto.error.ErrorCode;
 import salute.oneshot.domain.common.dto.success.ApiResponseConst;
 import salute.oneshot.domain.delivery.dto.response.UserDeliveryResponseDto;
@@ -22,7 +24,6 @@ import salute.oneshot.global.exception.ForbiddenException;
 import salute.oneshot.global.exception.NotFoundException;
 import salute.oneshot.util.DeliveryTestFactory;
 import salute.oneshot.util.UserTestFactory;
-
 import java.lang.reflect.InvocationTargetException;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -70,6 +71,11 @@ class DeliveryControllerTest extends AbstractRestDocsTests {
                 .andExpect(jsonPath("$.data.trackingNumber").value(DeliveryTestFactory.TRACKING_NUMBER))
                 .andExpect(jsonPath("$.data.status").value(ShippingStatus.REGISTERED.toString()))
                 .andExpect(jsonPath("$.data.deliveryMessage").value(DeliveryTestFactory.DELIVERY_MESSAGE))
+                .andDo(ApiDocumentFactory.listDoc(
+                        "delivery-controller-test/success-get-shipping-for-user",
+                        ApiDocumentFactory.DELIVERY_TAG,
+                        ApiDocumentationLoader.getSummary("delivery", "USER_DELIVERY_GET_API"),
+                        ApiDocumentationLoader.getDescription("delivery", "USER_DELIVERY_GET_API")))
                 .andReturn();
     }
 
@@ -85,6 +91,11 @@ class DeliveryControllerTest extends AbstractRestDocsTests {
                         .with(user(UserTestFactory.createMockUserDetails())))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.errorMessage").value(ErrorCode.SHIPPING_NOT_FOUND.getMessage()))
+                .andDo(ApiDocumentFactory.listDoc(
+                        "delivery/invalid-order-id-get-shipping-for-user",
+                        ApiDocumentFactory.DELIVERY_TAG,
+                        ApiDocumentationLoader.getSummary("delivery", "USER_DELIVERY_GET_API"),
+                        ApiDocumentationLoader.getDescription("delivery", "USER_DELIVERY_GET_API")))
                 .andReturn();
     }
 
@@ -100,6 +111,11 @@ class DeliveryControllerTest extends AbstractRestDocsTests {
                         .with(user(UserTestFactory.createMockUserDetails())))
                 .andExpect(status().isForbidden())
                  .andExpect(jsonPath("$.errorMessage").value(ErrorCode.FORBIDDEN_ACCESS.getMessage()))
+                .andDo(ApiDocumentFactory.listDoc(
+                        "delivery/forbidden-order-id-get-shipping-for-user",
+                        ApiDocumentFactory.DELIVERY_TAG,
+                        ApiDocumentationLoader.getSummary("delivery", "USER_DELIVERY_GET_API"),
+                        ApiDocumentationLoader.getDescription("delivery", "USER_DELIVERY_GET_API")))
                 .andReturn();
     }
 }

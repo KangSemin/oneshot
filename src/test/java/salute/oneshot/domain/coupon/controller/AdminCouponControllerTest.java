@@ -12,6 +12,8 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.util.ReflectionTestUtils;
 import salute.oneshot.config.TestSecurityConfig;
 import salute.oneshot.domain.common.AbstractRestDocsTests;
+import salute.oneshot.domain.common.ApiDocumentFactory;
+import salute.oneshot.domain.common.ApiDocumentationLoader;
 import salute.oneshot.domain.common.dto.error.ErrorCode;
 import salute.oneshot.domain.common.dto.success.ApiResponseConst;
 import salute.oneshot.domain.coupon.dto.request.CpnRequestDto;
@@ -82,6 +84,11 @@ class AdminCouponControllerTest extends AbstractRestDocsTests {
                 .andExpect(jsonPath("$.data.id").value(CouponTestFactory.COUPON_ID))
                 .andExpect(jsonPath("$.data.couponName").value(CouponTestFactory.COUPON_NAME))
                 .andExpect(jsonPath("$.data.discountValue").value(CouponTestFactory.DISCOUNT_VALUE))
+                .andDo(ApiDocumentFactory.listDoc(
+                        "admin-coupon-controller-test/success-create-coupon",
+                        ApiDocumentFactory.COUPON_TAG,
+                        ApiDocumentationLoader.getSummary("coupon", "ADMIN_COUPON_CREATE_API"),
+                        ApiDocumentationLoader.getDescription("coupon", "ADMIN_COUPON_CREATE_API")))
                 .andReturn();
     }
 
@@ -109,6 +116,11 @@ class AdminCouponControllerTest extends AbstractRestDocsTests {
                 .andExpect(jsonPath("$.data.discountValue").value(CouponTestFactory.DISCOUNT_VALUE))
                 .andExpect(jsonPath("$.data.startTime").value(CouponTestFactory.START_LOCAL_DATE_TIME.toString()))
                 .andExpect(jsonPath("$.data.endTime").value(CouponTestFactory.END_LOCAL_DATE_TIME.toString()))
+                .andDo(ApiDocumentFactory.listDoc(
+                        "admin-coupon-controller-test/success-update-coupon",
+                        ApiDocumentFactory.COUPON_TAG,
+                        ApiDocumentationLoader.getSummary("coupon", "ADMIN_COUPON_UPDATE_API"),
+                        ApiDocumentationLoader.getDescription("coupon", "ADMIN_COUPON_UPDATE_API")))
                 .andReturn();
     }
 
@@ -129,6 +141,11 @@ class AdminCouponControllerTest extends AbstractRestDocsTests {
                         .with(user(UserTestFactory.createMockAdminDetails())))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.errorMessage").value(ErrorCode.COUPON_NOT_FOUND.getMessage()))
+                .andDo(ApiDocumentFactory.listDoc(
+                        "admin-coupon-controller-test/invalid-coupon-id-update-coupon",
+                        ApiDocumentFactory.COUPON_TAG,
+                        ApiDocumentationLoader.getSummary("coupon", "ADMIN_COUPON_UPDATE_API"),
+                        ApiDocumentationLoader.getDescription("coupon", "ADMIN_COUPON_UPDATE_API")))
                 .andReturn();
     }
 
@@ -147,6 +164,11 @@ class AdminCouponControllerTest extends AbstractRestDocsTests {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value(ApiResponseConst.DELETE_CPN_SUCCESS))
                 .andExpect(jsonPath("$.data").value(couponId))
+                .andDo(ApiDocumentFactory.listDoc(
+                        "admin-coupon-controller-test/success-delete-coupon",
+                        ApiDocumentFactory.COUPON_TAG,
+                        ApiDocumentationLoader.getSummary("coupon", "ADMIN_COUPON_DELETE_API"),
+                        ApiDocumentationLoader.getDescription("coupon", "ADMIN_COUPON_DELETE_API")))
                 .andReturn();
     }
 
@@ -164,6 +186,11 @@ class AdminCouponControllerTest extends AbstractRestDocsTests {
                         .with(user(UserTestFactory.createMockAdminDetails())))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.errorMessage").value(ErrorCode.COUPON_NOT_FOUND.getMessage()))
+                .andDo(ApiDocumentFactory.listDoc(
+                        "admin-coupon-controller-test/invalid-coupon-id-delete-coupon",
+                        ApiDocumentFactory.COUPON_TAG,
+                        ApiDocumentationLoader.getSummary("coupon", "ADMIN_COUPON_DELETE_API"),
+                        ApiDocumentationLoader.getDescription("coupon", "ADMIN_COUPON_DELETE_API")))
                 .andReturn();
     }
 
@@ -189,6 +216,11 @@ class AdminCouponControllerTest extends AbstractRestDocsTests {
                 .andExpect(jsonPath("$.data.userCouponId").value(1L))
                 .andExpect(jsonPath("$.data.status").value(UserCouponStatus.ISSUED.toString()))
                 .andExpect(jsonPath("$.data.coupon.couponName").value(CouponTestFactory.COUPON_NAME))
+                .andDo(ApiDocumentFactory.listDoc(
+                        "admin-coupon-controller-test/success-grant-user-coupon",
+                        ApiDocumentFactory.COUPON_TAG,
+                        ApiDocumentationLoader.getSummary("coupon", "ADMIN_USER_COUPON_GRANT_API"),
+                        ApiDocumentationLoader.getDescription("coupon", "ADMIN_USER_COUPON_GRANT_API")))
                 .andReturn();
     }
 
@@ -209,6 +241,11 @@ class AdminCouponControllerTest extends AbstractRestDocsTests {
                         .with(user(UserTestFactory.createMockAdminDetails())))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.errorMessage").value(ErrorCode.COUPON_NOT_FOUND.getMessage()))
+                .andDo(ApiDocumentFactory.listDoc(
+                        "admin-coupon-controller-test/invalid-coupon-id-grant-user-coupon",
+                        ApiDocumentFactory.COUPON_TAG,
+                        ApiDocumentationLoader.getSummary("coupon", "ADMIN_USER_COUPON_GRANT_API"),
+                        ApiDocumentationLoader.getDescription("coupon", "ADMIN_USER_COUPON_GRANT_API")))
                 .andReturn();
     }
 }

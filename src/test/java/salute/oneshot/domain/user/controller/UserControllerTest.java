@@ -9,9 +9,10 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.web.servlet.MockMvc;
 import salute.oneshot.config.TestSecurityConfig;
 import salute.oneshot.domain.common.AbstractRestDocsTests;
+import salute.oneshot.domain.common.ApiDocumentFactory;
+import salute.oneshot.domain.common.ApiDocumentationLoader;
 import salute.oneshot.domain.common.dto.error.ErrorCode;
 import salute.oneshot.domain.common.dto.success.ApiResponseConst;
 import salute.oneshot.domain.user.dto.repuest.UpdateUserRequestDto;
@@ -67,6 +68,11 @@ class UserControllerTest extends AbstractRestDocsTests {
                 .andExpect(jsonPath("$.data.email").value(UserTestFactory.EMAIL))
                 .andExpect(jsonPath("$.data.nickname").value(UserTestFactory.NICKNAME))
                 .andExpect(jsonPath("$.data.userRole").value(UserTestFactory.ROLE_USER.toString()))
+                .andDo(ApiDocumentFactory.listDoc(
+                        "user-controller-test/success-get-user-info",
+                        ApiDocumentFactory.USER_TAG,
+                        ApiDocumentationLoader.getSummary("user", "USER_GET_INFO_API"),
+                        ApiDocumentationLoader.getDescription("user", "USER_GET_INFO_API")))
                 .andReturn();
     }
 
@@ -82,6 +88,11 @@ class UserControllerTest extends AbstractRestDocsTests {
                         .with(user(UserTestFactory.createMockUserDetails())))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.errorMessage").value(ErrorCode.USER_NOT_FOUND.getMessage()))
+                .andDo(ApiDocumentFactory.listDoc(
+                        "user/invalid-user-id-get-user-info",
+                        ApiDocumentFactory.USER_TAG,
+                        ApiDocumentationLoader.getSummary("user", "USER_GET_INFO_API"),
+                        ApiDocumentationLoader.getDescription("user", "USER_GET_INFO_API")))
                 .andReturn();
     }
 
@@ -108,10 +119,15 @@ class UserControllerTest extends AbstractRestDocsTests {
                 .andExpect(jsonPath("$.data.email").value(UserTestFactory.EMAIL))
                 .andExpect(jsonPath("$.data.nickname").value(UserTestFactory.NICKNAME))
                 .andExpect(jsonPath("$.data.userRole").value(UserTestFactory.ROLE_USER.toString()))
+                .andDo(ApiDocumentFactory.listDoc(
+                        "user/success-update-user-info",
+                        ApiDocumentFactory.USER_TAG,
+                        ApiDocumentationLoader.getSummary("user", "USER_UPDATE_INFO_API"),
+                        ApiDocumentationLoader.getDescription("user", "USER_UPDATE_INFO_API")))
                 .andReturn();
     }
 
-    @DisplayName("유저 정보 수정 실패: 존재하지 않거나 소프르딜리트 된 유저아이디성공")
+    @DisplayName("유저 정보 수정 실패: 존재하지 않거나 소프르딜리트 된 유저아이디")
     @Test
     void invalidUserIdUpdateUserInfo() throws Exception {
         // given
@@ -128,6 +144,11 @@ class UserControllerTest extends AbstractRestDocsTests {
                         .with(user(UserTestFactory.createMockUserDetails())))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.errorMessage").value(ErrorCode.USER_NOT_FOUND.getMessage()))
+                .andDo(ApiDocumentFactory.listDoc(
+                        "user/invalid-user-id-update-user-info",
+                        ApiDocumentFactory.USER_TAG,
+                        ApiDocumentationLoader.getSummary("user", "USER_UPDATE_INFO_API"),
+                        ApiDocumentationLoader.getDescription("user", "USER_UPDATE_INFO_API")))
                 .andReturn();
     }
 
@@ -148,6 +169,11 @@ class UserControllerTest extends AbstractRestDocsTests {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value(ApiResponseConst.DELETE_USER_SUCCESS))
                 .andExpect(jsonPath("$.data").value(userId))
+                .andDo(ApiDocumentFactory.listDoc(
+                        "user/success-delete-user",
+                        ApiDocumentFactory.USER_TAG,
+                        ApiDocumentationLoader.getSummary("user", "USER_DELETE_API"),
+                        ApiDocumentationLoader.getDescription("user", "USER_DELETE_API")))
                 .andReturn();
     }
 
@@ -165,6 +191,11 @@ class UserControllerTest extends AbstractRestDocsTests {
                         .header("Authorization", "Bearer test-token"))
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.errorMessage").value(ErrorCode.DUPLICATE_USER_DELETE.getMessage()))
+                .andDo(ApiDocumentFactory.listDoc(
+                        "user/invalid-user-id-delete-user",
+                        ApiDocumentFactory.USER_TAG,
+                        ApiDocumentationLoader.getSummary("user", "USER_DELETE_API"),
+                        ApiDocumentationLoader.getDescription("user", "USER_DELETE_API")))
                 .andReturn();
     }
 }

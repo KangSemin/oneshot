@@ -11,6 +11,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import salute.oneshot.config.TestSecurityConfig;
 import salute.oneshot.domain.common.AbstractRestDocsTests;
+import salute.oneshot.domain.common.ApiDocumentFactory;
+import salute.oneshot.domain.common.ApiDocumentationLoader;
 import salute.oneshot.domain.common.dto.error.ErrorCode;
 import salute.oneshot.domain.common.dto.success.ApiResponseConst;
 import salute.oneshot.domain.user.dto.repuest.UpdateRoleRequestDto;
@@ -68,6 +70,11 @@ class SuperAdminUserControllerTest extends AbstractRestDocsTests {
                 .andExpect(jsonPath("$.message").value(ApiResponseConst.UPDATE_ROLE_SUCCESS))
                 .andExpect(jsonPath("$.data.userId").value(UserTestFactory.USER_ID))
                 .andExpect(jsonPath("$.data.userRole").value(UserTestFactory.ROLE_ADMIN.toString()))
+                .andDo(ApiDocumentFactory.listDoc(
+                        "super-admin-user-controller-test/success-update-user-role",
+                        ApiDocumentFactory.USER_TAG,
+                        ApiDocumentationLoader.getSummary("user", "SUPER_ADMIN_USER_ROLE_UPDATE_API"),
+                        ApiDocumentationLoader.getDescription("user", "SUPER_ADMIN_USER_ROLE_UPDATE_API")))
                 .andReturn();
     }
 
@@ -88,6 +95,11 @@ class SuperAdminUserControllerTest extends AbstractRestDocsTests {
                         .with(user(UserTestFactory.createMockSuperAdminDetails())))
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.errorMessage").value(ErrorCode.DUPLICATE_ROLE.getMessage()))
+                .andDo(ApiDocumentFactory.listDoc(
+                        "super-admin-user-controller-test/duplicated-user-role-update-user-role",
+                        ApiDocumentFactory.USER_TAG,
+                        ApiDocumentationLoader.getSummary("user", "SUPER_ADMIN_USER_ROLE_UPDATE_API"),
+                        ApiDocumentationLoader.getDescription("user", "SUPER_ADMIN_USER_ROLE_UPDATE_API")))
                 .andReturn();
     }
 }

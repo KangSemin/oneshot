@@ -8,13 +8,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.util.ReflectionTestUtils;
 import salute.oneshot.config.TestSecurityConfig;
 import salute.oneshot.domain.common.AbstractRestDocsTests;
+import salute.oneshot.domain.common.ApiDocumentFactory;
+import salute.oneshot.domain.common.ApiDocumentationLoader;
 import salute.oneshot.domain.common.dto.error.ErrorCode;
 import salute.oneshot.domain.common.dto.success.ApiResponseConst;
 import salute.oneshot.domain.coupon.dto.response.*;
@@ -56,7 +56,6 @@ class CouponControllerTest extends AbstractRestDocsTests {
     private UserCoupon userCoupon;
     private UserCoupon userCoupon2;
 
-
     @BeforeEach
     void setUp() {
         coupon = CouponTestFactory.createCoupon();
@@ -86,6 +85,11 @@ class CouponControllerTest extends AbstractRestDocsTests {
                 .andExpect(jsonPath("$.data.userCouponId").value(1L))
                 .andExpect(jsonPath("$.data.status").value(UserCouponStatus.ISSUED.toString()))
                 .andExpect(jsonPath("$.data.coupon.couponName").value(CouponTestFactory.COUPON_NAME))
+                .andDo(ApiDocumentFactory.listDoc(
+                        "coupon-controller-test/success-use-user-coupon",
+                        ApiDocumentFactory.COUPON_TAG,
+                        ApiDocumentationLoader.getSummary("coupon", "COUPON_USE_API"),
+                        ApiDocumentationLoader.getDescription("coupon", "COUPON_USE_API")))
                 .andReturn();
     }
 
@@ -102,6 +106,11 @@ class CouponControllerTest extends AbstractRestDocsTests {
                         .with(user(UserTestFactory.createMockUserDetails())))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.errorMessage").value(ErrorCode.COUPON_NOT_FOUND.getMessage()))
+                .andDo(ApiDocumentFactory.listDoc(
+                        "coupon-controller-test/invalid-user-coupon-id-use-user-coupon",
+                        ApiDocumentFactory.COUPON_TAG,
+                        ApiDocumentationLoader.getSummary("coupon", "COUPON_USE_API"),
+                        ApiDocumentationLoader.getDescription("coupon", "COUPON_USE_API")))
                 .andReturn();
     }
 
@@ -136,6 +145,13 @@ class CouponControllerTest extends AbstractRestDocsTests {
                 .andExpect(jsonPath("$.data.coupons[1].couponName").value("2000원 할인쿠폰"))
                 .andExpect(jsonPath("$.data.coupons[2].id").value(3L))
                 .andExpect(jsonPath("$.data.coupons[2].couponName").value("3000원 할인쿠폰"))
+                .andDo(ApiDocumentFactory.listDoc(
+                        "coupon-controller-test/success-get-coupons",
+                        ApiDocumentFactory.COUPON_TAG,
+                        ApiDocumentationLoader.getSummary("coupon", "COUPON_LIST_API"),
+                        ApiDocumentationLoader.getDescription("coupon", "COUPON_LIST_API"),
+                        ApiDocumentFactory.PAGE_PARAM,
+                        ApiDocumentFactory.SIZE_PARAM))
                 .andReturn();
     }
 
@@ -168,6 +184,14 @@ class CouponControllerTest extends AbstractRestDocsTests {
                 .andExpect(jsonPath("$.data.coupons[1].id").value(3L))
                 .andExpect(jsonPath("$.data.coupons[0].couponName").value("2000원 할인쿠폰"))
                 .andExpect(jsonPath("$.data.coupons[1].couponName").value("3000원 할인쿠폰"))
+                .andDo(ApiDocumentFactory.listDoc(
+                        "coupon-controller-test/success-get-coupons-with-start-date",
+                        ApiDocumentFactory.COUPON_TAG,
+                        ApiDocumentationLoader.getSummary("coupon", "COUPON_LIST_API"),
+                        ApiDocumentationLoader.getDescription("coupon", "COUPON_LIST_API"),
+                        ApiDocumentFactory.PAGE_PARAM,
+                        ApiDocumentFactory.SIZE_PARAM,
+                        ApiDocumentFactory.START_DATE_PARAM))
                 .andReturn();
     }
 
@@ -200,6 +224,14 @@ class CouponControllerTest extends AbstractRestDocsTests {
                 .andExpect(jsonPath("$.data.coupons[1].id").value(3L))
                 .andExpect(jsonPath("$.data.coupons[0].couponName").value(CouponTestFactory.COUPON_NAME))
                 .andExpect(jsonPath("$.data.coupons[1].couponName").value("3000원 할인쿠폰"))
+                .andDo(ApiDocumentFactory.listDoc(
+                        "coupon-controller-test/success-get-coupons-with-end-date",
+                        ApiDocumentFactory.COUPON_TAG,
+                        ApiDocumentationLoader.getSummary("coupon", "COUPON_LIST_API"),
+                        ApiDocumentationLoader.getDescription("coupon", "COUPON_LIST_API"),
+                        ApiDocumentFactory.PAGE_PARAM,
+                        ApiDocumentFactory.SIZE_PARAM,
+                        ApiDocumentFactory.END_DATE_PARAM))
                 .andReturn();
     }
 
@@ -230,6 +262,15 @@ class CouponControllerTest extends AbstractRestDocsTests {
                 .andExpect(jsonPath("$.message").value(ApiResponseConst.GET_CPN_LIST_SUCCESS))
                 .andExpect(jsonPath("$.data.coupons[0].id").value(2L))
                 .andExpect(jsonPath("$.data.coupons[0].couponName").value("2000원 할인쿠폰"))
+                .andDo(ApiDocumentFactory.listDoc(
+                        "coupon-controller-test/success-get-coupons-with-start-and-end-date",
+                        ApiDocumentFactory.COUPON_TAG,
+                        ApiDocumentationLoader.getSummary("coupon", "COUPON_LIST_API"),
+                        ApiDocumentationLoader.getDescription("coupon", "COUPON_LIST_API"),
+                        ApiDocumentFactory.PAGE_PARAM,
+                        ApiDocumentFactory.SIZE_PARAM,
+                        ApiDocumentFactory.START_DATE_PARAM,
+                        ApiDocumentFactory.END_DATE_PARAM))
                 .andReturn();
     }
 
@@ -255,6 +296,15 @@ class CouponControllerTest extends AbstractRestDocsTests {
                 .andExpect(jsonPath("$.data.coupons").isEmpty())
                 .andExpect(jsonPath("$.data.totalPages").value(1))
                 .andExpect(jsonPath("$.data.hasNext").value(false))
+                .andDo(ApiDocumentFactory.listDoc(
+                        "coupon-controller-test/success-get-empty-coupons",
+                        ApiDocumentFactory.COUPON_TAG,
+                        ApiDocumentationLoader.getSummary("coupon", "COUPON_LIST_API"),
+                        ApiDocumentationLoader.getDescription("coupon", "COUPON_LIST_API"),
+                        ApiDocumentFactory.PAGE_PARAM,
+                        ApiDocumentFactory.SIZE_PARAM,
+                        ApiDocumentFactory.START_DATE_PARAM,
+                        ApiDocumentFactory.END_DATE_PARAM))
                 .andReturn();
     }
 
@@ -278,6 +328,11 @@ class CouponControllerTest extends AbstractRestDocsTests {
                 .andExpect(jsonPath("$.data.discountValue").value(CouponTestFactory.DISCOUNT_VALUE))
                 .andExpect(jsonPath("$.data.startTime").value(CouponTestFactory.START_LOCAL_DATE_TIME.toString()))
                 .andExpect(jsonPath("$.data.endTime").value(CouponTestFactory.END_LOCAL_DATE_TIME.toString()))
+                .andDo(ApiDocumentFactory.listDoc(
+                        "coupon-controller-test/success-get-coupon",
+                        ApiDocumentFactory.COUPON_TAG,
+                                ApiDocumentationLoader.getSummary("coupon", "COUPON_GET_API"),
+                                ApiDocumentationLoader.getDescription("coupon", "COUPON_GET_API")))
                 .andReturn();
     }
 
@@ -293,6 +348,11 @@ class CouponControllerTest extends AbstractRestDocsTests {
                         .with(user(UserTestFactory.createMockUserDetails())))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.errorMessage").value(ErrorCode.COUPON_NOT_FOUND.getMessage()))
+                .andDo(ApiDocumentFactory.listDoc(
+                        "coupon-controller-test/invalid-coupon-id-get-coupon",
+                        ApiDocumentFactory.COUPON_TAG,
+                        ApiDocumentationLoader.getSummary("coupon", "COUPON_GET_API"),
+                        ApiDocumentationLoader.getDescription("coupon", "COUPON_GET_API")))
                 .andReturn();
     }
 
@@ -319,6 +379,13 @@ class CouponControllerTest extends AbstractRestDocsTests {
                 .andExpect(jsonPath("$.data.userCoupons[0].status").value(UserCouponStatus.ISSUED.toString()))
                 .andExpect(jsonPath("$.data.userCoupons[0].coupon.id").value(CouponTestFactory.COUPON_ID))
                 .andExpect(jsonPath("$.data.userCoupons[0].coupon.couponName").value(CouponTestFactory.COUPON_NAME))
+                .andDo(ApiDocumentFactory.listDoc(
+                        "coupon-controller-test/success-get-user-coupons",
+                        ApiDocumentFactory.COUPON_TAG,
+                        ApiDocumentationLoader.getSummary("coupon", "USER_COUPON_LIST_API"),
+                        ApiDocumentationLoader.getDescription("coupon", "USER_COUPON_LIST_API"),
+                        ApiDocumentFactory.PAGE_PARAM,
+                        ApiDocumentFactory.SIZE_PARAM))
                 .andReturn();
     }
 
@@ -337,6 +404,7 @@ class CouponControllerTest extends AbstractRestDocsTests {
         mockMvc.perform(get("/api/coupons/users")
                         .param("page", "1")
                         .param("size", "10")
+                        .param("status", "ISSUED")
                         .with(user(UserTestFactory.createMockUserDetails())))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value(ApiResponseConst.GET_CPN_LIST_SUCCESS))
@@ -344,12 +412,21 @@ class CouponControllerTest extends AbstractRestDocsTests {
                 .andExpect(jsonPath("$.data.userCoupons").isEmpty())
                 .andExpect(jsonPath("$.data.totalPages").value(1))
                 .andExpect(jsonPath("$.data.hasNext").value(false))
+                .andDo(ApiDocumentFactory.listDoc(
+                        "coupon-controller-test/success-get-empty-user-coupons",
+                        ApiDocumentFactory.COUPON_TAG,
+                        ApiDocumentationLoader.getSummary("coupon", "USER_COUPON_LIST_API"),
+                        ApiDocumentationLoader.getDescription("coupon", "USER_COUPON_LIST_API"),
+                        ApiDocumentFactory.COUPON_STATUS_PARAM,
+                        ApiDocumentFactory.PAGE_PARAM,
+                        ApiDocumentFactory.SIZE_PARAM))
                 .andReturn();
     }
 
+
     @DisplayName("유저쿠폰 목록 조회 성공: ISSUED 상태 조회")
     @Test
-    void successGetEmptyUserCouponsWithISSUED() throws Exception {
+    void successGetUserCouponsWithISSUED() throws Exception {
         // given
         List<UserCpnBriefResponseDto> userCoupons = List.of(UserCpnBriefResponseDto.from(userCoupon));
         PageImpl<UserCpnBriefResponseDto> page = new PageImpl<>(userCoupons);
@@ -370,6 +447,14 @@ class CouponControllerTest extends AbstractRestDocsTests {
                 .andExpect(jsonPath("$.data.userCoupons[0].status").value(UserCouponStatus.ISSUED.toString()))
                 .andExpect(jsonPath("$.data.userCoupons[0].coupon.id").value(CouponTestFactory.COUPON_ID))
                 .andExpect(jsonPath("$.data.userCoupons[0].coupon.couponName").value(CouponTestFactory.COUPON_NAME))
+                .andDo(ApiDocumentFactory.listDoc(
+                        "coupon-controller-test/success-get-user-coupons-with-issued",
+                        ApiDocumentFactory.COUPON_TAG,
+                        ApiDocumentationLoader.getSummary("coupon", "USER_COUPON_LIST_API"),
+                        ApiDocumentationLoader.getDescription("coupon", "USER_COUPON_LIST_API"),
+                        ApiDocumentFactory.COUPON_STATUS_PARAM,
+                        ApiDocumentFactory.PAGE_PARAM,
+                        ApiDocumentFactory.SIZE_PARAM))
                 .andReturn();
     }
 
@@ -391,6 +476,11 @@ class CouponControllerTest extends AbstractRestDocsTests {
                 .andExpect(jsonPath("$.data.userCouponId").value(1L))
                 .andExpect(jsonPath("$.data.status").value(UserCouponStatus.ISSUED.toString()))
                 .andExpect(jsonPath("$.data.coupon.couponName").value(CouponTestFactory.COUPON_NAME))
+                .andDo(ApiDocumentFactory.listDoc(
+                        "coupon/success-get-user-coupon",
+                        ApiDocumentFactory.COUPON_TAG,
+                                ApiDocumentationLoader.getSummary("coupon", "USER_COUPON_GET_API"),
+                                ApiDocumentationLoader.getDescription("coupon", "USER_COUPON_GET_API")))
                 .andReturn();
     }
 
@@ -406,6 +496,11 @@ class CouponControllerTest extends AbstractRestDocsTests {
                         .with(user(UserTestFactory.createMockUserDetails())))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.errorMessage").value(ErrorCode.COUPON_NOT_FOUND.getMessage()))
+                .andDo(ApiDocumentFactory.listDoc(
+                        "coupon-controller-test/invalid-user-coupon-id-get-user-coupon",
+                        ApiDocumentFactory.COUPON_TAG,
+                        ApiDocumentationLoader.getSummary("coupon", "USER_COUPON_GET_API"),
+                        ApiDocumentationLoader.getDescription("coupon", "USER_COUPON_GET_API")))
                 .andReturn();
     }
 
@@ -440,10 +535,17 @@ class CouponControllerTest extends AbstractRestDocsTests {
                 .andExpect(jsonPath("$.data.coupons[0].couponName").value(CouponTestFactory.COUPON_NAME))
                 .andExpect(jsonPath("$.data.coupons[1].couponName").value("2000원 할인쿠폰"))
                 .andExpect(jsonPath("$.data.coupons[2].couponName").value("3000원 할인쿠폰"))
+                .andDo(ApiDocumentFactory.listDoc(
+                        "coupon-controller-test/success-get-coupons-for-event",
+                        ApiDocumentFactory.COUPON_TAG,
+                        ApiDocumentationLoader.getSummary("coupon", "EVENT_COUPON_LIST_API"),
+                        ApiDocumentationLoader.getDescription("coupon", "EVENT_COUPON_LIST_API"),
+                        ApiDocumentFactory.PAGE_PARAM,
+                        ApiDocumentFactory.SIZE_PARAM))
                 .andReturn();
     }
 
-    @DisplayName("이벤트용 쿠폰 목록 조회 성공: 시작일 입력(쿠폰 시작일 > 이벤트 시작일)")
+    @DisplayName("이벤트용 쿠폰 목록 조회 성공: 시작일 입력(쿠폰 시작일 < 이벤트 시작일)")
     @Test
     void successGetCouponsForEventWithEventStartDate() throws Exception {
         // given
@@ -471,10 +573,18 @@ class CouponControllerTest extends AbstractRestDocsTests {
                 .andExpect(jsonPath("$.data.coupons[1].id").value(3L))
                 .andExpect(jsonPath("$.data.coupons[0].couponName").value(CouponTestFactory.COUPON_NAME))
                 .andExpect(jsonPath("$.data.coupons[1].couponName").value("3000원 할인쿠폰"))
+                .andDo(ApiDocumentFactory.listDoc(
+                        "coupon-controller-test/success-get-coupons-for-event-with-event-start-date",
+                        ApiDocumentFactory.COUPON_TAG,
+                        ApiDocumentationLoader.getSummary("coupon", "EVENT_COUPON_LIST_API"),
+                        ApiDocumentationLoader.getDescription("coupon", "EVENT_COUPON_LIST_API"),
+                        ApiDocumentFactory.PAGE_PARAM,
+                        ApiDocumentFactory.SIZE_PARAM,
+                        ApiDocumentFactory.EVENT_START_DATE_PARAM))
                 .andReturn();
     }
 
-    @DisplayName("이벤트용 쿠폰 목록 조회 성공: 종료일 입력(쿠폰 종료일 < 이벤트 시작일)")
+    @DisplayName("이벤트용 쿠폰 목록 조회 성공: 종료일 입력(쿠폰 종료일 > 이벤트 종료일)")
     @Test
     void successGetCouponsForEventWithEventEndDate() throws Exception {
         // given
@@ -493,12 +603,20 @@ class CouponControllerTest extends AbstractRestDocsTests {
         mockMvc.perform(get("/api/coupons")
                         .param("page", "1")
                         .param("size", "10")
-                        .param("eventStartDate", "2025-03-09")
+                        .param("eventEndDate", "2025-03-10")
                         .with(user(UserTestFactory.createMockUserDetails())))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value(ApiResponseConst.GET_CPN_LIST_SUCCESS))
                 .andExpect(jsonPath("$.data.coupons[0].id").value(3L))
                 .andExpect(jsonPath("$.data.coupons[0].couponName").value("3000원 할인쿠폰"))
+                .andDo(ApiDocumentFactory.listDoc(
+                        "coupon-controller-test/success-get-coupons-for-event-with-event-end-date",
+                        ApiDocumentFactory.COUPON_TAG,
+                        ApiDocumentationLoader.getSummary("coupon", "EVENT_COUPON_LIST_API"),
+                        ApiDocumentationLoader.getDescription("coupon", "EVENT_COUPON_LIST_API"),
+                        ApiDocumentFactory.PAGE_PARAM,
+                        ApiDocumentFactory.SIZE_PARAM,
+                        ApiDocumentFactory.EVENT_END_DATE_PARAM))
                 .andReturn();
     }
 
@@ -526,6 +644,15 @@ class CouponControllerTest extends AbstractRestDocsTests {
                 .andExpect(jsonPath("$.message").value(ApiResponseConst.GET_CPN_LIST_SUCCESS))
                 .andExpect(jsonPath("$.data.coupons[0].id").value(CouponTestFactory.COUPON_ID))
                 .andExpect(jsonPath("$.data.coupons[0].couponName").value(CouponTestFactory.COUPON_NAME))
+                .andDo(ApiDocumentFactory.listDoc(
+                        "coupon-controller-test/success-get-coupons-for-event-with-event-start-and-end-date",
+                        ApiDocumentFactory.COUPON_TAG,
+                        ApiDocumentationLoader.getSummary("coupon", "EVENT_COUPON_LIST_API"),
+                        ApiDocumentationLoader.getDescription("coupon", "EVENT_COUPON_LIST_API"),
+                        ApiDocumentFactory.PAGE_PARAM,
+                        ApiDocumentFactory.SIZE_PARAM,
+                        ApiDocumentFactory.EVENT_START_DATE_PARAM,
+                        ApiDocumentFactory.EVENT_END_DATE_PARAM))
                 .andReturn();
     }
 }

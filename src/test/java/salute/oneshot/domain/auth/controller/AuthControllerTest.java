@@ -22,6 +22,8 @@ import salute.oneshot.domain.auth.dto.service.LogInSDto;
 import salute.oneshot.domain.auth.dto.service.SignUpSDto;
 import salute.oneshot.domain.auth.service.AuthService;
 import salute.oneshot.domain.common.AbstractRestDocsTests;
+import salute.oneshot.domain.common.ApiDocumentFactory;
+import salute.oneshot.domain.common.ApiDocumentationLoader;
 import salute.oneshot.domain.common.dto.error.ErrorCode;
 import salute.oneshot.domain.common.dto.success.ApiResponseConst;
 import salute.oneshot.domain.user.entity.User;
@@ -79,6 +81,11 @@ class AuthControllerTest extends AbstractRestDocsTests {
                 .andExpect(jsonPath("$.message").value(ApiResponseConst.SIGNUP_SUCCESS))
                 .andExpect(jsonPath("$.data.email").value(UserTestFactory.EMAIL))
                 .andExpect(jsonPath("$.data.nickname").value(UserTestFactory.NICKNAME))
+                .andDo(ApiDocumentFactory.listDoc(
+                        "auth-controller-test/success-sign-up",
+                        ApiDocumentFactory.AUTH_TAG,
+                        ApiDocumentationLoader.getSummary("auth", "AUTH_SIGNUP_API"),
+                        ApiDocumentationLoader.getDescription("auth", "AUTH_SIGNUP_API")))
                 .andReturn();
     }
 
@@ -98,6 +105,11 @@ class AuthControllerTest extends AbstractRestDocsTests {
                         .content(objectMapper.writeValueAsString(requestDto)))
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.errorMessage").value(ErrorCode.DUPLICATE_EMAIL.getMessage()))
+                .andDo(ApiDocumentFactory.listDoc(
+                        "auth-controller-test/duplicated-email-sign-up",
+                        ApiDocumentFactory.AUTH_TAG,
+                        ApiDocumentationLoader.getSummary("auth", "AUTH_SIGNUP_API"),
+                        ApiDocumentationLoader.getDescription("auth", "AUTH_SIGNUP_API")))
                 .andReturn();
     }
 
@@ -120,6 +132,11 @@ class AuthControllerTest extends AbstractRestDocsTests {
                 .andExpect(status().isOk())
                 .andExpect(header().exists("Set-Cookie"))
                 .andExpect(jsonPath("$.message").value(ApiResponseConst.LOGIN_SUCCESS))
+                .andDo(ApiDocumentFactory.listDoc(
+                        "auth-controller-test/success-log-in",
+                        ApiDocumentFactory.AUTH_TAG,
+                        ApiDocumentationLoader.getSummary("auth", "AUTH_LOGIN_API"),
+                        ApiDocumentationLoader.getDescription("auth", "AUTH_LOGIN_API")))
                 .andReturn();
 
         // 수동으로 Set-Cookie 헤더 검증
@@ -146,6 +163,11 @@ class AuthControllerTest extends AbstractRestDocsTests {
                         .content(objectMapper.writeValueAsString(requestDto)))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.errorMessage").value(ErrorCode.USER_NOT_FOUND.getMessage()))
+                .andDo(ApiDocumentFactory.listDoc(
+                        "auth-controller-test/invalid-email-log-in",
+                        ApiDocumentFactory.AUTH_TAG,
+                        ApiDocumentationLoader.getSummary("auth", "AUTH_LOGIN_API"),
+                        ApiDocumentationLoader.getDescription("auth", "AUTH_LOGIN_API")))
                 .andReturn();
     }
 
@@ -165,6 +187,11 @@ class AuthControllerTest extends AbstractRestDocsTests {
                         .content(objectMapper.writeValueAsString(requestDto)))
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.errorMessage").value(ErrorCode.LOGIN_FAILED.getMessage()))
+                .andDo(ApiDocumentFactory.listDoc(
+                        "auth-controller-test/invalid-password-log-in",
+                        ApiDocumentFactory.AUTH_TAG,
+                        ApiDocumentationLoader.getSummary("auth", "AUTH_LOGIN_API"),
+                        ApiDocumentationLoader.getDescription("auth", "AUTH_LOGIN_API")))
                 .andReturn();
     }
 
@@ -182,6 +209,11 @@ class AuthControllerTest extends AbstractRestDocsTests {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value(ApiResponseConst.LOGOUT_SUCCESS))
                 .andExpect(jsonPath("$.data").value(userId))
+                .andDo(ApiDocumentFactory.listDoc(
+                        "auth-controller-test/success-log-out",
+                        ApiDocumentFactory.AUTH_TAG,
+                        ApiDocumentationLoader.getSummary("auth", "AUTH_LOGOUT_API"),
+                        ApiDocumentationLoader.getDescription("auth", "AUTH_LOGOUT_API")))
                 .andReturn();
     }
 
@@ -204,6 +236,11 @@ class AuthControllerTest extends AbstractRestDocsTests {
                 .andExpect(header().exists(HttpHeaders.SET_COOKIE))
                 .andExpect(jsonPath("$.message").value(ApiResponseConst.GET_ACS_TOKEN_SUCCESS))
                 .andExpect(jsonPath("$.data.accessToken").exists())
+                .andDo(ApiDocumentFactory.listDoc(
+                        "auth-controller-test/success-refresh-token",
+                        ApiDocumentFactory.AUTH_TAG,
+                        ApiDocumentationLoader.getSummary("auth", "AUTH_REFRESH_TOKEN_API"),
+                        ApiDocumentationLoader.getDescription("auth", "AUTH_REFRESH_TOKEN_API")))
                 .andReturn();
     }
 
@@ -222,6 +259,11 @@ class AuthControllerTest extends AbstractRestDocsTests {
                         .cookie(new Cookie("refreshToken", refreshToken)))
                 .andExpect(status().isForbidden())
                 .andExpect(jsonPath("$.errorMessage").value(ErrorCode.INVALID_TOKEN.getMessage()))
+                .andDo(ApiDocumentFactory.listDoc(
+                        "auth-controller-test/mismatch-info-fail-refresh-token",
+                        ApiDocumentFactory.AUTH_TAG,
+                        ApiDocumentationLoader.getSummary("auth", "AUTH_REFRESH_TOKEN_API"),
+                        ApiDocumentationLoader.getDescription("auth", "AUTH_REFRESH_TOKEN_API")))
                 .andReturn();
     }
 }

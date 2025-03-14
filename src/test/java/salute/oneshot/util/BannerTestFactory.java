@@ -7,6 +7,7 @@ import salute.oneshot.domain.banner.entity.Banner;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class BannerTestFactory {
 
@@ -58,6 +59,13 @@ public class BannerTestFactory {
     public static BannerRequestDto createBannerRequestDto()
             throws NoSuchMethodException, InvocationTargetException,
             InstantiationException, IllegalAccessException {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime startTime = now.plusDays(1);
+        LocalDateTime endTime = now.plusDays(7);
+
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+
         Constructor<BannerRequestDto> bannerCont = BannerRequestDto.class
                 .getDeclaredConstructor(
                         Long.class,
@@ -71,10 +79,10 @@ public class BannerTestFactory {
         return bannerCont.newInstance(
                 BANNER_ID,
                 IMAGE_URL,
-                START_DATE,
-                START_TIME,
-                END_DATE,
-                END_TIME);
+                startTime.format(dateFormatter),
+                startTime.format(timeFormatter),
+                endTime.format(dateFormatter),
+                endTime.format(timeFormatter));
     }
 
     public static BannerRequestDto createInvalidBannerRequestDto()

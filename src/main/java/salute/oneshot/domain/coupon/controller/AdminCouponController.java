@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import salute.oneshot.domain.common.dto.error.ErrorCode;
 import salute.oneshot.domain.common.dto.success.ApiResponse;
 import salute.oneshot.domain.common.dto.success.ApiResponseConst;
 import salute.oneshot.domain.coupon.dto.request.CpnRequestDto;
@@ -17,6 +18,9 @@ import salute.oneshot.domain.coupon.dto.service.CreateCpnSDto;
 import salute.oneshot.domain.coupon.dto.service.CreateUserCpnSDto;
 import salute.oneshot.domain.coupon.dto.service.UpdateCpnSDto;
 import salute.oneshot.domain.coupon.service.CouponService;
+import salute.oneshot.global.exception.InvalidException;
+
+import java.time.LocalDateTime;
 
 @RestController
 @RequestMapping("/api/admin/coupons")
@@ -38,6 +42,10 @@ public class AdminCouponController {
                         requestDto.getStartTime(),
                         requestDto.getEndDate(),
                         requestDto.getEndTime());
+        validateEventDate(
+                serviceDto.getStartTime(),
+                serviceDto.getEndTime());
+
         CpnBriefResponseDto responseDto =
                 couponService.createCoupon(serviceDto);
 
@@ -54,6 +62,10 @@ public class AdminCouponController {
     ) {
         UpdateCpnSDto serviceDto =
                 UpdateCpnSDto.of(couponId, requestDto);
+        validateEventDate(
+                serviceDto.getStartTime(),
+                serviceDto.getEndTime());
+
         CpnDetailResponseDto responseDto =
                 couponService.updateCoupon(serviceDto);
 
@@ -90,5 +102,18 @@ public class AdminCouponController {
                 .body(ApiResponse.success(
                         ApiResponseConst.ADD_USER_CPN_SUCCESS,
                         responseDto));
+    }
+
+    private void validateEventDate(
+            LocalDateTime startTime,
+            LocalDateTime endTime
+    ) {
+        if (endTime.isBefore(LocalDateTime.now())) {
+            throw new InvalidException(ErrorCode.EXPIRED_DATE);
+        }
+
+        if (startTime.isAfter(endTime)) {
+            throw new InvalidException(ErrorCode.INVALID_DATE);
+        }
     }
 }

@@ -10,10 +10,11 @@ import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.util.ReflectionTestUtils;
 import salute.oneshot.config.TestSecurityConfig;
 import salute.oneshot.domain.cocktail.entity.Cocktail;
 import salute.oneshot.domain.common.AbstractRestDocsTests;
+import salute.oneshot.domain.common.ApiDocumentFactory;
+import salute.oneshot.domain.common.ApiDocumentationLoader;
 import salute.oneshot.domain.common.dto.error.ErrorCode;
 import salute.oneshot.domain.common.dto.success.ApiResponseConst;
 import salute.oneshot.domain.favorite.dto.response.FavoritePageResponseDto;
@@ -81,6 +82,11 @@ class FavoriteControllerTest extends AbstractRestDocsTests {
                 .andExpect(jsonPath("$.data.description").value(cocktail.getDescription()))
                 .andExpect(jsonPath("$.data.type").value(cocktail.getType().toString()))
                 .andExpect(jsonPath("$.data.favoritedAt").value(org.hamcrest.Matchers.startsWith("2025-03-10T01:01")))
+                .andDo(ApiDocumentFactory.listDoc(
+                        "favorite-controller-test/success-create-favorite",
+                        ApiDocumentFactory.FAVORITE_TAG,
+                        ApiDocumentationLoader.getSummary("favorite", "FAVORITE_CREATE_API"),
+                        ApiDocumentationLoader.getDescription("event", "FAVORITE_CREATE_API")))
                 .andReturn();
     }
 
@@ -97,6 +103,11 @@ class FavoriteControllerTest extends AbstractRestDocsTests {
                         .with(user(UserTestFactory.createMockUserDetails())))
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.errorMessage").value(ErrorCode.DUPLICATE_FAVORITE.getMessage()))
+                .andDo(ApiDocumentFactory.listDoc(
+                        "favorite/duplicated-favorite-create-favorite",
+                        ApiDocumentFactory.FAVORITE_TAG,
+                        ApiDocumentationLoader.getSummary("favorite", "FAVORITE_CREATE_API"),
+                        ApiDocumentationLoader.getDescription("event", "FAVORITE_CREATE_API")))
                 .andReturn();
     }
 
@@ -113,6 +124,11 @@ class FavoriteControllerTest extends AbstractRestDocsTests {
                         .with(user(UserTestFactory.createMockUserDetails())))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.errorMessage").value(ErrorCode.COCKTAIL_NOT_FOUND.getMessage()))
+                .andDo(ApiDocumentFactory.listDoc(
+                        "favorite/invalid-favorite-id-create-favorite",
+                        ApiDocumentFactory.FAVORITE_TAG,
+                        ApiDocumentationLoader.getSummary("favorite", "FAVORITE_CREATE_API"),
+                        ApiDocumentationLoader.getDescription("event", "FAVORITE_CREATE_API")))
                 .andReturn();
     }
 
@@ -132,6 +148,11 @@ class FavoriteControllerTest extends AbstractRestDocsTests {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value(ApiResponseConst.GET_FVRT_STAT_SUCCESS))
                 .andExpect(jsonPath("$.data.favorited").value(true))
+                .andDo(ApiDocumentFactory.listDoc(
+                        "favorite/success-check-favorite",
+                        ApiDocumentFactory.FAVORITE_TAG,
+                        ApiDocumentationLoader.getSummary("favorite", "FAVORITE_CHECK_API"),
+                        ApiDocumentationLoader.getDescription("event", "FAVORITE_CHECK_API")))
                 .andReturn();
     }
 
@@ -160,6 +181,13 @@ class FavoriteControllerTest extends AbstractRestDocsTests {
                 .andExpect(jsonPath("$.data.favorites[0].type").value(cocktail.getType().toString()))
                 .andExpect(jsonPath("$.data.totalPages").value(1))
                 .andExpect(jsonPath("$.data.hasNext").value(false))
+                .andDo(ApiDocumentFactory.listDoc(
+                        "favorite/success-get-favorites",
+                        ApiDocumentFactory.FAVORITE_TAG,
+                        ApiDocumentationLoader.getSummary("favorite", "FAVORITE_LIST_API"),
+                        ApiDocumentationLoader.getDescription("event", "FAVORITE_LIST_API"),
+                        ApiDocumentFactory.PAGE_PARAM,
+                        ApiDocumentFactory.SIZE_PARAM))
                 .andReturn();
     }
 
@@ -184,6 +212,13 @@ class FavoriteControllerTest extends AbstractRestDocsTests {
                 .andExpect(jsonPath("$.data.favorites").isEmpty())
                 .andExpect(jsonPath("$.data.totalPages").value(1))
                 .andExpect(jsonPath("$.data.hasNext").value(false))
+                .andDo(ApiDocumentFactory.listDoc(
+                        "favorite/success-get-empty-favorites",
+                        ApiDocumentFactory.FAVORITE_TAG,
+                        ApiDocumentationLoader.getSummary("favorite", "FAVORITE_LIST_API"),
+                        ApiDocumentationLoader.getDescription("event", "FAVORITE_LIST_API"),
+                        ApiDocumentFactory.PAGE_PARAM,
+                        ApiDocumentFactory.SIZE_PARAM))
                 .andReturn();
     }
 
@@ -207,6 +242,11 @@ class FavoriteControllerTest extends AbstractRestDocsTests {
                 .andExpect(jsonPath("$.data.description").value(cocktail.getDescription()))
                 .andExpect(jsonPath("$.data.type").value(cocktail.getType().toString()))
                 .andExpect(jsonPath("$.data.favoritedAt").value(org.hamcrest.Matchers.startsWith("2025-03-10T01:01")))
+                .andDo(ApiDocumentFactory.listDoc(
+                        "favorite/success-delete-favorite",
+                        ApiDocumentFactory.FAVORITE_TAG,
+                        ApiDocumentationLoader.getSummary("favorite", "FAVORITE_DELETE_API"),
+                        ApiDocumentationLoader.getDescription("event", "FAVORITE_DELETE_API")))
                 .andReturn();
     }
 
@@ -222,6 +262,11 @@ class FavoriteControllerTest extends AbstractRestDocsTests {
                         .with(user(UserTestFactory.createMockUserDetails())))
                 .andExpect(status().isForbidden())
                 .andExpect(jsonPath("$.errorMessage").value(ErrorCode.FORBIDDEN_ACCESS.getMessage()))
+                .andDo(ApiDocumentFactory.listDoc(
+                        "favorite/invalid-id-delete-favorite",
+                        ApiDocumentFactory.FAVORITE_TAG,
+                        ApiDocumentationLoader.getSummary("favorite", "FAVORITE_DELETE_API"),
+                        ApiDocumentationLoader.getDescription("event", "FAVORITE_DELETE_API")))
                 .andReturn();
     }
 }

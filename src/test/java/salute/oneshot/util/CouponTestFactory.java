@@ -8,6 +8,7 @@ import salute.oneshot.domain.coupon.entity.Coupon;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class CouponTestFactory {
 
@@ -58,6 +59,13 @@ public class CouponTestFactory {
     public static CpnRequestDto createCpnRequestDto()
             throws NoSuchMethodException, InvocationTargetException,
             InstantiationException, IllegalAccessException {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime startTime = now.plusDays(1);
+        LocalDateTime endTime = now.plusDays(7);
+
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+
         Constructor<CpnRequestDto> couponCont = CpnRequestDto.class
                 .getDeclaredConstructor(
                         String.class,
@@ -71,10 +79,10 @@ public class CouponTestFactory {
         return couponCont.newInstance(
                 COUPON_NAME,
                 DISCOUNT_VALUE,
-                START_DATE,
-                START_TIME,
-                END_DATE,
-                END_TIME );
+                startTime.format(dateFormatter),
+                startTime.format(timeFormatter),
+                endTime.format(dateFormatter),
+                endTime.format(timeFormatter));
     }
 
     public static UserCpnRequestDto createUserCpnRequestDTo()

@@ -11,6 +11,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import salute.oneshot.config.TestSecurityConfig;
 import salute.oneshot.domain.common.AbstractRestDocsTests;
+import salute.oneshot.domain.common.ApiDocumentFactory;
+import salute.oneshot.domain.common.ApiDocumentationLoader;
 import salute.oneshot.domain.common.dto.error.ErrorCode;
 import salute.oneshot.domain.common.dto.success.ApiResponseConst;
 import salute.oneshot.domain.delivery.dto.request.DeliveryRequestDto;
@@ -83,6 +85,11 @@ class AdminDeliveryControllerTest extends AbstractRestDocsTests {
                 .andExpect(jsonPath("$.data.trackingNumber").value(DeliveryTestFactory.TRACKING_NUMBER))
                 .andExpect(jsonPath("$.data.status").value(ShippingStatus.REGISTERED.name()))
                 .andExpect(jsonPath("$.data.createdAt").value("2025-03-11T00:00:00"))
+                .andDo(ApiDocumentFactory.listDoc(
+                        "admin-delivery-controller-test/success-create-delivery",
+                        ApiDocumentFactory.DELIVERY_TAG,
+                        ApiDocumentationLoader.getSummary("delivery", "ADMIN_DELIVERY_CREATE_API"),
+                        ApiDocumentationLoader.getDescription("delivery", "ADMIN_DELIVERY_CREATE_API")))
                 .andReturn();
     }
 
@@ -103,6 +110,11 @@ class AdminDeliveryControllerTest extends AbstractRestDocsTests {
                         .with(user(UserTestFactory.createMockUserDetails())))
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.errorMessage").value(ErrorCode.DUPLICATE_SHIPPING.getMessage()))
+                .andDo(ApiDocumentFactory.listDoc(
+                        "delivery/conflict-order-id-create-delivery",
+                        ApiDocumentFactory.DELIVERY_TAG,
+                        ApiDocumentationLoader.getSummary("delivery", "ADMIN_DELIVERY_CREATE_API"),
+                        ApiDocumentationLoader.getDescription("delivery", "ADMIN_DELIVERY_CREATE_API")))
                 .andReturn();
     }
 
@@ -123,6 +135,11 @@ class AdminDeliveryControllerTest extends AbstractRestDocsTests {
                         .with(user(UserTestFactory.createMockUserDetails())))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.errorMessage").value(ErrorCode.ORDER_NOT_FOUND.getMessage()))
+                .andDo(ApiDocumentFactory.listDoc(
+                        "delivery/invalid-order-id-create-delivery",
+                        ApiDocumentFactory.DELIVERY_TAG,
+                        ApiDocumentationLoader.getSummary("delivery", "ADMIN_DELIVERY_CREATE_API"),
+                        ApiDocumentationLoader.getDescription("delivery", "ADMIN_DELIVERY_CREATE_API")))
                 .andReturn();
     }
 
@@ -143,6 +160,11 @@ class AdminDeliveryControllerTest extends AbstractRestDocsTests {
                         .with(user(UserTestFactory.createMockUserDetails())))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errorMessage").value(ErrorCode.INVALID_ORDER_STATE.getMessage()))
+                .andDo(ApiDocumentFactory.listDoc(
+                        "delivery/invalid-order-state-create-delivery",
+                        ApiDocumentFactory.DELIVERY_TAG,
+                        ApiDocumentationLoader.getSummary("delivery", "ADMIN_DELIVERY_CREATE_API"),
+                        ApiDocumentationLoader.getDescription("delivery", "ADMIN_DELIVERY_CREATE_API")))
                 .andReturn();
     }
 
@@ -171,6 +193,11 @@ class AdminDeliveryControllerTest extends AbstractRestDocsTests {
                 .andExpect(jsonPath("$.data.trackingNumber").value(DeliveryTestFactory.TRACKING_NUMBER))
                 .andExpect(jsonPath("$.data.status").value(ShippingStatus.REGISTERED.name()))
                 .andExpect(jsonPath("$.data.createdAt").value("2025-03-11T00:00:00"))
+                .andDo(ApiDocumentFactory.listDoc(
+                        "delivery/success-get-delivery",
+                        ApiDocumentFactory.DELIVERY_TAG,
+                        ApiDocumentationLoader.getSummary("delivery", "ADMIN_DELIVERY_GET_API"),
+                        ApiDocumentationLoader.getDescription("delivery", "ADMIN_DELIVERY_GET_API")))
                 .andReturn();
     }
 
@@ -188,6 +215,11 @@ class AdminDeliveryControllerTest extends AbstractRestDocsTests {
                         .with(user(UserTestFactory.createMockUserDetails())))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.errorMessage").value(ErrorCode.SHIPPING_NOT_FOUND.getMessage()))
+                .andDo(ApiDocumentFactory.listDoc(
+                        "delivery/invalid-delivery-id-get-delivery",
+                        ApiDocumentFactory.DELIVERY_TAG,
+                        ApiDocumentationLoader.getSummary("delivery", "ADMIN_DELIVERY_GET_API"),
+                        ApiDocumentationLoader.getDescription("delivery", "ADMIN_DELIVERY_GET_API")))
                 .andReturn();
     }
 
@@ -220,6 +252,11 @@ class AdminDeliveryControllerTest extends AbstractRestDocsTests {
                 .andExpect(jsonPath("$.data.trackingNumber").value(DeliveryTestFactory.TRACKING_NUMBER))
                 .andExpect(jsonPath("$.data.status").value(ShippingStatus.of(requestDto.getStatus()).toString()))
                 .andExpect(jsonPath("$.data.createdAt").value("2025-03-11T00:00:00"))
+                .andDo(ApiDocumentFactory.listDoc(
+                        "delivery/success-update-delivery",
+                        ApiDocumentFactory.DELIVERY_TAG,
+                        ApiDocumentationLoader.getSummary("delivery", "ADMIN_DELIVERY_UPDATE_API"),
+                        ApiDocumentationLoader.getDescription("delivery", "ADMIN_DELIVERY_UPDATE_API")))
                 .andReturn();
     }
 
@@ -239,6 +276,11 @@ class AdminDeliveryControllerTest extends AbstractRestDocsTests {
                         .with(user(UserTestFactory.createMockUserDetails())))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.errorMessage").value(ErrorCode.SHIPPING_NOT_FOUND.getMessage()))
+                .andDo(ApiDocumentFactory.listDoc(
+                        "delivery/invalid-delivery-id-update-delivery",
+                        ApiDocumentFactory.DELIVERY_TAG,
+                        ApiDocumentationLoader.getSummary("delivery", "ADMIN_DELIVERY_UPDATE_API"),
+                        ApiDocumentationLoader.getDescription("delivery", "ADMIN_DELIVERY_UPDATE_API")))
                 .andReturn();
     }
 
@@ -258,6 +300,11 @@ class AdminDeliveryControllerTest extends AbstractRestDocsTests {
                         .with(user(UserTestFactory.createMockUserDetails())))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errorMessage").value(ErrorCode.SAME_STATUS_UPDATE.getMessage()))
+                .andDo(ApiDocumentFactory.listDoc(
+                        "delivery/conflict-delivery-status-update-delivery",
+                        ApiDocumentFactory.DELIVERY_TAG,
+                        ApiDocumentationLoader.getSummary("delivery", "ADMIN_DELIVERY_UPDATE_API"),
+                        ApiDocumentationLoader.getDescription("delivery", "ADMIN_DELIVERY_UPDATE_API")))
                 .andReturn();
     }
 
@@ -277,6 +324,11 @@ class AdminDeliveryControllerTest extends AbstractRestDocsTests {
                         .with(user(UserTestFactory.createMockUserDetails())))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errorMessage").value(ErrorCode.INVALID_STATUS_CHANGE.getMessage()))
+                .andDo(ApiDocumentFactory.listDoc(
+                        "delivery/invalid-delivery-status-update-delivery",
+                        ApiDocumentFactory.DELIVERY_TAG,
+                        ApiDocumentationLoader.getSummary("delivery", "ADMIN_DELIVERY_UPDATE_API"),
+                        ApiDocumentationLoader.getDescription("delivery", "ADMIN_DELIVERY_UPDATE_API")))
                 .andReturn();
     }
 }

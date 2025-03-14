@@ -9,10 +9,11 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import salute.oneshot.config.TestSecurityConfig;
 import salute.oneshot.domain.common.AbstractRestDocsTests;
+import salute.oneshot.domain.common.ApiDocumentFactory;
+import salute.oneshot.domain.common.ApiDocumentationLoader;
 import salute.oneshot.domain.common.dto.error.ErrorCode;
 import salute.oneshot.domain.common.dto.success.ApiResponseConst;
 import salute.oneshot.domain.event.dto.request.EventRequestDto;
@@ -75,6 +76,11 @@ class AdminEventControllerTest extends AbstractRestDocsTests {
                 .andExpect(jsonPath("$.data.name").value(EventTestFactory.NAME))
                 .andExpect(jsonPath("$.data.startTime").value(EventTestFactory.START_LOCAL_DATE_TIME.toString()))
                 .andExpect(jsonPath("$.data.endTime").value(EventTestFactory.END_LOCAL_DATE_TIME.toString()))
+                .andDo(ApiDocumentFactory.listDoc(
+                        "admin-event-controller-test/success-create-event",
+                        ApiDocumentFactory.EVENT_TAG,
+                        ApiDocumentationLoader.getSummary("event", "ADMIN_EVENT_CREATE_API"),
+                        ApiDocumentationLoader.getDescription("event", "ADMIN_EVENT_CREATE_API")))
                 .andReturn();
     }
 
@@ -91,7 +97,12 @@ class AdminEventControllerTest extends AbstractRestDocsTests {
                         .content(objectMapper.writeValueAsString(requestDto))
                         .with(user(UserTestFactory.createMockAdminDetails())))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.errorMessage").value(ErrorCode.EXPIRED_EVENT.getMessage()))
+                .andExpect(jsonPath("$.errorMessage").value(ErrorCode.EXPIRED_DATE.getMessage()))
+                .andDo(ApiDocumentFactory.listDoc(
+                        "event/invalid-end-time-create-event",
+                        ApiDocumentFactory.EVENT_TAG,
+                        ApiDocumentationLoader.getSummary("event", "ADMIN_EVENT_CREATE_API"),
+                        ApiDocumentationLoader.getDescription("event", "ADMIN_EVENT_CREATE_API")))
                 .andReturn();
     }
 
@@ -108,7 +119,12 @@ class AdminEventControllerTest extends AbstractRestDocsTests {
                         .content(objectMapper.writeValueAsString(requestDto))
                         .with(user(UserTestFactory.createMockAdminDetails())))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.errorMessage").value(ErrorCode.INVALID_EVENT_PERIOD.getMessage()))
+                .andExpect(jsonPath("$.errorMessage").value(ErrorCode.INVALID_DATE.getMessage()))
+                .andDo(ApiDocumentFactory.listDoc(
+                        "event/invalid-start-time-create-event",
+                        ApiDocumentFactory.EVENT_TAG,
+                        ApiDocumentationLoader.getSummary("event", "ADMIN_EVENT_CREATE_API"),
+                        ApiDocumentationLoader.getDescription("event", "ADMIN_EVENT_CREATE_API")))
                 .andReturn();
     }
 
@@ -129,6 +145,11 @@ class AdminEventControllerTest extends AbstractRestDocsTests {
                         .with(user(UserTestFactory.createMockAdminDetails())))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errorMessage").value(ErrorCode.MISSING_COUPON.getMessage()))
+                .andDo(ApiDocumentFactory.listDoc(
+                        "event/missing-details-create-event",
+                        ApiDocumentFactory.EVENT_TAG,
+                        ApiDocumentationLoader.getSummary("event", "ADMIN_EVENT_CREATE_API"),
+                        ApiDocumentationLoader.getDescription("event", "ADMIN_EVENT_CREATE_API")))
                 .andReturn();
     }
 
@@ -149,6 +170,11 @@ class AdminEventControllerTest extends AbstractRestDocsTests {
                         .with(user(UserTestFactory.createMockAdminDetails())))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errorMessage").value(ErrorCode.INVALID_JSON_DATA.getMessage()))
+                .andDo(ApiDocumentFactory.listDoc(
+                        "event/fail-parsing-create-event",
+                        ApiDocumentFactory.EVENT_TAG,
+                        ApiDocumentationLoader.getSummary("event", "ADMIN_EVENT_CREATE_API"),
+                        ApiDocumentationLoader.getDescription("event", "ADMIN_EVENT_CREATE_API")))
                 .andReturn();
     }
 
@@ -178,10 +204,15 @@ class AdminEventControllerTest extends AbstractRestDocsTests {
                 .andExpect(jsonPath("$.data.endTime").value(EventTestFactory.END_LOCAL_DATE_TIME.toString()))
                 .andExpect(jsonPath("$.data.eventDetail.couponId").value(1L))
                 .andExpect(jsonPath("$.data.eventDetail.couponName").value("20% 할인 쿠폰"))
+                .andDo(ApiDocumentFactory.listDoc(
+                        "event/success-update-event",
+                        ApiDocumentFactory.EVENT_TAG,
+                        ApiDocumentationLoader.getSummary("event", "ADMIN_EVENT_UPDATE_API"),
+                        ApiDocumentationLoader.getDescription("event", "ADMIN_EVENT_UPDATE_API")))
                 .andReturn();
     }
 
-    @DisplayName("이벤트 수정 실패: 존재하지 않는 배너아이디로 수정")
+    @DisplayName("이벤트 수정 실패: 이벤트가 등록된 배너 정보가 존재하지 않을 경우")
     @Test
     void invalidBannerIdUpdateEvent() throws Exception {
         // given
@@ -198,6 +229,11 @@ class AdminEventControllerTest extends AbstractRestDocsTests {
                         .with(user(UserTestFactory.createMockAdminDetails())))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.errorMessage").value(ErrorCode.BANNER_NOT_FOUND.getMessage()))
+                .andDo(ApiDocumentFactory.listDoc(
+                        "event/invalid-banner-id-update-event",
+                        ApiDocumentFactory.EVENT_TAG,
+                        ApiDocumentationLoader.getSummary("event", "ADMIN_EVENT_UPDATE_API"),
+                        ApiDocumentationLoader.getDescription("event", "ADMIN_EVENT_UPDATE_API")))
                 .andReturn();
     }
 
@@ -218,6 +254,11 @@ class AdminEventControllerTest extends AbstractRestDocsTests {
                         .with(user(UserTestFactory.createMockAdminDetails())))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errorMessage").value(ErrorCode.MISSING_COUPON.getMessage()))
+                .andDo(ApiDocumentFactory.listDoc(
+                        "event/missing-details-update-event",
+                        ApiDocumentFactory.EVENT_TAG,
+                        ApiDocumentationLoader.getSummary("event", "ADMIN_EVENT_UPDATE_API"),
+                        ApiDocumentationLoader.getDescription("event", "ADMIN_EVENT_UPDATE_API")))
                 .andReturn();
     }
 
@@ -238,6 +279,11 @@ class AdminEventControllerTest extends AbstractRestDocsTests {
                         .with(user(UserTestFactory.createMockAdminDetails())))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errorMessage").value(ErrorCode.INVALID_JSON_DATA.getMessage()))
+                .andDo(ApiDocumentFactory.listDoc(
+                        "event/fail-parsing-update-event",
+                        ApiDocumentFactory.EVENT_TAG,
+                        ApiDocumentationLoader.getSummary("event", "ADMIN_EVENT_UPDATE_API"),
+                        ApiDocumentationLoader.getDescription("event", "ADMIN_EVENT_UPDATE_API")))
                 .andReturn();
     }
 
@@ -258,6 +304,11 @@ class AdminEventControllerTest extends AbstractRestDocsTests {
                         .with(user(UserTestFactory.createMockAdminDetails())))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errorMessage").value(ErrorCode.INVALID_JSON_DATA.getMessage()))
+                .andDo(ApiDocumentFactory.listDoc(
+                        "event/fail-parsing-json-node-update-event",
+                        ApiDocumentFactory.EVENT_TAG,
+                        ApiDocumentationLoader.getSummary("event", "ADMIN_EVENT_UPDATE_API"),
+                        ApiDocumentationLoader.getDescription("event", "ADMIN_EVENT_UPDATE_API")))
                 .andReturn();
     }
 
@@ -274,6 +325,11 @@ class AdminEventControllerTest extends AbstractRestDocsTests {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value(ApiResponseConst.DELETE_EVENT_SUCCESS))
                 .andExpect(jsonPath("$.data").value(eventId))
+                .andDo(ApiDocumentFactory.listDoc(
+                        "event/success-delete-event",
+                        ApiDocumentFactory.EVENT_TAG,
+                        ApiDocumentationLoader.getSummary("event", "ADMIN_EVENT_DELETE_API"),
+                        ApiDocumentationLoader.getDescription("event", "ADMIN_EVENT_DELETE_API")))
                 .andReturn();
     }
 
@@ -292,6 +348,11 @@ class AdminEventControllerTest extends AbstractRestDocsTests {
                         .with(user(UserTestFactory.createMockAdminDetails())))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.errorMessage").value(ErrorCode.EVENT_NOT_FOUND.getMessage()))
+                .andDo(ApiDocumentFactory.listDoc(
+                        "event/invalid-event-id-delete-event",
+                        ApiDocumentFactory.EVENT_TAG,
+                        ApiDocumentationLoader.getSummary("event", "ADMIN_EVENT_DELETE_API"),
+                        ApiDocumentationLoader.getDescription("event", "ADMIN_EVENT_DELETE_API")))
                 .andReturn();
     }
 
@@ -308,9 +369,14 @@ class AdminEventControllerTest extends AbstractRestDocsTests {
         // When & Then
         mockMvc.perform(get("/api/admin/events/event-stream/{eventId}", eventId)
                         .accept(MediaType.TEXT_EVENT_STREAM_VALUE)
-                .with(user(UserTestFactory.createMockAdminDetails())))
+                        .with(user(UserTestFactory.createMockAdminDetails())))
                 .andExpect(status().isOk())
                 .andExpect(request().asyncStarted())
+                .andDo(ApiDocumentFactory.listDoc(
+                        "event/success-stream-event-updates",
+                        ApiDocumentFactory.EVENT_TAG,
+                        ApiDocumentationLoader.getSummary("event", "EVENT_STREAM_API"),
+                        ApiDocumentationLoader.getDescription("event", "EVENT_STREAM_API")))
                 .andReturn();
 
         then(eventService).should().subscribeEvent(eventId);
@@ -331,6 +397,11 @@ class AdminEventControllerTest extends AbstractRestDocsTests {
                         .with(user(UserTestFactory.createMockAdminDetails())))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.errorMessage").value(ErrorCode.EVENT_NOT_FOUND.getMessage()))
+                .andDo(ApiDocumentFactory.listDoc(
+                        "event/invalid-event-id-stream-event-updates",
+                        ApiDocumentFactory.EVENT_TAG,
+                        ApiDocumentationLoader.getSummary("event", "EVENT_STREAM_API"),
+                        ApiDocumentationLoader.getDescription("event", "EVENT_STREAM_API")))
                 .andReturn();
     }
 }
