@@ -45,6 +45,7 @@ public class AdminEventController {
         validateEventDate(
                 serviceDto.getStartTime(),
                 serviceDto.getEndTime());
+
         EventBriefResponseDto responseDto =
                 eventService.createEvent(serviceDto);
 
@@ -72,6 +73,7 @@ public class AdminEventController {
         validateEventDate(
                 serviceDto.getStartTime(),
                 serviceDto.getEndTime());
+
         EventDetailResponseDto responseDto =
                 eventService.updateEvent(serviceDto);
 
@@ -107,11 +109,11 @@ public class AdminEventController {
             LocalDateTime endTime
     ) {
         if (endTime.isBefore(LocalDateTime.now())) {
-            throw new InvalidException(ErrorCode.EXPIRED_EVENT);
+            throw new InvalidException(ErrorCode.EXPIRED_DATE);
         }
 
         if (startTime.isAfter(endTime)) {
-            throw new InvalidException(ErrorCode.INVALID_EVENT_PERIOD);
+            throw new InvalidException(ErrorCode.INVALID_DATE);
         }
     }
 }

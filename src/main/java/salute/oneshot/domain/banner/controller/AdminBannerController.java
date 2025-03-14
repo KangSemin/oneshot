@@ -11,8 +11,12 @@ import salute.oneshot.domain.banner.dto.response.BannerResponseDto;
 import salute.oneshot.domain.banner.dto.service.BannerSDto;
 import salute.oneshot.domain.banner.dto.service.UpdateBannerSDto;
 import salute.oneshot.domain.banner.service.BannerService;
+import salute.oneshot.domain.common.dto.error.ErrorCode;
 import salute.oneshot.domain.common.dto.success.ApiResponse;
 import salute.oneshot.domain.common.dto.success.ApiResponseConst;
+import salute.oneshot.global.exception.InvalidException;
+
+import java.time.LocalDateTime;
 
 @RestController
 @RequestMapping("/api/admin/banners")
@@ -33,8 +37,13 @@ public class AdminBannerController {
                 requestDto.getStartTime(),
                 requestDto.getEndDate(),
                 requestDto.getEndTime());
+        validateEventDate(
+                serviceDto.getStartTime(),
+                serviceDto.getEndTime());
+
         BannerResponseDto responseDto =
                 bannerService.createBanner(serviceDto);
+
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.success(
                         ApiResponseConst.ADD_BANNER_SUCCESS,
@@ -53,6 +62,10 @@ public class AdminBannerController {
                 requestDto.getStartTime(),
                 requestDto.getEndDate(),
                 requestDto.getEndTime());
+        validateEventDate(
+                serviceDto.getStartTime(),
+                serviceDto.getEndTime());
+
         BannerResponseDto responseDto =
                 bannerService.updateBanner(serviceDto);
 
@@ -71,5 +84,18 @@ public class AdminBannerController {
                 .body(ApiResponse.success(
                         ApiResponseConst.DELETE_BANNER_SUCCESS,
                         bannerId));
+    }
+
+    private void validateEventDate(
+            LocalDateTime startTime,
+            LocalDateTime endTime
+    ) {
+        if (endTime.isBefore(LocalDateTime.now())) {
+            throw new InvalidException(ErrorCode.EXPIRED_DATE);
+        }
+
+        if (startTime.isAfter(endTime)) {
+            throw new InvalidException(ErrorCode.INVALID_DATE);
+        }
     }
 }
