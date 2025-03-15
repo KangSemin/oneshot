@@ -1,11 +1,11 @@
-name: Gradle Build
+name: Build And Deploy Test
 
 on:
   push:
     branches: [ "chore/action" ]
 
 jobs:
-  build:
+  build-and-deploy-test:
     runs-on: ubuntu-latest
 
     steps:
