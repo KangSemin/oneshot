@@ -1,35 +1,37 @@
 package salute.oneshot.domain.auth.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import salute.oneshot.domain.auth.dto.response.SignInResponseDto;
-import salute.oneshot.domain.auth.dto.response.AuthResponseDto;
-import salute.oneshot.domain.auth.dto.service.SignInSDto;
-import salute.oneshot.domain.auth.dto.service.AuthSDto;
+import salute.oneshot.domain.auth.dto.response.SignUpResponseDto;
+import salute.oneshot.domain.auth.dto.response.TokenInfo;
+import salute.oneshot.domain.auth.dto.service.LogInSDto;
+import salute.oneshot.domain.auth.dto.service.SignUpSDto;
+import salute.oneshot.domain.auth.dto.service.LogOutSDto;
+import salute.oneshot.domain.auth.repository.RedisBlacklistRepository;
+import salute.oneshot.domain.auth.repository.RedisRefreshTokenRepository;
 import salute.oneshot.domain.common.dto.error.ErrorCode;
 import salute.oneshot.domain.user.entity.User;
+import salute.oneshot.domain.user.entity.UserRole;
 import salute.oneshot.domain.user.repository.UserRepository;
 import salute.oneshot.global.exception.ConflictException;
 import salute.oneshot.global.exception.InvalidException;
 import salute.oneshot.global.exception.NotFoundException;
-import salute.oneshot.global.security.SecurityConst;
 import salute.oneshot.global.security.jwt.JwtProvider;
-import salute.oneshot.global.security.service.CustomUserDetailsService;
 
 @Service
 @RequiredArgsConstructor
 public class AuthService {
 
-    private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
     private final JwtProvider jwtProvider;
-    private final CustomUserDetailsService userDetailsService;
+    private final PasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
+    private final RedisRefreshTokenRepository refreshTokenRepository;
+    private final RedisBlacklistRepository blacklistRepository;
 
     @Transactional
-    public AuthResponseDto userSignUp(AuthSDto serviceDto) {
+    public SignUpResponseDto userSignUp(SignUpSDto serviceDto) {
         if (userRepository.existsByEmail(serviceDto.getEmail())) {
             throw new ConflictException(ErrorCode.DUPLICATE_EMAIL);
         }
@@ -38,14 +40,13 @@ public class AuthService {
                 serviceDto.getEmail(),
                 passwordEncoder.encode(serviceDto.getPassword()),
                 serviceDto.getNickName());
-
         userRepository.save(user);
 
-        return AuthResponseDto.from(user);
+        return SignUpResponseDto.from(user);
     }
 
-    @Transactional(readOnly = true)
-    public SignInResponseDto userSignIn(SignInSDto serviceDto) {
+    @Transactional
+    public TokenInfo logIn(LogInSDto serviceDto) {
         User user = userRepository
                 .findByEmailAndIsDeletedIsFalse(serviceDto.getEmail())
                 .orElseThrow(() ->
@@ -56,24 +57,40 @@ public class AuthService {
             throw new InvalidException(ErrorCode.LOGIN_FAILED);
         }
 
-        Authentication authentication =
-                userDetailsService.createAuthentication(
-                        user.getId(),
-                        user.getEmail(),
-                        user.getUserRole());
+        TokenInfo tokenInfo =
+                jwtProvider.createToken(user.getId(), user.getUserRole());
+        refreshTokenRepository.save(
+                user.getId(),
+                user.getUserRole(),
+                tokenInfo.getRefreshToken());
 
-        String token = jwtProvider.createToken(authentication);
-
-        return SignInResponseDto.of(token, SecurityConst.TOKEN_TYPE);
+        return tokenInfo;
     }
 
     @Transactional
-    public AuthResponseDto signOut(Long id) {
-        User user = userRepository.findByIdAndIsDeletedIsFalse(id)
-                .orElseThrow(() ->
-                        new NotFoundException(ErrorCode.USER_NOT_FOUND));
-        user.logout();
+    public void logOut(LogOutSDto serviceDto) {
+        String token = jwtProvider
+                .extractToken(serviceDto.getToken());
+        long remainMilliSeconds = jwtProvider
+                .getRemainMilliSeconds(token);
+        blacklistRepository.save(token, remainMilliSeconds);
+    }
 
-        return AuthResponseDto.from(user);
+    @Transactional
+    public TokenInfo refreshAccessToken(String refreshToken) {
+        Long userId = jwtProvider.getUserIdFromToken(refreshToken);
+
+        if (refreshTokenRepository.validate(userId, refreshToken)) {
+            UserRole userRole = refreshTokenRepository.findRoleById(userId);
+
+            TokenInfo tokenInfo = jwtProvider.createToken(userId, userRole);
+            refreshTokenRepository.save(
+                    userId,
+                    userRole,
+                    tokenInfo.getRefreshToken());
+
+            return tokenInfo;
+        }
+        throw new InvalidException(ErrorCode.INVALID_TOKEN);
     }
 }

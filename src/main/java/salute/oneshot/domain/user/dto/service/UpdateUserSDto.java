@@ -9,14 +9,14 @@ import lombok.Getter;
 public class UpdateUserSDto {
 
     private final Long id;
-    private final String nickName;
+    private final String nickname;
     private final String password;
 
     public static UpdateUserSDto of(
             Long id,
-            String nickName,
+            String nickname,
             String password
     ) {
-        return new UpdateUserSDto(id, nickName, password);
+        return new UpdateUserSDto(id, nickname, password);
     }
 }

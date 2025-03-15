@@ -6,12 +6,14 @@ else
   GRADLE_CMD = ./gradlew
 endif
 
-.PHONY: build docker-build up start logs stop
+.PHONY: build docker-build up start logs stop fast-build fast
 
 APP_NAME=oneshot:latest
 
 build:
-	$(GRADLE_CMD) clean build -x test
+
+	$(GRADLE_CMD) build
+
 
 docker-build:
 	docker build -t $(APP_NAME) .
@@ -26,3 +28,8 @@ logs:
 
 stop:
 	docker-compose down
+
+fast-build:
+	$(GRADLE_CMD) build -x test
+
+fast: fast-build docker-build up

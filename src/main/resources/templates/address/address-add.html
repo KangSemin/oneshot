@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>주소 검색</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Gothic+A1&family=Gowun+Dodum&family=IBM+Plex+Sans+KR&family=Noto+Sans+KR:wght@100..900&family=Noto+Serif+KR:wght@200..900&family=Orbit&display=swap');
+
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            background-color: #1a1a1a;
+            font-family: "Orbit", serif;
+            font-weight: 400;
+            font-style: normal;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+        }
+
+        .address-container {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            padding: 40px;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.2);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 32px;
+            font-weight: 600;
+            color: #ff0ccb;
+            text-shadow: 0 0 10px rgba(249, 108, 255, 0.5);
+            letter-spacing: 1px;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-group label {
+            display: block;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(56, 218, 255, 0.2);
+            border-radius: 12px;
+            color: white;
+            font-size: 15px;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: rgba(21, 235, 255, 0.5);
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+        }
+
+        input[readonly] {
+            background: rgba(255, 255, 255, 0.02);
+            border-color: rgba(56, 218, 255, 0.1);
+            cursor: not-allowed;
+        }
+
+        .postcode-group {
+            display: flex;
+            gap: 12px;
+            align-items: flex-end;
+        }
+
+        .postcode-group > div {
+            flex: 1;
+        }
+
+        #searchAddressBtn {
+            padding: 12px 20px;
+            background: rgba(0, 250, 255, 0.32);
+            border: 1px solid rgba(6, 168, 168, 0.34);
+            box-shadow: 0 0 20px rgba(106, 255, 233, 0.18);
+            border-radius: 12px;
+            color: #fff;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        #searchAddressBtn:hover {
+            background: rgba(65, 243, 220, 0.64);
+            border-color: rgba(64, 183, 187, 0.5);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.29);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 40px;
+            margin-bottom: 10px;
+        }
+
+        .cancel-btn {
+            flex: 1;
+            padding: 12px;
+            background: rgba(255, 51, 246, 0.09);
+            border: 1px solid rgba(255, 53, 249, 0.24);
+            border-radius: 12px;
+            color: rgba(255, 53, 249, 0.76);
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .cancel-btn:hover {
+            background: rgba(255, 51, 246, 0.16);
+            border-color: rgba(255, 53, 249, 0.49);
+            box-shadow: 0 0 15px rgba(87, 87, 87, 0.16);
+        }
+
+        .submit-btn {
+            flex: 1;
+            padding: 12px;
+            background: rgba(0, 250, 255, 0.32);
+            border: 1px solid rgba(6, 168, 168, 0.34);
+            box-shadow: 0 0 20px rgba(106, 255, 233, 0.18);
+            border-radius: 12px;
+            color: #fff;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            background: rgba(65, 243, 220, 0.64);
+            border-color: rgba(64, 183, 187, 0.5);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.29);
+        }
+    </style>
+
+</head>
+<body>
+<div class="address-container">
+    <h1>Address</h1>
+
+    <form id="updateAddressForm">
+        <div class="form-group">
+            <label for="addressName">주소지 이름</label>
+            <input type="text"
+                   id="addressName"
+                   name="addressName"
+                   placeholder="예: 집, 회사"
+                   required>
+        </div>
+
+        <div class="form-group postcode-group">
+            <div>
+                <label for="postcode">우편번호</label>
+                <input type="text"
+                       id="postcode"
+                       name="postcode"
+                       placeholder="우편번호"
+                       readonly
+                       required>
+            </div>
+            <button type="button" id="searchAddressBtn">주소 검색</button>
+        </div>
+
+        <div class="form-group">
+            <label for="postAddress">주소</label>
+            <input type="text"
+                   id="postAddress"
+                   name="postAddress"
+                   placeholder="주소"
+                   readonly
+                   required>
+        </div>
+
+        <div class="form-group">
+            <label for="detailAddress">상세주소</label>
+            <input type="text"
+                   id="detailAddress"
+                   name="detailAddress"
+                   placeholder="상세주소">
+        </div>
+
+        <div class="form-group">
+            <label for="extraAddress">기타</label>
+            <input type="text"
+                   id="extraAddress"
+                   name="extraAddress"
+                   placeholder="기타사항">
+        </div>
+
+        <div class="button-group">
+            <button type="button"
+                    class="cancel-btn"
+                    onclick="history.back()">취소</button>
+            <button type="submit"
+                    id="submitFormBtn"
+                    class="submit-btn">저장</button>
+        </div>
+    </form>
+</div>
+
+<script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+<script th:nonce="${scriptNonce}">
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const addressNameInput = document.getElementById("addressName");
+        const postcodeInput = document.getElementById("postcode");
+        const postAddressInput = document.getElementById("postAddress");
+        const detailAddressInput = document.getElementById("detailAddress");
+        const extraAddressInput = document.getElementById("extraAddress");
+        const searchButton = document.getElementById("searchAddressBtn");
+        const submitButton = document.getElementById("submitFormBtn");
+
+        // 주소 검색 함수
+        function searchAddress() {
+            new daum.Postcode({
+                oncomplete: function (data) {
+                    // 우편번호, 주소를 입력
+                    postcodeInput.value = data.zonecode;
+                    postAddressInput.value = data.address;
+
+                    detailAddressInput.focus();
+                }
+            }).open();
+        }
+
+        async function submitForm(event) {
+            event.preventDefault();
+
+            const requestData = {
+                addressName: addressNameInput.value.trim(),
+                postcode: postcodeInput.value.trim(),
+                postAddress: postAddressInput.value.trim(),
+                detailAddress: detailAddressInput.value.trim(),
+                extraAddress: extraAddressInput.value.trim()
+            };
+
+            try {
+                const response = await fetch("/api/addresses", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(requestData),
+                    credentials: "include" // 쿠키가 포함되도록 설정
+
+                });
+
+                const responseText = await response.text();
+
+                if (!response.ok) {
+                    throw new Error(`서버 응답 실패: ${response.status}, 내용: ${responseText}`);
+                }
+
+                const data = JSON.parse(responseText);
+                alert("주소가 저장되었습니다. (ID: " + data.id + ")");
+            } catch (error) {
+                console.error("주소 저장 실패 상세 정보:", error);
+                alert("주소 저장에 실패했습니다.");
+            }
+        }
+
+        // 이벤트 리스너 등록
+        searchButton.addEventListener("click", searchAddress);
+        submitButton.addEventListener("click", submitForm);
+    });
+</script>
+</body>
+</html>

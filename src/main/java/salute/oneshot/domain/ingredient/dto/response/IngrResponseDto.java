@@ -17,13 +17,15 @@ public class IngrResponseDto implements Serializable {
     private final String description;
     private final IngredientCategory category;
     private final Double AVB;
+    private final String imageUrl;
 
 
-    public static IngrResponseDto from(Ingredient ingredient) {
+
+
+    public static IngrResponseDto from(Ingredient ingredient){
         return new IngrResponseDto(
                 ingredient.getId(), ingredient.getName(), ingredient.getDescription(),
-                ingredient.getCategory(), ingredient.getAvb()
-        );
+                ingredient.getCategory(), ingredient.getAvb(), ingredient.getImageUrl());
     }
 }
 

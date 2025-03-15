@@ -2,6 +2,7 @@ package salute.oneshot.domain.delivery.enums;
 
 import lombok.Getter;
 import salute.oneshot.domain.common.dto.error.ErrorCode;
+import salute.oneshot.domain.coupon.entity.UserCouponStatus;
 import salute.oneshot.global.exception.InvalidException;
 
 import java.util.Arrays;
@@ -22,7 +23,14 @@ public enum CourierCompany {
         this.code = code;
     }
 
-    public static CourierCompany of(String code) {
+    public static CourierCompany ofName(String companyName) {
+        return Arrays.stream(CourierCompany.values())
+                .filter(r -> r.name().equalsIgnoreCase(companyName))
+                .findFirst()
+                .orElseThrow(() -> new InvalidException(ErrorCode.INVALID_COUPON_STATUS));
+    }
+
+    public static CourierCompany ofCode(String code) {
         return Arrays.stream(CourierCompany.values())
                 .filter(c -> c.getCode().equals(code))
                 .findFirst()

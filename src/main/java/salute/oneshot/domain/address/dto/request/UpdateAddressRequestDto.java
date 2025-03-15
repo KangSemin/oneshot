@@ -8,7 +8,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class UpdateAddressRequestDto {
-
+    // 카카오 API 주소정보를 받아오므로 @NoBlank만 적용
     @NotBlank
     private final String addressName;
     @NotBlank

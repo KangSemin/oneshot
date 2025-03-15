@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8" />
+    <script src="https://js.tosspayments.com/v2/standard"></script>
+    <title>주문 결제</title>
+</head>
+<body>
+<h1 id="orderNumber" style="font-size: 120px;"></h1>
+<button class="button" style="margin-top: 30px" id="paymentButton">결제하기</button>
+
+<div id="orderData"
+     th:data-order-number="${order.orderNumber}"
+     th:data-amount="${order.amountValue}"
+     th:data-order-name="${order.orderName}"
+     th:data-customer-email="${order.customerEmail}"
+     th:data-customer-name="${order.customerName}"
+     th:data-customer-key="${order.customerKey}"></div>
+
+<script th:nonce="${scriptNonce}">
+    document.addEventListener('DOMContentLoaded', function () {
+        // Thymeleaf에서 전달된 주문 정보 추출
+        const orderElement = document.getElementById('orderData');
+        const order = {
+            orderNumber: orderElement.getAttribute('data-order-number'),
+            amountValue: parseInt(orderElement.getAttribute('data-amount'), 10),
+            orderName: orderElement.getAttribute('data-order-name'),
+            customerEmail: orderElement.getAttribute('data-customer-email'),
+            customerName: orderElement.getAttribute('data-customer-name'),
+            customerKey: orderElement.getAttribute('data-customer-key')
+        };
+
+        // Toss Payments 초기화
+        const clientKey = "test_ck_nRQoOaPz8LENQzY2zy953y47BMw6";
+        const customerKey = order.customerKey;
+        const tossPayments = TossPayments(clientKey);
+        const payment = tossPayments.payment({ customerKey });
+
+        // 결제 요청 함수
+        async function requestPayment() {
+            // Toss Payments 결제 진행
+            await payment.requestPayment({
+                method: "CARD",
+                amount: {
+                    currency: "KRW",
+                    value: order.amountValue
+                },
+                orderId: order.orderNumber,
+                orderName: order.orderName,
+                successUrl: window.location.origin + "/payments/success",
+                failUrl: window.location.origin + "/payments/fail",
+                customerEmail: order.customerEmail,
+                customerName: order.customerName
+            });
+        }
+
+        // 주문 번호 표시
+        document.getElementById("orderNumber").innerText = order.orderNumber;
+
+        // 결제 버튼 이벤트 리스너
+        document.getElementById("paymentButton").addEventListener("click", requestPayment);
+    });
+</script>
+</body>
+</html>

@@ -5,7 +5,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import salute.oneshot.domain.cocktail.entity.Cocktail;
-import salute.oneshot.domain.common.dto.entity.BaseEntity;
+import salute.oneshot.domain.common.entity.BaseEntity;
 
 @Entity
 @Table(name = "favorites", indexes = {
@@ -33,7 +33,7 @@ public class Favorite extends BaseEntity {
         this.cocktail = cocktail;
     }
 
-    public static Favorite from(Long userId, Cocktail cocktail) {
+    public static Favorite of(Long userId, Cocktail cocktail) {
         return new Favorite(userId, cocktail);
     }
 }

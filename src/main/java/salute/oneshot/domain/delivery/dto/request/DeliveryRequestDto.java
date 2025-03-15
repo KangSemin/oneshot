@@ -14,5 +14,5 @@ public class DeliveryRequestDto {
     private final String receiverPhone;
     private final String deliveryMessage;
     private final String trackingNumber;
-    private final CourierCompany courierCompany;
+    private final String courierCompany;
 }

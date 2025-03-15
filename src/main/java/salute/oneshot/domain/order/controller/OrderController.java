@@ -11,21 +11,21 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import salute.oneshot.domain.common.dto.success.ApiResponse;
 import salute.oneshot.domain.common.dto.success.ApiResponseConst;
+import salute.oneshot.domain.common.facade.OrderPaymentFacade;
 import salute.oneshot.domain.order.dto.request.CreateOrderRequestDto;
 import salute.oneshot.domain.order.dto.request.UpdateOrderRequestDto;
-import salute.oneshot.domain.order.dto.response.GetOrderResponseDto;
 import salute.oneshot.domain.order.dto.response.CreateOrderResponseDto;
+import salute.oneshot.domain.order.dto.response.GetOrderResponseDto;
 import salute.oneshot.domain.order.dto.response.UpdateOrderResponseDto;
 import salute.oneshot.domain.order.dto.service.*;
-import salute.oneshot.domain.order.service.OrderService;
-import salute.oneshot.global.security.entity.CustomUserDetails;
+import salute.oneshot.global.security.model.CustomUserDetails;
 
 @RestController
 @RequestMapping("/api/orders")
 @RequiredArgsConstructor
 public class OrderController {
 
-    private final OrderService orderService;
+    private final OrderPaymentFacade orderPaymentFacade;
 
     @PostMapping
     public ResponseEntity<ApiResponse<CreateOrderResponseDto>> createOrder(
@@ -36,7 +36,7 @@ public class OrderController {
 
         CreateOrderSDto sDto = CreateOrderSDto.of(userId, requestDto.getAddressId());
 
-        CreateOrderResponseDto responseDto = orderService.createOrder(sDto);
+        CreateOrderResponseDto responseDto = orderPaymentFacade.createOrder(sDto);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(ApiResponseConst.ADD_ORD_SUCCESS, responseDto));
     }
@@ -50,7 +50,7 @@ public class OrderController {
 
         GetOrderSDto sDto = GetOrderSDto.of(userId, orderId);
 
-        GetOrderResponseDto responseDto = orderService.getOrder(sDto);
+        GetOrderResponseDto responseDto = orderPaymentFacade.getOrder(sDto);
 
         return ResponseEntity.ok(ApiResponse.success(ApiResponseConst.GET_ORD_SUCCESS, responseDto));
     }
@@ -67,7 +67,7 @@ public class OrderController {
 
         GetAllOrderSDto sDto = GetAllOrderSDto.of(userId, pageable);
 
-        Page<CreateOrderResponseDto> responseDtoPage = orderService.getAllOrder(sDto);
+        Page<CreateOrderResponseDto> responseDtoPage = orderPaymentFacade.getAllOrder(sDto);
 
         return ResponseEntity.ok(ApiResponse.success(ApiResponseConst.GET_ORD_SUCCESS, responseDtoPage));
     }
@@ -84,7 +84,7 @@ public class OrderController {
         UpdateOrderSDto sDto = UpdateOrderSDto
                 .of(userId, orderId, requestDto.getOrderStatus());
 
-        UpdateOrderResponseDto responseDto = orderService.updateOrder(sDto);
+        UpdateOrderResponseDto responseDto = orderPaymentFacade.updateOrder(sDto);
 
         return ResponseEntity.ok(ApiResponse.success(ApiResponseConst.UPDATE_ORD_SUCCESS, responseDto));
     }
@@ -98,7 +98,7 @@ public class OrderController {
 
         DeleteOrderSDto sDto = DeleteOrderSDto.of(userId, orderId);
 
-        orderService.deleteOrder(sDto);
+        orderPaymentFacade.deleteOrder(sDto);
 
         return ResponseEntity.ok(ApiResponse.success(ApiResponseConst.DELETE_ORD_SUCCESS));
     }

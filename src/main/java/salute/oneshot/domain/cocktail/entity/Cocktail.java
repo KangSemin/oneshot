@@ -18,7 +18,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
-import salute.oneshot.domain.common.dto.entity.BaseEntity;
+import salute.oneshot.domain.common.entity.BaseEntity;
 import salute.oneshot.domain.user.entity.User;
 
 @Entity
@@ -47,7 +47,9 @@ public class Cocktail extends BaseEntity {
     @OneToMany(mappedBy = "cocktail",cascade = CascadeType.REMOVE)
     private List<CocktailIngredient> ingredientList;
 
-    private Integer likeCounts;
+
+    @ColumnDefault("0")
+    private Integer favoriteCount = 0;
 
     @Column(nullable = false)
     @ColumnDefault("0")
@@ -56,20 +58,23 @@ public class Cocktail extends BaseEntity {
     @ColumnDefault("0")
     private Integer viewCount = 0;
 
+    private String imageUrl;
+
 
     private Cocktail(String name, String description, String recipe, RecipeType type,
-        User user, List<CocktailIngredient> ingredientList) {
+        User user, List<CocktailIngredient> ingredientList, String imageUrl) {
         this.name = name;
         this.description = description;
         this.recipe = recipe;
         this.type = type;
         this.user = user;
         this.ingredientList = ingredientList;
+        this.imageUrl = imageUrl;
     }
 
     public static Cocktail of(String name, String description, String recipe, RecipeType type,
-        User user, List<CocktailIngredient> ingredientList) {
-        return new Cocktail(name, description, recipe, type, user, ingredientList);
+        User user, List<CocktailIngredient> ingredientList, String imageUrl) {
+        return new Cocktail(name, description, recipe, type, user, ingredientList, imageUrl);
     }
 
     public void update(String name, String description, String recipe,
@@ -78,8 +83,5 @@ public class Cocktail extends BaseEntity {
         this.description = description;
         this.recipe = recipe;
         this.ingredientList = ingredientList;
-    }
-    public void incrementCount() {
-        this.viewCount++;
     }
 }
