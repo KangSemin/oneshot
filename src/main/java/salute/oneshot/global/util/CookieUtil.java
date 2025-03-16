@@ -16,64 +16,31 @@ import java.util.Optional;
 @Component
 public class CookieUtil {
 
-    private static final ObjectMapper objectMapper = new ObjectMapper();
-
 
     public static Cookie getOrCreateCookie(HttpServletRequest request, String cookieName) {
+
+        //해당 쿠키가 없으면 빈 문자열을 값으로 가진 쿠키를 반환한다
 
         Cookie[] cookies = request.getCookies();
 
         if (cookies == null) {
-            return new Cookie(cookieName, "[]");
+            return new Cookie(cookieName, "");
         }
 
         Optional<Cookie> optionalCookie = Arrays.stream(cookies)
                 .filter(c -> c.getName().equals(cookieName)).findFirst();
 
         if (optionalCookie.isEmpty()) {
-            return new Cookie(cookieName, "[]");
+            return new Cookie(cookieName, "");
         }
 
         return optionalCookie.get();
     }
 
-    public static boolean isExistValue(Cookie cookie, Long cocktailId) {
-
-        return getValues(cookie).contains(cocktailId);
-
-    }
-
-
-    public static void SetValue(Cookie cookie, Long value) {
-
-        List<Long> valueList = getValues(cookie);
-
-        valueList.add(value);
-
-        String stringValue = "";
-
-        try {
-            stringValue = objectMapper.writeValueAsString(valueList);
-        } catch (JsonProcessingException e) {
-        }
-
-        cookie.setValue(stringValue);
-
-    }
-
-    public static List<Long> getValues(Cookie cookie) {
-
+    public static boolean isExistValue(Cookie cookie, String cookieId) {
 
         String values = cookie.getValue();
-
-        try {
-           return objectMapper.readValue(values, new TypeReference<List<Long>>() {
-            });
-
-        } catch (JsonProcessingException e) {
-            return new ArrayList<>();
-        }
-
+        return values.contains(cookieId);
 
     }
 }
