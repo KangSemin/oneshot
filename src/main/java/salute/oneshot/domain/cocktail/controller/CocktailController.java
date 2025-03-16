@@ -64,19 +64,21 @@ public class CocktailController {
                                                                                   @PathVariable(name = "cocktailId") Long cocktailId
     ){
 
-        Cookie viewCookie = CookieUtil.getOrCreateCookie(request, "viewCount");
+        String value = "[" + cocktailId + "]";
 
-        if(!CookieUtil.isExistValue(viewCookie, cocktailId)){
-            CookieUtil.SetValue(viewCookie, cocktailId);
+        Cookie cookie = CookieUtil.getOrCreateCookie(request, "viewCount");
+
+        if(!CookieUtil.isExistValue(cookie, value)){
+            cookie.setValue(cookie.getValue() + value);
             cocktailService.increaseViewCountAndScore(cocktailId);
         }
 
         long todayEndTime = LocalDate.now().atTime(LocalTime.MAX).toEpochSecond(ZoneOffset.UTC);
         long currentTime = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
-        viewCookie.setPath("/");
-        viewCookie.setMaxAge((int) (todayEndTime - currentTime));
+        cookie.setPath("/");
+        cookie.setMaxAge((int) (todayEndTime - currentTime));
 
-        httpResponse.addCookie(viewCookie);
+        httpResponse.addCookie(cookie);
 
         CocktailResponseDto responseDto = cocktailService.getCocktail(cocktailId);
         return ResponseEntity.ok(ApiResponse.success(ApiResponseConst.GET_CCKTL_SUCCESS, responseDto));
