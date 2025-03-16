@@ -117,7 +117,7 @@ tasks.named('test') {
     useJUnitPlatform()
 }
 
-// RestDocs + Swagger
+// 1. OpenAPI 스펙 생성
 tasks.register('enhanceOpenApiSpec') {
     dependsOn 'openapi3'
     doLast {
@@ -138,20 +138,23 @@ security:
     }
 }
 
+// 2. GenerateSwaggerUI 태스크 설정 - enhanceOpenApiSpec 후에 실행되어야 함
 tasks.withType(GenerateSwaggerUI) {
     dependsOn 'enhanceOpenApiSpec'
 }
 
-tasks.named('generateSwaggerUISample', GenerateSwaggerUI) {
-    outputDir = file("${project.projectDir}/build/resources/main/static/docs")
+// 3. Swagger UI 복사 태스크
+tasks.register('copySwaggerUI', Copy) {
+    dependsOn 'generateSwaggerUISample'
+
+    def generateSwaggerUISampleTask = tasks.named('generateSwaggerUISample', GenerateSwaggerUI).get()
+    from("${generateSwaggerUISampleTask.outputDir}")
+    into("${project.projectDir}/src/main/resources/static/docs")
 }
 
-tasks.named('jar') {
-    dependsOn 'generateSwaggerUISample'
-}
-
-tasks.named('resolveMainClassName') {
-    dependsOn 'generateSwaggerUISample'
+// 4. bootJar 태스크가 copySwaggerUI 후에 실행되도록 설정
+tasks.named('bootJar') {
+    dependsOn 'copySwaggerUI'
 }
 
 // queryDSL 설정
