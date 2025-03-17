@@ -342,4 +342,31 @@ class CocktailControllerTest extends AbstractRestDocsTests {
                 )));
     }
 
+    @Test
+    @DisplayName("인기 칵테일 조회")
+    @WithMockUser
+    void getPopularCocktails() throws Exception {
+        // given
+        List<CocktailResponseDto> response = List.of(
+            CocktailResponseDto.from(CocktailTestFactory.createBlackRussian()),
+            CocktailResponseDto.from(CocktailTestFactory.createWhiteRussian()),
+            CocktailResponseDto.from(CocktailTestFactory.createKahluaMilk())
+        );
+        given(cocktailService.getPopularCocktails()).willReturn(response);
+        
+        // when & then
+        mockMvc.perform(get("/api/cocktails/popular")
+                .contentType(MediaType.APPLICATION_JSON)
+                .with(user(UserTestFactory.createMockUserDetails()))
+                .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andDo(document("cocktail/getPopularCocktails",
+                preprocessRequest(prettyPrint()),
+                preprocessResponse(prettyPrint()),
+                resource(ResourceSnippetParameters.builder()
+                    .tag(API_TAG)
+                    .summary("인기 칵테일 조회")
+                    .build()
+                )));
+    }
 }
