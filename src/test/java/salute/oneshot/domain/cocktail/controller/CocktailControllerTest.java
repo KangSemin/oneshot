@@ -254,12 +254,15 @@ class CocktailControllerTest extends AbstractRestDocsTests {
 
         // when & then
         mockMvc.perform(get("/api/cocktails/search")
-                .content(objectMapper.writeValueAsString(request))
-                .contentType(MediaType.APPLICATION_JSON)
-                .param("page", "1")
-                .param("size", "10")
-                .param("isCraftable", "false")
-                .param("recipeType", "OFFICIAL")
+                .queryParams(
+                    MultiValueMap.fromSingleValue(
+                        Map.of(
+                            "page", "1",
+                            "size", "10",
+                            "isCraftable", "false",
+                            "recipeType", "OFFICIAL",
+                            "ingredientIds", "3,4"
+                        )))
                 .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andDo(document("cocktail/getCocktailByIngr",
@@ -269,10 +272,11 @@ class CocktailControllerTest extends AbstractRestDocsTests {
                     .tag(API_TAG)
                     .summary("재료를 통한 칵테일 검색")
                     .queryParameters(
-                        parameterWithName("page").description("페이지 넘버").optional(),
-                        parameterWithName("size").description("페이지당 항목 수").optional(),
-                        parameterWithName("isCraftable").description("조주 가능한 칵테일만 검색").optional(),
-                        parameterWithName("recipeType").description("OFFICIAL/CUSTOM").optional())
+                        parameterWithName("page").type(SimpleType.INTEGER).description("기본값 : 1").optional(),
+                        parameterWithName("size").type(SimpleType.INTEGER).description("기본값 : 10").optional(),
+                        parameterWithName("isCraftable").type(SimpleType.BOOLEAN).description("기본값 : false").optional(),
+                        parameterWithName("recipeType").description("OFFICIAL/CUSTOM").optional(),
+                        parameterWithName("ingredientIds").description("List<Long>").optional())
                     .build()
                 )));
 
