@@ -115,8 +115,8 @@ public class CouponController {
     public ResponseEntity<ApiResponse<CpnPageResponseDto>> getCouponsForEvent(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
-            @RequestParam String eventStartDate,
-            @RequestParam String eventEndDate
+            @RequestParam(required = false) String eventStartDate,
+            @RequestParam(required = false) String eventEndDate
     ) {
         Pageable pageable = getPageable(page, size);
         GetCpnSDto serviceDto =
