@@ -95,7 +95,7 @@ class IngredientControllerTest extends AbstractRestDocsTests {
                         .file(multipartFile)
                         .file(requestFile)
                         .with(user(UserTestFactory.createMockAdminDetails()))
-                        .contentType(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.MULTIPART_FORM_DATA)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestDto)))
                 .andExpect(jsonPath("$.message").value(ApiResponseConst.ADD_INGR_SUCCESS))
