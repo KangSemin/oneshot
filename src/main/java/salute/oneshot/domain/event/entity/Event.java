@@ -55,7 +55,7 @@ public class Event extends BaseEntity {
         this.startTime = startTime;
         this.endTime = endTime;
         this.eventType = eventType;
-        // 프론트 미존재여서 일단 온고잉이로
+        // 프론트 미존재여서 일단 온고잉으로
         this.status = EventStatus.ONGOING;
         this.limitCount = limitCount;
     }

@@ -54,9 +54,9 @@ public class EventProducerService {
             Long couponId,
             String limitCount
     ) {
-        String counterKey = "event:" + eventId + ":counter";
-        String limitKey = "event:" + eventId + ":limit";
-        String winnersKey = "event:" + eventId + ":winners";
+        String counterKey = "event:{" + eventId + "}:counter";
+        String limitKey = "event:{" + eventId + "}:limit";
+        String winnersKey = "event:{" + eventId + "}:winners";
 
         List<String> keysForScript = List.of(counterKey, limitKey, winnersKey);
 
