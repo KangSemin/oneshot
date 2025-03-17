@@ -20,6 +20,7 @@
 
 # 🔧기술스택
 
+##Development
 <img src="https://img.shields.io/badge/Java-007396?style=flat-square&logo=OpenJDK&logoColor=white">&nbsp;
 <img src="https://img.shields.io/badge/Redis-DC382D?style=flat-square&logo=redis&logoColor=white">&nbsp;
 <img src="https://img.shields.io/badge/MySQL-4479A1?style=flat-square&logo=mysql&logoColor=white">&nbsp;
@@ -28,18 +29,17 @@
 <img src="https://img.shields.io/badge/elasticsearch-%230377CC.svg?style=for-the-badge&logo=elasticsearch&logoColor=white">&nbsp;
 
 
-//
+## Operation
 <img src="https://img.shields.io/badge/Docker-2496ED?style=flat-square&logo=Docker&logoColor=white"/>&nbsp;
 <img src="https://img.shields.io/badge/Amazon EC2-FF9900?style=flat-square&logo=amazonec2&logoColor=white">&nbsp;
 <img src="https://img.shields.io/badge/Amazon AWS-232F3E?style=flat-square&logo=amazonaws&logoColor=white">&nbsp;
 <img src="https://img.shields.io/badge/GitHub Actions-2088FF?style=flat-square&logo=githubactions&logoColor=white">&nbsp;
-//
-
-//협업툴
-<img src="https://img.shields.io/badge/jira-%230A0FFF.svg?style=for-the-badge&logo=jira&logoColor=white"/>&nbsp;
 <img src="https://img.shields.io/badge/git-%23F05033.svg?style=for-the-badge&logo=git&logoColor=white"/>&nbsp;
 <img src="https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white"/>&nbsp;
 
+
+
+<img src="https://img.shields.io/badge/jira-%230A0FFF.svg?style=for-the-badge&logo=jira&logoColor=white"/>&nbsp;
 
 
 
@@ -53,18 +53,141 @@
   </br>
 ### **🔍 도입 배경**
 - QueryDsl을 사용하여 검색기능 구현시 적은데이터에서는 사용자가 불편을 느끼지 못할정도의 속도가 측정되었지만,
-- 대용량의 데이터 환경에서 데이터 양이 많아질수록 시간복잡도 증가 발생
+- 대용량의 데이터 환경에서 데이터 양이 많아질수록 시간복잡도 증가 발생으로 엘라스틱서치 도입
   </br>
+
+## 🚀 성능 개선: redis 사용으로 쿼리 감소, 빠른 조회가능
+
+### ✏️ **한줄 요약**
+- 칵테일의 조회수, 즐겨찾기 count부분 관리
+- TTL 기능으로 블랙리스트의 만료 시간을 토큰 만료시간과 같게 설정가능함
+- 인메모리의 빠른 조회 속도로 토큰 검증 작업이 빨라짐
+
+  </br>
+
+ ## 🚀 성능 개선: 실시간 알림 서비스
+ ### ✏️ **한줄 요약**
+  
+### **🔍 도입 배경**
+###:우편물이_담긴_우편함: 메시징 시스템
+1.** Rabbit MQ**
+   - **적용 위치**: 선착순 이벤트 사후 처리를 위한 비동기 통신
+   - **사용 이유**: 단일 서버 환경과 1,000명 규모에 적합한 메시징 브로커.
+			FIFO 큐 방식으로 메시지 순서 보장.
+			NACK, DLQ 기능으로 메시지 영속성 제공.
+   - **구체적 역할**: 이벤트 참여 시 비동기 사후 처리(결제, 알림 등), 메시지 내역 관리
+2.** Rabbit MQ**
+   - **적용 위치**: 선착순 이벤트 동시성 제어
+   - **사용 이유**: 원자적 실행으로 높은 TPS 처리 가능.
+			  정확한 카운트 관리와 데이터 정합성 보장.
+   - **구체적 역할**: 이벤트 참여 요청의 동시성 제어, limitCount와 실제 처리 카운트 관리
+###:시계_반대_방향_화살표: 실시간 통신
+1.** Web Socket**
+   - **적용 위치**:
+   - **사용 이유**:
+   - **구체적 역할**:
+2.**SSE(Server-Sent Events)**
+   - **적용 위치**: 선착순 이벤트 결과 실시간 알림
+   - **사용 이유**: 서버에서 클라이언트로의 단방향 통신에 최적화.
+                          WebSocket보다 가벼운 리소스 사용으로 효율적.
+   - **구체적 역할**: 구체적 역할: 사용자에게 이벤트 참여 결과 실시간 전달
+
 
   
 
  # 📄트러블슈팅
+ <details>
+  <summary>OpenSearch 호환을 위한 ElasticSearch RestClient 관련 리팩토링</summary>
+   - 배포를 위해 docker-compose로 구동하던 ElasticSearch를 AWS에서 구축할 필요가 생겼다.
+- OpenSearch와 ElasticSearch의 호환성이 높다는 정보를 듣고 시도
+
+# 시도1 - OpenSearch 관련 라이브러리로 리팩토링 → `삽질`
+
+- 처음에는 OpenSearch 관련해서 나오는 블로그 글들을 활용해서 리팩토링을 시도했다.
+- OS와 ES의 빈이 겹치는 에러가 있어서 아래 코드를 SpringApplication에 추가했다.
+- `@SpringBootApplication(exclude = {ElasticsearchDataAutoConfiguration.class})`
+- 하지만 여전히 문제가 생겨서 ElasticSearch 의존성을 제거해야 한다는 내용을 보고 리팩터링을 시도했다.
+- 하다보니 너무 관련된 변경이 많아졌고 이러면 로컬에서 도커로 테스트할 수 없다는 문제점이 생겼다.
+- 호환성이 높다는 말에 의심이 돼서 검색해 본 결과 아래의 글을 찾을 수 있었다.
+
+# 시도2 - RestClient를 수정해서 호환되게 변경
+
+- https://flambeeyoga.tistory.com/entry/Spring-elasticsearch-rest-client-853%EC%97%90-opensearch-%EC%97%B0%EA%B2%B0%ED%95%98%EA%B8%B0
+- 이 글에서는 나와 비슷하게 ES로 만들어진 프로젝트를 OS 환경에 배포하려고 하고 있었다.
+- 요약하자면 **ES와 OS 모두 Rest API 기반**이기 때문에 OS 라이브러리 의존성 없이도 호환이 가능하다!
+- 다만 RestClient를 OS에 맞게 변경할 필요가 있었다.
+- 하지만 글과는 다르게 Timeout 예외가 발생
+
+```java
+Caused by: org.springframework.dao.DataAccessResourceFailureException: Timeout connecting to [[vpc-oneshot-elasticsearch-qm3januchy4i3zzbovj3hdwneq.ap-northeast-2.es.amazonaws.com/172.31.4.176:9200](http://vpc-oneshot-elasticsearch-qm3januchy4i3zzbovj3hdwneq.ap-northeast-2.es.amazonaws.com/172.31.4.176:9200)]
+```
+
+# 시도3 - AWS OpenSearch에 접근할 수 있게 보안 설정 변경
+
+- 일단 AWS의 OS 서비스 도메인은 노드 1개로 단순하게 구성했고 VPC 중 서브넷 하나에 선택했다.
+- 하지만 보안 설정과 정책을 아무리 바꿔봐도 로컬 환경과 동일한 VPC에 있는 EC2에서 둘 다 접근이 불가능했다.
+- 공식문서를 따라서 OS 도메인을 퍼블릭으로 새로 생성하고 호스트/포트/로그인 정보를 바꾸면서 응답을 받는 데에 성공했다.(OS 도메인 생성 겁나 오래 걸림)
+- OS는 퍼블릭일 경우 `세분화된 액세스`와 `https 사용`이 강제되고 → Basic Auth와 SSL + 443포트를 사용해야 한다. → **9200 포트를 고집했던 것이 문제의 원인 중의 하나**였음!
+- 퍼블릭 도메인에서 포트와 엔드포인트를 적절하게 설정하니 에러코드지만 응답을 받을 수 있었다.
+
+# 시도 2-1 - 이어서 RestClient를 수정해서 호환되게 변경
+
+- 다음부터는 블로그에 나온 상태코드와 같아서 이어서 진행할 수 있었다.
+- 블로그에서는 `RestClient` 빈을 직접 생성하는데 우리 프로젝트는 `ClientConfiguration` 가 설정되어 있었다.
+- 자세히는 모르지만 최신버전에서 추천되는 방식으로 여러가지 편의기능을 제공하는 것 같다.
+- 아무튼 디버그 모드에서 콜스택을 따라가서 확인한 결과 이 친구를 사용하는 방식은 강제로 Header를 바꿔버려서 헤더를 알맞게 수정해도 OS에서 406 Not Acceptable을 반환한다.
+- 또 OS와 호환되기 위해서는 추가적이 헤더가 필요했다.
+- 결국 `ClientConfiguration` 을 사용하는 방식으로 힘들다고 판단해서 `ElasticsearchClient`를 직접 반환하는 코드로 변경
+- 블로그 내용은 코틀린으로 작성되어 자잘한 삽질들이 있었다…
+
+```java
+    @Bean
+    public ElasticsearchClient elasticsearchClient() {
+        // Basic 인증 설정
+        final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+        credentialsProvider.setCredentials(AuthScope.ANY,
+                new UsernamePasswordCredentials(username, password));
+
+        Header[] defaultHeaders = new Header[] {
+                new BasicHeader("Content-Type", "application/json")
+        };
+
+        // RestClientBuilder에 인증 정보/추가헤더 적용
+        RestClientBuilder builder = RestClient
+                .builder(new HttpHost(host, port, "https"))
+                .setDefaultHeaders(defaultHeaders)
+                .setHttpClientConfigCallback(httpClientBuilder ->
+                        httpClientBuilder
+                                .setDefaultCredentialsProvider(credentialsProvider)
+                                .addInterceptorLast(new HttpResponseInterceptor() {
+                                    @Override
+                                    public void process(HttpResponse response, HttpContext context) throws HttpException, IOException {
+                                        response.addHeader("X-Elastic-Product", "Elasticsearch");
+                                    }
+                                })
+                );
+
+        RestClient restClient = builder.build();
+
+        ElasticsearchTransport transport = new RestClientTransport(restClient, new JacksonJsonpMapper(objectMapper));
+
+        return new ElasticsearchClient(transport);
+    }
+```
+
+- 스프링 앱을 실행하면 정상적으로 OpenSearch에 연결되고 실행이 가능하다…
+
+![Image](https://github.com/user-attachments/assets/c779668a-f73e-4dc7-92fa-650cce5a8dd2)
+
+- 로컬 테스트 환경에서는 여전히 도커의 엘라스틱 서치를 사용해야 하기 때문에 아이디, 비밀번호를 요구하지 않고, HTTPS를 사용하지 않는 빈을 하나 더 만들고 프로필을 이용해서 사용 환경을 구분할 수 있도록 했다.
+  <!-- 내용 -->
+</details>
  
 
 
 
 
- # 추가 개선 예정
+ # 🩹추가 개선 예정
 장바구니와 주문의 연관관계 변경으로 데이터 효율 개선
 
 엘라스틱 서치 동의어 사전을 통해 사용성 개선
