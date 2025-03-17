@@ -36,6 +36,9 @@
 ## 📊 WireFrame
 ![Image](https://github.com/user-attachments/assets/4fd81874-cac9-4dc9-bc2d-28fc353bc3b6)
 
+👇👇 Link 👇👇
+
+[WireFrame  링크](https://www.figma.com/design/VpTM2b3OTPGFkTFMef3Imc/Untitled?node-id=0-1&t=qD3uG8KuG1AEFkOk-1)
 
 ## 🔧 기술스택
 
