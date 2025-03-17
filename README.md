@@ -20,7 +20,7 @@
 
 # 🔧기술스택
 
-##Development
+## Development
 <img src="https://img.shields.io/badge/Java-007396?style=flat-square&logo=OpenJDK&logoColor=white">&nbsp;
 <img src="https://img.shields.io/badge/Redis-DC382D?style=flat-square&logo=redis&logoColor=white">&nbsp;
 <img src="https://img.shields.io/badge/MySQL-4479A1?style=flat-square&logo=mysql&logoColor=white">&nbsp;
@@ -38,7 +38,7 @@
 <img src="https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white"/>&nbsp;
 
 
-
+##  Documentation
 <img src="https://img.shields.io/badge/jira-%230A0FFF.svg?style=for-the-badge&logo=jira&logoColor=white"/>&nbsp;
 
 
@@ -65,36 +65,40 @@
 
   </br>
 
- ## 🚀 성능 개선: 실시간 알림 서비스
- ### ✏️ **한줄 요약**
-  
-### **🔍 도입 배경**
-###:우편물이_담긴_우편함: 메시징 시스템
-1.** Rabbit MQ**
+### :플로피_디스크: **데이터베이스 및 캐싱**
+1. **Redis**
+   - **적용 위치**: 캐시 서버
+   - **사용 이유**: 실시간 상품 할인율과 최저가 조회 성능 향상. TTL 설정으로 타임세일 종료 시 데이터 자동 삭제.
+### :우편물이_담긴_우편함: 메시징 시스템
+1. **Rabbit MQ**
    - **적용 위치**: 선착순 이벤트 사후 처리를 위한 비동기 통신
-   - **사용 이유**: 단일 서버 환경과 1,000명 규모에 적합한 메시징 브로커.
-			FIFO 큐 방식으로 메시지 순서 보장.
-			NACK, DLQ 기능으로 메시지 영속성 제공.
-   - **구체적 역할**: 이벤트 참여 시 비동기 사후 처리(결제, 알림 등), 메시지 내역 관리
-2.** Rabbit MQ**
+   - **사용 이유**:
+     - FIFO 큐 방식으로 메시지 순서 보장.
+     - NACK, DLQ 기능으로 메시지 영속성 제공.
+     - 단일 서버 환경과 1,000명 규모에 적합.
+   - **구체적 역할**:
+     - 이벤트 참여 시 비동기 사후 처리 (결제, 알림 등)
+     -  메시지 내역 관리
+2. **Lua Script**
    - **적용 위치**: 선착순 이벤트 동시성 제어
    - **사용 이유**: 원자적 실행으로 높은 TPS 처리 가능.
-			  정확한 카운트 관리와 데이터 정합성 보장.
-   - **구체적 역할**: 이벤트 참여 요청의 동시성 제어, limitCount와 실제 처리 카운트 관리
-###:시계_반대_방향_화살표: 실시간 통신
-1.** Web Socket**
+        - 정확한 카운트 관리와 데이터 정합성 보장.
+   - **구체적 역할**:
+        - 이벤트 참여 요청의 동시성 제어,
+        - limitCount와 실제 처리 카운트 관리
+### :시계_반대_방향_화살표: 실시간 통신
+1. **Web Socket**
    - **적용 위치**:
    - **사용 이유**:
    - **구체적 역할**:
-2.**SSE(Server-Sent Events)**
+2. **SSE(Server-Sent Events)**
    - **적용 위치**: 선착순 이벤트 결과 실시간 알림
-   - **사용 이유**: 서버에서 클라이언트로의 단방향 통신에 최적화.
-                          WebSocket보다 가벼운 리소스 사용으로 효율적.
-   - **구체적 역할**: 구체적 역할: 사용자에게 이벤트 참여 결과 실시간 전달
+   - **사용 이유**:
+        - 서버에서 클라이언트로의 단방향 통신에 최적화.
+      -  WebSocket보다 가벼운 리소스 사용으로 효율적.
+   - **구체적 역할**: 사용자에게 이벤트 참여 결과 실시간 전달
 
-
-  
-
+</br>
  # 📄트러블슈팅
  <details>
   <summary>OpenSearch 호환을 위한 ElasticSearch RestClient 관련 리팩토링</summary>
@@ -182,7 +186,117 @@ Caused by: org.springframework.dao.DataAccessResourceFailureException: Timeout c
 - 로컬 테스트 환경에서는 여전히 도커의 엘라스틱 서치를 사용해야 하기 때문에 아이디, 비밀번호를 요구하지 않고, HTTPS를 사용하지 않는 빈을 하나 더 만들고 프로필을 이용해서 사용 환경을 구분할 수 있도록 했다.
   <!-- 내용 -->
 </details>
+</br>
+ <details>
+  <summary>즐겨찾기 등록시 쿼리 여러번 발생</summary>
+문제:
+Favorite엔티티에 Uesr객체, Cocktail객체를 참조
+User객체 반환 시, Cocktail객체 반환 시, Favorite 객체 저장 시 총 쿼리 세 번 발생
+즐겨찾기기 등록은 빈번하게 발생하는 요청인데, 한 번의 요청에 세 번의 쿼리발생은
+문제라고 인식
+문제해결:
+findById 대신 **getReferenceById로 프록시 객체 반환
+User: getReferenceById
+User는 로그인한 유저이기 때문에, userId가 존재하지 않을 가능성이 없다.
+따라서 User객체를 프록시 객체로 반환하게 될 때 발생할 문제가 없다.
+Cocktail: findById
+Cocktail아이디는 입력받아 사용
+따라서, Cocktail객체가 존재하지 않을 가능성이 있다. 
+그리고 Cocktail객체의 Count 값을 변경시켜야 해서 칵테일 객체는 필요
+대신 Cocktail객체가 존재하는지 확인하는 절차를 먼저 거치도록 함
+Exist 쿼리문으로 Cocktail객체의 존재확인을 하고, 없다면 예외 발생
+이렇게 함으로써 칵테일 객체가 없을 때 불필요한 쿼리발생 방지
+Exist 쿼리는 Count쿼리보다도 가볍기 때문에 적절하다고 판단
+(findById - 모든 컬럼 데이터를 가져옴
+  count - COUNT를 사용하므로 조건에 맞는 모든 행을 확인
+  exist - 조건에 맞는 첫 행 발견 시 즉시 반환)
+결론
+ User는 프록시 객체로 반환: 쿼리발생 X
+Cocktail 존재 여부 확인: 쿼리 발생하나 무척 가벼움, exixt 쿼리발생 1
+Cocktail 객체 반환: select 쿼리발생 1
+Favorite save: update쿼리 발생 1
+쿼리 발생횟수는 3번으로 동일하나, exist 쿼리가 가벼우므로 최적화
+레디스에 즐겨찾기 카운트값을 캐싱
+칵테일 객체의 즐겨찾기카운트컬럼에 직접 접근할 필요가 없어짐
+따라서, Cocktail객체도 프록시객체로 저장해도 됨
+User 객체는 로그인한 유저의 디테일 정보이므로, Cocktail 객체는 
+exist 쿼리문으로 존재하는지 확인하므로, getReferenceById 객체 참조해도
+문제되지 않는다고 판단
+결론
+ User 프록시 객체로 반환: 쿼리발생 X
+Cocktail 존재 여부 확인: 쿼리 발생하나 무척 가벼움, exixt 쿼리발생 1
+Cocktail 프록시 객체로 반환: 쿼리발생 X
+Favorite save: update쿼리 발생 1
+쿼리 발생횟수 2번
+**일반적인 findById vs getReferenceById:
+findById
+CopyUser user = userRepository.findById(1L).get();
+// 즉시 SELECT 쿼리 실행
+// SELECT * FROM user WHERE id = 1
+
+​
+getReferenceById
+CopyUser userReference = userRepository.getReferenceById(1L);
+// 이 시점에는 쿼리 실행 안 함
+// 실제 user 데이터가 필요한 시점에 쿼리 실행
+
+​
+작동 방식:
+Copy// 1. 프록시 객체만 생성 (쿼리 없음)
+User userReference = userRepository.getReferenceById(1L);
+
+// 2. 이 시점에는 id만 가지고 있음
+Long userId = userReference.getId();  // 쿼리 발생 안 함
+
+// 3. 실제 데이터가 필요한 시점에 쿼리 발생
+String userName = userReference.getName();  // 이때 SELECT 쿼리 발생
+
+​
+즐겨찾기 생성시에는:
+Copy@Transactional
+public FavoriteResponseDto createFavorite(CreateFavoriteSDto dto) {
+    // 1. 프록시 User 객체 생성 (쿼리 없음)
+    User userReference = userRepository.getReferenceById(dto.getUserId());
+
+    // 2. 레시피 조회 (첫 번째 쿼리)
+    Recipe recipe = recipeRepository.findById(dto.getRecipeId())
+            .orElseThrow(() -> new NotFoundException(ErrorCode.RECIPE_NOT_FOUND));
+
+    // 3. 즐겨찾기 저장 (두 번째 쿼리)
+    // 여기서는 User의 실제 데이터가 필요없고 ID만 필요하므로
+    // 추가 쿼리 발생하지 않음
+    Favorite favorite = Favorite.from(userReference, recipe);
+    favoriteRepository.save(favorite);
+
+    return FavoriteResponseDto.from(favorite);
+}
+  <!-- 내용 -->
+</details>
+
+<details>
+  <summary></summary>
+	다음과 같이 엘라스틱서치의 인덱스 설정을 직접 해주고 도큐먼트에 파일 위치를 
+
+매핑시켜 주었음에도 키바나에서 인덱스를 확인해 보았을 때 인덱스가 자동으로 생성되지 않는 문제가 발생하였습니다.
+
+![Image](https://github.com/user-attachments/assets/564e19ea-32a5-4cda-82d3-cf86b23d97c9)
+![Image](https://github.com/user-attachments/assets/9f1a1960-ad8b-4b37-97a2-e1efc68a0c2a)
+
  
+
+- 인덱스를 생성하기 위해서는 `elasticeSearchRepository`가 필요하다.
+    
+    엘라스틱서치의 인덱스 정보를 읽고, 이를 기반으로 인덱스를 생성해 주는 것은 `repository`의 책임인데, `elasticSearchRepository` 인터페이스를 구현하지 않았기 때문에 발생한 이슈였다.
+    
+
+## Spring Data ElasticSearch가 인덱스를 자동 생성하는 과정
+
+- 애플리케이션이 실행될 때 엘라스틱서치는  `@document` 에너테이션이 달린 클래스를 읽는다.
+- 레포지토리 인터페이스를 구현한 레포지토리가 등록되면서, 레포지토리 내부의 `IndexOperations`를 통해 해당 이름의 인덱스가 이미 존재하는지 확인하고, 존재하지 않으면 `@mapping`, `@Setting`의 path 경로에 있는 파일 내용을 기반으로 인덱스를 생성한다.
+
+repository를 사용하지 않고, `operations`를 사용하여 기능을 구현하고 있었기 때문에, `elasticSearchRepository`의 구현체를 생성하지 않아 `indexOperation`을 통한 인덱스 생성이 자동으로 일어나지 않았기 때문입니다. repository를 사용하지 않으면 `indexOperations` 구현체를 통해 직접 인덱스를 생성해 줘야 한다.
+  <!-- 내용 -->
+</details>
 
 
 
