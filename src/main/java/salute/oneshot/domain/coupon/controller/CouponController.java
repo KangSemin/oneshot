@@ -79,7 +79,11 @@ public class CouponController {
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) String status
     ) {
-        Pageable pageable = getPageable(page, size);
+        Pageable pageable = PageRequest.of(
+                    page - 1,
+                    size,
+                    Sort.by("coupon.endTime").ascending());
+
         GetUserCpnSDto serviceDto =
                 GetUserCpnSDto.of(userDetails.getId(), status, pageable);
         UserCpnPageResponseDto responseDto =
