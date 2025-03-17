@@ -260,8 +260,8 @@ class IngredientControllerTest extends AbstractRestDocsTests {
                                 .queryParameters(
                                         parameterWithName("keyword").defaultValue(" ").description("검색할 재료 키워드(선택)"),
                                         parameterWithName("category").defaultValue(" ").description("재료 카테고리(선택)"),
-                                        parameterWithName("page").type(SimpleType.INTEGER).description("페이지 번호 (1부터 시작, 선택)"),
-                                        parameterWithName("size").type(SimpleType.INTEGER).description("한 페이지당 조회할 개수(선택)")
+                                        parameterWithName("page").defaultValue("1").type(SimpleType.INTEGER).description("페이지 번호 (1부터 시작, 선택)"),
+                                        parameterWithName("size").defaultValue("10").type(SimpleType.INTEGER).description("한 페이지당 조회할 개수(선택)")
                                 )
                                 .build())));
     }
