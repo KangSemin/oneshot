@@ -22,6 +22,8 @@ public class EventConsumerService {
 
         try {
             Long couponId = participateDto.getCouponId();
+            log.debug("쿠폰 발급 시도 - 쿠폰ID: {}, 사용자ID: {}", couponId, participateDto.getUserId());
+
             CreateUserCpnSDto createUserCpnSDto =
                     CreateUserCpnSDto.of(couponId, participateDto.getUserId());
             couponService.grantUserCoupon(createUserCpnSDto);

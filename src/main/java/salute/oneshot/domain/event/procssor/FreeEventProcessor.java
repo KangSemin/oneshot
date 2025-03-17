@@ -122,14 +122,21 @@ public class FreeEventProcessor implements EventProcessor {
     }
 
     private boolean shouldCompleteEvent(Long eventId, int limitCount) {
-        String counterKey = "event:" + eventId + ":counter";
+        String counterKey = "event:{" + eventId + "}:counter";
+        log.info("이벤트 완료 확인 - 키: {}, 제한 수량: {}", counterKey, limitCount);
+
         String value = redisTemplate.opsForValue().get(counterKey);
+        log.info("이벤트 카운터 값: {}", value);
 
         if (value == null) {
             return false;
         }
 
         int currentCount = Integer.parseInt(value);
+        boolean shouldComplete = currentCount >= limitCount;
+        log.info("이벤트 완료 여부 - 현재 카운트: {}, 제한 수량: {}, 완료해야 함: {}",
+                currentCount, limitCount, shouldComplete);
+
         return currentCount >= limitCount;
     }
 }
