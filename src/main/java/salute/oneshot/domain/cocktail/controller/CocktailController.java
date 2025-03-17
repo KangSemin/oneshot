@@ -85,13 +85,13 @@ public class CocktailController {
 
     @GetMapping("/search")
     public ResponseEntity<ApiResponse<Page<CocktailResponseDto>>> searchWithIngredients(
-        @RequestBody SearchCocktailByIngrsReqDto request,
+        @RequestParam(required = true) List<Long> ingredientIds,
         @RequestParam(required = false) RecipeType recipeType,
         @RequestParam(defaultValue = "false") Boolean isCraftable,
         @RequestParam(defaultValue = "1") int page,
         @RequestParam(defaultValue = "10") int size) throws IOException {
 
-        SearchCocktailSDto sDto = SearchCocktailSDto.of(request.getIngredientIds(), isCraftable,
+        SearchCocktailSDto sDto = SearchCocktailSDto.of(ingredientIds, isCraftable,
             recipeType, page, size);
 
         Page<CocktailResponseDto> response = cocktailService.getCocktailsByIngr(sDto);
