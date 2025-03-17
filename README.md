@@ -1,5 +1,5 @@
 # 🍹oneshot🍷 
->칵테일 마니아층을 위한 <U>칵테일과 재료조회</U> 및 <U>관련물품 판매</U> 서비스입니다.
+칵테일 마니아층을 위한 <U>칵테일과 재료조회</U> 및 <U>관련물품 판매</U> 서비스입니다.
 
 프로젝트 기간 : 2025-02-11 ~ 2025-03-17
 
@@ -14,11 +14,11 @@
 선착순 이벤트
 
 ## 🔗목차
-1. [📌 Architecture](#architecture)
-2. [📃 API](#api)
-3. [📊 WireFrame](#WireFrame)
-4. [🔧 기술스택](#기술스택)
-5. [🗝️ KEY SUMMARY](#key-summary)
+1. [📌 Architecture](#-architecture)
+2. [📃 API](#-api)
+3. [📊 WireFrame](#-WireFrame)
+4. [🔧 기술스택](#-기술스택)
+5. [🗝️ KEY SUMMARY](#-key-summary)
 6. [🪛적용 기술](#적용-기술)
 7. [🎯트러블슈팅](#트러블슈팅)
 8. [🎢추가 개선 예정](#추가-개선-예정)
