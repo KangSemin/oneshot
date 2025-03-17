@@ -1,6 +1,7 @@
 package salute.oneshot.domain.coupon.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +22,7 @@ import salute.oneshot.global.exception.NotFoundException;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class CouponService {
@@ -60,6 +62,8 @@ public class CouponService {
 
     @Transactional
     public UserCpnBriefResponseDto grantUserCoupon(CreateUserCpnSDto serviceDto) {
+        log.info("쿠폰 발급 시작 - 사용자ID: {}, 쿠폰ID: {}", serviceDto.getUserId(), serviceDto.getCouponId());
+
         User user = userRepository
                 .getReferenceById(serviceDto.getUserId());
         Coupon coupon = couponRepository
