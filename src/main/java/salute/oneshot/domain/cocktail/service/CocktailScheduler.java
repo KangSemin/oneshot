@@ -89,6 +89,8 @@ public class CocktailScheduler {
         }
     }
 
+    //여기에다가 어뷰징키를 매일 24시에 삭제하는 스케줄러를 작성해야함
+
 
     private Cocktail findById(Long cocktailId) {
         return cocktailRepository.findById(cocktailId)

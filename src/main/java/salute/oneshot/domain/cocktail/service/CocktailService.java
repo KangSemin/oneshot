@@ -144,8 +144,6 @@ public class CocktailService {
     @Transactional
     public CocktailResponseDto getCocktail(Long cocktailId) {
 
-        log.info("서비스에서의 칵테일 아이디:" + cocktailId );
-
         Cocktail cocktail = findById(cocktailId);
         return CocktailResponseDto.from(cocktail);
     }

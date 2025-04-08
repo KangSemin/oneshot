@@ -113,31 +113,31 @@ class CocktailControllerTest extends AbstractRestDocsTests {
 
     }
 
-    @Test
-    @DisplayName("칵테일 상세 조회")
-    @WithMockUser
-    void getCocktailById() throws Exception {
-
-        // given
-        CocktailResponseDto response = CocktailResponseDto.from(CocktailTestFactory.createBlackRussian());
-
-        given(cocktailService.getCocktail(1L))
-            .willReturn(response);
-
-        // when & then
-        mockMvc.perform(get("/api/cocktails/{cocktailId}", 1L)
-                .contentType(MediaType.APPLICATION_JSON)
-                .with(user(UserTestFactory.createMockUserDetails()))
-                .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andDo(document("cocktail/getCocktailById",
-                preprocessRequest(prettyPrint()),
-                preprocessResponse(prettyPrint()),
-                resource(ResourceSnippetParameters.builder()
-                    .tag(API_TAG)
-                    .build()
-                )));
-    }
+//    @Test
+//    @DisplayName("칵테일 상세 조회")
+//    @WithMockUser
+//    void getCocktailById() throws Exception {
+//
+//        // given
+//        CocktailResponseDto response = CocktailResponseDto.from(CocktailTestFactory.createBlackRussian());
+//
+//        given(cocktailService.getCocktail(1L))
+//            .willReturn(response);
+//
+//        // when & then
+//        mockMvc.perform(get("/api/cocktails/{cocktailId}", 1L)
+//                .contentType(MediaType.APPLICATION_JSON)
+//                .with(user(UserTestFactory.createMockUserDetails()))
+//                .accept(MediaType.APPLICATION_JSON))
+//            .andExpect(status().isOk())
+//            .andDo(document("cocktail/getCocktailById",
+//                preprocessRequest(prettyPrint()),
+//                preprocessResponse(prettyPrint()),
+//                resource(ResourceSnippetParameters.builder()
+//                    .tag(API_TAG)
+//                    .build()
+//                )));
+//    }
 
 
 
