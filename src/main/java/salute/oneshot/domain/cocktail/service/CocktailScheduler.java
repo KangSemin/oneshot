@@ -33,7 +33,6 @@ public class CocktailScheduler {
     @Scheduled(cron = "0 0 * * * ?")
     @CachePut(cacheNames = RedisConst.POPULAR_COCKTAIL_KEY, key = "'popualr'")
     public List<CocktailResponseDto> updatePopularCocktails() {
-        log.info("인기 칵테일 업데이트");
 
         List<Long> topNIds = Objects.requireNonNull(redisTemplate.opsForZSet()
                                     .reverseRange(RedisConst.COCKTAIL_SCORE_KEY, 0, TOP_N - 1))
@@ -52,7 +51,6 @@ public class CocktailScheduler {
     @Transactional
     @Scheduled(cron = "0 0/5 * * * ?")
     public void updateCocktailViewAndFavoriteCountToDB() {
-        log.info("데이터 정합성 맞춤");
 
         ScanOptions scanOptions = ScanOptions.scanOptions()
                 .match(RedisConst.COCKTAIL_COUNT_KEY_PREFIX + "*") // 특정 패턴의 키만 검색
@@ -89,7 +87,28 @@ public class CocktailScheduler {
         }
     }
 
-    //여기에다가 어뷰징키를 매일 24시에 삭제하는 스케줄러를 작성해야함
+    @Scheduled(cron = "0 0 0 * * *")
+    public void abusingReset(){
+
+        Set<String> keys = new HashSet<>();
+
+       ScanOptions scanOptions = ScanOptions.scanOptions().match("ab::*")
+                                .count(100)
+                                .build();
+
+        Cursor<byte[]> cursor = redisTemplate.executeWithStickyConnection(
+                redisConnection -> redisConnection.scan(scanOptions)
+        );// 스캔을 통해 가져온 마지막 위치를 저장함
+
+        while (cursor.hasNext()){
+            String key = new String(cursor.next());
+            keys.add(key);
+
+            if(!key.isEmpty()){
+                redisTemplate.delete(keys);
+            }
+        }
+    }
 
 
     private Cocktail findById(Long cocktailId) {

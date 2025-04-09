@@ -23,12 +23,11 @@ import salute.oneshot.domain.common.dto.success.ApiResponse;
 import salute.oneshot.domain.common.dto.success.ApiResponseConst;
 import salute.oneshot.global.security.model.CustomUserDetails;
 import salute.oneshot.global.util.CookieUtil;
+import salute.oneshot.global.util.HttpHeaderUtil;
 import salute.oneshot.global.util.S3Util;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @RestController
@@ -38,9 +37,8 @@ public class CocktailController {
 
     private final CocktailService cocktailService;
     private final RedisTemplate<String, String> redisTemplate;
-    private final S3Util s3Util;
 
-    final String ABUSING_PREFIX = "abusing::";
+    final String ABUSING_PREFIX = "ab::";
 
     @PostMapping
     public ResponseEntity<ApiResponse<CocktailResponseDto>> createCocktail(
@@ -60,40 +58,36 @@ public class CocktailController {
 
 
     @GetMapping("/{cocktailId}")
-    private ResponseEntity<ApiResponse<CocktailResponseDto>> getCocktail(@RequestHeader(value = "Referer", required = false) String referer,
-                                                                         HttpServletRequest request,
+    private ResponseEntity<ApiResponse<CocktailResponseDto>> getCocktail(HttpServletRequest request,
                                                                          HttpServletResponse httpResponse,
                                                                          @PathVariable(name = "cocktailId") long cocktailId
-    ) {
+    ){
+        String[] whiteUrl = new String[]{"cocktail/search", "cocktail/popular", "cocktail/keyword"};
+        boolean isValidReferer = HttpHeaderUtil.checkReferer(whiteUrl, request);
 
-        ResponseEntity<ApiResponse<CocktailResponseDto>> response =  ResponseEntity.ok(ApiResponse.success(ApiResponseConst.GET_CCKTL_SUCCESS,
+        if(!isValidReferer){
+            return ResponseEntity.ok(ApiResponse.success(ApiResponseConst.GET_CCKTL_SUCCESS,
                 cocktailService.getCocktail(cocktailId)));
-
-        if (!(referer.contains("/api/cocktails/popular" ) || referer.contains("/api/cocktails/condition") || referer.contains("/api/cocktails/search"))) {// 이 부분을 인기칵테일 or 검색 url이 아니면으로 변경해야함
-            return response;
         }
 
-        String ip = request.getHeader("X-Forwarded-For").split(",")[0];
-        String userAgent = request.getHeader("User_Agent");
-
-        log.info("값 :" + ip + userAgent);
-
         String cookieName = "abusing";
+        Cookie cookie = CookieUtil.getOrCreateCookie(request, cookieName);// 어뷰징관리 쿠키가 있음
 
-        Cookie cookie = CookieUtil.getOrCreateCookie(request, cookieName);
 
-        List<String> values = redisTemplate.opsForList().range(ABUSING_PREFIX + cocktailId, 0, -1);
-        boolean isExist = !values.isEmpty() && values.contains(cookie.getValue());
+        List<String> values = redisTemplate.opsForList().range(cookie.getValue(), 0, -1);// 사용자의 식별자 값을 키로 사용함
 
-        if (!isExist) {
+        boolean isViewed = values != null && values.contains(String.valueOf(cocktailId));
+
+        if (!isViewed) {
             cocktailService.increaseViewCountAndScore(cocktailId);
-            redisTemplate.opsForList().rightPush(ABUSING_PREFIX + cocktailId, cookie.getValue());
+            redisTemplate.opsForList().rightPush(ABUSING_PREFIX + cookie.getValue(), String.valueOf(cocktailId));
         }
 
         CookieUtil.setCookieTime(cookie);
         httpResponse.addCookie(cookie);
 
-        return response;
+        return ResponseEntity.ok(ApiResponse.success(ApiResponseConst.GET_CCKTL_SUCCESS,
+                cocktailService.getCocktail(cocktailId)));
     }
 
 
@@ -140,7 +134,7 @@ public class CocktailController {
         return ResponseEntity.ok(ApiResponse.success(ApiResponseConst.DELETE_CCKTL_SUCCESS));
     }
 
-    @GetMapping("/condition")
+    @GetMapping("/keyword")
     public ResponseEntity<ApiResponse<Page<CocktailResponseDto>>> getCocktailsByCondition(
             @RequestParam(name = "page", defaultValue = "1") int page,
             @RequestParam(name = "size", defaultValue = "10") int size,

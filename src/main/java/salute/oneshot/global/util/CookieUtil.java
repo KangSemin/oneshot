@@ -6,10 +6,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.net.http.HttpRequest;
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -20,33 +22,24 @@ import java.util.List;
 import java.util.Optional;
 
 @Component
+@Slf4j
 public class CookieUtil {
 
-    public static Cookie[] getCookies(HttpServletRequest request){
-        return request.getCookies();
-    }
-
-
-    public static Cookie getOrCreateCookie(HttpServletRequest request, String cookieName) {
+    public static Cookie getOrCreateCookie(HttpServletRequest request, String cookieName)  {
 
         Cookie[] cookies = request.getCookies();
 
-        String ip = request.getHeader("X-Forwarded-For").split(",")[0];
+        String ip = HttpHeaderUtil.getClientIp(request);
         String agent = request.getHeader("User-Agent");
-        String value = " ";
+        String value = HashUtil.sha256(ip + agent).substring(0, 30);
 
-        if (cookies == null) {
-            return new Cookie(cookieName, value);//여기에다가
-        }// 이부분이랑 코드가 너무 겹침
+        Cookie cookie = Optional.ofNullable(cookies)
+                .flatMap(arr -> Arrays.stream(arr)
+                        .filter(c -> c.getName().equals(cookieName))
+                        .findFirst())
+                .orElseGet(() -> new Cookie(cookieName, value));
 
-        Optional<Cookie> optionalCookie = Arrays.stream(cookies)
-                .filter(c -> c.getName().equals(cookieName)).findFirst();
-
-        if (optionalCookie.isEmpty()) {
-            return new Cookie(cookieName, value);
-        }// 이 부분이 확실히 짜치긴한다.
-
-        return optionalCookie.get();
+        return cookie;
     }
 
 
