@@ -7,6 +7,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.validator.internal.constraintvalidators.hv.UUIDValidator;
 import org.springframework.stereotype.Component;
 
 import java.net.http.HttpRequest;
@@ -22,7 +23,6 @@ import java.util.List;
 import java.util.Optional;
 
 @Component
-@Slf4j
 public class CookieUtil {
 
     public static Cookie getOrCreateCookie(HttpServletRequest request, String cookieName)  {
@@ -31,7 +31,8 @@ public class CookieUtil {
 
         String ip = HttpHeaderUtil.getClientIp(request);
         String agent = request.getHeader("User-Agent");
-        String value = HashUtil.sha256(ip + agent).substring(0, 30);
+        String value = HashUtil.sha256(ip + agent).substring(0, 30);// ip + user-agent를 사용해 임시 식별자를 만들고, 쿠키의 값으로 넣어준다
+
 
         Cookie cookie = Optional.ofNullable(cookies)
                 .flatMap(arr -> Arrays.stream(arr)
@@ -49,4 +50,5 @@ public class CookieUtil {
         cookie.setPath("/");
         cookie.setMaxAge((int) (todayEndTime - currentTime));
     }
+
 }

@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import jakarta.servlet.http.Cookie;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CachePut;
@@ -65,6 +66,8 @@ public class CocktailService {
     private final CocktailElasticQueryRepository searchFinder;
 
     private final S3Util s3Util;
+
+    final String ABUSING_PREFIX = "ab::";
 
     @Transactional
     public void createCocktail(CreateCocktailSDto sDto) {
@@ -141,12 +144,30 @@ public class CocktailService {
         cocktailRepository.deleteById(sDto.getCocktailId());
     }
 
-    @Transactional
+    //오버라이딩
+    @Transactional(readOnly = true)
     public CocktailResponseDto getCocktail(Long cocktailId) {
 
         Cocktail cocktail = findById(cocktailId);
         return CocktailResponseDto.from(cocktail);
     }
+
+    @Transactional(readOnly = true)
+    public CocktailResponseDto getCocktail(Long cocktailId, String key) {
+
+        List<String> values = redisTemplate.opsForList().range(ABUSING_PREFIX + key, 0, -1);// 사용자의 식별자 값을 키로 사용함
+
+        boolean isViewed = values != null && values.contains(String.valueOf(cocktailId));
+
+        if (!isViewed) {
+            redisTemplate.opsForList().rightPush(ABUSING_PREFIX + key, String.valueOf(cocktailId));
+            increaseViewCountAndScore(cocktailId);
+        }
+
+        Cocktail cocktail = findById(cocktailId);
+        return CocktailResponseDto.from(cocktail);
+    }
+
 
     public void increaseViewCountAndScore(Long cocktailId) {
         String cocktailCountKey = RedisConst.COCKTAIL_COUNT_KEY_PREFIX + cocktailId;

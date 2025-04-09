@@ -36,9 +36,8 @@ import java.util.List;
 public class CocktailController {
 
     private final CocktailService cocktailService;
-    private final RedisTemplate<String, String> redisTemplate;
 
-    final String ABUSING_PREFIX = "ab::";
+
 
     @PostMapping
     public ResponseEntity<ApiResponse<CocktailResponseDto>> createCocktail(
@@ -62,32 +61,23 @@ public class CocktailController {
                                                                          HttpServletResponse httpResponse,
                                                                          @PathVariable(name = "cocktailId") long cocktailId
     ){
-        String[] whiteUrl = new String[]{"cocktail/search", "cocktail/popular", "cocktail/keyword"};
-        boolean isValidReferer = HttpHeaderUtil.checkReferer(whiteUrl, request);
+        String[] validReferers = new String[]{"cocktail/search", "cocktail/popular", "cocktail/keyword"};
+        boolean isValidReferer = HttpHeaderUtil.checkReferer(validReferers, request);
+
 
         if(!isValidReferer){
             return ResponseEntity.ok(ApiResponse.success(ApiResponseConst.GET_CCKTL_SUCCESS,
-                cocktailService.getCocktail(cocktailId)));
+                    cocktailService.getCocktail(cocktailId)));
         }
 
         String cookieName = "abusing";
-        Cookie cookie = CookieUtil.getOrCreateCookie(request, cookieName);// 어뷰징관리 쿠키가 있음
-
-
-        List<String> values = redisTemplate.opsForList().range(cookie.getValue(), 0, -1);// 사용자의 식별자 값을 키로 사용함
-
-        boolean isViewed = values != null && values.contains(String.valueOf(cocktailId));
-
-        if (!isViewed) {
-            cocktailService.increaseViewCountAndScore(cocktailId);
-            redisTemplate.opsForList().rightPush(ABUSING_PREFIX + cookie.getValue(), String.valueOf(cocktailId));
-        }
+        Cookie cookie = CookieUtil.getOrCreateCookie(request, cookieName);
 
         CookieUtil.setCookieTime(cookie);
         httpResponse.addCookie(cookie);
 
-        return ResponseEntity.ok(ApiResponse.success(ApiResponseConst.GET_CCKTL_SUCCESS,
-                cocktailService.getCocktail(cocktailId)));
+        CocktailResponseDto responseDto = cocktailService.getCocktail(cocktailId, cookie.getValue());
+        return ResponseEntity.ok(ApiResponse.success(ApiResponseConst.GET_CCKTL_SUCCESS, responseDto));
     }
 
 

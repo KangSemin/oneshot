@@ -57,8 +57,6 @@ public class CocktailScheduler {
                 .count(100)
                 .build();// 키를 100대만 가지고 온다
 
-
-
         Cursor<byte[]> cursor = redisTemplate.executeWithStickyConnection(
                 redisConnection -> redisConnection.scan(scanOptions)
         );
@@ -76,7 +74,7 @@ public class CocktailScheduler {
             cocktailQueryRepository.addViewCntFromRedis(cocktailId, viewCnt);
 
             String favCntStr = (String) redisTemplate.opsForHash().get(key, "favoriteCount");
-            Integer favoriteCnt = (favCntStr != null) ? Integer.parseInt(favCntStr) : 0;
+            Integer favoriteCnt = (favCntStr != null) ? Integer.parseInt(favCntStr) : 0 ;
             cocktailQueryRepository.addFavoriteCntFromRedis(cocktailId, favoriteCnt);
 
             keysToDelete.add(key);
@@ -87,6 +85,10 @@ public class CocktailScheduler {
         }
     }
 
+    /*
+         매일 00시 어뷰징 키 삭제 함으로써 사용자별 조회기록 초기화
+         레디스를 임시세션 스토어 용도로 사용
+     */
     @Scheduled(cron = "0 0 0 * * *")
     public void abusingReset(){
 
