@@ -1,10 +1,8 @@
 package salute.oneshot.global.util;
 
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-@Slf4j
 @Component
 public class HttpHeaderUtil {
 
@@ -39,12 +37,11 @@ public class HttpHeaderUtil {
 
     public static boolean checkReferer(String[] validReferers, HttpServletRequest request){
         String referer = request.getHeader("Referer");
+        if(referer == null) {return false;}
 
         for(String url : validReferers){
-            if(url.contains(referer)){return true;}
+            if(referer.contains(url)){return true;}
         }
-        if(referer == null){return true;}
-        log.info("referer : " + referer);
 
         return false;
     }

@@ -64,13 +64,11 @@ public class CocktailController {
         String[] validReferers = new String[]{"cocktail/search", "cocktail/popular", "cocktail/keyword"};
         boolean isValidReferer = HttpHeaderUtil.checkReferer(validReferers, request);
 
-
         if(!isValidReferer){
-            return ResponseEntity.ok(ApiResponse.success(ApiResponseConst.GET_CCKTL_SUCCESS,
-                    cocktailService.getCocktail(cocktailId)));
+            return ResponseEntity.ok(ApiResponse.success(ApiResponseConst.GET_CCKTL_SUCCESS, cocktailService.getCocktail(cocktailId)));
         }
 
-        String cookieName = "abusing";
+        String cookieName = "abusingKey";
         Cookie cookie = CookieUtil.getOrCreateCookie(request, cookieName);
 
         CookieUtil.setCookieTime(cookie);
