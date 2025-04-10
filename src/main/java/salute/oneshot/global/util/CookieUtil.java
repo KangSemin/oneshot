@@ -22,16 +22,16 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-@Component
+
 public class CookieUtil {
 
-    public static Cookie getOrCreateCookie(HttpServletRequest request, String cookieName)  {
+    public static Cookie getOrCreateCookie(HttpServletRequest request, String cookieName) throws NoSuchAlgorithmException {
 
         Cookie[] cookies = request.getCookies();
 
         String ip = HttpHeaderUtil.getClientIp(request);
         String agent = request.getHeader("User-Agent");
-        String value = HashUtil.sha256(ip + agent).substring(0, 30);// ip + user-agent를 사용해 임시 식별자를 만들고, 쿠키의 값으로 넣어준다
+        String value = HashUtil.encodeSha256(ip + agent).substring(0, 30);// ip + user-agent를 사용해 임시 식별자를 만들고, 쿠키의 값으로 넣어준다
 
 
         Cookie cookie = Optional.ofNullable(cookies)

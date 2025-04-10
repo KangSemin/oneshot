@@ -105,10 +105,9 @@ public class CocktailScheduler {
         while (cursor.hasNext()){
             String key = new String(cursor.next());
             keys.add(key);
-
-            if(!key.isEmpty()){
-                redisTemplate.delete(keys);
-            }
+        }
+        if(!keys.isEmpty()){
+            redisTemplate.delete(keys);
         }
     }
 

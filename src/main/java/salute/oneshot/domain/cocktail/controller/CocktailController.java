@@ -27,6 +27,7 @@ import salute.oneshot.global.util.HttpHeaderUtil;
 import salute.oneshot.global.util.S3Util;
 
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 @Slf4j
@@ -60,7 +61,7 @@ public class CocktailController {
     private ResponseEntity<ApiResponse<CocktailResponseDto>> getCocktail(HttpServletRequest request,
                                                                          HttpServletResponse httpResponse,
                                                                          @PathVariable(name = "cocktailId") long cocktailId
-    ){
+    ) throws NoSuchAlgorithmException {
         String[] validReferers = new String[]{"cocktail/search", "cocktail/popular", "cocktail/keyword"};
         boolean isValidReferer = HttpHeaderUtil.checkReferer(validReferers, request);
 
@@ -71,10 +72,11 @@ public class CocktailController {
         String cookieName = "abusingKey";
         Cookie cookie = CookieUtil.getOrCreateCookie(request, cookieName);
 
+        CocktailResponseDto responseDto = cocktailService.getCocktail(cocktailId, cookie.getValue());
+
         CookieUtil.setCookieTime(cookie);
         httpResponse.addCookie(cookie);
 
-        CocktailResponseDto responseDto = cocktailService.getCocktail(cocktailId, cookie.getValue());
         return ResponseEntity.ok(ApiResponse.success(ApiResponseConst.GET_CCKTL_SUCCESS, responseDto));
     }
 
