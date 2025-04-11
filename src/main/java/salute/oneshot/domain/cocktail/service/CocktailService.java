@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import jakarta.servlet.http.Cookie;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CachePut;
@@ -51,9 +52,6 @@ import salute.oneshot.global.util.S3Util;
 @RequiredArgsConstructor
 public class CocktailService {
 
-    private static final String COCKTAIL_INDEX = "cocktails";
-    private static final String INGR_FIELD = "ingredients";
-
     private final CocktailRepository cocktailRepository;
     private final UserRepository userRepository;
     private final IngredientRepository ingredientRepository;
@@ -62,9 +60,11 @@ public class CocktailService {
     private final ElasticsearchClient client;
     private final RedisTemplate<String, String> redisTemplate;
     private final CocktailScheduler cocktailScheduler;
-    private final CocktailElasticQueryRepository searchFinder;
+    private final CocktailElasticQueryRepository elasticQueryRepository;
 
     private final S3Util s3Util;
+
+
 
     @Transactional
     public void createCocktail(CreateCocktailSDto sDto) {
@@ -112,7 +112,7 @@ public class CocktailService {
     public Page<CocktailResponseDto> getCocktailsByIngr(SearchCocktailSDto sDto) throws IOException {
 
 
-        SearchResponse<CocktailDocument> response = searchFinder.findCocktailsByIngr(sDto);
+        SearchResponse<CocktailDocument> response = elasticQueryRepository.findCocktailsByIngr(sDto);
 
         List<Long> cocktailIds = response.hits().hits().stream()
                 .map(hit -> Long.parseLong(hit.source().getId()))
@@ -141,14 +141,30 @@ public class CocktailService {
         cocktailRepository.deleteById(sDto.getCocktailId());
     }
 
-    @Transactional
+    //오버로딩
+    @Transactional(readOnly = true)
     public CocktailResponseDto getCocktail(Long cocktailId) {
-
-        log.info("서비스에서의 칵테일 아이디:" + cocktailId );
 
         Cocktail cocktail = findById(cocktailId);
         return CocktailResponseDto.from(cocktail);
     }
+
+    @Transactional(readOnly = true)
+    public CocktailResponseDto getCocktail(Long cocktailId, String key) {
+
+        List<String> values = redisTemplate.opsForList().range(RedisConst.ABUSING_PREFIX + key, 0, -1);// 사용자의 식별자 값을 키로 사용함
+
+        boolean isViewed = values != null && values.contains(String.valueOf(cocktailId));
+
+        if (!isViewed) {
+            redisTemplate.opsForList().rightPush(RedisConst.ABUSING_PREFIX + key, String.valueOf(cocktailId));
+            increaseViewCountAndScore(cocktailId);
+        }
+
+        Cocktail cocktail = findById(cocktailId);
+        return CocktailResponseDto.from(cocktail);
+    }
+
 
     public void increaseViewCountAndScore(Long cocktailId) {
         String cocktailCountKey = RedisConst.COCKTAIL_COUNT_KEY_PREFIX + cocktailId;
@@ -184,7 +200,7 @@ public class CocktailService {
     @Transactional(readOnly = true)
     public Page<CocktailResponseDto> getIngrByCondition(findCocktailSDto sDto) throws IOException {
 
-        SearchResponse<CocktailDocument> response = searchFinder.searchByCondition(sDto);
+        SearchResponse<CocktailDocument> response = elasticQueryRepository.searchByCondition(sDto);
 
         Map<Long, Double> responseCocktail = response.hits().hits().stream()
                 .filter(hit -> hit.source() != null)

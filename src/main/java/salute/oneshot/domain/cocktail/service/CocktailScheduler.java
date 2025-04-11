@@ -33,7 +33,6 @@ public class CocktailScheduler {
     @Scheduled(cron = "0 0 * * * ?")
     @CachePut(cacheNames = RedisConst.POPULAR_COCKTAIL_KEY, key = "'popualr'")
     public List<CocktailResponseDto> updatePopularCocktails() {
-        log.info("인기 칵테일 업데이트");
 
         List<Long> topNIds = Objects.requireNonNull(redisTemplate.opsForZSet()
                                     .reverseRange(RedisConst.COCKTAIL_SCORE_KEY, 0, TOP_N - 1))
@@ -52,14 +51,11 @@ public class CocktailScheduler {
     @Transactional
     @Scheduled(cron = "0 0/5 * * * ?")
     public void updateCocktailViewAndFavoriteCountToDB() {
-        log.info("데이터 정합성 맞춤");
 
         ScanOptions scanOptions = ScanOptions.scanOptions()
                 .match(RedisConst.COCKTAIL_COUNT_KEY_PREFIX + "*") // 특정 패턴의 키만 검색
                 .count(100)
                 .build();// 키를 100대만 가지고 온다
-
-
 
         Cursor<byte[]> cursor = redisTemplate.executeWithStickyConnection(
                 redisConnection -> redisConnection.scan(scanOptions)
@@ -78,7 +74,7 @@ public class CocktailScheduler {
             cocktailQueryRepository.addViewCntFromRedis(cocktailId, viewCnt);
 
             String favCntStr = (String) redisTemplate.opsForHash().get(key, "favoriteCount");
-            Integer favoriteCnt = (favCntStr != null) ? Integer.parseInt(favCntStr) : 0;
+            Integer favoriteCnt = (favCntStr != null) ? Integer.parseInt(favCntStr) : 0 ;
             cocktailQueryRepository.addFavoriteCntFromRedis(cocktailId, favoriteCnt);
 
             keysToDelete.add(key);
@@ -86,6 +82,32 @@ public class CocktailScheduler {
 
         if (!keysToDelete.isEmpty()) {
             redisTemplate.delete(keysToDelete);
+        }
+    }
+
+    /*
+         매일 00시 어뷰징 키 삭제 함으로써 사용자별 조회기록 초기화
+         레디스를 임시세션 스토어 용도로 사용
+     */
+    @Scheduled(cron = "0 0 0 * * *")
+    public void abusingReset(){
+
+        Set<String> keys = new HashSet<>();
+
+       ScanOptions scanOptions = ScanOptions.scanOptions().match("ab::*")
+                                .count(100)
+                                .build();
+
+        Cursor<byte[]> cursor = redisTemplate.executeWithStickyConnection(
+                redisConnection -> redisConnection.scan(scanOptions)
+        );// 스캔을 통해 가져온 마지막 위치를 저장함
+
+        while (cursor.hasNext()){
+            String key = new String(cursor.next());
+            keys.add(key);
+        }
+        if(!keys.isEmpty()){
+            redisTemplate.delete(keys);
         }
     }
 
