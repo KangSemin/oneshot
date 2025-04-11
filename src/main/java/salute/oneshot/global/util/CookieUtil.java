@@ -6,74 +6,49 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.hibernate.validator.internal.constraintvalidators.hv.UUIDValidator;
 import org.springframework.stereotype.Component;
 
+import java.net.http.HttpRequest;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-@Component
+
 public class CookieUtil {
 
-    private static final ObjectMapper objectMapper = new ObjectMapper();
-
-
-    public static Cookie getOrCreateCookie(HttpServletRequest request, String cookieName) {
+    public static Cookie getOrCreateCookie(HttpServletRequest request, String cookieName) throws NoSuchAlgorithmException {
 
         Cookie[] cookies = request.getCookies();
 
-        if (cookies == null) {
-            return new Cookie(cookieName, "[]");
-        }
+        String ip = HttpHeaderUtil.getClientIp(request);
+        String agent = request.getHeader("User-Agent");
+        String value = HashUtil.encodeSha256(ip + agent).substring(0, 30);// ip + user-agent를 사용해 임시 식별자를 만들고, 쿠키의 값으로 넣어준다
 
-        Optional<Cookie> optionalCookie = Arrays.stream(cookies)
-                .filter(c -> c.getName().equals(cookieName)).findFirst();
 
-        if (optionalCookie.isEmpty()) {
-            return new Cookie(cookieName, "[]");
-        }
+        Cookie cookie = Optional.ofNullable(cookies)
+                .flatMap(arr -> Arrays.stream(arr)
+                        .filter(c -> c.getName().equals(cookieName))
+                        .findFirst())
+                .orElseGet(() -> new Cookie(cookieName, value));
 
-        return optionalCookie.get();
-    }
-
-    public static boolean isExistValue(Cookie cookie, Long cocktailId) {
-
-        return getValues(cookie).contains(cocktailId);
-
+        return cookie;
     }
 
 
-    public static void SetValue(Cookie cookie, Long value) {
-
-        List<Long> valueList = getValues(cookie);
-
-        valueList.add(value);
-
-        String stringValue = "";
-
-        try {
-            stringValue = objectMapper.writeValueAsString(valueList);
-        } catch (JsonProcessingException e) {
-        }
-
-        cookie.setValue(stringValue);
-
+    public static void setCookieTime(Cookie cookie){
+        long todayEndTime = LocalDate.now().atTime(LocalTime.MAX).toEpochSecond(ZoneOffset.UTC);
+        long currentTime = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
+        cookie.setPath("/");
+        cookie.setMaxAge((int) (todayEndTime - currentTime));
     }
 
-    public static List<Long> getValues(Cookie cookie) {
-
-
-        String values = cookie.getValue();
-
-        try {
-           return objectMapper.readValue(values, new TypeReference<List<Long>>() {
-            });
-
-        } catch (JsonProcessingException e) {
-            return new ArrayList<>();
-        }
-
-
-    }
 }

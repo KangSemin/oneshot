@@ -519,11 +519,11 @@ class CouponControllerTest extends AbstractRestDocsTests {
         PageImpl<CpnBriefResponseDto> page = new PageImpl<>(coupons);
         CpnPageResponseDto responseDto = CpnPageResponseDto.from(page);
 
-        given(couponService.getCoupons(any(GetCpnSDto.class)))
+        given(couponService.getCouponsForEvent(any(GetCpnSDto.class)))
                 .willReturn(responseDto);
 
         // when & then
-        mockMvc.perform(get("/api/coupons")
+        mockMvc.perform(get("/api/coupons/for-event")
                         .param("page", "1")
                         .param("size", "10")
                         .with(user(UserTestFactory.createMockUserDetails())))
@@ -558,11 +558,11 @@ class CouponControllerTest extends AbstractRestDocsTests {
         PageImpl<CpnBriefResponseDto> page = new PageImpl<>(coupons);
         CpnPageResponseDto responseDto = CpnPageResponseDto.from(page);
 
-        given(couponService.getCoupons(any(GetCpnSDto.class)))
+        given(couponService.getCouponsForEvent(any(GetCpnSDto.class)))
                 .willReturn(responseDto);
 
         // when & then
-        mockMvc.perform(get("/api/coupons")
+        mockMvc.perform(get("/api/coupons/for-event")
                         .param("page", "1")
                         .param("size", "10")
                         .param("eventStartDate", "2025-03-02")
@@ -596,11 +596,11 @@ class CouponControllerTest extends AbstractRestDocsTests {
         PageImpl<CpnBriefResponseDto> page = new PageImpl<>(coupons);
         CpnPageResponseDto responseDto = CpnPageResponseDto.from(page);
 
-        given(couponService.getCoupons(any(GetCpnSDto.class)))
+        given(couponService.getCouponsForEvent(any(GetCpnSDto.class)))
                 .willReturn(responseDto);
 
         // when & then
-        mockMvc.perform(get("/api/coupons")
+        mockMvc.perform(get("/api/coupons/for-event")
                         .param("page", "1")
                         .param("size", "10")
                         .param("eventEndDate", "2025-03-10")
@@ -630,11 +630,11 @@ class CouponControllerTest extends AbstractRestDocsTests {
         PageImpl<CpnBriefResponseDto> page = new PageImpl<>(coupons);
         CpnPageResponseDto responseDto = CpnPageResponseDto.from(page);
 
-        given(couponService.getCoupons(any(GetCpnSDto.class)))
+        given(couponService.getCouponsForEvent(any(GetCpnSDto.class)))
                 .willReturn(responseDto);
 
         // when & then
-        mockMvc.perform(get("/api/coupons")
+        mockMvc.perform(get("/api/coupons/for-event")
                         .param("page", "1")
                         .param("size", "10")
                         .param("eventStartDate", "2025-03-02")
