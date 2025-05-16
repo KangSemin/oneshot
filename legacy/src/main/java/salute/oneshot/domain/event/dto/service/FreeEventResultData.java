@@ -1,4 +1,4 @@
-package salute.oneshot.domain.event.dto;
+package salute.oneshot.domain.event.dto.service;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -6,6 +6,7 @@ import lombok.Getter;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import salute.oneshot.domain.event.dto.FreeEventData;
 
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
