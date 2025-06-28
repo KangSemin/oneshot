@@ -106,7 +106,7 @@ public class CocktailService {
             } catch (IOException e) {}
         }
         return imageUrl;
-    }
+    } //프리사인드 유알엘로 변경할 예정
 
     @Transactional(readOnly = true)
     public Page<CocktailResponseDto> getCocktailsByIngr(SearchCocktailSDto sDto) throws IOException {
@@ -141,21 +141,15 @@ public class CocktailService {
         cocktailRepository.deleteById(sDto.getCocktailId());
     }
 
-    @Transactional
-    public CocktailResponseDto getCocktail(Long cocktailId) {
-
-        log.info("서비스에서의 칵테일 아이디:" + cocktailId );
-
-        Cocktail cocktail = findById(cocktailId);
-        return CocktailResponseDto.from(cocktail);
-    }
-
-    public void increaseViewCountAndScore(Long cocktailId) {
-        String cocktailCountKey = RedisConst.COCKTAIL_COUNT_KEY_PREFIX + cocktailId;
+    @Transactional(readOnly = true)
+    public CocktailResponseDto getCocktail(Long cocktailId, String userKey) {
         String cocktailScoreKey = RedisConst.COCKTAIL_SCORE_KEY_PREFIX + cocktailId;
+        CocktailResponseDto cocktailResponseDto = CocktailResponseDto.from(findById(cocktailId));
 
-        redisTemplate.opsForHash().increment(cocktailCountKey,"viewCount",1);
+        if(userKey == null){return cocktailResponseDto;}
+        redisTemplate.opsForSet().add(RedisConst.COCKTAIL_COUNT_KEY_PREFIX + cocktailId, userKey);
         redisTemplate.opsForZSet().incrementScore(RedisConst.COCKTAIL_SCORE_KEY, cocktailScoreKey, 1);
+        return cocktailResponseDto;
     }
 
     @Transactional
@@ -219,6 +213,4 @@ public class CocktailService {
         return cocktailRepository.findById(cocktailId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.COCKTAIL_NOT_FOUND));
     }
-
-
 }
