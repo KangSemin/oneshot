@@ -7,12 +7,11 @@ import org.springframework.stereotype.Component;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @Component
 public class CookieUtil {
 
-    public Map<String, Cookie> FindOrElseCreateCookie(List<String> cookieNameList, HttpServletRequest servletRequest) {
+    public Map<String, Cookie> findOrElseCreateCookie(List<String> cookieNameList, HttpServletRequest servletRequest) {
 
         List<Cookie> cookieArr = List.of(servletRequest.getCookies());
         Map<String, Cookie> cookieMap = new HashMap<>();
