@@ -25,6 +25,7 @@ import salute.oneshot.domain.cocktail.entity.CocktailIngredient;
 import salute.oneshot.domain.cocktail.entity.RecipeType;
 import salute.oneshot.domain.cocktail.repository.CocktailElasticQueryRepository;
 import salute.oneshot.domain.cocktail.repository.CocktailIngredientRepository;
+import salute.oneshot.domain.cocktail.repository.CocktailQueryDslRepositoryImpl;
 import salute.oneshot.domain.cocktail.repository.CocktailRepository;
 import salute.oneshot.domain.common.dto.error.ErrorCode;
 import salute.oneshot.domain.ingredient.entity.Ingredient;
@@ -36,6 +37,7 @@ import salute.oneshot.global.exception.NotFoundException;
 import salute.oneshot.global.exception.UnauthorizedException;
 import salute.oneshot.global.util.RedisConst;
 import salute.oneshot.global.util.S3Util;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -50,15 +52,14 @@ import java.util.stream.Collectors;
 public class CocktailService {
 
     private final CocktailRepository cocktailRepository;
+    private final CocktailQueryDslRepositoryImpl cocktailQueryDslRepository;
     private final UserRepository userRepository;
     private final IngredientRepository ingredientRepository;
     private final CocktailIngredientRepository cocktailIngredientRepository;
     private final ElasticsearchOperations operations;
     private final ElasticsearchClient client;
     private final RedisTemplate<String, String> redisTemplate;
-    private final CocktailScheduler cocktailScheduler;
     private final CocktailElasticQueryRepository searchFinder;
-
     private final S3Util s3Util;
 
     @Transactional
@@ -202,10 +203,14 @@ public class CocktailService {
     }
 
 
-    @Cacheable(cacheNames = "popular_cocktail", key = "'popualr'")
+    @Cacheable(cacheNames = "cocktail", key = "'popualr'")
     public List<CocktailResponseDto> getPopularCocktails() {
-        List<Long> popularCocktailIdList = cocktailScheduler.updatePopularCocktails();
-        return cocktailRepository.findAllById(popularCocktailIdList).stream().map(CocktailResponseDto::from).toList();
+     return cocktailRepository.findTopN().stream().map(CocktailResponseDto::from).toList();
+    }
+
+    @Transactional
+    public void updateViewCount(Long cocktailId, Integer view) {
+        cocktailQueryDslRepository.updateViewCntFromRedis(cocktailId, view);
     }
 
     private Cocktail findById(Long cocktailId) {
