@@ -4,7 +4,7 @@ package salute.oneshot.domain.cocktail.repository;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import jakarta.persistence.EntityManager;
+
 import java.util.List;
 
 import lombok.RequiredArgsConstructor;
@@ -12,7 +12,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 import salute.oneshot.domain.cocktail.entity.Cocktail;
 import salute.oneshot.domain.cocktail.entity.QCocktail;
 import salute.oneshot.domain.cocktail.entity.QCocktailIngredient;
@@ -65,20 +64,13 @@ public class CocktailQueryDslRepositoryImpl implements CocktailQueryDslRepositor
     }
 
 
-    public void addViewCntFromRedis(Long cocktailId, Integer viewCnt){
+    @Override
+    public void updateViewCntFromRedis(Long cocktailId, Integer viewCnt){
 
         queryFactory.update(cocktail)
-                .set(cocktail.viewCount, cocktail.viewCount.add(viewCnt))
+                .set(cocktail.viewCount, viewCnt)
                 .where(cocktail.id.eq(cocktailId))
                 .execute();
     }
 
-
-    public void addFavoriteCntFromRedis(Long cocktailId, Integer favoriteCnt){
-
-        queryFactory.update(cocktail)
-                .set(cocktail.favoriteCount, cocktail.favoriteCount.add(favoriteCnt))
-                .where(cocktail.id.eq(cocktailId))
-                .execute();
-    }
 }

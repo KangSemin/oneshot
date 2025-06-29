@@ -8,5 +8,5 @@ import salute.oneshot.domain.ingredient.entity.Ingredient;
 
 public interface CocktailQueryDslRepository{
     Page<Cocktail> searchCocktailsByIngredients(List<Ingredient> selectedIngrs, Pageable pageable);
-
+     void updateViewCntFromRedis(Long cocktailId, Integer viewCnt);
 }
