@@ -13,8 +13,10 @@ public class CookieUtil {
 
     public Map<String, Cookie> findOrElseCreateCookie(List<String> cookieNameList, HttpServletRequest servletRequest) {
 
-        List<Cookie> cookieArr = List.of(servletRequest.getCookies());
         Map<String, Cookie> cookieMap = new HashMap<>();
+
+        if(servletRequest.getCookies() == null){return cookieMap;}
+        List<Cookie> cookieArr = List.of(servletRequest.getCookies());
 
         for (String cookieName : cookieNameList) {
             Cookie targetCookie = cookieArr.stream()

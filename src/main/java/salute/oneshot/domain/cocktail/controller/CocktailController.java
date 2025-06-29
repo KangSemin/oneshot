@@ -57,8 +57,8 @@ public class CocktailController {
                                                                          @AuthenticationPrincipal CustomUserDetails userDetails,
                                                                          @PathVariable(name = "cocktailId") Long cocktailId
     ) {
-        String guestKey = userDetails.getId() != null ? userDetails.getId().toString()
-                : guestIdentifierManager.FindOrElseCreateKey(servletRequest, servletResponse);
+        String guestKey = userDetails == null ?  guestIdentifierManager.FindOrElseCreateKey(servletRequest, servletResponse)
+                : userDetails.getId().toString();
 
         CocktailResponseDto responseDto  = cocktailService.getCocktail(cocktailId, guestKey);
         return ResponseEntity.ok(ApiResponse.success(ApiResponseConst.GET_CCKTL_SUCCESS, responseDto));
@@ -128,11 +128,9 @@ public class CocktailController {
 
 
     @GetMapping("/popular")//인기 칵테일 조회
-    public ResponseEntity<ApiResponse<List<CocktailResponseDto>>> getPopularCocktails() {
+    public ResponseEntity<ApiResponse<List<CocktailResponseDto>>> getPopularCocktails(@AuthenticationPrincipal CustomUserDetails userDetails) {
 
         List<CocktailResponseDto> dtoResponseList = cocktailService.getPopularCocktails();
-
-        return ResponseEntity.ok(
-                ApiResponse.success(ApiResponseConst.GET_CCKTL_LIST_SUCCESS, dtoResponseList));
+        return ResponseEntity.ok(ApiResponse.success(ApiResponseConst.GET_CCKTL_LIST_SUCCESS, dtoResponseList));
     }
 }

@@ -27,9 +27,9 @@ public class GuestIdentifierManager {
         Cookie uuidCookie = cookieMap.get(UUID_COOKIE);
         Cookie signatureCookie = cookieMap.get(SIGNATURE_COOKIE);
 
-        if (uuidCookie == null || signatureCookie == null) {
+        if (uuidCookie == null && signatureCookie == null) {
 
-            String uuid = String.valueOf(UUID.randomUUID().getMostSignificantBits());
+            String uuid = String.valueOf(UUID.randomUUID().getMostSignificantBits() & Long.MAX_VALUE);
             uuidCookie = new Cookie(UUID_COOKIE, uuid);
 
             String signature = hashMacUtil.createSignature(uuid);
