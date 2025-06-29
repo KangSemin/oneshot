@@ -23,7 +23,7 @@ public class GuestIdentifierManager {
 
     public String FindOrElseCreateKey(HttpServletRequest servletRequest, HttpServletResponse servletResponse) {
 
-        Map<String,Cookie> cookieMap = cookieUtil.FindOrElseCreateCookie(List.of(UUID_COOKIE, SIGNATURE_COOKIE), servletRequest);
+        Map<String,Cookie> cookieMap = cookieUtil.findOrElseCreateCookie(List.of(UUID_COOKIE, SIGNATURE_COOKIE), servletRequest);
         Cookie uuidCookie = cookieMap.get(UUID_COOKIE);
         Cookie signatureCookie = cookieMap.get(SIGNATURE_COOKIE);
 
