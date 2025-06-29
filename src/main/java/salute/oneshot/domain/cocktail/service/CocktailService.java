@@ -3,15 +3,6 @@ package salute.oneshot.domain.cocktail.service;
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch.core.DeleteRequest;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CachePut;
@@ -32,9 +23,9 @@ import salute.oneshot.domain.cocktail.entity.Cocktail;
 import salute.oneshot.domain.cocktail.entity.CocktailDocument;
 import salute.oneshot.domain.cocktail.entity.CocktailIngredient;
 import salute.oneshot.domain.cocktail.entity.RecipeType;
+import salute.oneshot.domain.cocktail.repository.CocktailElasticQueryRepository;
 import salute.oneshot.domain.cocktail.repository.CocktailIngredientRepository;
 import salute.oneshot.domain.cocktail.repository.CocktailRepository;
-import salute.oneshot.domain.cocktail.repository.CocktailElasticQueryRepository;
 import salute.oneshot.domain.common.dto.error.ErrorCode;
 import salute.oneshot.domain.ingredient.entity.Ingredient;
 import salute.oneshot.domain.ingredient.repository.IngredientRepository;
@@ -45,14 +36,18 @@ import salute.oneshot.global.exception.NotFoundException;
 import salute.oneshot.global.exception.UnauthorizedException;
 import salute.oneshot.global.util.RedisConst;
 import salute.oneshot.global.util.S3Util;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class CocktailService {
-
-    private static final String COCKTAIL_INDEX = "cocktails";
-    private static final String INGR_FIELD = "ingredients";
 
     private final CocktailRepository cocktailRepository;
     private final UserRepository userRepository;
@@ -143,12 +138,18 @@ public class CocktailService {
 
     @Transactional(readOnly = true)
     public CocktailResponseDto getCocktail(Long cocktailId, String userKey) {
+
         String cocktailScoreKey = RedisConst.COCKTAIL_SCORE_KEY_PREFIX + cocktailId;
         CocktailResponseDto cocktailResponseDto = CocktailResponseDto.from(findById(cocktailId));
 
         if(userKey == null){return cocktailResponseDto;}
-        redisTemplate.opsForSet().add(RedisConst.COCKTAIL_COUNT_KEY_PREFIX + cocktailId, userKey);
-        redisTemplate.opsForZSet().incrementScore(RedisConst.COCKTAIL_SCORE_KEY, cocktailScoreKey, 1);
+
+        boolean alreadyView = Boolean.TRUE.equals(redisTemplate.opsForSet().isMember(RedisConst.COCKTAIL_VIEW_COUNT_KEY_PREFIX + cocktailId, userKey));
+        if(!alreadyView){
+            redisTemplate.opsForSet().add(RedisConst.COCKTAIL_VIEW_COUNT_KEY_PREFIX + cocktailId, userKey);
+            redisTemplate.opsForZSet().incrementScore(RedisConst.COCKTAIL_SCORE_KEY, cocktailScoreKey, 1);
+        }
+
         return cocktailResponseDto;
     }
 
@@ -203,11 +204,9 @@ public class CocktailService {
 
     @Cacheable(cacheNames = "popular_cocktail", key = "'popualr'")
     public List<CocktailResponseDto> getPopularCocktails() {
-
-        return cocktailScheduler.updatePopularCocktails();
-
+        List<Long> popularCocktailIdList = cocktailScheduler.updatePopularCocktails();
+        return cocktailRepository.findAllById(popularCocktailIdList).stream().map(CocktailResponseDto::from).toList();
     }
-
 
     private Cocktail findById(Long cocktailId) {
         return cocktailRepository.findById(cocktailId)

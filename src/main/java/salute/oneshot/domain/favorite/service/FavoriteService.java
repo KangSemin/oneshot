@@ -80,8 +80,7 @@ public class FavoriteService {
     }
 
     public void increaseFavoriteScore(Long cocktailId) {
-        String cocktailScoreKey =
-                RedisConst.COCKTAIL_SCORE_KEY_PREFIX + cocktailId;
+        String cocktailScoreKey = RedisConst.COCKTAIL_SCORE_KEY_PREFIX + cocktailId;
 
         redisTemplate.opsForZSet()
                 .incrementScore(RedisConst.COCKTAIL_SCORE_KEY,cocktailScoreKey, 2);
