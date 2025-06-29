@@ -57,13 +57,13 @@ public class CocktailController {
                                                                          @AuthenticationPrincipal CustomUserDetails userDetails,
                                                                          @PathVariable(name = "cocktailId") Long cocktailId
     ) {
-        String guestKey = userDetails == null ?  guestIdentifierManager.FindOrElseCreateKey(servletRequest, servletResponse)
+        boolean isValidPath = servletRequest.getHeader("Referer") != null; //프론트 구현시 수정예정
+        String userKey = userDetails == null ?  guestIdentifierManager.FindOrElseCreateKey(servletRequest, servletResponse)
                 : userDetails.getId().toString();
 
-        CocktailResponseDto responseDto  = cocktailService.getCocktail(cocktailId, guestKey);
+        CocktailResponseDto responseDto  = cocktailService.getCocktail(cocktailId, userKey, isValidPath);
         return ResponseEntity.ok(ApiResponse.success(ApiResponseConst.GET_CCKTL_SUCCESS, responseDto));
     }
-
 
     @GetMapping("/search")
     public ResponseEntity<ApiResponse<Page<CocktailResponseDto>>> searchWithIngredients(
