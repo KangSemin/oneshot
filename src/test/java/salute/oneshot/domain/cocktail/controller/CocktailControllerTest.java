@@ -22,6 +22,7 @@ import com.epages.restdocs.apispec.ResourceSnippetParameters;
 import com.epages.restdocs.apispec.SimpleType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Member;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
@@ -44,6 +45,8 @@ import salute.oneshot.domain.cocktail.dto.service.UpdateCocktailSDto;
 import salute.oneshot.domain.cocktail.service.CocktailService;
 import salute.oneshot.domain.common.AbstractRestDocsTests;
 import salute.oneshot.domain.common.dto.success.ApiResponseConst;
+import salute.oneshot.domain.user.entity.User;
+import salute.oneshot.global.util.GuestIdentifierManager;
 import salute.oneshot.global.util.S3Util;
 import salute.oneshot.util.CocktailTestFactory;
 import salute.oneshot.util.UserTestFactory;
@@ -60,6 +63,10 @@ class CocktailControllerTest extends AbstractRestDocsTests {
 
     @MockitoBean
     private S3Util s3Util;
+
+    @MockitoBean
+    private GuestIdentifierManager guestIdentifierManager;
+
     @Autowired
     private ObjectMapper objectMapper;
 
@@ -118,10 +125,14 @@ class CocktailControllerTest extends AbstractRestDocsTests {
     @WithMockUser
     void getCocktailById() throws Exception {
 
+        User user = UserTestFactory.createUser();
+        String guestKey = "guestKey";
+
         // given
         CocktailResponseDto response = CocktailResponseDto.from(CocktailTestFactory.createBlackRussian());
 
-        given(cocktailService.getCocktail(1L))
+        given(guestIdentifierManager.FindOrElseCreateKey(any(), any())).willReturn(guestKey);
+        given(cocktailService.getCocktail(1L, user.getId().toString()))
             .willReturn(response);
 
         // when & then
