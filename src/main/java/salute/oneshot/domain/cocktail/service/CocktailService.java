@@ -3,16 +3,6 @@ package salute.oneshot.domain.cocktail.service;
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch.core.DeleteRequest;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
-import jakarta.servlet.http.Cookie;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CachePut;
@@ -33,9 +23,10 @@ import salute.oneshot.domain.cocktail.entity.Cocktail;
 import salute.oneshot.domain.cocktail.entity.CocktailDocument;
 import salute.oneshot.domain.cocktail.entity.CocktailIngredient;
 import salute.oneshot.domain.cocktail.entity.RecipeType;
-import salute.oneshot.domain.cocktail.repository.CocktailIngredientRepository;
-import salute.oneshot.domain.cocktail.repository.CocktailRepository;
 import salute.oneshot.domain.cocktail.repository.CocktailElasticQueryRepository;
+import salute.oneshot.domain.cocktail.repository.CocktailIngredientRepository;
+import salute.oneshot.domain.cocktail.repository.CocktailQueryDslRepositoryImpl;
+import salute.oneshot.domain.cocktail.repository.CocktailRepository;
 import salute.oneshot.domain.common.dto.error.ErrorCode;
 import salute.oneshot.domain.ingredient.entity.Ingredient;
 import salute.oneshot.domain.ingredient.repository.IngredientRepository;
@@ -47,24 +38,29 @@ import salute.oneshot.global.exception.UnauthorizedException;
 import salute.oneshot.global.util.RedisConst;
 import salute.oneshot.global.util.S3Util;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class CocktailService {
 
     private final CocktailRepository cocktailRepository;
+    private final CocktailQueryDslRepositoryImpl cocktailQueryDslRepository;
     private final UserRepository userRepository;
     private final IngredientRepository ingredientRepository;
     private final CocktailIngredientRepository cocktailIngredientRepository;
     private final ElasticsearchOperations operations;
     private final ElasticsearchClient client;
     private final RedisTemplate<String, String> redisTemplate;
-    private final CocktailScheduler cocktailScheduler;
-    private final CocktailElasticQueryRepository elasticQueryRepository;
-
+    private final CocktailElasticQueryRepository searchFinder;
     private final S3Util s3Util;
-
-
 
     @Transactional
     public void createCocktail(CreateCocktailSDto sDto) {
@@ -106,13 +102,13 @@ public class CocktailService {
             } catch (IOException e) {}
         }
         return imageUrl;
-    }
+    } //프리사인드 유알엘로 변경할 예정
 
     @Transactional(readOnly = true)
     public Page<CocktailResponseDto> getCocktailsByIngr(SearchCocktailSDto sDto) throws IOException {
 
 
-        SearchResponse<CocktailDocument> response = elasticQueryRepository.findCocktailsByIngr(sDto);
+        SearchResponse<CocktailDocument> response = searchFinder.findCocktailsByIngr(sDto);
 
         List<Long> cocktailIds = response.hits().hits().stream()
                 .map(hit -> Long.parseLong(hit.source().getId()))
@@ -141,37 +137,21 @@ public class CocktailService {
         cocktailRepository.deleteById(sDto.getCocktailId());
     }
 
-    //오버로딩
     @Transactional(readOnly = true)
-    public CocktailResponseDto getCocktail(Long cocktailId) {
+    public CocktailResponseDto getCocktail(Long cocktailId, String userKey, boolean isValidPath) {
 
-        Cocktail cocktail = findById(cocktailId);
-        return CocktailResponseDto.from(cocktail);
-    }
+        String cocktailScoreKey = RedisConst.COCKTAIL_SCORE_KEY_PREFIX + cocktailId;
+        CocktailResponseDto cocktailResponseDto = CocktailResponseDto.from(findById(cocktailId));
 
-    @Transactional(readOnly = true)
-    public CocktailResponseDto getCocktail(Long cocktailId, String key) {
+        if(userKey == null){return cocktailResponseDto;}
 
-        List<String> values = redisTemplate.opsForList().range(RedisConst.ABUSING_PREFIX + key, 0, -1);// 사용자의 식별자 값을 키로 사용함
-
-        boolean isViewed = values != null && values.contains(String.valueOf(cocktailId));
-
-        if (!isViewed) {
-            redisTemplate.opsForList().rightPush(RedisConst.ABUSING_PREFIX + key, String.valueOf(cocktailId));
-            increaseViewCountAndScore(cocktailId);
+        boolean alreadyView = Boolean.TRUE.equals(redisTemplate.opsForSet().isMember(RedisConst.COCKTAIL_VIEW_COUNT_KEY_PREFIX + cocktailId, userKey));
+        if(isValidPath && !alreadyView){
+            redisTemplate.opsForSet().add(RedisConst.COCKTAIL_VIEW_COUNT_KEY_PREFIX + cocktailId, userKey);
+            redisTemplate.opsForZSet().incrementScore(RedisConst.COCKTAIL_SCORE_KEY, cocktailScoreKey, 1);
         }
 
-        Cocktail cocktail = findById(cocktailId);
-        return CocktailResponseDto.from(cocktail);
-    }
-
-
-    public void increaseViewCountAndScore(Long cocktailId) {
-        String cocktailCountKey = RedisConst.COCKTAIL_COUNT_KEY_PREFIX + cocktailId;
-        String cocktailScoreKey = RedisConst.COCKTAIL_SCORE_KEY_PREFIX + cocktailId;
-
-        redisTemplate.opsForHash().increment(cocktailCountKey,"viewCount",1);
-        redisTemplate.opsForZSet().incrementScore(RedisConst.COCKTAIL_SCORE_KEY, cocktailScoreKey, 1);
+        return cocktailResponseDto;
     }
 
     @Transactional
@@ -200,7 +180,7 @@ public class CocktailService {
     @Transactional(readOnly = true)
     public Page<CocktailResponseDto> getIngrByCondition(findCocktailSDto sDto) throws IOException {
 
-        SearchResponse<CocktailDocument> response = elasticQueryRepository.searchByCondition(sDto);
+        SearchResponse<CocktailDocument> response = searchFinder.searchByCondition(sDto);
 
         Map<Long, Double> responseCocktail = response.hits().hits().stream()
                 .filter(hit -> hit.source() != null)
@@ -223,18 +203,18 @@ public class CocktailService {
     }
 
 
-    @Cacheable(cacheNames = "popular_cocktail", key = "'popualr'")
+    @Cacheable(cacheNames = "cocktail", key = "'popualr'")
     public List<CocktailResponseDto> getPopularCocktails() {
-
-        return cocktailScheduler.updatePopularCocktails();
-
+     return cocktailRepository.findTopN().stream().map(CocktailResponseDto::from).toList();
     }
 
+    @Transactional
+    public void updateViewCount(Long cocktailId, Integer view) {
+        cocktailQueryDslRepository.updateViewCntFromRedis(cocktailId, view);
+    }
 
     private Cocktail findById(Long cocktailId) {
         return cocktailRepository.findById(cocktailId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.COCKTAIL_NOT_FOUND));
     }
-
-
 }

@@ -1,6 +1,5 @@
 package salute.oneshot.domain.cocktail.controller;
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -8,7 +7,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -22,12 +20,9 @@ import salute.oneshot.domain.cocktail.service.CocktailService;
 import salute.oneshot.domain.common.dto.success.ApiResponse;
 import salute.oneshot.domain.common.dto.success.ApiResponseConst;
 import salute.oneshot.global.security.model.CustomUserDetails;
-import salute.oneshot.global.util.CookieUtil;
-import salute.oneshot.global.util.HttpHeaderUtil;
-import salute.oneshot.global.util.S3Util;
+import salute.oneshot.global.util.GuestIdentifierManager;
 
 import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 @Slf4j
@@ -37,7 +32,7 @@ import java.util.List;
 public class CocktailController {
 
     private final CocktailService cocktailService;
-
+    private final GuestIdentifierManager guestIdentifierManager;
 
 
     @PostMapping
@@ -56,30 +51,19 @@ public class CocktailController {
     }
 
 
-
     @GetMapping("/{cocktailId}")
-    private ResponseEntity<ApiResponse<CocktailResponseDto>> getCocktail(HttpServletRequest request,
-                                                                         HttpServletResponse httpResponse,
-                                                                         @PathVariable(name = "cocktailId") long cocktailId
-    ) throws NoSuchAlgorithmException {
-        String[] validReferers = new String[]{"cocktail/search", "cocktail/popular", "cocktail/keyword"};
-        boolean isValidReferer = HttpHeaderUtil.checkReferer(validReferers, request);
+    private ResponseEntity<ApiResponse<CocktailResponseDto>> getCocktail(HttpServletRequest servletRequest,
+                                                                         HttpServletResponse servletResponse,
+                                                                         @AuthenticationPrincipal CustomUserDetails userDetails,
+                                                                         @PathVariable(name = "cocktailId") Long cocktailId
+    ) {
+        boolean isValidPath = servletRequest.getHeader("Referer") != null; //프론트 구현시 수정예정
+        String userKey = userDetails == null ?  guestIdentifierManager.FindOrElseCreateKey(servletRequest, servletResponse)
+                : userDetails.getId().toString();
 
-        if(!isValidReferer){
-            return ResponseEntity.ok(ApiResponse.success(ApiResponseConst.GET_CCKTL_SUCCESS, cocktailService.getCocktail(cocktailId)));
-        }
-
-        String cookieName = "abusingKey";
-        Cookie cookie = CookieUtil.getOrCreateCookie(request, cookieName);
-
-        CocktailResponseDto responseDto = cocktailService.getCocktail(cocktailId, cookie.getValue());
-
-        CookieUtil.setCookieTime(cookie);
-        httpResponse.addCookie(cookie);
-
+        CocktailResponseDto responseDto  = cocktailService.getCocktail(cocktailId, userKey, isValidPath);
         return ResponseEntity.ok(ApiResponse.success(ApiResponseConst.GET_CCKTL_SUCCESS, responseDto));
     }
-
 
     @GetMapping("/search")
     public ResponseEntity<ApiResponse<Page<CocktailResponseDto>>> searchWithIngredients(
@@ -124,7 +108,7 @@ public class CocktailController {
         return ResponseEntity.ok(ApiResponse.success(ApiResponseConst.DELETE_CCKTL_SUCCESS));
     }
 
-    @GetMapping("/keyword")
+    @GetMapping//조건별 검색
     public ResponseEntity<ApiResponse<Page<CocktailResponseDto>>> getCocktailsByCondition(
             @RequestParam(name = "page", defaultValue = "1") int page,
             @RequestParam(name = "size", defaultValue = "10") int size,
@@ -144,11 +128,9 @@ public class CocktailController {
 
 
     @GetMapping("/popular")//인기 칵테일 조회
-    public ResponseEntity<ApiResponse<List<CocktailResponseDto>>> getPopularCocktails() {
+    public ResponseEntity<ApiResponse<List<CocktailResponseDto>>> getPopularCocktails(@AuthenticationPrincipal CustomUserDetails userDetails) {
 
         List<CocktailResponseDto> dtoResponseList = cocktailService.getPopularCocktails();
-
-        return ResponseEntity.ok(
-                ApiResponse.success(ApiResponseConst.GET_CCKTL_LIST_SUCCESS, dtoResponseList));
+        return ResponseEntity.ok(ApiResponse.success(ApiResponseConst.GET_CCKTL_LIST_SUCCESS, dtoResponseList));
     }
 }

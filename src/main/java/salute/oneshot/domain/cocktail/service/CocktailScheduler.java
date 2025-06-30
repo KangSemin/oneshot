@@ -3,21 +3,19 @@ package salute.oneshot.domain.cocktail.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CachePut;
+import org.springframework.data.redis.connection.RedisSetCommands;
 import org.springframework.data.redis.core.Cursor;
+import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ScanOptions;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 import salute.oneshot.domain.cocktail.dto.response.CocktailResponseDto;
-import salute.oneshot.domain.cocktail.entity.Cocktail;
-import salute.oneshot.domain.cocktail.repository.CocktailQueryDslRepositoryImpl;
 import salute.oneshot.domain.cocktail.repository.CocktailRepository;
-import salute.oneshot.domain.common.dto.error.ErrorCode;
-import salute.oneshot.global.exception.NotFoundException;
 import salute.oneshot.global.util.RedisConst;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Slf4j
 @Component
@@ -25,95 +23,57 @@ import java.util.*;
 public class CocktailScheduler {
 
     private final RedisTemplate<String, String> redisTemplate;
+    private final CocktailService cocktailService;
     private final CocktailRepository cocktailRepository;
-    private final CocktailQueryDslRepositoryImpl cocktailQueryRepository;
 
+    private final int scanCount = 1000;
     private final int TOP_N = 10;
 
-    @Scheduled(cron = "0 0 * * * ?")
-    @CachePut(cacheNames = RedisConst.POPULAR_COCKTAIL_KEY, key = "'popualr'")
+    @Scheduled(cron = "0 0/5 * * * ?")
+    public void updateCocktailViewCountToDB() {
+
+        List<String> byteKeyList = new ArrayList<>();
+        ScanOptions scanOptions = ScanOptions.scanOptions()
+                .match(RedisConst.COCKTAIL_VIEW_COUNT_KEY_PREFIX + "*")
+                .count(scanCount)
+                .build();
+
+        try (Cursor<byte[]> cursor = redisTemplate.executeWithStickyConnection(
+                connection -> connection.scan(scanOptions))) {
+            while (cursor.hasNext()) {
+                byteKeyList.add(new String(cursor.next()));
+            }
+        }
+
+        List<Object> result = redisTemplate.executePipelined((RedisCallback<Object>) connection -> {
+            RedisSetCommands setCommands = connection.setCommands();
+            for (String key : byteKeyList) {
+                setCommands.sCard(redisTemplate.getStringSerializer().serialize(key));
+            }
+            return null;
+        });
+
+        for (int i = 0; i < byteKeyList.size(); i++) {
+            Long cocktailId = Long.parseLong(byteKeyList.get(i).split("::")[1]);
+            int count = Integer.parseInt((String.valueOf(result.get(i))));
+            cocktailService.updateViewCount(cocktailId, count);
+        }
+
+        redisTemplate.delete(byteKeyList);
+    }
+
+    @Scheduled(cron = "0 0 * * * ?")// 인기칵테일 갱신 메서드
+    @CachePut(cacheNames = "cocktail", key = "'popualr'")
     public List<CocktailResponseDto> updatePopularCocktails() {
 
-        List<Long> topNIds = Objects.requireNonNull(redisTemplate.opsForZSet()
-                                    .reverseRange(RedisConst.COCKTAIL_SCORE_KEY, 0, TOP_N - 1))
-                                    .stream()
-                                    .map(key -> Long.parseLong(key.split("::")[1]))
-                                    .toList();
+        List<Long> popularCocktailIdList = redisTemplate.opsForZSet()
+                .reverseRange(RedisConst.COCKTAIL_SCORE_KEY, 0, TOP_N - 1).stream()
+                .map(key -> Long.parseLong(key.split("::")[1])).toList();
 
-        redisTemplate.delete(RedisConst.COCKTAIL_SCORE_KEY);
+        redisTemplate.delete(RedisConst.POPULAR_COCKTAIL_KEY);
+        List<CocktailResponseDto>  popularCocktailList = cocktailRepository.findAllById(popularCocktailIdList)
+                .stream().map(CocktailResponseDto::from).toList();
 
-        List<CocktailResponseDto> responseDtoList = topNIds.stream().map(this::findById)
-                .map(CocktailResponseDto::from).toList();
-
-        return responseDtoList;
-    }
-
-    @Transactional
-    @Scheduled(cron = "0 0/5 * * * ?")
-    public void updateCocktailViewAndFavoriteCountToDB() {
-
-        ScanOptions scanOptions = ScanOptions.scanOptions()
-                .match(RedisConst.COCKTAIL_COUNT_KEY_PREFIX + "*") // 특정 패턴의 키만 검색
-                .count(100)
-                .build();// 키를 100대만 가지고 온다
-
-        Cursor<byte[]> cursor = redisTemplate.executeWithStickyConnection(
-                redisConnection -> redisConnection.scan(scanOptions)
-        );
-
-        Set<String> keysToDelete = new HashSet<>();
-
-        while (cursor.hasNext()) {
-            String key = new String(cursor.next());
-
-            Long cocktailId = Long.parseLong(key.split("::")[1]);
-
-
-            String viewCntStr = (String) redisTemplate.opsForHash().get(key, "viewCount");
-            Integer viewCnt = (viewCntStr != null) ? Integer.parseInt(viewCntStr) : 0;
-            cocktailQueryRepository.addViewCntFromRedis(cocktailId, viewCnt);
-
-            String favCntStr = (String) redisTemplate.opsForHash().get(key, "favoriteCount");
-            Integer favoriteCnt = (favCntStr != null) ? Integer.parseInt(favCntStr) : 0 ;
-            cocktailQueryRepository.addFavoriteCntFromRedis(cocktailId, favoriteCnt);
-
-            keysToDelete.add(key);
-        }
-
-        if (!keysToDelete.isEmpty()) {
-            redisTemplate.delete(keysToDelete);
-        }
-    }
-
-    /*
-         매일 00시 어뷰징 키 삭제 함으로써 사용자별 조회기록 초기화
-         레디스를 임시세션 스토어 용도로 사용
-     */
-    @Scheduled(cron = "0 0 0 * * *")
-    public void abusingReset(){
-
-        Set<String> keys = new HashSet<>();
-
-       ScanOptions scanOptions = ScanOptions.scanOptions().match("ab::*")
-                                .count(100)
-                                .build();
-
-        Cursor<byte[]> cursor = redisTemplate.executeWithStickyConnection(
-                redisConnection -> redisConnection.scan(scanOptions)
-        );// 스캔을 통해 가져온 마지막 위치를 저장함
-
-        while (cursor.hasNext()){
-            String key = new String(cursor.next());
-            keys.add(key);
-        }
-        if(!keys.isEmpty()){
-            redisTemplate.delete(keys);
-        }
-    }
-
-
-    private Cocktail findById(Long cocktailId) {
-        return cocktailRepository.findById(cocktailId)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.COCKTAIL_NOT_FOUND));
+        return popularCocktailList;
     }
 }
