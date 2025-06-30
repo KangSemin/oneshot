@@ -13,12 +13,12 @@ public class MessageResponseDto {
     private final Long timeMillis;
 
 
-    public static MessageResponseDto from(String message) {
-        int contentEnd = message.lastIndexOf("::");
+    public static MessageResponseDto from(String formattedMessage) {
+        int contentEnd = formattedMessage.lastIndexOf("::");
 
-        String sender = (message.charAt(0) == 'u') ? "user" : "admin";
-        String content = message.substring(3, contentEnd);
-        Long timeMillis = Long.parseLong(message.substring(contentEnd + 2));
+        String sender = (formattedMessage.charAt(0) == 'u') ? "user" : "admin";
+        String content = formattedMessage.substring(3, contentEnd);
+        Long timeMillis = Long.parseLong(formattedMessage.substring(contentEnd + 2));
 
         return new MessageResponseDto(sender, content, timeMillis);
     }

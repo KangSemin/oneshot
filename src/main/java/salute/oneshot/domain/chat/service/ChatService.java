@@ -1,17 +1,20 @@
 package salute.oneshot.domain.chat.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.core.*;
+import org.springframework.data.redis.core.ListOperations;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
 import salute.oneshot.domain.chat.dto.response.ChatPreviewResponseDto;
-import salute.oneshot.domain.chat.dto.response.FindChatResponseDto;
 import salute.oneshot.domain.chat.dto.response.FindChatListResponseDto;
+import salute.oneshot.domain.chat.dto.response.FindChatResponseDto;
 import salute.oneshot.domain.chat.dto.response.MessageResponseDto;
 import salute.oneshot.domain.user.entity.UserRole;
 
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -51,46 +54,40 @@ public class ChatService {
         ListOperations<String, String> ops = redisTemplate.opsForList();
         String key = CHAT_KEY_PREFIX + userId;
 
-        String messagePrefix = (role == UserRole.USER) ? "u::" : "a::";
-        String formattedMessage = messagePrefix + message + "::" + System.currentTimeMillis();
+        String messagePrefix = (role == UserRole.USER) ? "u" : "a";
+        String formattedMessage = messagePrefix + "::" + message + "::" + System.currentTimeMillis();
         ops.rightPush(key, formattedMessage);
 
         redisTemplate.expire(key, Duration.ofDays(3));
         ops.trim(key, -MAX_CHAT_SIZE, -1);
+
+        // 챗 메타데이터
+        long now = System.currentTimeMillis();
+        String metaValue = userId + "::" + message + "::" + now;
+        redisTemplate.opsForZSet().add("chatList", metaValue, now);
     }
 
     public FindChatListResponseDto findChatList(String cursor, int limit) {
-        // 커서가 없으면 "0"으로 설정 (SCAN 시작)
-        String scanCursor = (cursor == null || cursor.isEmpty()) ? "0" : cursor;
+        // 3일 전 타임스탬프 계산
+        long threeDaysAgo = System.currentTimeMillis() - 3 * 24 * 60 * 60 * 1000;
 
-        return redisTemplate.execute((RedisCallback<FindChatListResponseDto>) connection -> {
-            List<ChatPreviewResponseDto> chatList = new ArrayList<>();
+        // 오래된 메타데이터 제거: 3일 이전의 score를 가진 모든 항목 삭제
+        redisTemplate.opsForZSet().removeRangeByScore("chatList", 0, threeDaysAgo);
 
-            // Lettuce 환경: Spring Data Redis의 scan 사용 (Cursor<byte[]>에는 native 커서가 없음)
-            ScanOptions options = ScanOptions.scanOptions().match("chat::*").count(limit).build();
-            Cursor<byte[]> cursorObj = connection.scan(options);
+        // 남은 전체 데이터를 조회 (정렬 상태가 유지된 상태로 반환)
+        Set<ZSetOperations.TypedTuple<String>> recentChatMetadata =
+                redisTemplate.opsForZSet().rangeWithScores("chatList", 0, -1);
 
-            // limit 개수만큼 키를 읽음
-            while (cursorObj.hasNext() && chatList.size() < limit) {
-                byte[] keyBytes = cursorObj.next();
-                String key = new String(keyBytes);
-                // 키 형식: "chat::{userId}" -> "::" 기준 분리
-                String[] parts = key.split("::");
-                String userId = parts[1];
-                // 해당 키의 리스트에서 마지막 요소를 가져옴
-                String lastMessage = redisTemplate.opsForList().index(key, -1);
-                chatList.add(ChatPreviewResponseDto.of(userId, lastMessage));
-            }
-            // Lettuce Cursor는 native 커서를 제공하지 않으므로, 추가 데이터가 있는지 여부를 별도로 처리해야 합니다.
-            // 여기서는 단순히 다음 커서를 빈 문자열("")로 설정합니다.
-            String nextCursor = "";
+        // TODO: 레디스가 초기화되고 한번도 채팅이 저장되지 않은 경우?
+        if (recentChatMetadata == null) {
+//            throw new Exception();
+        };
 
-            try {
-                cursorObj.close();
-            } catch (Exception e) {
-                // 예외는 로깅 또는 무시
-            }
-            return FindChatListResponseDto.of(chatList, nextCursor);
-        });
+        List<ChatPreviewResponseDto> chatList = recentChatMetadata.stream().map(t -> t.getValue()).map(ChatPreviewResponseDto::from).toList();
+
+        // TODO: 커서 페이징 구현
+        String nextCursor = "";
+
+        return FindChatListResponseDto.of(chatList, nextCursor);
     }
 }

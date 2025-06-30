@@ -51,9 +51,9 @@ public class ChatTestFactory {
 
     private static ChatPreviewResponseDto createChatPreviewResponseDto() throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
         Constructor<ChatPreviewResponseDto> constructor =
-                ChatPreviewResponseDto.class.getDeclaredConstructor(Long.class, String.class);
+                ChatPreviewResponseDto.class.getDeclaredConstructor(String.class, String.class, String.class);
         constructor.setAccessible(true);
 
-        return constructor.newInstance(UserTestFactory.USER_ID, FORMATTED_MESSAGE);
+        return constructor.newInstance(UserTestFactory.USER_ID + "", FORMATTED_MESSAGE, MESSAGE_TIME_MILLIS + "");
     }
 }

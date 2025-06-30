@@ -79,7 +79,11 @@ public class CouponController {
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) String status
     ) {
-        Pageable pageable = getPageable(page, size);
+        Pageable pageable = PageRequest.of(
+                    page - 1,
+                    size,
+                    Sort.by("coupon.endTime").ascending());
+
         GetUserCpnSDto serviceDto =
                 GetUserCpnSDto.of(userDetails.getId(), status, pageable);
         UserCpnPageResponseDto responseDto =
@@ -111,8 +115,8 @@ public class CouponController {
     public ResponseEntity<ApiResponse<CpnPageResponseDto>> getCouponsForEvent(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
-            @RequestParam String eventStartDate,
-            @RequestParam String eventEndDate
+            @RequestParam(required = false) String eventStartDate,
+            @RequestParam(required = false) String eventEndDate
     ) {
         Pageable pageable = getPageable(page, size);
         GetCpnSDto serviceDto =

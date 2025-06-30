@@ -54,9 +54,9 @@ public class EventProducerService {
             Long couponId,
             String limitCount
     ) {
-        String counterKey = "event:" + eventId + ":counter";
-        String limitKey = "event:" + eventId + ":limit";
-        String winnersKey = "event:" + eventId + ":winners";
+        String counterKey = "event:{" + eventId + "}:counter";
+        String limitKey = "event:{" + eventId + "}:limit";
+        String winnersKey = "event:{" + eventId + "}:winners";
 
         List<String> keysForScript = List.of(counterKey, limitKey, winnersKey);
 
@@ -83,8 +83,12 @@ public class EventProducerService {
     }
 
     public void sendToEventQueue(ParticipateEventDto dto) {
-        log.info("메시지 전송 시도: {}", dto);
-        rabbitTemplate.convertAndSend(exchangeName, routingKey, dto);
-        log.info("메시지 전송 완료");
+        try {
+            log.info("메시지 전송 시도: {}", dto);
+            rabbitTemplate.convertAndSend(exchangeName, routingKey, dto);
+            log.info("메시지 전송 완료: {}", dto);
+        } catch (Exception e) {
+            log.error("메시지 전송 실패: {}", dto, e);
+        }
     }
 }
