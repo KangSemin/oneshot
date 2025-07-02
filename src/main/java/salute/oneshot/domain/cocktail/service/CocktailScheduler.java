@@ -31,35 +31,6 @@ public class CocktailScheduler {
 
     @Scheduled(cron = "0 0/5 * * * ?")
     public void updateCocktailViewCountToDB() {
-
-        List<String> byteKeyList = new ArrayList<>();
-        ScanOptions scanOptions = ScanOptions.scanOptions()
-                .match(RedisConst.COCKTAIL_VIEW_COUNT_KEY_PREFIX + "*")
-                .count(scanCount)
-                .build();
-
-        try (Cursor<byte[]> cursor = redisTemplate.executeWithStickyConnection(
-                connection -> connection.scan(scanOptions))) {
-            while (cursor.hasNext()) {
-                byteKeyList.add(new String(cursor.next()));
-            }
-        }
-
-        List<Object> result = redisTemplate.executePipelined((RedisCallback<Object>) connection -> {
-            RedisSetCommands setCommands = connection.setCommands();
-            for (String key : byteKeyList) {
-                setCommands.sCard(redisTemplate.getStringSerializer().serialize(key));
-            }
-            return null;
-        });
-
-        for (int i = 0; i < byteKeyList.size(); i++) {
-            Long cocktailId = Long.parseLong(byteKeyList.get(i).split("::")[1]);
-            int count = Integer.parseInt((String.valueOf(result.get(i))));
-            cocktailService.updateViewCount(cocktailId, count);
-        }
-
-        redisTemplate.delete(byteKeyList);
     }
 
     @Scheduled(cron = "0 0 * * * ?")// 인기칵테일 갱신 메서드
@@ -75,5 +46,22 @@ public class CocktailScheduler {
                 .stream().map(CocktailResponseDto::from).toList();
 
         return popularCocktailList;
+    }
+
+    @Scheduled
+    public void abusingReset(){
+        List<String> byteKeyList = new ArrayList<>();
+        ScanOptions scanOptions = ScanOptions.scanOptions()
+                .match(RedisConst.COCKTAIL_VIEW_COUNT_KEY_PREFIX + "*")
+                .count(scanCount)
+                .build();
+
+        try (Cursor<byte[]> cursor = redisTemplate.executeWithStickyConnection(
+                connection -> connection.scan(scanOptions))) {
+            while (cursor.hasNext()) {
+                byteKeyList.add(new String(cursor.next()));
+            }
+        }
+        redisTemplate.delete(byteKeyList);
     }
 }
