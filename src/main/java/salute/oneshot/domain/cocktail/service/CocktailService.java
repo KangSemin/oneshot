@@ -138,16 +138,16 @@ public class CocktailService {
     }
 
     @Transactional(readOnly = true)
-    public CocktailResponseDto getCocktail(Long cocktailId, String userKey, boolean isValidPath) {
+    public CocktailResponseDto getCocktail(Long cocktailId, Long userKey, boolean isValidPath) {
 
         String cocktailScoreKey = RedisConst.COCKTAIL_SCORE_KEY_PREFIX + cocktailId;
         CocktailResponseDto cocktailResponseDto = CocktailResponseDto.from(findById(cocktailId));
 
         if(userKey == null){return cocktailResponseDto;}
 
-        boolean alreadyView = Boolean.TRUE.equals(redisTemplate.opsForSet().isMember(RedisConst.COCKTAIL_VIEW_COUNT_KEY_PREFIX + cocktailId, userKey));
+        boolean alreadyView = redisTemplate.opsForValue().getBit(RedisConst.POPULAR_COCKTAIL_KEY, userKey);
         if(isValidPath && !alreadyView){
-            redisTemplate.opsForSet().add(RedisConst.COCKTAIL_VIEW_COUNT_KEY_PREFIX + cocktailId, userKey);
+            redisTemplate.opsForValue().setBit(RedisConst.COCKTAIL_VIEW_COUNT_KEY_PREFIX + cocktailId, userKey, true);
             redisTemplate.opsForHash().increment(RedisConst.COCKTAIL_VIEW_COUNT_KEY, String.valueOf(cocktailId), 1);
             redisTemplate.opsForZSet().incrementScore(RedisConst.COCKTAIL_SCORE_KEY, cocktailScoreKey, 1);
         }
@@ -202,10 +202,11 @@ public class CocktailService {
         return new PageImpl<>(cocktailResponseDtoList, sDto.getPageable(), total);
     }
 
-
-    @Cacheable(cacheNames = "cocktail", key = "'popualr'")
     public List<CocktailResponseDto> getPopularCocktails() {
-     return cocktailRepository.findTopN().stream().map(CocktailResponseDto::from).toList();
+        List<Long> allValues = redisTemplate.opsForList().range(RedisConst.POPULAR_COCKTAIL_KEY, 0, -1)
+                .stream().map(Long::parseLong).toList();
+
+        return cocktailRepository.findAllById(allValues).stream().map(CocktailResponseDto::from).toList();
     }
 
     @Transactional

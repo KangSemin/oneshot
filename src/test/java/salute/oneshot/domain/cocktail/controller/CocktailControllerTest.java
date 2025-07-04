@@ -126,14 +126,14 @@ class CocktailControllerTest extends AbstractRestDocsTests {
     void getCocktailById() throws Exception {
 
         User user = UserTestFactory.createUser();
-        String guestKey = "guestKey";
+        Long guestKey = 1L;
         boolean isValid = false;
 
         // given
         CocktailResponseDto response = CocktailResponseDto.from(CocktailTestFactory.createBlackRussian());
 
         given(guestIdentifierManager.FindOrElseCreateKey(any(), any())).willReturn(guestKey);
-        given(cocktailService.getCocktail(1L, user.getId().toString(), isValid))
+        given(cocktailService.getCocktail(1L, user.getId(), isValid))
             .willReturn(response);
 
         // when & then
