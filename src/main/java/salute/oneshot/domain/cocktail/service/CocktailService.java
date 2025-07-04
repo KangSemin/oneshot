@@ -148,6 +148,7 @@ public class CocktailService {
         boolean alreadyView = Boolean.TRUE.equals(redisTemplate.opsForSet().isMember(RedisConst.COCKTAIL_VIEW_COUNT_KEY_PREFIX + cocktailId, userKey));
         if(isValidPath && !alreadyView){
             redisTemplate.opsForSet().add(RedisConst.COCKTAIL_VIEW_COUNT_KEY_PREFIX + cocktailId, userKey);
+            redisTemplate.opsForHash().increment(RedisConst.COCKTAIL_VIEW_COUNT_KEY, String.valueOf(cocktailId), 1);
             redisTemplate.opsForZSet().incrementScore(RedisConst.COCKTAIL_SCORE_KEY, cocktailScoreKey, 1);
         }
 
@@ -155,7 +156,6 @@ public class CocktailService {
     }
 
     @Transactional
-    @CachePut(value = RedisConst.POPULAR_COCKTAIL_KEY, key = "#sDto.cocktailId")
     public CocktailResponseDto updateCocktail(UpdateCocktailSDto sDto) {
 
         Cocktail cocktail = findById(sDto.getCocktailId());
