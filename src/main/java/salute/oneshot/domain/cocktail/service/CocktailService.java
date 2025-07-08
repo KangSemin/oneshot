@@ -5,8 +5,6 @@ import co.elastic.clients.elasticsearch.core.DeleteRequest;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -39,10 +37,7 @@ import salute.oneshot.global.util.RedisConst;
 import salute.oneshot.global.util.S3Util;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -145,13 +140,12 @@ public class CocktailService {
 
         if(userKey == null){return cocktailResponseDto;}
 
-        boolean alreadyView = redisTemplate.opsForValue().getBit(RedisConst.POPULAR_COCKTAIL_KEY, userKey);
+        boolean alreadyView = Boolean.TRUE.equals(redisTemplate.opsForValue().getBit(RedisConst.COCKTAIL_VIEW_COUNT_KEY + cocktailId, userKey));
         if(isValidPath && !alreadyView){
             redisTemplate.opsForValue().setBit(RedisConst.COCKTAIL_VIEW_COUNT_KEY_PREFIX + cocktailId, userKey, true);
             redisTemplate.opsForHash().increment(RedisConst.COCKTAIL_VIEW_COUNT_KEY, String.valueOf(cocktailId), 1);
             redisTemplate.opsForZSet().incrementScore(RedisConst.COCKTAIL_SCORE_KEY, cocktailScoreKey, 1);
         }
-
         return cocktailResponseDto;
     }
 
@@ -210,8 +204,13 @@ public class CocktailService {
     }
 
     @Transactional
-    public void updateViewCount(Long cocktailId, Integer view) {
-        cocktailQueryDslRepository.updateViewCntFromRedis(cocktailId, view);
+    public void updateViewCount(Map<Long, Integer> viewCountMap) {
+
+        Set<Long> cocktailIdSet = viewCountMap.keySet();
+        for(Long cocktailId : cocktailIdSet){
+            Integer viewCount = viewCountMap.get(cocktailId);
+            cocktailQueryDslRepository.updateViewCntFromRedis(cocktailId, viewCount);
+        }
     }
 
     private Cocktail findById(Long cocktailId) {

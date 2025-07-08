@@ -19,7 +19,7 @@ public class GuestIdentifierManager {
     final String UUID_COOKIE = "uuid";
     final String SIGNATURE_COOKIE = "signature";
 
-    public String FindOrElseCreateKey(HttpServletRequest servletRequest, HttpServletResponse servletResponse) {
+    public Long FindOrElseCreateKey(HttpServletRequest servletRequest, HttpServletResponse servletResponse) {
 
         Map<String,Cookie> cookieMap = cookieUtil.findOrElseCreateCookie(List.of(UUID_COOKIE, SIGNATURE_COOKIE), servletRequest);
         Cookie uuidCookie = cookieMap.get(UUID_COOKIE);
@@ -36,9 +36,9 @@ public class GuestIdentifierManager {
             servletResponse.addCookie(uuidCookie);
             servletResponse.addCookie(signatureCookie);
 
-            return uuidCookie.getValue();
+            return Long.parseLong(uuidCookie.getValue());
         }
 
-        return  hashMacUtil.validValue(uuidCookie.getValue(), signatureCookie.getValue()) ? uuidCookie.getValue() : null ;
+        return  hashMacUtil.validValue(uuidCookie.getValue(), signatureCookie.getValue()) ? Long.parseLong(uuidCookie.getValue()) : null ;
     }
 }
