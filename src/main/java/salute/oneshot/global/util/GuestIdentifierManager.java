@@ -5,6 +5,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+
+import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -16,8 +18,9 @@ public class GuestIdentifierManager {
     private final CookieUtil cookieUtil;
     private final HashMacUtil hashMacUtil;
 
-    final String UUID_COOKIE = "uuid";
-    final String SIGNATURE_COOKIE = "signature";
+    private final String UUID_COOKIE = "uuid";
+    private final String SIGNATURE_COOKIE = "signature";
+    private final BigInteger MAX_OFFSET = BigInteger.valueOf(4_294_967_296L);
 
     public Long FindOrElseCreateKey(HttpServletRequest servletRequest, HttpServletResponse servletResponse) {
 
@@ -27,7 +30,7 @@ public class GuestIdentifierManager {
 
         if (uuidCookie == null && signatureCookie == null) {
 
-            String uuid = String.valueOf(UUID.randomUUID().getMostSignificantBits() & Long.MAX_VALUE);
+            String uuid = BigInteger.valueOf(UUID.randomUUID().getMostSignificantBits()).mod(MAX_OFFSET).toString();
             uuidCookie = new Cookie(UUID_COOKIE, uuid);
 
             String signature = hashMacUtil.createSignature(uuid);

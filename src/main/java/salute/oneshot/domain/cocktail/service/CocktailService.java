@@ -135,16 +135,15 @@ public class CocktailService {
     @Transactional(readOnly = true)
     public CocktailResponseDto getCocktail(Long cocktailId, Long userKey, boolean isValidPath) {
 
-        String cocktailScoreKey = RedisConst.COCKTAIL_SCORE_KEY_PREFIX + cocktailId;
         CocktailResponseDto cocktailResponseDto = CocktailResponseDto.from(findById(cocktailId));
 
         if(userKey == null){return cocktailResponseDto;}
 
-        boolean alreadyView = Boolean.TRUE.equals(redisTemplate.opsForValue().getBit(RedisConst.COCKTAIL_VIEW_COUNT_KEY + cocktailId, userKey));
+        boolean alreadyView = Boolean.TRUE.equals(redisTemplate.opsForValue().getBit(RedisConst.COCKTAIL_VIEW_ABUSING_KEY + cocktailId, userKey));
         if(isValidPath && !alreadyView){
-            redisTemplate.opsForValue().setBit(RedisConst.COCKTAIL_VIEW_COUNT_KEY_PREFIX + cocktailId, userKey, true);
+            redisTemplate.opsForValue().setBit(RedisConst.COCKTAIL_VIEW_ABUSING_KEY + cocktailId, userKey, true);
             redisTemplate.opsForHash().increment(RedisConst.COCKTAIL_VIEW_COUNT_KEY, String.valueOf(cocktailId), 1);
-            redisTemplate.opsForZSet().incrementScore(RedisConst.COCKTAIL_SCORE_KEY, cocktailScoreKey, 1);
+            redisTemplate.opsForZSet().incrementScore(RedisConst.COCKTAIL_SCORE_KEY, String.valueOf(cocktailId), 1);
         }
         return cocktailResponseDto;
     }

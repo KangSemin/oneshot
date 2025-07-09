@@ -45,7 +45,7 @@ public class CocktailScheduler {
 
     @Scheduled(cron = "0 0 * * * ?")
     public void updatePopularCocktails() {
-
+        if(!redisTemplate.hasKey(RedisConst.COCKTAIL_SCORE_KEY)){return;}
         redisTemplate.rename(RedisConst.COCKTAIL_SCORE_KEY, RedisConst.COCKTAIL_SCORE_SNAPSHOT_KEY);
         List<String> popularCocktailIdList = redisTemplate.opsForZSet().reverseRange(RedisConst.COCKTAIL_SCORE_SNAPSHOT_KEY, 0, TOP_N - 1).stream().toList();
         redisTemplate.opsForList().rightPushAll(RedisConst.POPULAR_COCKTAIL_KEY, popularCocktailIdList);
@@ -56,7 +56,7 @@ public class CocktailScheduler {
     public void abusingReset(){
         List<String> byteKeyList = new ArrayList<>();
         ScanOptions scanOptions = ScanOptions.scanOptions()
-                .match(RedisConst.COCKTAIL_VIEW_COUNT_KEY_PREFIX + "*")
+                .match(RedisConst.COCKTAIL_VIEW_ABUSING_KEY + "*")
                 .count(scanCount)
                 .build();
 
