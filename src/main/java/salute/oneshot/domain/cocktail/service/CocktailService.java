@@ -5,8 +5,6 @@ import co.elastic.clients.elasticsearch.core.DeleteRequest;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -39,10 +37,7 @@ import salute.oneshot.global.util.RedisConst;
 import salute.oneshot.global.util.S3Util;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -138,24 +133,22 @@ public class CocktailService {
     }
 
     @Transactional(readOnly = true)
-    public CocktailResponseDto getCocktail(Long cocktailId, String userKey, boolean isValidPath) {
+    public CocktailResponseDto getCocktail(Long cocktailId, Long userKey, boolean isValidPath) {
 
-        String cocktailScoreKey = RedisConst.COCKTAIL_SCORE_KEY_PREFIX + cocktailId;
         CocktailResponseDto cocktailResponseDto = CocktailResponseDto.from(findById(cocktailId));
 
         if(userKey == null){return cocktailResponseDto;}
 
-        boolean alreadyView = Boolean.TRUE.equals(redisTemplate.opsForSet().isMember(RedisConst.COCKTAIL_VIEW_COUNT_KEY_PREFIX + cocktailId, userKey));
+        boolean alreadyView = Boolean.TRUE.equals(redisTemplate.opsForValue().getBit(RedisConst.COCKTAIL_VIEW_ABUSING_KEY + cocktailId, userKey));
         if(isValidPath && !alreadyView){
-            redisTemplate.opsForSet().add(RedisConst.COCKTAIL_VIEW_COUNT_KEY_PREFIX + cocktailId, userKey);
-            redisTemplate.opsForZSet().incrementScore(RedisConst.COCKTAIL_SCORE_KEY, cocktailScoreKey, 1);
+            redisTemplate.opsForValue().setBit(RedisConst.COCKTAIL_VIEW_ABUSING_KEY + cocktailId, userKey, true);
+            redisTemplate.opsForHash().increment(RedisConst.COCKTAIL_VIEW_COUNT_KEY, String.valueOf(cocktailId), 1);
+            redisTemplate.opsForZSet().incrementScore(RedisConst.COCKTAIL_SCORE_KEY, String.valueOf(cocktailId), 1);
         }
-
         return cocktailResponseDto;
     }
 
     @Transactional
-    @CachePut(value = RedisConst.POPULAR_COCKTAIL_KEY, key = "#sDto.cocktailId")
     public CocktailResponseDto updateCocktail(UpdateCocktailSDto sDto) {
 
         Cocktail cocktail = findById(sDto.getCocktailId());
@@ -202,15 +195,21 @@ public class CocktailService {
         return new PageImpl<>(cocktailResponseDtoList, sDto.getPageable(), total);
     }
 
-
-    @Cacheable(cacheNames = "cocktail", key = "'popualr'")
     public List<CocktailResponseDto> getPopularCocktails() {
-     return cocktailRepository.findTopN().stream().map(CocktailResponseDto::from).toList();
+        List<Long> allValues = redisTemplate.opsForList().range(RedisConst.POPULAR_COCKTAIL_KEY, 0, -1)
+                .stream().map(Long::parseLong).toList();
+
+        return cocktailRepository.findAllById(allValues).stream().map(CocktailResponseDto::from).toList();
     }
 
     @Transactional
-    public void updateViewCount(Long cocktailId, Integer view) {
-        cocktailQueryDslRepository.updateViewCntFromRedis(cocktailId, view);
+    public void updateViewCount(Map<Long, Integer> viewCountMap) {
+
+        Set<Long> cocktailIdSet = viewCountMap.keySet();
+        for(Long cocktailId : cocktailIdSet){
+            Integer viewCount = viewCountMap.get(cocktailId);
+            cocktailQueryDslRepository.updateViewCntFromRedis(cocktailId, viewCount);
+        }
     }
 
     private Cocktail findById(Long cocktailId) {

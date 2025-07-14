@@ -58,8 +58,8 @@ public class CocktailController {
                                                                          @PathVariable(name = "cocktailId") Long cocktailId
     ) {
         boolean isValidPath = servletRequest.getHeader("Referer") != null; //프론트 구현시 수정예정
-        String userKey = userDetails == null ?  guestIdentifierManager.FindOrElseCreateKey(servletRequest, servletResponse)
-                : userDetails.getId().toString();
+        Long userKey = userDetails == null ?  guestIdentifierManager.FindOrElseCreateKey(servletRequest, servletResponse)
+                : userDetails.getId();
 
         CocktailResponseDto responseDto  = cocktailService.getCocktail(cocktailId, userKey, isValidPath);
         return ResponseEntity.ok(ApiResponse.success(ApiResponseConst.GET_CCKTL_SUCCESS, responseDto));

@@ -3,11 +3,10 @@ package salute.oneshot.domain.cocktail.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CachePut;
-import org.springframework.data.redis.connection.RedisSetCommands;
 import org.springframework.data.redis.core.Cursor;
-import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ScanOptions;
+import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import salute.oneshot.domain.cocktail.dto.response.CocktailResponseDto;
@@ -16,6 +15,9 @@ import salute.oneshot.global.util.RedisConst;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Component
@@ -24,17 +26,37 @@ public class CocktailScheduler {
 
     private final RedisTemplate<String, String> redisTemplate;
     private final CocktailService cocktailService;
-    private final CocktailRepository cocktailRepository;
 
     private final int scanCount = 1000;
     private final int TOP_N = 10;
 
-    @Scheduled(cron = "0 0/5 * * * ?")
+    @Scheduled(cron = "0 0/3 * * * ?")
     public void updateCocktailViewCountToDB() {
 
+        Map<Object, Object> rawMap = redisTemplate.opsForHash().entries(RedisConst.COCKTAIL_VIEW_COUNT_KEY);
+
+        Map<Long, Integer> viewCountMap = rawMap.entrySet().stream()
+                .collect(Collectors.toMap(
+                        e -> Long.parseLong(e.getKey().toString()),
+                        e -> Integer.parseInt(e.getValue().toString())));
+
+        cocktailService.updateViewCount(viewCountMap);
+    }
+
+    @Scheduled(cron = "0 0 * * * ?")
+    public void updatePopularCocktails() {
+        if(!redisTemplate.hasKey(RedisConst.COCKTAIL_SCORE_KEY)){return;}
+        redisTemplate.rename(RedisConst.COCKTAIL_SCORE_KEY, RedisConst.COCKTAIL_SCORE_SNAPSHOT_KEY);
+        List<String> popularCocktailIdList = redisTemplate.opsForZSet().reverseRange(RedisConst.COCKTAIL_SCORE_SNAPSHOT_KEY, 0, TOP_N - 1).stream().toList();
+        redisTemplate.opsForList().rightPushAll(RedisConst.POPULAR_COCKTAIL_KEY, popularCocktailIdList);
+        redisTemplate.delete(RedisConst.COCKTAIL_SCORE_SNAPSHOT_KEY);
+    }
+
+    @Scheduled(cron = "0 0 0 * * *")
+    public void abusingReset(){
         List<String> byteKeyList = new ArrayList<>();
         ScanOptions scanOptions = ScanOptions.scanOptions()
-                .match(RedisConst.COCKTAIL_VIEW_COUNT_KEY_PREFIX + "*")
+                .match(RedisConst.COCKTAIL_VIEW_ABUSING_KEY + "*")
                 .count(scanCount)
                 .build();
 
@@ -44,36 +66,6 @@ public class CocktailScheduler {
                 byteKeyList.add(new String(cursor.next()));
             }
         }
-
-        List<Object> result = redisTemplate.executePipelined((RedisCallback<Object>) connection -> {
-            RedisSetCommands setCommands = connection.setCommands();
-            for (String key : byteKeyList) {
-                setCommands.sCard(redisTemplate.getStringSerializer().serialize(key));
-            }
-            return null;
-        });
-
-        for (int i = 0; i < byteKeyList.size(); i++) {
-            Long cocktailId = Long.parseLong(byteKeyList.get(i).split("::")[1]);
-            int count = Integer.parseInt((String.valueOf(result.get(i))));
-            cocktailService.updateViewCount(cocktailId, count);
-        }
-
         redisTemplate.delete(byteKeyList);
-    }
-
-    @Scheduled(cron = "0 0 * * * ?")// 인기칵테일 갱신 메서드
-    @CachePut(cacheNames = "cocktail", key = "'popualr'")
-    public List<CocktailResponseDto> updatePopularCocktails() {
-
-        List<Long> popularCocktailIdList = redisTemplate.opsForZSet()
-                .reverseRange(RedisConst.COCKTAIL_SCORE_KEY, 0, TOP_N - 1).stream()
-                .map(key -> Long.parseLong(key.split("::")[1])).toList();
-
-        redisTemplate.delete(RedisConst.POPULAR_COCKTAIL_KEY);
-        List<CocktailResponseDto>  popularCocktailList = cocktailRepository.findAllById(popularCocktailIdList)
-                .stream().map(CocktailResponseDto::from).toList();
-
-        return popularCocktailList;
     }
 }
